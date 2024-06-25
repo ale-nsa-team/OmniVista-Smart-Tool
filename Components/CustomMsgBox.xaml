@@ -1,0 +1,47 @@
+﻿<Window x:Class="PoEWizard.Components.CustomMsgBox"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PoEWizard.Components"
+        mc:Ignorable="d"
+        Loaded="OnWindowLoaded"
+        ResizeMode="NoResize" 
+        ShowInTaskbar="False" 
+        WindowStyle="None"
+        SizeToContent="WidthAndHeight"
+        MaxWidth="400" MaxHeight="400">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
+                <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Border Style="{DynamicResource templateOpt}" Margin="0">
+        <Grid x:Name="_mainGrid" x:FieldModifier="private" Style="{DynamicResource popupWindow}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" x:Name="_colOne" />
+                <ColumnDefinition Width="auto" x:Name="_colTwo" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="40" />
+            </Grid.RowDefinitions>
+            <Image Grid.Row="1" Grid.Column="0" x:Name="msgIcon" Width="24" Height="24" VerticalAlignment="center" />
+            <Border Grid.Row="0" Grid.ColumnSpan="2" Style="{DynamicResource msgBoxTitleBorder}">
+                <TextBlock x:Name="msgHeader" Style="{DynamicResource msgBoxTitle}" />
+            </Border>
+            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="msgBody" Style="{DynamicResource msgBoxBody}" />
+            <Border Grid.Row="2" Grid.ColumnSpan="2" Style="{DynamicResource propsBorder}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="msgOkBtn" Style="{DynamicResource defaultButton}" Margin="0,0,10,0" Click="MsgOkBtn_Click">OK</Button>
+                    <Button x:Name="msgCancelBtn" Style="{DynamicResource defaultButton}" Click="MsgCancelBtn_Click">Cancel</Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

@@ -23,7 +23,8 @@ namespace PoEWizard.Device
         #endregion
         #region Properties
         public static string sessionPrompt = DEFAULT_PROMPT;
-        public static string UserName { get; set; }
+        public static string IpAddress { get; set; }
+        public static string Username { get; set; }
         public static string Password { get; set; }
         public static bool IsLoginWithDefault { get; set; } = true;
         public string SerialNumber { get; set; } = "";
@@ -97,7 +98,7 @@ namespace PoEWizard.Device
         {
             if (IsLoginWithDefault)
             {
-                UserName = DEFAULT_USERNAME;
+                Username = DEFAULT_USERNAME;
                 Password = DEFAULT_PASSWORD;
             }
             ResetRebootInfo();
@@ -280,7 +281,7 @@ namespace PoEWizard.Device
                 }));
 
                 CmdExecutor login = new CmdExecutor();
-                login.Send(UserName).Response()
+                login.Send(Username).Response()
                 .Regex(".*(" + PASSWORD_PROMPT + OR_CHAR + PASSWORD_PROMPT_6X + ").*")
                 .Custom(new DeviceActor((actor9, data9) => sendPassword));
 
@@ -656,12 +657,12 @@ namespace PoEWizard.Device
             }
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-                Login login = new Login(UserName);
+                Login login = new Login(Username);
                 login.Owner = MainWindow.Instance;
                 login.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 if (login.ShowDialog() == true)
                 {
-                    UserName = login.User;
+                    Username = login.User;
                     Password = login.Password;
                 }
             }));

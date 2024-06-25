@@ -107,6 +107,12 @@
     <Compile Include="Comm\ReturnData.cs" />
     <Compile Include="Comm\SerialPortService.cs" />
     <Compile Include="Comm\TaskRequest.cs" />
+    <Compile Include="Components\AboutBox.xaml.cs">
+      <DependentUpon>AboutBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CustomMsgBox.xaml.cs">
+      <DependentUpon>CustomMsgBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
@@ -156,6 +162,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Components\AboutBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CustomMsgBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Login.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -184,6 +198,23 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\wiz.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="wiz.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\wand.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\connected.png" />
+    <Resource Include="Resources\disconnected-dark.png" />
+    <Resource Include="Resources\disconnected-light.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ale-icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

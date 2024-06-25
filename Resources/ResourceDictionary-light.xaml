@@ -2,6 +2,9 @@
                     xmlns:local="clr-namespace:PoEWizard.Components"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <BitmapImage x:Key="connected" UriSource="connected.png" />
+    <BitmapImage x:Key="disconnected" UriSource="disconnected-light.png" />
+
     <SolidColorBrush x:Key="fontColor" Color="Black" />
     <SolidColorBrush x:Key="linkColor" Color="Blue" />
     <SolidColorBrush x:Key="mainWindowBackgroundColor" Color="White" />

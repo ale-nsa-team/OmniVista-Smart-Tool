@@ -20,6 +20,7 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class Login : Window
     {
+        public string IpAddress { get; set; }
         public string User { get; set; }
         public string Password { get; set; }
 
@@ -40,6 +41,7 @@ namespace PoEWizard.Components
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
+            IpAddress = ipAddress.Text;
             User = username.Text;
             Password = passwword.Password;
             this.DialogResult = true;

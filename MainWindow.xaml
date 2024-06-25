@@ -5,8 +5,117 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard"
         mc:Ignorable="d"
-        Title="Mainwindow" Height="450" Width="800">
-    <Grid>
-        
+        Loaded="OnWindowLoaded"
+        Title="PoE Wizard" Height="600" Width="800" Icon="/wiz.ico">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/ResourceDictionary-light.xaml"/>
+                <ResourceDictionary Source="Resources/ResourceDictionary-dark.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid x:Name="_mainGrid" Style="{DynamicResource _mainGrid}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0" x:Name="_mainMenu" Style="{DynamicResource _mainMenu}">
+            <MenuItem Header="Connection">
+                <MenuItem Header="Switch..." x:Name="_switchMenuItem" Click="SwitchMenuItem_Click"/>
+                <MenuItem Header="Connect" x:Name="_connectMenuItem" IsEnabled="false" Click="ConnectMenuItem_Click"/>
+                <Separator/>
+                <MenuItem Header="Exit" Click="Exit_Click"/>
+            </MenuItem>
+            <MenuItem Header="View">
+                <MenuItem Header="Activity" Click="ViewActivity_Click"/>
+                <MenuItem Header="Log" Click="ViewLog_Click"/>
+                <MenuItem Header="Snapshot" x:Name="_snapshotMenuItem" Click="ViewSnapshot_Click"/>
+                <Separator/>
+                <MenuItem Header="Theme">
+                    <MenuItem Header="Dark" x:Name="_darkMenuItem" IsChecked="True" Click="ThemeItem_Click"/>
+                    <MenuItem Header="Light" x:Name="_lightMenuItem"  Click="ThemeItem_Click"/>
+                </MenuItem>
+                <MenuItem Header="Help" Click="Help_Click"/>
+                <MenuItem Header="About" Click="About_Click"/>
+            </MenuItem>
+        </Menu>
+        <StackPanel Grid.Row="1" x:Name="_switchInfo" Margin="0,10,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">Connected to S/N:</Label>
+                <Label Grid.Row="0" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_serialNo"/>
+                <Label Grid.Row="1" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">Model:</Label>
+                <Label Grid.Row="1" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_model"/>
+                <Label Grid.Row="2" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">Realease:</Label>
+                <Label Grid.Row="2" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_release"/>
+                <Label Grid.Row="3" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">MAC:</Label>
+                <Label Grid.Row="3" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_mac"/>
+                <Label Grid.Row="4" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">Running Directory:</Label>
+                <Label Grid.Row="4" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_runningDir"/>
+            </Grid>
+        </StackPanel>
+        <Border Grid.Row="2" x:Name="_psInfo" Style="{DynamicResource templateOpt}">
+        </Border>
+        <Border Grid.Row="2" x:Name="_infoBox" Style="{DynamicResource infoBorder}" Visibility="Collapsed">
+            <TextBlock x:Name="_infoBlock" />
+        </Border>
+        <Border Grid.Row="3" x:Name="_psDetails" Style="{DynamicResource templateOpt}">
+        </Border>
+        <Border Grid.Row="4" x:Name="_buttonArea" Style="{DynamicResource templateOpt}">
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="_btnRunWiz" Style="{DynamicResource defaultButton}" Height="28" Margin="10" Width="100"  Padding="0" Click="RunWiz_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{DynamicResource leftJustifLabel}">Run Wizard</Label>
+                        <Image Source="Resources/wand.png" Height="16" Width="16"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <StatusBar Grid.Row="5" x:Name="_statusBar" Style="{DynamicResource statusBar}">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem Grid.Column="0">
+                <TextBlock x:Name="_status" Text="Idle" Margin="5,0,0,0"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="1">
+                <ProgressBar x:Name="_progressBar" Style="{DynamicResource progressBar}" Visibility="Hidden"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Right">
+                <TextBlock x:Name="_switchAttributes" />
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="3" x:Name="_btnConnect" HorizontalContentAlignment="Right" Margin="5,0,5,0"
+                           MouseUp="ConnectBtn_Click">
+                <Image Width="16" Height="16" x:Name="_comImg" Source="{DynamicResource disconnected}"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>

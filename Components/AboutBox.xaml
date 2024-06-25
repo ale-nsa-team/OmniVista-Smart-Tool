@@ -1,0 +1,38 @@
+﻿<Window x:Class="PoEWizard.Components.AboutBox"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PoEWizard.Components"
+        mc:Ignorable="d"
+        Title="About ALE Configuration Wizard" Height="400" Width="450" WindowStyle="None" ShowInTaskbar="False">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
+                <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Style="{DynamicResource popupWindow}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Image Grid.Row="0" Grid.Column="0" Source="../Resources/ale-icon.png" Stretch="None"/>
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <TextBlock x:Name="_aboutTitle" Style="{DynamicResource aboutTitle}" />
+            <TextBlock x:Name="_version" Style="{DynamicResource aboutParagraph}" />
+            <TextBlock x:Name="_copyWright" Style="{DynamicResource aboutParagraph}" />
+            <TextBlock x:Name="_company" Style="{DynamicResource aboutParagraph}" />
+            <TextBlock x:Name="_aboutDescr" Style="{DynamicResource aboutParagraph}" />
+        </StackPanel>
+        <Border Grid.Row="1" Grid.Column="1" Style="{DynamicResource aboutBorder}">
+            <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" HorizontalAlignment="Right">OK</Button>
+        </Border>
+    </Grid>
+</Window>
