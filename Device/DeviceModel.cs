@@ -8,7 +8,6 @@ using static PoEWizard.Data.Constants;
 using PoEWizard.Data;
 using PoEWizard.Comm;
 using PoEWizard.Components;
-using PoEWizard.Device;
 
 namespace PoEWizard.Device
 {
