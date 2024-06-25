@@ -10,9 +10,18 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class Login : Window
     {
+        private string _pwd;
         public string IpAddress { get; set; }
         public string User { get; set; }
-        public string Password { get; set; }
+        public string Password
+        {
+            get => _pwd;
+            set
+            {
+                _pwd = value;
+                password.Password = value;
+            } 
+        }
 
         public Login(String user)
         {
@@ -25,7 +34,7 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
-            username.Text = user;
+            this.DataContext = this;
             User = user;
         }
 
@@ -33,7 +42,7 @@ namespace PoEWizard.Components
         {
             IpAddress = ipAddress.Text;
             User = username.Text;
-            Password = passwword.Password;
+            Password = password.Password;
             this.DialogResult = true;
             this.Close();
         }

@@ -6,7 +6,7 @@ using Renci.SshNet;
 
 namespace PoEWizard.Comm
 {
-    public class SSHService
+    public class SftpService
     {
         public string Host { get; set; }
         public int Port { get; set; }
@@ -16,9 +16,9 @@ namespace PoEWizard.Comm
 
         private SftpClient _sftpClient;
 
-        public SSHService() : this(DeviceModel.IpAddress, 22, DeviceModel.Username, DeviceModel.Password) { }
+        public SftpService() : this(DeviceModel.IpAddress, 22, DeviceModel.Username, DeviceModel.Password) { }
 
-        public SSHService(string host, int port, string user, string password)
+        public SftpService(string host, int port, string user, string password)
         {
             Host = host;
             Port = port;

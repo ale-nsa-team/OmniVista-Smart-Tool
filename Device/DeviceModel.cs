@@ -24,8 +24,8 @@ namespace PoEWizard.Device
         #region Properties
         public static string sessionPrompt = DEFAULT_PROMPT;
         public static string IpAddress { get; set; }
-        public static string Username { get; set; }
-        public static string Password { get; set; }
+        public static string Username { get; set; } = DEFAULT_USERNAME;
+        public static string Password { get; set; } = DEFAULT_PASSWORD;
         public static bool IsLoginWithDefault { get; set; } = true;
         public string SerialNumber { get; set; } = "";
         public string Model { get; set; } = "";

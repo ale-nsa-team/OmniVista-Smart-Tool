@@ -45,7 +45,7 @@ namespace PoEWizard
             darkDict = Resources.MergedDictionaries[1];
             DataContext = this;
             Instance = this;
-
+            device = new DeviceModel();
             // progress report handling
             progress = new Progress<ProgressReport>(report =>
             {
@@ -79,9 +79,13 @@ namespace PoEWizard
         #region event handlers
         private void SwitchMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Login login = new Login(DeviceModel.Username);
-            login.Owner = this;
-            login.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            Login login = new Login(DeviceModel.Username)
+            {
+                Password = DeviceModel.Password,
+                IpAddress = DeviceModel.IpAddress,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
             if (login.ShowDialog() == true)
             {
                 DeviceModel.Username = login.User;

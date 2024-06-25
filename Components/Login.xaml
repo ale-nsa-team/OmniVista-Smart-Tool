@@ -23,11 +23,11 @@
         <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="Enter Switch Credentials" Style="{DynamicResource popupTitle}" />
         <StackPanel Grid.Row="1" Style="{DynamicResource cfgWindow}">
             <Label>IP Address</Label>
-            <TextBox x:Name="ipAddress" x:FieldModifier="private" />
+            <TextBox x:Name="ipAddress" x:FieldModifier="private" Text="{Binding IpAddress}"/>
             <Label>Username</Label>
-            <TextBox x:Name="username" x:FieldModifier="private"/>
+            <TextBox x:Name="username" x:FieldModifier="private" Text="{Binding User}"/>
             <Label Margin="0,10,0,0">Password</Label>
-            <PasswordBox x:Name="passwword" KeyDown="Password_KeyDown" x:FieldModifier="private"/>
+            <PasswordBox x:Name="password" KeyDown="Password_KeyDown" x:FieldModifier="private"/>
         </StackPanel>
         <Border Grid.Row="2" Style="{DynamicResource propsBorder}">
             <StackPanel Orientation="Horizontal">
