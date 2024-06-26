@@ -67,7 +67,7 @@ namespace PoEWizard.Data
                         skipFrames += 1;
                         method = new StackFrame(skipFrames).GetMethod();
                     }
-                    string caller = $"{method.DeclaringType.Name}: {method.Name}";
+                    string caller = method.DeclaringType.DeclaringType.Name;
                     string logMsg = $"{strDate} [{level,-5}] ({caller}) - {message}";
                     lock (lockObj)
                     {
