@@ -110,9 +110,7 @@
     <Compile Include="Comm\RestApiClient.cs" />
     <Compile Include="Comm\RestApiService.cs" />
     <Compile Include="Comm\ResultCallback.cs" />
-    <Compile Include="Comm\ReturnData.cs" />
     <Compile Include="Comm\SftpService.cs" />
-    <Compile Include="Comm\TaskRequest.cs" />
     <Compile Include="Components\AboutBox.xaml.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
