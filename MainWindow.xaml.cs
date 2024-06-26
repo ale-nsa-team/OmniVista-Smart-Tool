@@ -101,6 +101,7 @@ namespace PoEWizard
 
         private void ConnectBtn_Click(object sender, MouseEventArgs e)
         {
+            _progressBar.Visibility = Visibility.Visible;
 
         }
 

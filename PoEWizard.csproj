@@ -142,6 +142,7 @@
     <Compile Include="Device\DeviceActor.cs" />
     <Compile Include="Device\DeviceModel.cs" />
     <Compile Include="Device\FileHanlder.cs" />
+    <Compile Include="Device\NewDeviceModel.cs" />
     <Compile Include="Device\PoE.cs" />
     <Compile Include="Device\PoeModel.cs" />
   </ItemGroup>
