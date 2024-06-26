@@ -28,11 +28,10 @@ namespace PoEWizard
         private readonly string templatePath;
         private string selectedFunction;
         private string selectedConfig;
-        private DeviceModel device;
         private readonly IProgress<ProgressReport> progress;
         private bool checkPort = true;
         private RestApiService restApiService;
-        private SwitchModel switchModel;
+        private SwitchModel device;
         #endregion
         #region public variables
         public static Window Instance;
@@ -49,7 +48,6 @@ namespace PoEWizard
             darkDict = Resources.MergedDictionaries[1];
             DataContext = this;
             Instance = this;
-            device = new DeviceModel();
             // progress report handling
             progress = new Progress<ProgressReport>(report =>
             {
@@ -83,30 +81,30 @@ namespace PoEWizard
         #region event handlers
         private void SwitchMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Login login = new Login(DeviceModel.Username)
+            Login login = new Login(device.Login)
             {
-                Password = DeviceModel.Password,
-                IpAddress = DeviceModel.IpAddress,
+                Password = device.Password,
+                IpAddress = device.IpAddr,
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             if (login.ShowDialog() == true)
             {
-                DeviceModel.Username = login.User;
-                DeviceModel.Password = login.Password;
-                DeviceModel.IpAddress = login.IpAddress;
-
-                Connect();    //Test of Rest API
-
+                device.Login = login.User;
+                device.Password = login.Password;
+                device.IpAddr = login.IpAddress;
+                Connect();
             }
         }
 
         private async void Connect()
         {
-            restApiService = new RestApiService(DeviceModel.IpAddress, DeviceModel.Username, DeviceModel.Password, 5);
+            _progressBar.Visibility = Visibility.Visible;
+            _status.Text = "Connecting to switch...";
+            restApiService = new RestApiService(device.IpAddr, device.Login, device.Password, 5);
             await Task.Run(() => restApiService.Connect());
-            switchModel = restApiService.SwitchModel;
-            if (switchModel.IsConnected)
+            device = restApiService.SwitchModel;
+            if (device.IsConnected)
             {
                 Logger.Info($"Connected to switch S/N {device.SerialNumber}, model {device.Model}");
             }
@@ -118,12 +116,12 @@ namespace PoEWizard
 
         private void ConnectMenuItem_Click(object sender, RoutedEventArgs e)
         {
-
+            Connect();
         }
 
         private void ConnectBtn_Click(object sender, MouseEventArgs e)
         {
-            _progressBar.Visibility = Visibility.Visible;
+            Connect();
 
         }
 

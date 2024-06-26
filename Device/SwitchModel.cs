@@ -1,12 +1,6 @@
-﻿using PoEWizard.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Reflection;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Device
@@ -25,6 +19,7 @@ namespace PoEWizard.Device
         public string Version { get; set; }
         public string Location { get; set; }
         public string Description { get; set; }
+        public string SerialNumber { get; set; }
         public string Contact { get; set; }
         public string Power { get; set; } = "0";
         public string Budget { get; set; } = "0";
