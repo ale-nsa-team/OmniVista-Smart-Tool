@@ -5,15 +5,31 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 using static PoEWizard.Data.Constants;
 
-namespace AleConfigWizard.Device
+namespace PoEWizard.Data
 {
     public static class CliParseUtils
     {
         private static readonly Regex vtableRegex = new Regex("([^:]+):(.+)", RegexOptions.Compiled);
         private static readonly Regex etableRegex = new Regex("([^:]+)=(.+)");
         private static readonly Regex htableRegex = new Regex(@"(-+\++)+");
+
+        public static Dictionary<string, string> ParseXmlToDictionary(string xml, string xpath)
+        {
+            Dictionary<string, string> dictionary = new Dictionary<string, string>();
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(xml);
+            XmlNodeList nodes = xmlDoc.SelectNodes(xpath);
+            foreach (XmlNode node in nodes)
+            {
+                string key = node.Name;
+                string value = node.InnerText.Trim(new char[] { ':', ' ', '\n' }); ;
+                dictionary[key] = value;
+            }
+            return dictionary;
+        }
 
         public static Dictionary<string, string> ParseVTable(string data)
         {

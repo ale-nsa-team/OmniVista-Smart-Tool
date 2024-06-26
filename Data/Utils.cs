@@ -212,6 +212,126 @@ namespace PoEWizard.Data
             }
             return foundChild;
         }
+
+        public static string CalcStringDuration(DateTime? startTime)
+        {
+            TimeSpan dur = DateTime.Now.Subtract((DateTime)startTime);
+            int hour = dur.Hours;
+            int sec = dur.Seconds;
+            int min = dur.Minutes;
+            int milliSec = dur.Milliseconds;
+            string duration = "";
+            if (hour > 0)
+            {
+                duration = hour.ToString() + " hour";
+                if (duration.Length > 1) duration += "s";
+            }
+            if (min > 0)
+            {
+                if (duration.Length > 0) duration += " ";
+                duration += min.ToString() + " min";
+            }
+            if (sec > 0)
+            {
+                if (duration.Length > 0) duration += " ";
+                duration += sec.ToString() + " sec";
+            }
+            if (milliSec > 0)
+            {
+                if (duration.Length > 0) duration += " ";
+                duration += milliSec.ToString() + " ms";
+            }
+            if (duration.Length < 1) duration = "< 1 ms";
+            return duration;
+        }
+
+        public static bool IsTimeExpired(DateTime startTime, double period)
+        {
+            return GetTimeDuration(startTime) >= period;
+        }
+
+        public static double GetTimeDuration(DateTime startTime)
+        {
+            try
+            {
+                return DateTime.Now.Subtract(startTime).TotalSeconds;
+            }
+            catch { }
+            return -1;
+        }
+
+        public static double GetTimeDurationMs(DateTime startTime)
+        {
+            try
+            {
+                return DateTime.Now.Subtract(startTime).TotalMilliseconds;
+            }
+            catch { }
+            return -1;
+        }
+
+        public static int StringToInt(string strNumber)
+        {
+            if (string.IsNullOrEmpty(strNumber)) return -1;
+            try
+            {
+                string number = ExtractNumber(strNumber);
+                if (!string.IsNullOrEmpty(number))
+                {
+                    bool isNumeric = int.TryParse(number.Trim(), out int intVal);
+                    if (isNumeric && (intVal >= 0)) return intVal;
+                }
+            }
+            catch { }
+            return -1;
+        }
+
+        public static double StringToDouble(string strNumber)
+        {
+            if (strNumber == null) return 0;
+            try
+            {
+                string number = ExtractNumber(strNumber);
+                if (!string.IsNullOrEmpty(number))
+                {
+                    bool isNumeric = double.TryParse(strNumber.Trim(), out double dVal);
+                    if (isNumeric && (dVal > 0)) return dVal;
+                }
+            }
+            catch { }
+            return 0;
+        }
+
+        private static string ExtractNumber(string strNumber)
+        {
+            try
+            {
+                return new string(strNumber.Where(char.IsDigit).ToArray());
+            }
+            catch { }
+            return null;
+        }
+
+        public static string PrintEnum(Enum enumVar)
+        {
+            try
+            {
+                return $"\"{ParseEnumToString(enumVar)}\"";
+            }
+            catch { }
+            return "";
+        }
+
+        public static string ParseEnumToString(Enum enumVar)
+        {
+            try
+            {
+                return Enum.GetName(enumVar.GetType(), enumVar);
+            }
+            catch { }
+            return "";
+        }
+
     }
 }
 

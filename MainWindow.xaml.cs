@@ -31,7 +31,8 @@ namespace PoEWizard
         private DeviceModel device;
         private readonly IProgress<ProgressReport> progress;
         private bool checkPort = true;
-        private RestApiService comService;
+        private RestApiService restApiService;
+        private SwitchInfo switchInfo;
         #endregion
         #region public variables
         public static Window Instance;
@@ -71,15 +72,16 @@ namespace PoEWizard
                 }
             });
 
-//            Connect(null, null);    //Test of Rest API
+            Connect(null, null);    //Test of Rest API
 
         }
 
         private async void Connect(object sender, MouseEventArgs e)
         {
-            ComCommander.ComService = comService;
-            await Task.Run(() => device.ConnectDevice(progress));
-            if (device.IsConnected)
+            restApiService = new RestApiService("192.168.1.3", "admin", "switch", 5);
+            await Task.Run(() => restApiService.Connect());
+            switchInfo = restApiService.SwitchInfo;
+            if (switchInfo.IsConnected)
             {
                 Logger.Info($"Connected to switch S/N {device.SerialNumber}, model {device.Model}");
             }

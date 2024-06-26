@@ -20,7 +20,7 @@ namespace PoEWizard.Device
         public string Login { get; set; }
         public string Password { get; set; }
         public SwitchStatus Status { get; set; }
-        public string CnxTimeout { get; set; }
+        public int CnxTimeout { get; set; }
         public string Model { get; set; }
         public string Version { get; set; }
         public string Location { get; set; }
@@ -35,33 +35,27 @@ namespace PoEWizard.Device
         public List<ChassisInfo> ChassisList { get; set; }
 
         public LogLevel LevelDebug { get; set; }
-        public bool Simulation { get; set; }
         public string ReleaseNumber { get; set; }
         public bool SettingsChanged { get; set; }
-        public long LastTrafficTime { get; set; }
-        public bool AutoScan { get; set; }
-        public string SnmpEngineID { get; set; }
+        public bool IsConnected { get; set; }
 
         public PowerSupplyState PowerSupplyState => GetPowerSupplyState();
 
         public SwitchInfo()
         {
         }
-
-        private void InitializeDefaults()
+        public SwitchInfo(string ipAddr, string username, string password, int cnxTimeout)
         {
-            this.IpAddr = "";
-            this.Login = "admin";
-            this.Password = "switch";
-            this.Status = SwitchStatus.Unknown;
-            this.CnxTimeout = "5";
-            this.LevelDebug = LogLevel.Activity;
-            this.AutoScan = false;
+            IpAddr = ipAddr;
+            Login = username;
+            Password = password;
+            CnxTimeout = cnxTimeout;
+            IsConnected = false;
         }
 
-        public ChassisInfo GetChassis(string chassisNumber)
+        public ChassisInfo GetChassis(int chassisNumber)
         {
-            return ChassisList.FirstOrDefault(c => c.Number.ToString() == chassisNumber);
+            return ChassisList.FirstOrDefault(c => c.Number == chassisNumber);
         }
 
         private PowerSupplyState GetPowerSupplyState()

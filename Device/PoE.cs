@@ -1,6 +1,6 @@
 ﻿
-using PoEWizard.Comm;
 using PoEWizard.Data;
+using PoEWizard.Comm;
 using System;
 using System.Collections.Generic;
 using System.Linq;

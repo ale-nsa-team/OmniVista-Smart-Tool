@@ -1,8 +1,10 @@
 ﻿using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
+using System.Collections.Generic;
 using System.IO.Ports;
 using System.Text;
+using static PoEWizard.Data.RestUrl;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace PoEWizard.Comm
@@ -12,27 +14,32 @@ namespace PoEWizard.Comm
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
         public ResultCallback Callback { get; set; }
-        public DeviceModel SwitchInfo { get; set; }
+        public SwitchInfo SwitchInfo { get; set; }
+        public RestApiClient RestApiClient { get; set; }
 
         public RestApiService()
         {
         }
-        public RestApiService(DeviceModel device)
+        public RestApiService(SwitchInfo device)
         {
-            SwitchInfo = device;
+            this.SwitchInfo = device;
         }
-        public RestApiService(string ipAddr, int br, int db, string p, string sb, string hs)
+        public RestApiService(string ipAddr, string username, string password, int cnxTimeout)
         {
-            SwitchInfo = new DeviceModel();
-            IsReady = false;
+            this.SwitchInfo = new SwitchInfo(ipAddr, username, password, cnxTimeout);
+            this.RestApiClient = new RestApiClient(SwitchInfo);
+            this.IsReady = false;
         }
 
         public void Connect()
         {
             try
             {
-                IsReady = true;
+                this.IsReady = true;
                 Logger.Debug($"Connecting Rest API");
+                RestApiClient.Login();
+                this.SwitchInfo = RestApiClient.SwitchInfo;
+                Dictionary<string, string> response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
             }
             catch (Exception e)
             {
@@ -68,26 +75,35 @@ namespace PoEWizard.Comm
                 Callback.OnError(ex.Message);
             }
         }
-        private void SpDataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            try
-            {
-                SerialPort sp = (SerialPort)sender;
-                string data = sp.ReadExisting();
-                //Logger.Debug($"Data received: {data}");
-                if (Callback != null) Callback.OnData(data);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Serial Port error", ex);
-            }
-        }
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
             return sb.ToString();
         }
+
+
+        private RestUrlEntry GetRestUrlEntry(RestUrlId url)
+        {
+            return GetRestUrlEntry(url, new string[1] { null });
+        }
+
+        private RestUrlEntry GetRestUrlEntry(RestUrlId url, string[] data)
+        {
+            RestUrlEntry entry = new RestUrlEntry(url, 60, data)
+            {
+                Method = GetHttpMethod(RELEASE_8, url),
+                Content = GetContent(RELEASE_8, url, data)
+            };
+            return entry;
+        }
+
+        private Dictionary<string, string> SendRequest(RestUrlEntry entry)
+        {
+            Dictionary<string, string> response = this.RestApiClient.SendRequest(entry);
+            return response;
+        }
+
     }
 
 }
