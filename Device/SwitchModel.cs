@@ -32,9 +32,8 @@ namespace PoEWizard.Device
 
         public PowerSupplyState PowerSupplyState => GetPowerSupplyState();
 
-        public SwitchModel()
-        {
-        }
+        public SwitchModel() : this("", DEFAULT_USERNAME, DEFAULT_PASSWORD, 5) { }
+
         public SwitchModel(string ipAddr, string username, string password, int cnxTimeout)
         {
             IpAddr = ipAddr;

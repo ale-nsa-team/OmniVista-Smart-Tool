@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using PoEWizard.Data;
-using PoEWizard.Device;
 using Renci.SshNet;
 
 namespace PoEWizard.Comm
@@ -15,8 +14,6 @@ namespace PoEWizard.Comm
         public bool IsConnected => _sftpClient?.IsConnected ?? false;
 
         private SftpClient _sftpClient;
-
-        public SftpService() : this(DeviceModel.IpAddress, 22, DeviceModel.Username, DeviceModel.Password) { }
 
         public SftpService(string host, int port, string user, string password)
         {

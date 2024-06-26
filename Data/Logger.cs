@@ -22,13 +22,17 @@ namespace PoEWizard.Data
 
         public static string LogPath { get; private set; }
 
-        private static void OpenLogFile()
+        static Logger()
         {
             try
             {
                 logLevel = LogLevel.Info;
                 string filename =  "PoEWizard.log";
                 LogPath = Path.Combine(MainWindow.dataPath, "Log", filename);
+                if (!Directory.Exists(Path.GetDirectoryName(LogPath)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(LogPath));
+                }
                 logSize = 1000000;
                 logCount = 5;
                 eventLog = new EventLog();
@@ -39,11 +43,6 @@ namespace PoEWizard.Data
                 }
                 eventLog.Source = source;
                 eventLog.Log = "Application";
-
-                if (!Directory.Exists(Path.GetDirectoryName(LogPath)))
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(LogPath));
-                }
             }
             catch { }
         }

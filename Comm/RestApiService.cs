@@ -23,6 +23,8 @@ namespace PoEWizard.Comm
         public RestApiService(SwitchModel device)
         {
             this.SwitchModel = device;
+            this.RestApiClient = new RestApiClient(SwitchModel);
+            this.IsReady = false;
         }
         public RestApiService(string ipAddr, string username, string password, int cnxTimeout)
         {

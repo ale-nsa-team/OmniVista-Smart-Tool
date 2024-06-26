@@ -3,11 +3,15 @@ using PoEWizard.Components;
 using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard
@@ -46,8 +50,20 @@ namespace PoEWizard
             InitializeComponent();
             lightDict = Resources.MergedDictionaries[0];
             darkDict = Resources.MergedDictionaries[1];
+            currentDict = darkDict;
             DataContext = this;
             Instance = this;
+            device = new SwitchModel();
+            //application info
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            string version = assembly.GetName().Version.ToString();
+            string title = assembly.GetCustomAttribute<AssemblyTitleAttribute>().Title;
+            string ale = assembly.GetCustomAttribute<AssemblyCompanyAttribute>().Company;
+            appVersion = title + " (V." + string.Join(".", version.Split('.').ToList().Take(2)) + ")";
+            //datapath
+            string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            dataPath = Path.Combine(appData, ale, title);
+
             // progress report handling
             progress = new Progress<ProgressReport>(report =>
             {
@@ -99,18 +115,20 @@ namespace PoEWizard
 
         private async void Connect()
         {
-            _progressBar.Visibility = Visibility.Visible;
-            _status.Text = "Connecting to switch...";
-            restApiService = new RestApiService(device.IpAddr, device.Login, device.Password, 5);
+            ShowProgress("Connecting to switch...");
+            restApiService = new RestApiService(device);
             await Task.Run(() => restApiService.Connect());
-            device = restApiService.SwitchModel;
+            HideProgress();
+
             if (device.IsConnected)
             {
                 Logger.Info($"Connected to switch S/N {device.SerialNumber}, model {device.Model}");
+                SetConnectedState();
             }
             else
             {
                 Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
+                SetDisconnectedState();
             }
         }
 
@@ -220,9 +238,32 @@ namespace PoEWizard
             _infoBox.Visibility = Visibility.Visible;
         }
 
+        private void ShowProgress(string message) {
+            _progressBar.Visibility = Visibility.Visible;
+            _status.Text = message;
+
+        }
+
+        private void HideProgress()
+        {
+            _progressBar.Visibility = Visibility.Hidden;
+            _status.Text = DEFAULT_APP_STATUS;
+        }
+
         private void HideInfoBox()
         {
             _infoBox.Visibility = Visibility.Collapsed;
+        }
+
+        private void SetConnectedState()
+        {
+            _comImg.Source = (ImageSource)currentDict["connected"];
+
+        }
+
+        private void SetDisconnectedState() 
+        {
+            _comImg.Source = (ImageSource)currentDict["disconnected"];
         }
 
         #endregion private methods

@@ -122,6 +122,7 @@
     </Compile>
     <Compile Include="Data\Activity.cs" />
     <Compile Include="Data\CliParseUtils.cs" />
+    <Compile Include="Data\ConfigKeyObject.cs" />
     <Compile Include="Data\Constants.cs" />
     <Compile Include="Data\Logger.cs" />
     <Compile Include="Data\ProgressReport.cs" />
@@ -130,7 +131,6 @@
     <Compile Include="Data\Utils.cs" />
     <Compile Include="Device\ChassisInfo.cs" />
     <Compile Include="Device\Commands.cs" />
-    <Compile Include="Device\PoE.cs" />
     <Compile Include="Device\PoeModel.cs" />
   </ItemGroup>
   <ItemGroup>

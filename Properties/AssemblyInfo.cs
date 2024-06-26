@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("PoEWizard")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Alcatel-Lucent Enterprise")]
 [assembly: AssemblyProduct("PoEWizard")]
 [assembly: AssemblyCopyright("Copyright ©  2024")]
 [assembly: AssemblyTrademark("")]
