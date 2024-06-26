@@ -1,6 +1,6 @@
 ﻿
-using PoEWizard.Comm;
 using PoEWizard.Data;
+using PoEWizard.Comm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace PoEWizard.Device
 
         public PoE(DeviceModel device, IProgress<ProgressReport> progress)
         {
-            prompt = DeviceModel.sessionPrompt;
+            prompt = DEFAULT_PROMPT;
             this.progress = progress;
             PortList = new List<string>();
         }

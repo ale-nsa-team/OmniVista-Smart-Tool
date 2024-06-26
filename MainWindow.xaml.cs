@@ -1,8 +1,10 @@
-﻿using PoEWizard.Components;
+﻿using PoEWizard.Comm;
+using PoEWizard.Components;
 using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -29,6 +31,8 @@ namespace PoEWizard
         private DeviceModel device;
         private readonly IProgress<ProgressReport> progress;
         private bool checkPort = true;
+        private RestApiService restApiService;
+        private SwitchModel switchModel;
         #endregion
         #region public variables
         public static Window Instance;
@@ -91,6 +95,24 @@ namespace PoEWizard
                 DeviceModel.Username = login.User;
                 DeviceModel.Password = login.Password;
                 DeviceModel.IpAddress = login.IpAddress;
+
+                Connect();    //Test of Rest API
+
+            }
+        }
+
+        private async void Connect()
+        {
+            restApiService = new RestApiService(DeviceModel.IpAddress, DeviceModel.Username, DeviceModel.Password, 5);
+            await Task.Run(() => restApiService.Connect());
+            switchModel = restApiService.SwitchModel;
+            if (switchModel.IsConnected)
+            {
+                Logger.Info($"Connected to switch S/N {device.SerialNumber}, model {device.Model}");
+            }
+            else
+            {
+                Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
             }
         }
 

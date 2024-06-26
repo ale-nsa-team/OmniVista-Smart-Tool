@@ -115,6 +115,8 @@
     <Compile Include="Comm\ComCommander.cs" />
     <Compile Include="Comm\DataMatch.cs" />
     <Compile Include="Comm\IComService.cs" />
+    <Compile Include="Comm\RestApiClient.cs" />
+    <Compile Include="Comm\RestApiService.cs" />
     <Compile Include="Comm\ResultCallback.cs" />
     <Compile Include="Comm\ReturnData.cs" />
     <Compile Include="Comm\SerialPortService.cs" />
@@ -135,9 +137,10 @@
     <Compile Include="Data\Constants.cs" />
     <Compile Include="Data\Logger.cs" />
     <Compile Include="Data\ProgressReport.cs" />
+    <Compile Include="Data\RestUrl.cs" />
+    <Compile Include="Data\RestUrlEntry.cs" />
     <Compile Include="Data\Utils.cs" />
     <Compile Include="Device\ChassisInfo.cs" />
-    <Compile Include="Device\CliParseUtils.cs" />
     <Compile Include="Device\Commands.cs" />
     <Compile Include="Device\DeviceActor.cs" />
     <Compile Include="Device\DeviceModel.cs" />
@@ -147,6 +150,11 @@
     <Compile Include="Device\PoeModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Device\PowerSupplyInfo.cs" />
+    <Compile Include="Device\SlotInfo.cs" />
+    <Compile Include="Device\SwitchModel.cs" />
+    <Compile Include="Device\SwitchPort.cs" />
+    <Compile Include="Exceptions\CustomExceptions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

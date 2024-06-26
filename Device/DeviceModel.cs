@@ -200,7 +200,7 @@ namespace PoEWizard.Device
                                 // save chassis info then active PoE then use saved chassis info to complete login
                                 // use chassis info to detect model and execute appropriate PoE cmd
                                 chassisInfo = GetChassisInfo(data4);
-                                if (chassisInfo?.ModelName == null) return null;
+                                if (chassisInfo?.Model == null) return null;
                                 Commands.Version = chassisInfo.IsOS6x ? AosVersion.V6 : AosVersion.V8;
                                 CmdExecutor nextCmd = new CmdExecutor();
                                 nextCmd.Send(Commands.StartPoE).Response().EndsWith(sessionPrompt)
@@ -552,9 +552,9 @@ namespace PoEWizard.Device
             bool success = false;
             if (chassisInfo != null)
             {
-                Model = chassisInfo.ModelName;
+                Model = chassisInfo.Model;
                 SerialNumber = chassisInfo.SerialNumber;
-                MacAddress = chassisInfo.MacAddres;
+                MacAddress = chassisInfo.MacAddress;
                 IsConnected = true;
                 if (isRunningFromWorking)
                 {
@@ -590,7 +590,7 @@ namespace PoEWizard.Device
         {
             if (chassisInfo != null)
             {
-                RebootDeviceModel = chassisInfo.ModelName;
+                RebootDeviceModel = chassisInfo.Model;
             }
             NeedToReboot = true;
         }

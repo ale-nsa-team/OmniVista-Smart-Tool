@@ -1,19 +1,33 @@
-﻿using PoEWizard.Data;
-using PoEWizard.Device;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 using static PoEWizard.Data.Constants;
 
-namespace AleConfigWizard.Device
+namespace PoEWizard.Data
 {
     public static class CliParseUtils
     {
         private static readonly Regex vtableRegex = new Regex("([^:]+):(.+)", RegexOptions.Compiled);
         private static readonly Regex etableRegex = new Regex("([^:]+)=(.+)");
         private static readonly Regex htableRegex = new Regex(@"(-+\++)+");
+
+        public static Dictionary<string, string> ParseXmlToDictionary(string xml, string xpath)
+        {
+            Dictionary<string, string> dictionary = new Dictionary<string, string>();
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(xml);
+            XmlNodeList nodes = xmlDoc.SelectNodes(xpath);
+            foreach (XmlNode node in nodes)
+            {
+                string key = node.Name;
+                string value = node.InnerText.Trim(new char[] { ':', ' ', '\n' }); ;
+                dictionary[key] = value;
+            }
+            return dictionary;
+        }
 
         public static Dictionary<string, string> ParseVTable(string data)
         {
@@ -38,7 +52,7 @@ namespace AleConfigWizard.Device
 
                 for (int i = line + 1; i < lines.Length; i++)
                 {
-                    if (lines[i] == string.Empty || lines[i].StartsWith(DeviceModel.sessionPrompt)) break;
+                    if (lines[i] == string.Empty) break;
                     Dictionary<string, string> dict = new Dictionary<string, string>();
                     dict.Clear();
                     string[] values = GetValues(lines[line], lines[i]);
@@ -192,17 +206,9 @@ namespace AleConfigWizard.Device
                             {
                                 errors.Append("Session expired, please disconnect and log back in to the switch.");
                             }
-                            else
+                            else if (startError)
                             {
-                                bool startsWithSessionPrompt = line.Contains(DeviceModel.sessionPrompt);
-                                if (startError && !startsWithSessionPrompt)
-                                {
-                                    errors.Append(line).Append(LINE_FEED);
-                                }
-                                else if (startsWithSessionPrompt)
-                                {
-                                    startError = false;
-                                }
+                                errors.Append(line).Append(LINE_FEED);
                             }
                         }
                     }
