@@ -12,6 +12,14 @@
         public enum MsgBoxIcons { Info, Warning, Error, Question, None };
         public enum TemplateOptions { Dhcp, Edge, Core, Lps, Lldp, Security, MaxConfigs };
         public enum AosVersion { V6, V8 };
+        public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
+        public enum PortStatus { Unknown, Up, Down }
+        public enum PoeStatus { On, Off, Fault, Deny, NoPoe }
+        public enum EType { Fiber, Copper, Unknown }
+        public enum PriorityLevelType { Low, High, Critical, Unknown }
+        public enum PowerSupplyState { Up, Down, Unknown }
+        public enum ChassisStatus { Unknown, Up, Down }
+
         #endregion
 
         #region strings

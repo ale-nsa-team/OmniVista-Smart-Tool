@@ -67,7 +67,7 @@ namespace PoEWizard.Device
             {
                 //VI to enter append/edit mode
                 CmdExecutor sender = new CmdExecutor();
-                sender = sender.Send(cdToWriteDirCmd, 10000).Response().EndsWith(DeviceModel.sessionPrompt)
+                sender = sender.Send(cdToWriteDirCmd, 10000).Response().EndsWith(DEFAULT_PROMPT)
                 .Send(VI + SPACE + fileName).Wait(250).Send(A_LITERAL);
                 int noOfExecutedCmds = 0;
                 int noOfExecutedCmdsPerPart = 0;
@@ -95,7 +95,7 @@ namespace PoEWizard.Device
                     sender = sender.Send(esc);
                 }
                 sender.Send(VI_X)
-                .Response().Regex($"{escseq}|{DeviceModel.sessionPrompt}$")
+                .Response().Regex($"{escseq}")
                 .Consume(new ResultCallback(result =>
                 {
                     success = true;
@@ -118,14 +118,14 @@ namespace PoEWizard.Device
             {
                 CmdExecutor sender = new CmdExecutor();
                 sender = sender.Send(cdToWriteDirCmd).Response()
-                    .EndsWith(DeviceModel.sessionPrompt)
+                    .EndsWith(null)
                     .Send(Commands.CatStartEoF + fileName);
                 foreach (string cmd in cmds)
                 {
                     sender = sender.Send(cmd);
                 }
                 sender.Send(EOF_STRING)
-                .Response().Regex($"Ctrl/C|{DeviceModel.sessionPrompt}$")
+                .Response().Regex($"Ctrl/C")
                 .Consume(new ResultCallback(result =>
                 {
                     success = true;

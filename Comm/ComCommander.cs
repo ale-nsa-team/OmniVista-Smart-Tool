@@ -16,7 +16,7 @@ namespace PoEWizard.Comm
         private static readonly LockingStringBuilder results = new LockingStringBuilder();
         private static readonly LockingStringBuilder errors = new LockingStringBuilder();
         private static readonly LockingStringBuilder buffer = new LockingStringBuilder(BUFFER_LENGTH);
-        public static IComService ComService { get; set; }
+        public static RestApiService ComService { get; set; }
 
         public static void Quit()
         {

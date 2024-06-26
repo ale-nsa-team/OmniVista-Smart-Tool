@@ -1,8 +1,10 @@
-﻿using PoEWizard.Components;
+﻿using PoEWizard.Comm;
+using PoEWizard.Components;
 using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -29,6 +31,7 @@ namespace PoEWizard
         private DeviceModel device;
         private readonly IProgress<ProgressReport> progress;
         private bool checkPort = true;
+        private RestApiService comService;
         #endregion
         #region public variables
         public static Window Instance;
@@ -67,6 +70,23 @@ namespace PoEWizard
                         break;
                 }
             });
+
+//            Connect(null, null);    //Test of Rest API
+
+        }
+
+        private async void Connect(object sender, MouseEventArgs e)
+        {
+            ComCommander.ComService = comService;
+            await Task.Run(() => device.ConnectDevice(progress));
+            if (device.IsConnected)
+            {
+                Logger.Info($"Connected to switch S/N {device.SerialNumber}, model {device.Model}");
+            }
+            else
+            {
+                Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
+            }
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)

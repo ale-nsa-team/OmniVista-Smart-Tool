@@ -37,7 +37,7 @@ namespace PoEWizard.Device
 
                 for (int i = line + 1; i < lines.Length; i++)
                 {
-                    if (lines[i] == string.Empty || lines[i].StartsWith(DeviceModel.sessionPrompt)) break;
+                    if (lines[i] == string.Empty) break;
                     Dictionary<string, string> dict = new Dictionary<string, string>();
                     dict.Clear();
                     string[] values = GetValues(lines[line], lines[i]);
@@ -191,17 +191,9 @@ namespace PoEWizard.Device
                             {
                                 errors.Append("Session expired, please disconnect and log back in to the switch.");
                             }
-                            else
+                            else if (startError)
                             {
-                                bool startsWithSessionPrompt = line.Contains(DeviceModel.sessionPrompt);
-                                if (startError && !startsWithSessionPrompt)
-                                {
-                                    errors.Append(line).Append(LINE_FEED);
-                                }
-                                else if (startsWithSessionPrompt)
-                                {
-                                    startError = false;
-                                }
+                                errors.Append(line).Append(LINE_FEED);
                             }
                         }
                     }

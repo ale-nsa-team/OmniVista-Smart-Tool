@@ -19,7 +19,7 @@ namespace PoEWizard.Device
 
         public PoE(DeviceModel device, IProgress<ProgressReport> progress)
         {
-            prompt = DeviceModel.sessionPrompt;
+            prompt = DEFAULT_PROMPT;
             this.progress = progress;
             PortList = new List<string>();
         }
