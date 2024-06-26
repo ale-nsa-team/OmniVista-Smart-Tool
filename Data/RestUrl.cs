@@ -427,7 +427,6 @@ namespace PoEWizard.Data
                     case RestUrlId.SHOW_MAC_LEARNING:
                     case RestUrlId.SHOW_TEMPERATURE:
                     case RestUrlId.SHOW_HEALTH:
-                    case RestUrlId.SHOW_SLOT_SECURITY:
                     case RestUrlId.SHOW_PORT_SECURITY_MAC_LEARNING:
                     case RestUrlId.SHOW_LAN_POWER:
                     case RestUrlId.SHOW_PORT_LAN_POWER:

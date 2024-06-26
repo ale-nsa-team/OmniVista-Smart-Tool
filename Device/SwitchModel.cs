@@ -12,7 +12,7 @@ using static PoEWizard.Data.Constants;
 namespace PoEWizard.Device
 {
     [Serializable]
-    public class SwitchInfo
+    public class SwitchModel
     {
         public string Name { get; set; }
 
@@ -29,22 +29,18 @@ namespace PoEWizard.Device
         public string Power { get; set; } = "0";
         public string Budget { get; set; } = "0";
         public string UpTime { get; set; }
-        public int Cpu { get; set; }
-        public int CpuThreshold { get; set; }
 
         public List<ChassisInfo> ChassisList { get; set; }
 
-        public LogLevel LevelDebug { get; set; }
         public string ReleaseNumber { get; set; }
-        public bool SettingsChanged { get; set; }
         public bool IsConnected { get; set; }
 
         public PowerSupplyState PowerSupplyState => GetPowerSupplyState();
 
-        public SwitchInfo()
+        public SwitchModel()
         {
         }
-        public SwitchInfo(string ipAddr, string username, string password, int cnxTimeout)
+        public SwitchModel(string ipAddr, string username, string password, int cnxTimeout)
         {
             IpAddr = ipAddr;
             Login = username;

@@ -151,7 +151,7 @@
   <ItemGroup>
     <Compile Include="Device\PowerSupplyInfo.cs" />
     <Compile Include="Device\SlotInfo.cs" />
-    <Compile Include="Device\SwitchInfo.cs" />
+    <Compile Include="Device\SwitchModel.cs" />
     <Compile Include="Device\SwitchPort.cs" />
     <Compile Include="Exceptions\CustomExceptions.cs" />
     <Compile Include="MainWindow.xaml.cs">

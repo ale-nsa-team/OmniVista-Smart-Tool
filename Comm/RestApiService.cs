@@ -14,20 +14,20 @@ namespace PoEWizard.Comm
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
         public ResultCallback Callback { get; set; }
-        public SwitchInfo SwitchInfo { get; set; }
+        public SwitchModel SwitchModel { get; set; }
         public RestApiClient RestApiClient { get; set; }
 
         public RestApiService()
         {
         }
-        public RestApiService(SwitchInfo device)
+        public RestApiService(SwitchModel device)
         {
-            this.SwitchInfo = device;
+            this.SwitchModel = device;
         }
         public RestApiService(string ipAddr, string username, string password, int cnxTimeout)
         {
-            this.SwitchInfo = new SwitchInfo(ipAddr, username, password, cnxTimeout);
-            this.RestApiClient = new RestApiClient(SwitchInfo);
+            this.SwitchModel = new SwitchModel(ipAddr, username, password, cnxTimeout);
+            this.RestApiClient = new RestApiClient(SwitchModel);
             this.IsReady = false;
         }
 
@@ -38,7 +38,7 @@ namespace PoEWizard.Comm
                 this.IsReady = true;
                 Logger.Debug($"Connecting Rest API");
                 RestApiClient.Login();
-                this.SwitchInfo = RestApiClient.SwitchInfo;
+                this.SwitchModel = RestApiClient.SwitchInfo;
                 Dictionary<string, string> response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
             }
             catch (Exception e)

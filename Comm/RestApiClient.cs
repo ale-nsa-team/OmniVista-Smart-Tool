@@ -24,7 +24,7 @@ namespace PoEWizard.Comm
         #region Internal Variables
 
         private readonly HttpClient _httpClient;
-        public SwitchInfo SwitchInfo { get; set; }
+        public SwitchModel SwitchInfo { get; set; }
         private bool _connected = false;
 
         #endregion Internal Variables
@@ -35,7 +35,7 @@ namespace PoEWizard.Comm
 
         #region Constructors
 
-        public RestApiClient(SwitchInfo switchInfo)
+        public RestApiClient(SwitchModel switchInfo)
         {
             this.SwitchInfo = switchInfo;
             this._httpClient = new HttpClient();

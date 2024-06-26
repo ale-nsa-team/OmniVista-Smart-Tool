@@ -32,7 +32,7 @@ namespace PoEWizard
         private readonly IProgress<ProgressReport> progress;
         private bool checkPort = true;
         private RestApiService restApiService;
-        private SwitchInfo switchInfo;
+        private SwitchModel switchModel;
         #endregion
         #region public variables
         public static Window Instance;
@@ -71,24 +71,6 @@ namespace PoEWizard
                         break;
                 }
             });
-
-            Connect(null, null);    //Test of Rest API
-
-        }
-
-        private async void Connect(object sender, MouseEventArgs e)
-        {
-            restApiService = new RestApiService("192.168.1.3", "admin", "switch", 5);
-            await Task.Run(() => restApiService.Connect());
-            switchInfo = restApiService.SwitchInfo;
-            if (switchInfo.IsConnected)
-            {
-                Logger.Info($"Connected to switch S/N {device.SerialNumber}, model {device.Model}");
-            }
-            else
-            {
-                Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
-            }
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
@@ -113,6 +95,24 @@ namespace PoEWizard
                 DeviceModel.Username = login.User;
                 DeviceModel.Password = login.Password;
                 DeviceModel.IpAddress = login.IpAddress;
+
+                Connect();    //Test of Rest API
+
+            }
+        }
+
+        private async void Connect()
+        {
+            restApiService = new RestApiService(DeviceModel.IpAddress, DeviceModel.Username, DeviceModel.Password, 5);
+            await Task.Run(() => restApiService.Connect());
+            switchModel = restApiService.SwitchModel;
+            if (switchModel.IsConnected)
+            {
+                Logger.Info($"Connected to switch S/N {device.SerialNumber}, model {device.Model}");
+            }
+            else
+            {
+                Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
             }
         }
 
