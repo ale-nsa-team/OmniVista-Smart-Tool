@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
@@ -330,6 +332,18 @@ namespace PoEWizard.Data
             }
             catch { }
             return "";
+        }
+
+        public static HttpStatusCode ConvertToHttpStatusCode(Dictionary<string, string> errorList)
+        {
+            try
+            {
+                return (HttpStatusCode)Enum.Parse(typeof(HttpStatusCode), errorList[RestUrl.HTTP_RESPONSE]);
+            }
+            catch
+            {
+                return HttpStatusCode.Unused;
+            }
         }
 
     }

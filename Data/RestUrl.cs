@@ -16,9 +16,10 @@ namespace PoEWizard.Data
         public const string RESULT = "RESULT";
         public const string RESPONSE = "RESPONSE";
         public const string DURATION = "DURATION";
-        public const string ERROR = "ERROR";
+        public const string API_ERROR = "error";
         public const string OUTPUT = "output";
         public const string NODE = "node";
+        public const string HTTP_RESPONSE = "diag";
 
         public const string DATA_0 = "%1_DATA_1%";
         public const string DATA_1 = "%2_DATA_2%";
@@ -35,71 +36,72 @@ namespace PoEWizard.Data
             SHOW_SYSTEM = 0,
             SHOW_CHASSIS = 1,
             SHOW_PORTS_LIST = 2,
-            SHOW_TRAFFIC = 3,
-            SHOW_MAC_LEARNING = 4,
-            SHOW_TEMPERATURE = 5,
-            SHOW_HEALTH = 6,
-            SHOW_PORT_SECURITY_MAC_LEARNING = 8,
-            SHOW_LAN_POWER = 9,
-            SHOW_SLOT_POWER = 10,
+            SHOW_POWER_SUPPLY = 3,
+            SHOW_LAN_POWER = 4,
+            SHOW_SLOT_POWER = 5,
+            SHOW_MAC_LEARNING = 6,
+            SHOW_TEMPERATURE = 7,
+            SHOW_HEALTH = 8,
+            SHOW_TRAFFIC = 9,
+            SHOW_PORT_SECURITY_MAC_LEARNING = 10,
             SHOW_SNMP_ENGINE_ID = 11,
 
-            POWER_DOWN_PORT = 12,
-            POWER_UP_PORT = 13,
-            POWER_PRIORITY_PORT = 14,
+            WRITE_MEMORY = 20,
+            REBOOT_SWITCH = 21,
+            COPY_FLASH_SYNCHRO = 22,
 
-            PORT_SECURITY_ENABLE = 15,
-            LOCK_PORT_SECURITY = 16,
-            UNLOCK_PORT_SECURITY = 17,
+            POWER_DOWN_PORT = 30,
+            POWER_UP_PORT = 31,
+            POWER_PRIORITY_PORT = 32,
+            POWER_4PAIR_PORT = 33,
+            POWER_2PAIR_PORT = 34,
 
-            INTERFACES_TDR_ENABLE = 18,
-            SHOW_INTERFACES_TDR_STATISTICS = 19,
-            CLEAR_INTERFACES_TDR_STATISTICS = 20,
+            PORT_SECURITY_ENABLE = 50,
+            LOCK_PORT_SECURITY = 51,
+            UNLOCK_PORT_SECURITY = 52,
+            PORT_SECURIRY_CONVERT_STATIC = 53,
+            PORT_SECURITY_RELEASE_VIOLATION = 54,
 
-            SHOW_SNMP_COMMUNITY = 30,
-            SHOW_SNMP_AGENT_CONFIG = 31,
-            SHOW_SNMP_TRAP_STATION = 32,
-            SHOW_SNMP_TRAP_FILTER = 33,
-            SHOW_SNMP_USER = 34,
+            SHOW_SNMP_COMMUNITY = 70,
+            SHOW_SNMP_AGENT_CONFIG = 71,
+            SHOW_SNMP_TRAP_STATION = 72,
+            SHOW_SNMP_TRAP_FILTER = 73,
+            SHOW_SNMP_USER = 74,
+            SNMP_ENABLE_COMMUNITY_MODE = 75,
+            SNMP_CREATE_COMMUNITY_MAP = 76,
+            SNMP_CREATE_STATION = 77,
+            SNMP_ENABLE_TRAP_AUTHENTICATION = 78,
+            SNMP_DELETE_STATION = 79,
+            SNMP_DELETE_COMMUNITY_MAP = 80,
+            SNMP_CREATE_USER = 81,
+            SNMP_DELETE_USER = 82,
+            SHOW_AAA_AUTHENTICATION = 83,
+            SNMP_UPDATE_LOCAL_AUTHENTICATION = 84,
+            SNMP_SET_TRAP_FILTER = 85,
 
-            SNMP_ENABLE_COMMUNITY_MODE = 35,
-            SNMP_CREATE_COMMUNITY_MAP = 36,
-            SNMP_CREATE_STATION = 37,
-            SNMP_ENABLE_TRAP_AUTHENTICATION = 38,
-            SNMP_DELETE_STATION = 39,
-            SNMP_DELETE_COMMUNITY_MAP = 40,
-            SNMP_CREATE_USER = 41,
-            SNMP_DELETE_USER = 42,
-
-            SHOW_AAA_AUTHENTICATION = 43,
-            SNMP_UPDATE_LOCAL_AUTHENTICATION = 44,
-
-            WRITE_MEMORY = 60,
-            REBOOT_SWITCH = 61,
-            COPY_FLASH_SYNCHRO = 63,
-
-            PORT_SECURIRY_CONVERT_STATIC = 64,
-            PORT_SECURITY_RELEASE_VIOLATION = 65,
-            SHOW_LLDP_REMOTE_SYSTEM = 66,
-            SHOW_VFL_MEMBER_PORT = 67,
-            SHOW_POWER_SUPPLY = 68,
-
-            SHOW_PORT_LAN_POWER = 69,
-            SHOW_PORT_SECURITY = 70,
-            SHOW_PORT_MAC_LEARNING = 71,
-
-            SNMP_SET_TRAP_FILTER = 72,
+            SHOW_LLDP_REMOTE_SYSTEM = 90,
+            SHOW_VFL_MEMBER_PORT = 91,
+            INTERFACES_TDR_ENABLE = 92,
+            SHOW_INTERFACES_TDR_STATISTICS = 93,
+            CLEAR_INTERFACES_TDR_STATISTICS = 94,
+            SHOW_PORT_LAN_POWER = 95,
+            SHOW_PORT_SECURITY = 96,
+            SHOW_PORT_MAC_LEARNING = 97
         }
 
         public static Dictionary<string, Dictionary<RestUrlId, string>> REST_URL_TABLE = new Dictionary<string, Dictionary<RestUrlId, string>>
         {
             [RELEASE_8] = new Dictionary<RestUrlId, string>
             {
-                [RestUrlId.SHOW_SYSTEM] = "cli/aos?cmd=show%20system",
-                [RestUrlId.SHOW_CHASSIS] = "cli/aos?cmd=show%20chassis",
-                [RestUrlId.SHOW_PORTS_LIST] = "cli/aos?cmd=show%20interfaces%20status",
-                [RestUrlId.SHOW_POWER_SUPPLY] = $"cli/aos?cmd=show%20powersupply {DATA_0}",
-                [RestUrlId.SHOW_LAN_POWER] = $"cli/aos?cmd=show%20lanpower%20 {DATA_0}",
+                [RestUrlId.SHOW_SYSTEM] = "cli/aos?cmd=show system",
+                [RestUrlId.SHOW_CHASSIS] = "cli/aos?cmd=show chassis",
+                [RestUrlId.SHOW_PORTS_LIST] = "cli/aos?cmd=show interfaces status",
+                [RestUrlId.SHOW_POWER_SUPPLY] = $"cli/aos?cmd=show powersupply {DATA_0}",
+                [RestUrlId.SHOW_LAN_POWER] = $"cli/aos?cmd=show lanpower slot {DATA_0}",
+                [RestUrlId.POWER_DOWN_PORT] = $"cli/aos?cmd=lanpower slot {DATA_0} service stop",
+                [RestUrlId.POWER_UP_PORT] = $"cli/aos?cmd=lanpower slot {DATA_0} service start",
+                [RestUrlId.POWER_4PAIR_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} 4pair enable",
+                [RestUrlId.POWER_2PAIR_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} 4pair disable",
 
                 [RestUrlId.WRITE_MEMORY] = "cli/aos?cmd=write%20memory%20flash-synchro",
 
@@ -155,6 +157,171 @@ namespace PoEWizard.Data
                 [RestUrlId.SHOW_PORT_MAC_LEARNING] = $"domain=cli&cmd=debug show json-mac-learning limit 4096 {DATA_0}",
             }
         };
+
+        public static string ParseUrl(string version, RestUrlEntry entry)
+        {
+            string url = GetUrlFromTable(version, entry.RestUrl, entry.Data).Trim();
+            string[] urlSplit = url.Split('=');
+            url = $"{urlSplit[0]}={urlSplit[1].Replace(" ", "%20").Replace("/", "%2F")}";
+            return url;
+        }
+
+        private static string GetUrlFromTable(string version, RestUrlId restUrlId, string[] data)
+        {
+            if (version == null || version == RELEASE_UNKNOWN)
+            {
+                throw new SwitchCommandError("Switch version invalid to get the URL for the Rest Api!");
+            }
+            if (REST_URL_TABLE.ContainsKey(version) && REST_URL_TABLE[version].ContainsKey(restUrlId))
+            {
+                string url = REST_URL_TABLE[version][restUrlId];
+                switch (restUrlId)
+                {
+                    case RestUrlId.SHOW_SYSTEM:
+                    case RestUrlId.SHOW_CHASSIS:
+                    case RestUrlId.SHOW_PORTS_LIST:
+                    case RestUrlId.SHOW_TRAFFIC:
+                    case RestUrlId.SHOW_TEMPERATURE:
+                    case RestUrlId.SHOW_HEALTH:
+                    case RestUrlId.SHOW_SLOT_POWER:
+                    case RestUrlId.SHOW_SNMP_ENGINE_ID:
+
+
+                    case RestUrlId.SHOW_SNMP_COMMUNITY:
+                    case RestUrlId.SHOW_SNMP_AGENT_CONFIG:
+                    case RestUrlId.SHOW_SNMP_TRAP_STATION:
+                    case RestUrlId.SHOW_SNMP_TRAP_FILTER:
+                    case RestUrlId.SHOW_SNMP_USER:
+                    case RestUrlId.SNMP_ENABLE_COMMUNITY_MODE:
+                    case RestUrlId.SNMP_CREATE_COMMUNITY_MAP:
+                    case RestUrlId.SNMP_CREATE_STATION:
+                    case RestUrlId.SNMP_ENABLE_TRAP_AUTHENTICATION:
+                    case RestUrlId.SNMP_DELETE_STATION:
+                    case RestUrlId.SNMP_DELETE_COMMUNITY_MAP:
+                    case RestUrlId.SNMP_CREATE_USER:
+                    case RestUrlId.SNMP_DELETE_USER:
+
+                    case RestUrlId.SHOW_AAA_AUTHENTICATION:
+                    case RestUrlId.SNMP_UPDATE_LOCAL_AUTHENTICATION:
+
+                    case RestUrlId.WRITE_MEMORY:
+                    case RestUrlId.COPY_FLASH_SYNCHRO:
+                    case RestUrlId.REBOOT_SWITCH:
+                    case RestUrlId.SHOW_LLDP_REMOTE_SYSTEM:
+                    case RestUrlId.SHOW_VFL_MEMBER_PORT:
+
+                    case RestUrlId.SHOW_PORT_LAN_POWER:
+                    case RestUrlId.SHOW_PORT_SECURITY:
+                    case RestUrlId.SHOW_PORT_SECURITY_MAC_LEARNING:
+                        return url;
+
+                    //using domain cli
+                    case RestUrlId.SHOW_MAC_LEARNING:
+                    case RestUrlId.SHOW_PORT_MAC_LEARNING:
+                    case RestUrlId.SHOW_POWER_SUPPLY:
+                    case RestUrlId.SHOW_LAN_POWER:
+                        if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
+                        return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
+
+                    case RestUrlId.POWER_DOWN_PORT:
+                    case RestUrlId.POWER_UP_PORT:
+                    case RestUrlId.POWER_PRIORITY_PORT:
+                    case RestUrlId.PORT_SECURITY_ENABLE:
+                    case RestUrlId.PORT_SECURIRY_CONVERT_STATIC:
+                    case RestUrlId.LOCK_PORT_SECURITY:
+                    case RestUrlId.UNLOCK_PORT_SECURITY:
+                    case RestUrlId.PORT_SECURITY_RELEASE_VIOLATION:
+                    case RestUrlId.INTERFACES_TDR_ENABLE:
+                    case RestUrlId.SHOW_INTERFACES_TDR_STATISTICS:
+                    case RestUrlId.CLEAR_INTERFACES_TDR_STATISTICS:
+                    case RestUrlId.SNMP_SET_TRAP_FILTER:
+                        if (data == null || data.Length < 2) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
+                        return url.Replace(DATA_0, (data.Length < 1) ? "" : data[0]).Replace(DATA_1, (data.Length < 2) ? "" : data[1]);
+
+                    default:
+                        throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
+                }
+            }
+            else
+            {
+                throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
+            }
+        }
+
+        public static HttpMethod GetHttpMethod(string version, RestUrlId restUrlId)
+        {
+            if (version == null || version == RELEASE_UNKNOWN)
+            {
+                throw new SwitchCommandError("Switch version invalid to get the HTTP Method for the Rest Api!");
+            }
+            if (REST_URL_TABLE.ContainsKey(version) && REST_URL_TABLE[version].ContainsKey(restUrlId))
+            {
+                switch (restUrlId)
+                {
+                    case RestUrlId.SHOW_SYSTEM:
+                    case RestUrlId.SHOW_CHASSIS:
+                    case RestUrlId.SHOW_PORTS_LIST:
+                    case RestUrlId.SHOW_TRAFFIC:
+                    case RestUrlId.SHOW_MAC_LEARNING:
+                    case RestUrlId.SHOW_TEMPERATURE:
+                    case RestUrlId.SHOW_HEALTH:
+                    case RestUrlId.SHOW_PORT_SECURITY_MAC_LEARNING:
+                    case RestUrlId.SHOW_LAN_POWER:
+                    case RestUrlId.SHOW_PORT_LAN_POWER:
+                    case RestUrlId.SHOW_SLOT_POWER:
+                    case RestUrlId.SHOW_SNMP_ENGINE_ID:
+
+                    case RestUrlId.SHOW_INTERFACES_TDR_STATISTICS:
+
+                    case RestUrlId.SHOW_SNMP_COMMUNITY:
+                    case RestUrlId.SHOW_SNMP_AGENT_CONFIG:
+                    case RestUrlId.SHOW_SNMP_TRAP_STATION:
+                    case RestUrlId.SHOW_SNMP_TRAP_FILTER:
+                    case RestUrlId.SHOW_SNMP_USER:
+
+                    case RestUrlId.SHOW_AAA_AUTHENTICATION:
+                    case RestUrlId.SHOW_LLDP_REMOTE_SYSTEM:
+                    case RestUrlId.SHOW_VFL_MEMBER_PORT:
+                    case RestUrlId.SHOW_POWER_SUPPLY:
+                        return HttpMethod.Get;
+
+                    case RestUrlId.POWER_DOWN_PORT:
+                    case RestUrlId.POWER_UP_PORT:
+                    case RestUrlId.POWER_PRIORITY_PORT:
+                    case RestUrlId.PORT_SECURITY_ENABLE:
+                    case RestUrlId.PORT_SECURIRY_CONVERT_STATIC:
+                    case RestUrlId.LOCK_PORT_SECURITY:
+                    case RestUrlId.UNLOCK_PORT_SECURITY:
+                    case RestUrlId.PORT_SECURITY_RELEASE_VIOLATION:
+
+                    case RestUrlId.INTERFACES_TDR_ENABLE:
+                    case RestUrlId.CLEAR_INTERFACES_TDR_STATISTICS:
+
+                    case RestUrlId.SNMP_ENABLE_COMMUNITY_MODE:
+                    case RestUrlId.SNMP_CREATE_COMMUNITY_MAP:
+                    case RestUrlId.SNMP_CREATE_STATION:
+                    case RestUrlId.SNMP_ENABLE_TRAP_AUTHENTICATION:
+                    case RestUrlId.SNMP_DELETE_STATION:
+                    case RestUrlId.SNMP_DELETE_COMMUNITY_MAP:
+                    case RestUrlId.SNMP_CREATE_USER:
+                    case RestUrlId.SNMP_DELETE_USER:
+                    case RestUrlId.SNMP_SET_TRAP_FILTER:
+
+                    case RestUrlId.SNMP_UPDATE_LOCAL_AUTHENTICATION:
+                    case RestUrlId.WRITE_MEMORY:
+                    case RestUrlId.COPY_FLASH_SYNCHRO:
+                    case RestUrlId.REBOOT_SWITCH:
+                        return HttpMethod.Post;
+
+                    default:
+                        throw new SwitchCommandError($"Invalid command {Utils.PrintEnum(restUrlId)}!");
+                }
+            }
+            else
+            {
+                throw new SwitchCommandError($"Invalid command {Utils.PrintEnum(restUrlId)}!");
+            }
+        }
 
         public static Dictionary<string, Dictionary<RestUrlId, Dictionary<string, string>>> CONTENT_TABLE = new Dictionary<string, Dictionary<RestUrlId, Dictionary<string, string>>>
         {
@@ -300,190 +467,6 @@ namespace PoEWizard.Data
                 }
             }
         };
-
-        public static string ParseUrl(string version, RestUrlEntry entry)
-        {
-            return GetUrlFromTable(version, entry.RestUrl, entry.Data);
-        }
-
-        private static string GetUrlFromTable(string version, RestUrlId restUrlId, string[] data)
-        {
-            if (version == null || version == RELEASE_UNKNOWN)
-            {
-                throw new SwitchCommandError("Switch version invalid to get the URL for the Rest Api!");
-            }
-            if (REST_URL_TABLE.ContainsKey(version) && REST_URL_TABLE[version].ContainsKey(restUrlId))
-            {
-                string url = REST_URL_TABLE[version][restUrlId];
-                switch (restUrlId)
-                {
-                    case RestUrlId.SHOW_SYSTEM:
-                    case RestUrlId.SHOW_CHASSIS:
-                    case RestUrlId.SHOW_PORTS_LIST:
-                    case RestUrlId.SHOW_TRAFFIC:
-                    case RestUrlId.SHOW_TEMPERATURE:
-                    case RestUrlId.SHOW_HEALTH:
-                    case RestUrlId.SHOW_SLOT_POWER:
-                    case RestUrlId.SHOW_SNMP_ENGINE_ID:
-
-                    case RestUrlId.POWER_DOWN_PORT:
-                    case RestUrlId.POWER_UP_PORT:
-                    case RestUrlId.POWER_PRIORITY_PORT:
-                    case RestUrlId.PORT_SECURITY_ENABLE:
-                    case RestUrlId.PORT_SECURIRY_CONVERT_STATIC:
-                    case RestUrlId.LOCK_PORT_SECURITY:
-                    case RestUrlId.UNLOCK_PORT_SECURITY:
-                    case RestUrlId.PORT_SECURITY_RELEASE_VIOLATION:
-
-                    case RestUrlId.INTERFACES_TDR_ENABLE:
-                    case RestUrlId.SHOW_INTERFACES_TDR_STATISTICS:
-                    case RestUrlId.CLEAR_INTERFACES_TDR_STATISTICS:
-
-                    case RestUrlId.SHOW_SNMP_COMMUNITY:
-                    case RestUrlId.SHOW_SNMP_AGENT_CONFIG:
-                    case RestUrlId.SHOW_SNMP_TRAP_STATION:
-                    case RestUrlId.SHOW_SNMP_TRAP_FILTER:
-                    case RestUrlId.SHOW_SNMP_USER:
-                    case RestUrlId.SNMP_ENABLE_COMMUNITY_MODE:
-                    case RestUrlId.SNMP_CREATE_COMMUNITY_MAP:
-                    case RestUrlId.SNMP_CREATE_STATION:
-                    case RestUrlId.SNMP_ENABLE_TRAP_AUTHENTICATION:
-                    case RestUrlId.SNMP_DELETE_STATION:
-                    case RestUrlId.SNMP_DELETE_COMMUNITY_MAP:
-                    case RestUrlId.SNMP_CREATE_USER:
-                    case RestUrlId.SNMP_DELETE_USER:
-
-                    case RestUrlId.SHOW_AAA_AUTHENTICATION:
-                    case RestUrlId.SNMP_UPDATE_LOCAL_AUTHENTICATION:
-
-                    case RestUrlId.WRITE_MEMORY:
-                    case RestUrlId.COPY_FLASH_SYNCHRO:
-                    case RestUrlId.REBOOT_SWITCH:
-                    case RestUrlId.SHOW_LLDP_REMOTE_SYSTEM:
-                    case RestUrlId.SHOW_VFL_MEMBER_PORT:
-
-                    case RestUrlId.SHOW_PORT_LAN_POWER:
-                    case RestUrlId.SHOW_PORT_SECURITY:
-                    case RestUrlId.SHOW_PORT_SECURITY_MAC_LEARNING:
-                        return url;
-
-                    //using domain cli
-                    case RestUrlId.SHOW_POWER_SUPPLY:
-                    case RestUrlId.SHOW_LAN_POWER:
-                        if (data == null || data.Length < 2)
-                        {
-                            return url.Replace(DATA_0, "");
-                        }
-                        else
-                        {
-                            return url.Replace(DATA_0, data[0]);
-                        }
-
-                    case RestUrlId.SNMP_SET_TRAP_FILTER:
-                        if (data == null || data.Length < 2)
-                        {
-                            throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
-                        }
-                        else
-                        {
-                            return url.Replace(DATA_0, data[0]).Replace(DATA_1, data[1]);
-                        }
-
-                    case RestUrlId.SHOW_MAC_LEARNING:
-                    case RestUrlId.SHOW_PORT_MAC_LEARNING:
-                        if (data == null || data.Length == 0)
-                        {
-                            throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
-                        }
-                        else
-                        {
-                            return url.Replace(DATA_0, data[0]);
-                        }
-
-                    default:
-                        throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
-                }
-            }
-            else
-            {
-                throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
-            }
-        }
-
-        public static HttpMethod GetHttpMethod(string version, RestUrlId restUrlId)
-        {
-            if (version == null || version == RELEASE_UNKNOWN)
-            {
-                throw new SwitchCommandError("Switch version invalid to get the HTTP Method for the Rest Api!");
-            }
-            if (REST_URL_TABLE.ContainsKey(version) && REST_URL_TABLE[version].ContainsKey(restUrlId))
-            {
-                switch (restUrlId)
-                {
-                    case RestUrlId.SHOW_SYSTEM:
-                    case RestUrlId.SHOW_CHASSIS:
-                    case RestUrlId.SHOW_PORTS_LIST:
-                    case RestUrlId.SHOW_TRAFFIC:
-                    case RestUrlId.SHOW_MAC_LEARNING:
-                    case RestUrlId.SHOW_TEMPERATURE:
-                    case RestUrlId.SHOW_HEALTH:
-                    case RestUrlId.SHOW_PORT_SECURITY_MAC_LEARNING:
-                    case RestUrlId.SHOW_LAN_POWER:
-                    case RestUrlId.SHOW_PORT_LAN_POWER:
-                    case RestUrlId.SHOW_SLOT_POWER:
-                    case RestUrlId.SHOW_SNMP_ENGINE_ID:
-
-                    case RestUrlId.SHOW_INTERFACES_TDR_STATISTICS:
-
-                    case RestUrlId.SHOW_SNMP_COMMUNITY:
-                    case RestUrlId.SHOW_SNMP_AGENT_CONFIG:
-                    case RestUrlId.SHOW_SNMP_TRAP_STATION:
-                    case RestUrlId.SHOW_SNMP_TRAP_FILTER:
-                    case RestUrlId.SHOW_SNMP_USER:
-
-                    case RestUrlId.SHOW_AAA_AUTHENTICATION:
-                    case RestUrlId.SHOW_LLDP_REMOTE_SYSTEM:
-                    case RestUrlId.SHOW_VFL_MEMBER_PORT:
-                    case RestUrlId.SHOW_POWER_SUPPLY:
-                        return HttpMethod.Get;
-
-                    case RestUrlId.POWER_DOWN_PORT:
-                    case RestUrlId.POWER_UP_PORT:
-                    case RestUrlId.POWER_PRIORITY_PORT:
-                    case RestUrlId.PORT_SECURITY_ENABLE:
-                    case RestUrlId.PORT_SECURIRY_CONVERT_STATIC:
-                    case RestUrlId.LOCK_PORT_SECURITY:
-                    case RestUrlId.UNLOCK_PORT_SECURITY:
-                    case RestUrlId.PORT_SECURITY_RELEASE_VIOLATION:
-
-                    case RestUrlId.INTERFACES_TDR_ENABLE:
-                    case RestUrlId.CLEAR_INTERFACES_TDR_STATISTICS:
-
-                    case RestUrlId.SNMP_ENABLE_COMMUNITY_MODE:
-                    case RestUrlId.SNMP_CREATE_COMMUNITY_MAP:
-                    case RestUrlId.SNMP_CREATE_STATION:
-                    case RestUrlId.SNMP_ENABLE_TRAP_AUTHENTICATION:
-                    case RestUrlId.SNMP_DELETE_STATION:
-                    case RestUrlId.SNMP_DELETE_COMMUNITY_MAP:
-                    case RestUrlId.SNMP_CREATE_USER:
-                    case RestUrlId.SNMP_DELETE_USER:
-                    case RestUrlId.SNMP_SET_TRAP_FILTER:
-
-                    case RestUrlId.SNMP_UPDATE_LOCAL_AUTHENTICATION:
-                    case RestUrlId.WRITE_MEMORY:
-                    case RestUrlId.COPY_FLASH_SYNCHRO:
-                    case RestUrlId.REBOOT_SWITCH:
-                        return HttpMethod.Post;
-
-                    default:
-                        throw new SwitchCommandError($"Invalid command {Utils.PrintEnum(restUrlId)}!");
-                }
-            }
-            else
-            {
-                throw new SwitchCommandError($"Invalid command {Utils.PrintEnum(restUrlId)}!");
-            }
-        }
 
         public static Dictionary<string, string> GetContent(string version, RestUrlId restUrlId, string[] data)
         {

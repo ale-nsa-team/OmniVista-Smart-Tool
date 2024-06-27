@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Xml;
 
 namespace PoEWizard.Comm
@@ -166,7 +167,7 @@ namespace PoEWizard.Comm
         {
             string url = RestUrl.ParseUrl(RestUrl.RELEASE_8, entry);
             if (string.IsNullOrEmpty(url)) throw new SwitchCommandError("Command line is missing!");
-            url = $"{this._httpClient.BaseAddress}?{url}";
+            url = $"{this._httpClient.BaseAddress}{url}";
             entry.StartTime = DateTime.Now;
             Dictionary<string, string> response;
             response = SendRestApiRequest(entry, url);
@@ -182,7 +183,7 @@ namespace PoEWizard.Comm
             {
                 [RestUrl.REST_URL] = url,
                 [RestUrl.RESULT] = "",
-                [RestUrl.ERROR] = "",
+                [Constants.ERROR] = "",
                 [RestUrl.DURATION] = ""
             };
             try
@@ -204,10 +205,10 @@ namespace PoEWizard.Comm
                 }
                 else
                 {
-                    string errorDescr = ParseError(http_response);
+                    string errorDescr = ParseError(http_response, url);
                     if (errorDescr != null)
                     {
-                        response[RestUrl.ERROR] = errorDescr;
+                        response[Constants.ERROR] = errorDescr;
                     }
                 }
             }
@@ -219,19 +220,29 @@ namespace PoEWizard.Comm
             return response;
         }
 
-        private string ParseError(Task<HttpResponseMessage> http_response)
+        private string ParseError(Task<HttpResponseMessage> http_response, string url)
         {
             try
             {
                 string xmlError = http_response.Result.Content.ReadAsStringAsync().Result;
-                var errorList = CliParseUtils.ParseXmlToDictionary(xmlError, "//nodes//result//error//*");
-                string response = errorList[RestUrl.NODE].Replace("Submission failed :", "").Trim();
-                return response;
+                var errorList = CliParseUtils.ParseXmlToDictionary(xmlError, "//nodes//result//*");
+                if (errorList.ContainsKey(RestUrl.API_ERROR) && !string.IsNullOrEmpty(errorList[RestUrl.API_ERROR]))
+                {
+                    string error = errorList[RestUrl.API_ERROR].Trim();
+                    if (errorList.ContainsKey(RestUrl.HTTP_RESPONSE) && !string.IsNullOrEmpty(errorList[RestUrl.HTTP_RESPONSE]))
+                    {
+                        HttpStatusCode code = Utils.ConvertToHttpStatusCode(errorList);
+                        error = $"{code} ({errorList[RestUrl.HTTP_RESPONSE]})\r\n{error}";
+                    }
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        error = $"Requested URL: {url}\r\n{error}";
+                        return error;
+                    }
+                }
             }
-            catch
-            {
-                return null;
-            }
+            catch { }
+            return null;
         }
 
         private HttpRequestMessage GetHttpRequest(RestUrlEntry entry, string url)

@@ -1,16 +1,17 @@
 ﻿using PoEWizard.Data;
 using PoEWizard.Device;
+using PoEWizard.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.IO.Ports;
 using System.Text;
+using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PoEWizard.Comm
 {
     public class RestApiService
     {
+        private Dictionary<string, string> _response = new Dictionary<string, string>();
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
         public ResultCallback Callback { get; set; }
@@ -19,6 +20,7 @@ namespace PoEWizard.Comm
 
         public RestApiService()
         {
+            SwitchModel = new SwitchModel();
         }
         public RestApiService(SwitchModel device)
         {
@@ -41,11 +43,22 @@ namespace PoEWizard.Comm
                 Logger.Debug($"Connecting Rest API");
                 RestApiClient.Login();
                 this.SwitchModel = RestApiClient.SwitchInfo;
-                Dictionary<string, string> response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Logger.Error(e.Message + ":\n" + e.StackTrace);
+                if (ex is SwitchConnectionFailure || ex is SwitchConnectionDropped || ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure)
+                {
+                    if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure) this.SwitchModel.Status = SwitchStatus.LoginFail;
+                    else this.SwitchModel.Status = SwitchStatus.Unreachable;
+                }
+                else
+                {
+                    throw ex;
+                }
             }
         }
         public void Close()
@@ -84,7 +97,6 @@ namespace PoEWizard.Comm
             return sb.ToString();
         }
 
-
         private RestUrlEntry GetRestUrlEntry(RestUrlId url)
         {
             return GetRestUrlEntry(url, new string[1] { null });
@@ -94,8 +106,8 @@ namespace PoEWizard.Comm
         {
             RestUrlEntry entry = new RestUrlEntry(url, 60, data)
             {
-                Method = GetHttpMethod(RELEASE_8, url),
-                Content = GetContent(RELEASE_8, url, data)
+                Method = GetHttpMethod(RELEASE_8, url)
+                //, Content = GetContent(RELEASE_8, url, data)
             };
             return entry;
         }
@@ -103,6 +115,16 @@ namespace PoEWizard.Comm
         private Dictionary<string, string> SendRequest(RestUrlEntry entry)
         {
             Dictionary<string, string> response = this.RestApiClient.SendRequest(entry);
+            if (response == null) return null;
+            if (response.ContainsKey(ERROR) && !string.IsNullOrEmpty(response[ERROR]))
+            {
+                throw new SwitchCommandError(response[ERROR]);
+            }
+            Dictionary<string, string> result = CliParseUtils.ParseXmlToDictionary(response[RESULT], "//nodes//result//*");
+            if (result != null && result.ContainsKey(OUTPUT) && !string.IsNullOrEmpty(result[OUTPUT]))
+            {
+                response[RESULT] = result[OUTPUT];
+            }
             return response;
         }
 

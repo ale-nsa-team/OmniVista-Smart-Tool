@@ -116,19 +116,26 @@ namespace PoEWizard
         private async void Connect()
         {
             ShowProgress("Connecting to switch...");
-            restApiService = new RestApiService(device);
-            await Task.Run(() => restApiService.Connect());
-            HideProgress();
+            try
+            {
+                restApiService = new RestApiService(device);
+                await Task.Run(() => restApiService.Connect());
+                HideProgress();
 
-            if (device.IsConnected)
-            {
-                Logger.Info($"Connected to switch S/N {device.SerialNumber}, model {device.Model}");
-                SetConnectedState();
+                if (device.IsConnected)
+                {
+                    Logger.Info($"Connected to switch S/N {device.SerialNumber}, model {device.Model}");
+                    SetConnectedState();
+                }
+                else
+                {
+                    Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
+                    SetDisconnectedState();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
-                SetDisconnectedState();
+                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
             }
         }
 
