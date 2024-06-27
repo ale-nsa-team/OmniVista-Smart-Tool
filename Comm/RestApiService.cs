@@ -48,9 +48,9 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
 
-                //this._response = SetPoePriority("1/1/26", PriorityLevelType.High);
-                //this._response = SetPoePriority("1/1/27", PriorityLevelType.High);
-                //this._response = SetPoePriority("1/1/28", PriorityLevelType.High);
+                SetPoePriority("1/1/26", PriorityLevelType.High);
+                SetPoePriority("1/1/26", PriorityLevelType.Critical);
+                SetPoePriority("1/1/26", PriorityLevelType.Low);
 
                 //this._response = PowerPort(RestUrlId.POWER_DOWN_PORT, "1/1/26");
                 //this._response = PowerPort(RestUrlId.POWER_UP_PORT, "1/1/26");

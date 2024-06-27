@@ -73,7 +73,7 @@ namespace PoEWizard.Data
             // 20 - 39: Commands related to actions on power
             [RestUrlId.POWER_DOWN_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} admin-state disable",        // 20
             [RestUrlId.POWER_UP_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} admin-state enable",           // 21
-            [RestUrlId.POWER_PRIORITY_PORT] = $"lanpower port {DATA_0} priority {DATA_1}",                  // 22
+            [RestUrlId.POWER_PRIORITY_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} priority {DATA_1}",      // 22
             [RestUrlId.POWER_4PAIR_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} 4pair enable",              // 23
             [RestUrlId.POWER_2PAIR_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} 4pair disable",             // 24
             [RestUrlId.POWER_DOWN_SLOT] = $"cli/aos?cmd=lanpower slot {DATA_0} service stop",               // 25
@@ -96,6 +96,7 @@ namespace PoEWizard.Data
         {
             string url = GetUrlFromTable(entry.RestUrl, entry.Data).Trim();
             string[] urlSplit = url.Split('=');
+            if (urlSplit.Length < 2) throw new SwitchCommandError($"Invalid command table\n{url}");
             url = $"{urlSplit[0]}={urlSplit[1].Replace(" ", "%20").Replace("/", "%2F")}";
             return url;
         }
