@@ -57,6 +57,7 @@ namespace PoEWizard.Comm
                 }
                 else
                 {
+                    Logger.Error(ex.Message + ":\n" + ex.StackTrace);
                     throw ex;
                 }
             }

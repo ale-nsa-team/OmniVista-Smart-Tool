@@ -86,7 +86,7 @@ namespace PoEWizard.Data
         {
             string url = GetUrlFromTable(entry.RestUrl, entry.Data).Trim();
             string[] urlSplit = url.Split('=');
-            url = $"{urlSplit[0]}={urlSplit[1].Replace(" ", "%20").Replace("/", "%2F")}";
+            url = $"{urlSplit[0]} {urlSplit[1].Replace(" ", "%20").Replace("/", "%2F")}";
             return url;
         }
 
