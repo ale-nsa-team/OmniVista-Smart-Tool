@@ -3,6 +3,7 @@ using PoEWizard.Device;
 using PoEWizard.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
@@ -37,16 +38,15 @@ namespace PoEWizard.Comm
                 Logger.Debug($"Connecting Rest API");
                 _progress.Report(new ProgressReport("Connecting to switch..."));
                 RestApiClient.Login();
-                this.SwitchModel = RestApiClient.SwitchInfo;
-                _progress.Report(new ProgressReport("Reading System information..."));
+                _progress?.Report(new ProgressReport("Reading System information..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
                 dict = CliParseUtils.ParseVTable(this._response["RESULT"]);
                 SwitchModel.LoadFromDictionary(dict);
                 _progress.Report(new ProgressReport("Reading chassis and port infomration..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
-                //this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS));
-                //this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
-                //this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[1] { "1/1" }));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
 
                 //this._response = SetPoePriority("1/1/26", PriorityLevelType.High);
                 //this._response = SetPoePriority("1/1/27", PriorityLevelType.High);
@@ -187,11 +187,7 @@ namespace PoEWizard.Comm
 
         private RestUrlEntry GetRestUrlEntry(RestUrlId url, string[] data)
         {
-            RestUrlEntry entry = new RestUrlEntry(url, 60, data)
-            {
-                Method = GetHttpMethod(url)
-                //, Content = GetContent(RELEASE_8, url, data)
-            };
+            RestUrlEntry entry = new RestUrlEntry(url, 60, data) { Method = HttpMethod.Get };
             return entry;
         }
 
