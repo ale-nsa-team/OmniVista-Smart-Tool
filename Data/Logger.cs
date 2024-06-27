@@ -20,6 +20,7 @@ namespace PoEWizard.Data
         private static int logCount;
         private static EventLog eventLog;
         private static readonly object lockObj = new object();
+        private static bool eventLogOk;
 
         public static string LogPath { get; private set; }
 
@@ -28,7 +29,7 @@ namespace PoEWizard.Data
             try
             {
                 logLevel = LogLevel.Info;
-                string filename =  "PoEWizard.log";
+                string filename = "PoEWizard.log";
                 LogPath = Path.Combine(MainWindow.dataPath, "Log", filename);
                 if (!Directory.Exists(Path.GetDirectoryName(LogPath)))
                 {
@@ -36,6 +37,10 @@ namespace PoEWizard.Data
                 }
                 logSize = 1000000;
                 logCount = 5;
+            }
+            catch { }
+            try
+            {
                 eventLog = new EventLog();
                 string source = nameof(PoEWizard);
                 if (!EventLog.SourceExists(source))
@@ -44,8 +49,12 @@ namespace PoEWizard.Data
                 }
                 eventLog.Source = source;
                 eventLog.Log = "Application";
+                eventLogOk = true;
             }
-            catch { }
+            catch
+            {
+                eventLogOk = false;
+            }
         }
 
         private static void Log(string message, LogLevel level)
@@ -53,9 +62,9 @@ namespace PoEWizard.Data
             try
             {
                 // Error messages are also written to event log
-                if (level == LogLevel.Error)
+                if (level == LogLevel.Error && eventLogOk)
                 {
-                    eventLog?.WriteEntry(message, EventLogEntryType.Error);
+                    eventLog.WriteEntry(message, EventLogEntryType.Error);
                 }
                 if (level <= logLevel)
                 {
@@ -85,9 +94,12 @@ namespace PoEWizard.Data
                 method = new StackFrame(skipFrames).GetMethod();
             }
             string fname = method.DeclaringType.FullName;
-            string[] parts = fname.Split(new char[] { '.', '<', '>' });
-            if (parts.Length > 2) return $"{parts[1].Replace("+", "")}: {parts[2]}";
-            else return $"{method.DeclaringType.Name}: {method.Name}";
+            if (fname.Contains("<"))
+            {
+                string[] parts = fname.Split(new char[] { '.', '<', '>' });
+                if (parts.Length > 2) return $"{parts[1].Replace("+", "")}: {parts[2]}";
+            }
+            return $"{method.DeclaringType.Name}: {method.Name}";
         }
 
         public static void Error(string message)
