@@ -148,7 +148,6 @@ namespace PoEWizard.Data
                     case RestUrlId.POWER_UP_PORT:           // 21
                     case RestUrlId.POWER_4PAIR_PORT:        // 23
 
-                    case RestUrlId.POWER_4PAIR_PORT:        // 23
                     case RestUrlId.POWER_2PAIR_PORT:        // 24
                     case RestUrlId.POWER_DOWN_SLOT:         // 25
                     case RestUrlId.POWER_UP_SLOT:           // 26
@@ -156,12 +155,12 @@ namespace PoEWizard.Data
                     case RestUrlId.POWER_823BT_DISABLE:     // 28
                     case RestUrlId.POWER_HDMI_ENABLE:       // 29
                     case RestUrlId.POWER_HDMI_DISABLE:      // 30
-                    case RestUrlId.POWER_4PAIR_PORT:        // 23
-                    case RestUrlId.POWER_4PAIR_PORT:        // 23
-                    case RestUrlId.POWER_4PAIR_PORT:        // 23
-                    case RestUrlId.POWER_4PAIR_PORT:        // 23
-                    case RestUrlId.POWER_4PAIR_PORT:        // 23
-                    case RestUrlId.POWER_4PAIR_PORT:        // 23
+                    //case RestUrlId.POWER_4PAIR_PORT:        // 23
+                    //case RestUrlId.POWER_4PAIR_PORT:        // 23
+                    //case RestUrlId.POWER_4PAIR_PORT:        // 23
+                    //case RestUrlId.POWER_4PAIR_PORT:        // 23
+                    //case RestUrlId.POWER_4PAIR_PORT:        // 23
+                    //case RestUrlId.POWER_4PAIR_PORT:        // 23
 
                     case RestUrlId.SHOW_PORT_MAC_LEARNING:
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
