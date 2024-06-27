@@ -47,9 +47,21 @@ namespace PoEWizard.Components
             this.Close();
         }
 
-        private void Password_KeyDown(object sender, KeyEventArgs e)
+        private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            if (e.Key == Key.Enter) BtnOk_Click(sender, e);
+            ipAddress.Focus();
+        }
+
+        private void TextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && IsAllValid()) BtnOk_Click(sender, e);
+        }
+
+        private bool IsAllValid()
+        {
+            return !string.IsNullOrEmpty(ipAddress.Text.Trim())
+                && !string.IsNullOrEmpty(username.Text.Trim()) 
+                && !string.IsNullOrEmpty(password.Password.Trim());
         }
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)

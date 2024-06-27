@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static PoEWizard.Data.Constants;
 
@@ -20,6 +19,7 @@ namespace PoEWizard.Data
         private static int logCount;
         private static EventLog eventLog;
         private static readonly object lockObj = new object();
+        private static readonly bool eventLogOk;
 
         public static string LogPath { get; private set; }
 
@@ -28,7 +28,7 @@ namespace PoEWizard.Data
             try
             {
                 logLevel = LogLevel.Info;
-                string filename =  "PoEWizard.log";
+                string filename = "PoEWizard.log";
                 LogPath = Path.Combine(MainWindow.dataPath, "Log", filename);
                 if (!Directory.Exists(Path.GetDirectoryName(LogPath)))
                 {
