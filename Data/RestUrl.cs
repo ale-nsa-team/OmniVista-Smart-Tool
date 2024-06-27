@@ -55,6 +55,8 @@ namespace PoEWizard.Data
             POWER_PRIORITY_PORT = 32,
             POWER_4PAIR_PORT = 33,
             POWER_2PAIR_PORT = 34,
+            POWER_DOWN_SLOT = 35,
+            POWER_UP_SLOT = 36,
 
             PORT_SECURITY_ENABLE = 50,
             LOCK_PORT_SECURITY = 51,
@@ -98,12 +100,15 @@ namespace PoEWizard.Data
                 [RestUrlId.SHOW_PORTS_LIST] = "cli/aos?cmd=show interfaces status",
                 [RestUrlId.SHOW_POWER_SUPPLY] = $"cli/aos?cmd=show powersupply {DATA_0}",
                 [RestUrlId.SHOW_LAN_POWER] = $"cli/aos?cmd=show lanpower slot {DATA_0}",
-                [RestUrlId.POWER_DOWN_PORT] = $"cli/aos?cmd=lanpower slot {DATA_0} service stop",
-                [RestUrlId.POWER_UP_PORT] = $"cli/aos?cmd=lanpower slot {DATA_0} service start",
+
+                [RestUrlId.POWER_DOWN_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} admin-state disable",
+                [RestUrlId.POWER_UP_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} admin-state enable",
                 [RestUrlId.POWER_4PAIR_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} 4pair enable",
                 [RestUrlId.POWER_2PAIR_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} 4pair disable",
+                [RestUrlId.POWER_DOWN_SLOT] = $"cli/aos?cmd=lanpower slot {DATA_0} service stop",
+                [RestUrlId.POWER_UP_SLOT] = $"cli/aos?cmd=lanpower slot {DATA_0} service start",
 
-                [RestUrlId.WRITE_MEMORY] = "cli/aos?cmd=write%20memory%20flash-synchro",
+                [RestUrlId.WRITE_MEMORY] = "cli/aos?cmd=write memory flash-synchro",
 
                 [RestUrlId.SHOW_SLOT_POWER] = "domain=mib&urn=alaPethMainPseTable&mibObject0=pethMainPseGroupIndex&mibObject1=alaPethMainPseMaxPower&mibObject2=pethMainPseUsageThreshold&mibObject3=pethMainPseConsumptionPower&function=chassisSlot_vcSlotNum&object=pethMainPseGroupIndex&ignoreError=true",
                 [RestUrlId.SHOW_SNMP_ENGINE_ID] = "domain=mib&urn=snmpEngine&&mibObject0=snmpEngineID",
