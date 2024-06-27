@@ -45,13 +45,27 @@ namespace PoEWizard.Device
             IsConnected = false;
         }
 
-        public void LoadFromDictionary(Dictionary<string, string> dict)
+        public void LoadFromDictionary(Dictionary<string, string> dict, DictionaryType dt)
         {
-            Name = dict["Name"];
-            Description = dict["Description"];
-            Location = dict["Location"];
-            Contact = dict["Contact"];
-            UpTime = dict["Up Time"];
+            switch (dt)
+            {
+                case DictionaryType.System:
+                    Name = dict["Name"];
+                    Description = dict["Description"];
+                    Location = dict["Location"];
+                    Contact = dict["Contact"];
+                    UpTime = dict["Up Time"];
+                    break;
+                case DictionaryType.Chassis:
+                    Model = dict["Model Name"];
+                    SerialNumber = dict["Serial Number"];
+                    MacAddr = dict["MAC Address"];
+                    break;
+                case DictionaryType.RunningDir:
+                    RunningDir = dict["Running Configuration"];
+                    break;
+            }
+;
         }
 
         public ChassisInfo GetChassis(int chassisNumber)
