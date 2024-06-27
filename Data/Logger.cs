@@ -67,8 +67,8 @@ namespace PoEWizard.Data
                         skipFrames += 1;
                         method = new StackFrame(skipFrames).GetMethod();
                     }
-                    //string caller = method.DeclaringType.DeclaringType.Name;
-                    string caller = GetMethodClass();
+                    string caller = method.DeclaringType.DeclaringType.Name;
+                    //string caller = GetMethodClass();
                     string logMsg = $"{strDate} [{level,-5}] ({caller}) - {message}";
                     lock (lockObj)
                     {
@@ -87,20 +87,20 @@ namespace PoEWizard.Data
         {
             try
             {
-                var stackFrame = new StackTrace().GetFrame(3);
+                var stackFrame = new StackTrace().GetFrame(2);
                 if (stackFrame == null) return "";
                 var methodInfo = stackFrame.GetMethod();
                 if (methodInfo != null)
                 {
                     if (methodInfo.Name.Contains("Log"))
                     {
-                        stackFrame = new StackTrace().GetFrame(4);
+                        stackFrame = new StackTrace().GetFrame(3);
                         if (stackFrame != null)
                         {
                             methodInfo = stackFrame.GetMethod();
                         }
                     }
-                    return $" by Method {methodInfo.Name} of {methodInfo.ReflectedType.Name}";
+                    return $" {methodInfo.ReflectedType.Name}: {methodInfo.Name}";
                 }
             }
             catch { }
