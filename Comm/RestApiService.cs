@@ -19,10 +19,6 @@ namespace PoEWizard.Comm
         public SwitchModel SwitchModel { get; set; }
         public RestApiClient RestApiClient { get; set; }
 
-        public RestApiService()
-        {
-            SwitchModel = new SwitchModel();
-        }
         public RestApiService(SwitchModel device, IProgress<ProgressReport> progress)
         {
             this.SwitchModel = device;
@@ -30,12 +26,6 @@ namespace PoEWizard.Comm
             this.RestApiClient = new RestApiClient(SwitchModel);
             this.IsReady = false;
             _progress = progress;
-        }
-        public RestApiService(string ipAddr, string username, string password, int cnxTimeout)
-        {
-            this.SwitchModel = new SwitchModel(ipAddr, username, password, cnxTimeout);
-            this.RestApiClient = new RestApiClient(SwitchModel);
-            this.IsReady = false;
         }
 
         public void Connect()
@@ -51,7 +41,7 @@ namespace PoEWizard.Comm
                 _progress?.Report(new ProgressReport("Reading System information..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
                 dict = CliParseUtils.ParseVTable(this._response["RESULT"]);
-                _progress?.Report(new ProgressReport("Readin chassis and port infomration..."));
+                _progress?.Report(new ProgressReport("Reading chassis and port infomration..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
                 // this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
