@@ -43,7 +43,7 @@ namespace PoEWizard.Comm
                 dict = CliParseUtils.ParseVTable(this._response["RESULT"]);
                 _progress?.Report(new ProgressReport("Reading chassis and port infomration..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
-                // this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
 

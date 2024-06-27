@@ -114,27 +114,61 @@ namespace PoEWizard.Data
                 string url = REST_URL_TABLE[restUrlId];
                 switch (restUrlId)
                 {
-                    case RestUrlId.SHOW_SYSTEM:
-                    case RestUrlId.SHOW_CHASSIS:
-                    case RestUrlId.SHOW_PORTS_LIST:
-                    case RestUrlId.SHOW_TRAFFIC:
-                    case RestUrlId.SHOW_TEMPERATURE:
-                    case RestUrlId.SHOW_HEALTH:
-                    case RestUrlId.SHOW_SLOT_POWER:
+                    // 20 - 39: Commands related to actions on power
+                    //LLDP_POWER_MDI_ENABLE = 31,
+                    //LLDP_POWER_MDI_DISABLE = 32,
+                    //LLDP_EXT_POWER_MDI_ENABLE = 33,
+                    //LLDP_EXT_POWER_MDI_DISABLE = 34,
+                    //POE_FAST_ENABLE = 35,
+                    //POE_PERPETUAL_ENABLE = 36,
+                    // 40 - 59: Special switch commands
+                    //WRITE_MEMORY = 40,
+                    //SHOW_PORT_MAC_LEARNING = 41
+
+
+                    // 0 - 19: Basic commands to gather switch data
+                    case RestUrlId.SHOW_SYSTEM:             //  0
+                    case RestUrlId.SHOW_CHASSIS:            //  1
+                    case RestUrlId.SHOW_PORTS_LIST:         //  2
+                    case RestUrlId.SHOW_POWER_SUPPLY:       //  3
+                    case RestUrlId.SHOW_LAN_POWER:          //  4
+                    case RestUrlId.SHOW_LAN_POWER_STATUS:   //  5
+                    case RestUrlId.SHOW_SLOT_POWER:         //  6
+                    case RestUrlId.SHOW_MAC_LEARNING:       //  7
+                    case RestUrlId.SHOW_TEMPERATURE:        //  8
+                    case RestUrlId.SHOW_HEALTH:             //  9
+                    case RestUrlId.SHOW_TRAFFIC:            // 10
+
+                    // 20 - 39: Commands related to actions on power
                     case RestUrlId.WRITE_MEMORY:
                         return url;
 
-                    //using domain cli
-                    case RestUrlId.SHOW_MAC_LEARNING:
+                    // 20 - 39: Commands related to actions on power
+                    case RestUrlId.POWER_DOWN_PORT:         // 20
+                    case RestUrlId.POWER_UP_PORT:           // 21
+                    case RestUrlId.POWER_4PAIR_PORT:        // 23
+
+                    case RestUrlId.POWER_4PAIR_PORT:        // 23
+                    case RestUrlId.POWER_2PAIR_PORT:        // 24
+                    case RestUrlId.POWER_DOWN_SLOT:         // 25
+                    case RestUrlId.POWER_UP_SLOT:           // 26
+                    case RestUrlId.POWER_823BT_ENABLE:      // 27
+                    case RestUrlId.POWER_823BT_DISABLE:     // 28
+                    case RestUrlId.POWER_HDMI_ENABLE:       // 29
+                    case RestUrlId.POWER_HDMI_DISABLE:      // 30
+                    case RestUrlId.POWER_4PAIR_PORT:        // 23
+                    case RestUrlId.POWER_4PAIR_PORT:        // 23
+                    case RestUrlId.POWER_4PAIR_PORT:        // 23
+                    case RestUrlId.POWER_4PAIR_PORT:        // 23
+                    case RestUrlId.POWER_4PAIR_PORT:        // 23
+                    case RestUrlId.POWER_4PAIR_PORT:        // 23
+
                     case RestUrlId.SHOW_PORT_MAC_LEARNING:
-                    case RestUrlId.SHOW_POWER_SUPPLY:
-                    case RestUrlId.SHOW_LAN_POWER:
-                    case RestUrlId.POWER_DOWN_PORT:
-                    case RestUrlId.POWER_UP_PORT:
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 
-                    case RestUrlId.POWER_PRIORITY_PORT:
+                    // 20 - 39: Commands related to actions on power
+                    case RestUrlId.POWER_PRIORITY_PORT:     // 22
                         if (data == null || data.Length < 2) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, data[0]).Replace(DATA_1, data[1]);
 
