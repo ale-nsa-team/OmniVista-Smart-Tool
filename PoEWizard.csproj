@@ -223,5 +223,18 @@
   <ItemGroup>
     <Resource Include="Resources\ale-icon.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\alert.png" />
+    <Resource Include="Resources\eye-closed-dark.png" />
+    <Resource Include="Resources\eye-closed-light.png" />
+    <Resource Include="Resources\eye-open-dark.png" />
+    <Resource Include="Resources\eye-open-light.png" />
+    <Resource Include="Resources\info.png" />
+    <Resource Include="Resources\question.png" />
+    <Resource Include="Resources\remove.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\error.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -51,7 +51,6 @@ namespace PoEWizard
             lightDict = Resources.MergedDictionaries[0];
             darkDict = Resources.MergedDictionaries[1];
             currentDict = darkDict;
-            DataContext = this;
             Instance = this;
             device = new SwitchModel();
             //application info
@@ -118,8 +117,13 @@ namespace PoEWizard
             try
             {
                 restApiService = new RestApiService(device, progress);
+                if (device.IsConnected)
+                {
+                    await Task.Run(() => restApiService.Close());
+                    SetDisconnectedState();
+                    return;
+                }
                 await Task.Run(() => restApiService.Connect());
-                HideProgress();
 
                 if (device.IsConnected)
                 {
@@ -136,6 +140,8 @@ namespace PoEWizard
             {
                 Logger.Error(ex.Message + ":\n" + ex.StackTrace);
             }
+            HideProgress();
+            HideInfoBox();
         }
 
         private void ConnectMenuItem_Click(object sender, RoutedEventArgs e)
@@ -263,13 +269,18 @@ namespace PoEWizard
 
         private void SetConnectedState()
         {
+            DataContext = device;
             _comImg.Source = (ImageSource)currentDict["connected"];
+            _switchAttributes.Text = $"{device.Name}";
 
         }
 
         private void SetDisconnectedState() 
         {
             _comImg.Source = (ImageSource)currentDict["disconnected"];
+            device = new SwitchModel();
+            _switchAttributes.Text = "";
+            DataContext = device;
         }
 
         #endregion private methods

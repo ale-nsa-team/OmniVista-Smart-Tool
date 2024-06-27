@@ -1,4 +1,5 @@
 ﻿<Window x:Class="PoEWizard.MainWindow"
+        DataContext="{StaticResource SwitchModel}"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,7 +7,7 @@
         xmlns:local="clr-namespace:PoEWizard"
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
-        Title="PoE Wizard" Height="600" Width="800" Icon="/wiz.ico">
+        Title="PoE Wizard" Height="800" Width="800" Icon="/wiz.ico">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -52,21 +53,30 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Label Grid.Row="0" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">Connected to S/N:</Label>
-                <Label Grid.Row="0" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_serialNo"/>
-                <Label Grid.Row="1" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">Model:</Label>
-                <Label Grid.Row="1" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_model"/>
-                <Label Grid.Row="2" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">Realease:</Label>
-                <Label Grid.Row="2" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_release"/>
-                <Label Grid.Row="3" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">MAC:</Label>
-                <Label Grid.Row="3" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_mac"/>
-                <Label Grid.Row="4" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">Running Directory:</Label>
-                <Label Grid.Row="4" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_runningDir"/>
+                <Label Grid.Row="0" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_serialNo" Content="{Binding SerialNumber}"/>
+                <Label Grid.Row="1" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">Name:</Label>
+                <Label Grid.Row="1" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_name" Content="{Binding Name}" />
+                <Label Grid.Row="2" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">Model:</Label>
+                <Label Grid.Row="2" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_model" Content="{Binding Model}"/>
+                <Label Grid.Row="3" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">Realease:</Label>
+                <Label Grid.Row="3" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_release" Content="{Binding Release}"/>
+                <Label Grid.Row="4" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">Location:</Label>
+                <Label Grid.Row="4" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_location" Content="{Binding Location}" />
+                <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">Contact:</Label>
+                <Label Grid.Row="5" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_contact" Content="{Binding Contact}" />
+                <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">MAC:</Label>
+                <Label Grid.Row="6" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_mac" Content="{Binding MacAddr}"/>
+                <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource leftJustifLabel}">Running Directory:</Label>
+                <Label Grid.Row="7" Grid.Column="1" Style="{DynamicResource leftJustifLabel}" x:Name="_runningDir" Content="{Binding RunningDir}"/>
             </Grid>
         </StackPanel>
         <Border Grid.Row="2" x:Name="_psInfo" Style="{DynamicResource templateOpt}">

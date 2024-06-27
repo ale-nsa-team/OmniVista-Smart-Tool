@@ -4,6 +4,13 @@
 
     <BitmapImage x:Key="connected" UriSource="connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="disconnected-light.png" />
+    <BitmapImage x:Key="info" UriSource="info.png" />
+    <BitmapImage x:Key="question" UriSource="question.png" />
+    <BitmapImage x:Key="alert" UriSource="alert.png" />
+    <BitmapImage x:Key="remove" UriSource="remove.png" />
+    <BitmapImage x:Key="error" UriSource="error.png" />
+    <BitmapImage x:Key="eye_open" UriSource="../Resources/eye-open-light.png" />
+    <BitmapImage x:Key="eye_closed" UriSource="../Resources/eye-closed-light.png" />
 
     <SolidColorBrush x:Key="fontColor" Color="Black" />
     <SolidColorBrush x:Key="linkColor" Color="Blue" />

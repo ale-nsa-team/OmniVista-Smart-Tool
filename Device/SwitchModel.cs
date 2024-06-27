@@ -11,12 +11,14 @@ namespace PoEWizard.Device
         public string Name { get; set; }
 
         public string IpAddr { get; set; }
+        public string MacAddr { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
         public SwitchStatus Status { get; set; }
         public int CnxTimeout { get; set; }
         public string Model { get; set; }
         public string Version { get; set; }
+        public string RunningDir { get; set; }
         public string Location { get; set; }
         public string Description { get; set; }
         public string SerialNumber { get; set; }
@@ -41,6 +43,15 @@ namespace PoEWizard.Device
             Password = password;
             CnxTimeout = cnxTimeout;
             IsConnected = false;
+        }
+
+        public void LoadFromDictionary(Dictionary<string, string> dict)
+        {
+            Name = dict["Name"];
+            Description = dict["Description"];
+            Location = dict["Location"];
+            Contact = dict["Contact"];
+            UpTime = dict["Up Time"];
         }
 
         public ChassisInfo GetChassis(int chassisNumber)

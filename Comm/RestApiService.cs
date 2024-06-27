@@ -35,17 +35,18 @@ namespace PoEWizard.Comm
                 Dictionary<string, string> dict = new Dictionary<string, string>();
                 this.IsReady = true;
                 Logger.Debug($"Connecting Rest API");
-                _progress?.Report(new ProgressReport("Connecting to switch..."));
+                _progress.Report(new ProgressReport("Connecting to switch..."));
                 RestApiClient.Login();
                 this.SwitchModel = RestApiClient.SwitchInfo;
-                _progress?.Report(new ProgressReport("Reading System information..."));
+                _progress.Report(new ProgressReport("Reading System information..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
                 dict = CliParseUtils.ParseVTable(this._response["RESULT"]);
-                _progress?.Report(new ProgressReport("Reading chassis and port infomration..."));
+                SwitchModel.LoadFromDictionary(dict);
+                _progress.Report(new ProgressReport("Reading chassis and port infomration..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS));
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
+                //this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS));
+                //this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
+                //this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
 
                 //this._response = SetPoePriority("1/1/26", PriorityLevelType.High);
                 //this._response = SetPoePriority("1/1/27", PriorityLevelType.High);
