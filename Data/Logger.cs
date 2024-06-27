@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static PoEWizard.Data.Constants;
 
@@ -14,15 +15,18 @@ namespace PoEWizard.Data
     /// </summary>
     public static class Logger
     {
+        #region variables
         private static LogLevel logLevel;
         private static int logSize;
         private static int logCount;
         private static EventLog eventLog;
         private static readonly object lockObj = new object();
-        private static readonly bool eventLogOk;
+        private static bool eventLogOk;
 
         public static string LogPath { get; private set; }
+        #endregion
 
+        #region constructor
         static Logger()
         {
             try
@@ -36,6 +40,10 @@ namespace PoEWizard.Data
                 }
                 logSize = 1000000;
                 logCount = 5;
+            }
+            catch { }
+            try
+            {
                 eventLog = new EventLog();
                 string source = nameof(PoEWizard);
                 if (!EventLog.SourceExists(source))
@@ -44,52 +52,16 @@ namespace PoEWizard.Data
                 }
                 eventLog.Source = source;
                 eventLog.Log = "Application";
+                eventLogOk = true;
             }
-            catch { }
-        }
-
-        private static void Log(string message, LogLevel level)
-        {
-            try
+            catch
             {
-                // Error messages are also written to event log
-                if (level == LogLevel.Error)
-                {
-                    eventLog?.WriteEntry(message, EventLogEntryType.Error);
-                }
-                if (level <= logLevel)
-                {
-                    string strDate = DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt");
-                    string caller = GetMethodClass();
-                    string logMsg = $"{strDate} [{level,-5}] ({caller}) - {message}";
-                    lock (lockObj)
-                    {
-                        using (StreamWriter file = File.AppendText(LogPath))
-                        {
-                            file.WriteLine(logMsg);
-                        }
-                    }
-                    Rotate();
-                }
+                eventLogOk = false;
             }
-            catch { }
         }
+        #endregion
 
-        private static string GetMethodClass()
-        {
-            int skipFrames = 1;
-            var method = new StackFrame(skipFrames).GetMethod();
-            while (method.DeclaringType.Name == "Logger")
-            {
-                skipFrames++;
-                method = new StackFrame(skipFrames).GetMethod();
-            }
-            string fname = method.DeclaringType.FullName;
-            string[] parts = fname.Split(new char[] { '.', '<', '>' });
-            if (parts.Length > 2) return $"{parts[1].Replace("+", "")}: {parts[2]}";
-            else return $"{method.DeclaringType.Name}: {method.Name}";
-        }
-
+        #region public methods
         public static void Error(string message)
         {
             Log(message, LogLevel.Error);
@@ -140,6 +112,54 @@ namespace PoEWizard.Data
                 }
             }
         }
+        #endregion
+
+        #region private methods
+
+        private static void Log(string message, LogLevel level)
+        {
+            try
+            {
+                // Error messages are also written to event log
+                if (level == LogLevel.Error && eventLogOk)
+                {
+                    eventLog.WriteEntry(message, EventLogEntryType.Error);
+                }
+                if (level <= logLevel)
+                {
+                    string strDate = DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt");
+                    string caller = GetMethodClass();
+                    string logMsg = $"{strDate} [{level,-5}] ({caller}) - {message}";
+                    lock (lockObj)
+                    {
+                        using (StreamWriter file = File.AppendText(LogPath))
+                        {
+                            file.WriteLine(logMsg);
+                        }
+                    }
+                    Rotate();
+                }
+            }
+            catch { }
+        }
+
+        private static string GetMethodClass()
+        {
+            int skipFrames = 1;
+            var method = new StackFrame(skipFrames).GetMethod();
+            while (method.DeclaringType.Name == "Logger")
+            {
+                skipFrames++;
+                method = new StackFrame(skipFrames).GetMethod();
+            }
+            string fname = method.DeclaringType.FullName;
+            if (fname.Contains("<"))
+            {
+                string[] parts = fname.Split(new char[] { '.', '<', '>' });
+                if (parts.Length > 2) return $"{parts[1].Replace("+", "")}: {parts[2]}";
+            }
+            return $"{method.DeclaringType.Name}: {method.Name}";
+        }
 
         private static void Rotate()
         {
@@ -170,5 +190,6 @@ namespace PoEWizard.Data
                 }
             }
         }
+        #endregion
     }
 }
