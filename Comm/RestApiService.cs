@@ -38,7 +38,7 @@ namespace PoEWizard.Comm
                 Logger.Debug($"Connecting Rest API");
                 _progress.Report(new ProgressReport("Connecting to switch..."));
                 RestApiClient.Login();
-                _progress?.Report(new ProgressReport("Reading System information..."));
+                _progress.Report(new ProgressReport("Reading System information..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
                 dict = CliParseUtils.ParseVTable(this._response["RESULT"]);
                 SwitchModel.LoadFromDictionary(dict);
