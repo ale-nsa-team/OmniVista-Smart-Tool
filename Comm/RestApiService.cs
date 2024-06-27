@@ -43,6 +43,10 @@ namespace PoEWizard.Comm
                 dict = CliParseUtils.ParseVTable(this._response["RESULT"]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.System);
                 _progress.Report(new ProgressReport("Reading chassis and port infomration..."));
+
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MICROCODE));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_RUNNING_DIR));
+
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
                 dict = CliParseUtils.ParseVTable(this._response["RESULT"]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.Chassis);

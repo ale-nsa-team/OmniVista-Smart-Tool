@@ -26,15 +26,17 @@ namespace PoEWizard.Data
         {
             // 0 - 19: Basic commands to gather switch data
             SHOW_SYSTEM = 0,
-            SHOW_CHASSIS = 1,
-            SHOW_PORTS_LIST = 2,
-            SHOW_POWER_SUPPLY = 3,
-            SHOW_LAN_POWER = 4,
-            SHOW_LAN_POWER_STATUS = 5,
-            SHOW_SLOT = 6,
-            SHOW_MAC_LEARNING = 7,
-            SHOW_TEMPERATURE = 8,
-            SHOW_HEALTH = 9,
+            SHOW_MICROCODE = 1,
+            SHOW_RUNNING_DIR = 2,
+            SHOW_CHASSIS = 3,
+            SHOW_PORTS_LIST = 4,
+            SHOW_POWER_SUPPLY = 5,
+            SHOW_LAN_POWER = 6,
+            SHOW_LAN_POWER_STATUS = 7,
+            SHOW_SLOT = 8,
+            SHOW_MAC_LEARNING = 9,
+            SHOW_TEMPERATURE = 10,
+            SHOW_HEALTH = 11,
             // 20 - 39: Commands related to actions on power
             POWER_DOWN_PORT = 20,
             POWER_UP_PORT = 21,
@@ -61,15 +63,17 @@ namespace PoEWizard.Data
         {
             // 0 - 19: Basic commands to gather switch data
             [RestUrlId.SHOW_SYSTEM] = "cli/aos?cmd=show system",                                            //  0
-            [RestUrlId.SHOW_CHASSIS] = "cli/aos?cmd=show chassis",                                          //  1
-            [RestUrlId.SHOW_PORTS_LIST] = "cli/aos?cmd=show interfaces status",                             //  2
-            [RestUrlId.SHOW_POWER_SUPPLY] = $"cli/aos?cmd=show powersupply {DATA_0}",                       //  3
-            [RestUrlId.SHOW_LAN_POWER] = $"cli/aos?cmd=show lanpower slot {DATA_0}",                        //  4
-            [RestUrlId.SHOW_LAN_POWER_STATUS] = $"cli/aos?cmd=show lanpower slot {DATA_0} status",          //  5
-            [RestUrlId.SHOW_SLOT] = $"cli/aos?cmd=show slot {DATA_0}",                                      //  6
-            [RestUrlId.SHOW_MAC_LEARNING] = $"cli/aos?cmd=show mac-learning",                               //  7
-            [RestUrlId.SHOW_TEMPERATURE] = $"cli/aos?cmd=show temperature",                                 //  8
-            [RestUrlId.SHOW_HEALTH] = $"cli/aos?cmd=show health",                                           //  9
+            [RestUrlId.SHOW_MICROCODE] = "cli/aos?cmd=show microcode",                                      //  1
+            [RestUrlId.SHOW_RUNNING_DIR] = "cli/aos?cmd=show running-directory",                            //  2
+            [RestUrlId.SHOW_CHASSIS] = "cli/aos?cmd=show chassis",                                          //  3
+            [RestUrlId.SHOW_PORTS_LIST] = "cli/aos?cmd=show interfaces status",                             //  4
+            [RestUrlId.SHOW_POWER_SUPPLY] = $"cli/aos?cmd=show powersupply {DATA_0}",                       //  5
+            [RestUrlId.SHOW_LAN_POWER] = $"cli/aos?cmd=show lanpower slot {DATA_0}",                        //  6
+            [RestUrlId.SHOW_LAN_POWER_STATUS] = $"cli/aos?cmd=show lanpower slot {DATA_0} status",          //  7
+            [RestUrlId.SHOW_SLOT] = $"cli/aos?cmd=show slot {DATA_0}",                                      //  8
+            [RestUrlId.SHOW_MAC_LEARNING] = $"cli/aos?cmd=show mac-learning",                               //  9
+            [RestUrlId.SHOW_TEMPERATURE] = $"cli/aos?cmd=show temperature",                                 // 10
+            [RestUrlId.SHOW_HEALTH] = $"cli/aos?cmd=show health",                                           // 11
             // 20 - 39: Commands related to actions on power
             [RestUrlId.POWER_DOWN_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} admin-state disable",        // 20
             [RestUrlId.POWER_UP_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} admin-state enable",           // 21
@@ -110,20 +114,22 @@ namespace PoEWizard.Data
                 {
                     // 0 - 19: Basic commands to gather switch data
                     case RestUrlId.SHOW_SYSTEM:                 //  0
-                    case RestUrlId.SHOW_CHASSIS:                //  1
-                    case RestUrlId.SHOW_PORTS_LIST:             //  2
-                    case RestUrlId.SHOW_POWER_SUPPLY:           //  3
-                    case RestUrlId.SHOW_SLOT:                   //  6
-                    case RestUrlId.SHOW_MAC_LEARNING:           //  7
-                    case RestUrlId.SHOW_TEMPERATURE:            //  8
-                    case RestUrlId.SHOW_HEALTH:                 //  9
+                    case RestUrlId.SHOW_MICROCODE:              //  1
+                    case RestUrlId.SHOW_RUNNING_DIR:            //  2
+                    case RestUrlId.SHOW_CHASSIS:                //  3
+                    case RestUrlId.SHOW_PORTS_LIST:             //  4
+                    case RestUrlId.SHOW_POWER_SUPPLY:           //  5
+                    case RestUrlId.SHOW_SLOT:                   //  8
+                    case RestUrlId.SHOW_MAC_LEARNING:           //  9
+                    case RestUrlId.SHOW_TEMPERATURE:            // 10
+                    case RestUrlId.SHOW_HEALTH:                 // 11
                     // 20 - 39: Commands related to actions on power
                     case RestUrlId.WRITE_MEMORY:                // 40
                         return url;
 
                     // 0 - 19: Basic commands to gather switch data
-                    case RestUrlId.SHOW_LAN_POWER:              //  4
-                    case RestUrlId.SHOW_LAN_POWER_STATUS:       //  5
+                    case RestUrlId.SHOW_LAN_POWER:              //  6
+                    case RestUrlId.SHOW_LAN_POWER_STATUS:       //  7
                     // 20 - 39: Commands related to actions on power
                     case RestUrlId.POWER_DOWN_PORT:             // 20
                     case RestUrlId.POWER_UP_PORT:               // 21
