@@ -30,11 +30,12 @@ namespace PoEWizard.Data
             SHOW_PORTS_LIST = 2,
             SHOW_POWER_SUPPLY = 3,
             SHOW_LAN_POWER = 4,
-            SHOW_SLOT_POWER = 5,
-            SHOW_MAC_LEARNING = 6,
-            SHOW_TEMPERATURE = 7,
-            SHOW_HEALTH = 8,
-            SHOW_TRAFFIC = 9,
+            SHOW_LAN_POWER_STATUS = 5,
+            SHOW_SLOT_POWER = 6,
+            SHOW_MAC_LEARNING = 7,
+            SHOW_TEMPERATURE = 8,
+            SHOW_HEALTH = 9,
+            SHOW_TRAFFIC = 10,
             // 20 - 39: Commands related to actions on power
             POWER_DOWN_PORT = 20,
             POWER_UP_PORT = 21,
@@ -51,9 +52,11 @@ namespace PoEWizard.Data
             LLDP_POWER_MDI_DISABLE = 32,
             LLDP_EXT_POWER_MDI_ENABLE = 33,
             LLDP_EXT_POWER_MDI_DISABLE = 34,
-            SHOW_PORT_MAC_LEARNING = 35,
+            POE_FAST_ENABLE = 35,
+            POE_PERPETUAL_ENABLE = 36,
             // 40 - 59: Special switch commands
-            WRITE_MEMORY = 40
+            WRITE_MEMORY = 40,
+            SHOW_PORT_MAC_LEARNING = 41
         }
 
         public static Dictionary<RestUrlId, string> REST_URL_TABLE = new Dictionary<RestUrlId, string>
@@ -63,6 +66,7 @@ namespace PoEWizard.Data
             [RestUrlId.SHOW_PORTS_LIST] = "cli/aos?cmd=show interfaces status",
             [RestUrlId.SHOW_POWER_SUPPLY] = $"cli/aos?cmd=show powersupply {DATA_0}",
             [RestUrlId.SHOW_LAN_POWER] = $"cli/aos?cmd=show lanpower slot {DATA_0}",
+            [RestUrlId.SHOW_LAN_POWER_STATUS] = $"cli/aos?cmd=show lanpower slot {DATA_0} status",
 
             [RestUrlId.POWER_DOWN_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} admin-state disable",
             [RestUrlId.POWER_UP_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} admin-state enable",
@@ -70,7 +74,20 @@ namespace PoEWizard.Data
             [RestUrlId.POWER_2PAIR_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} 4pair disable",
             [RestUrlId.POWER_DOWN_SLOT] = $"cli/aos?cmd=lanpower slot {DATA_0} service stop",
             [RestUrlId.POWER_UP_SLOT] = $"cli/aos?cmd=lanpower slot {DATA_0} service start",
-            [RestUrlId.POWER_PRIORITY_PORT] = "domain=mib&urn=pethPsePortTable",
+            [RestUrlId.POWER_PRIORITY_PORT] = $"lanpower port {DATA_0} priority {DATA_1}",
+            [RestUrlId.POWER_823BT_ENABLE] = $"cli/aos?cmd=lanpower slot {DATA_0} 8023bt enable",
+            [RestUrlId.POWER_823BT_DISABLE] = $"cli/aos?cmd=lanpower slot {DATA_0} 8023bt disable",
+
+            [RestUrlId.POE_FAST_ENABLE] = $"cli/aos?cmd=lanpower slot {DATA_0} fpoe enable",
+            [RestUrlId.POE_PERPETUAL_ENABLE] = $"cli/aos?cmd=lanpower slot {DATA_0} ppoe enable",
+
+            //            POWER_HDMI_ENABLE = 29,
+            //            POWER_HDMI_DISABLE = 30,
+            //            LLDP_POWER_MDI_ENABLE = 31,
+            //            LLDP_POWER_MDI_DISABLE = 32,
+            //            LLDP_EXT_POWER_MDI_ENABLE = 33,
+            //            LLDP_EXT_POWER_MDI_DISABLE = 34,
+
 
             [RestUrlId.WRITE_MEMORY] = "cli/aos?cmd=write memory flash-synchro",
 
@@ -86,7 +103,7 @@ namespace PoEWizard.Data
         {
             string url = GetUrlFromTable(entry.RestUrl, entry.Data).Trim();
             string[] urlSplit = url.Split('=');
-            url = $"{urlSplit[0]} {urlSplit[1].Replace(" ", "%20").Replace("/", "%2F")}";
+            url = $"{urlSplit[0]}={urlSplit[1].Replace(" ", "%20").Replace("/", "%2F")}";
             return url;
         }
 
@@ -114,9 +131,12 @@ namespace PoEWizard.Data
                     case RestUrlId.SHOW_LAN_POWER:
                     case RestUrlId.POWER_DOWN_PORT:
                     case RestUrlId.POWER_UP_PORT:
-                    case RestUrlId.POWER_PRIORITY_PORT:
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
+
+                    case RestUrlId.POWER_PRIORITY_PORT:
+                        if (data == null || data.Length < 2) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
+                        return url.Replace(DATA_0, data[0]).Replace(DATA_1, data[1]);
 
                     default:
                         throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");

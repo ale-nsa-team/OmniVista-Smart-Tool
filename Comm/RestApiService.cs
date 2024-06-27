@@ -45,8 +45,25 @@ namespace PoEWizard.Comm
                 this.SwitchModel = RestApiClient.SwitchInfo;
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
+                // this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
+
+                //this._response = SetPoePriority("1/1/26", PriorityLevelType.High);
+                //this._response = SetPoePriority("1/1/27", PriorityLevelType.High);
+                //this._response = SetPoePriority("1/1/28", PriorityLevelType.High);
+
+                //this._response = PowerPort(RestUrlId.POWER_DOWN_PORT, "1/1/26");
+                //this._response = PowerPort(RestUrlId.POWER_UP_PORT, "1/1/26");
+                //this._response = PowerPort(RestUrlId.POWER_4PAIR_PORT, "1/1/28");
+                //this._response = PowerPort(RestUrlId.POWER_2PAIR_PORT, "1/1/28");
+
+                //this._response = SetPoeConfiguration(RestUrlId.POWER_823BT_ENABLE, "1/1");
+                //this._response = SetPoeConfiguration(RestUrlId.POWER_823BT_DISABLE, "1/1");
+
+                //this._response = SetPoeConfiguration(RestUrlId.POE_FAST_ENABLE, "1/1");
+                //this._response = SetPoeConfiguration(RestUrlId.POE_PERPETUAL_ENABLE, "1/1");
+
             }
             catch (Exception ex)
             {
@@ -57,11 +74,77 @@ namespace PoEWizard.Comm
                 }
                 else
                 {
-                    Logger.Error(ex.Message + ":\n" + ex.StackTrace);
                     throw ex;
                 }
             }
         }
+
+        private Dictionary<string, string> SetPoeConfiguration(RestUrlId cmd, string slot)
+        {
+            try
+            {
+                return SendRequest(GetRestUrlEntry(cmd, new string[1] { slot }));
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+                if (ex is SwitchConnectionFailure || ex is SwitchConnectionDropped || ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure)
+                {
+                    if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure) this.SwitchModel.Status = SwitchStatus.LoginFail;
+                    else this.SwitchModel.Status = SwitchStatus.Unreachable;
+                    return null;
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
+        }
+
+        private Dictionary<string, string> PowerPort(RestUrlId cmd, string port)
+        {
+            try
+            {
+                return SendRequest(GetRestUrlEntry(cmd, new string[1] { port }));
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+                if (ex is SwitchConnectionFailure || ex is SwitchConnectionDropped || ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure)
+                {
+                    if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure) this.SwitchModel.Status = SwitchStatus.LoginFail;
+                    else this.SwitchModel.Status = SwitchStatus.Unreachable;
+                    return null;
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
+        }
+
+        private Dictionary<string, string> SetPoePriority(string port, PriorityLevelType priority)
+        {
+            try
+            {
+                return SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+                if (ex is SwitchConnectionFailure || ex is SwitchConnectionDropped || ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure)
+                {
+                    if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure) this.SwitchModel.Status = SwitchStatus.LoginFail;
+                    else this.SwitchModel.Status = SwitchStatus.Unreachable;
+                    return null;
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
+        }
+
         public void Close()
         {
             Logger.Debug($"Closing Rest API");

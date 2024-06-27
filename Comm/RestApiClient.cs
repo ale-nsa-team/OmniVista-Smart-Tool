@@ -214,7 +214,6 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
                 if (ex.InnerException is HttpRequestException) throw new SwitchConnectionFailure("Switch connection failure!");
                 else throw ex;
             }
