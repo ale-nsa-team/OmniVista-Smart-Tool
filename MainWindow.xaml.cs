@@ -115,10 +115,9 @@ namespace PoEWizard
 
         private async void Connect()
         {
-            ShowProgress("Connecting to switch...");
             try
             {
-                restApiService = new RestApiService(device);
+                restApiService = new RestApiService(device, progress);
                 await Task.Run(() => restApiService.Connect());
                 HideProgress();
 

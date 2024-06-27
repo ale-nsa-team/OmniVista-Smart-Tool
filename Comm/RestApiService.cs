@@ -12,6 +12,7 @@ namespace PoEWizard.Comm
     public class RestApiService
     {
         private Dictionary<string, string> _response = new Dictionary<string, string>();
+        private readonly IProgress<ProgressReport> _progress;
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
         public ResultCallback Callback { get; set; }
@@ -22,11 +23,13 @@ namespace PoEWizard.Comm
         {
             SwitchModel = new SwitchModel();
         }
-        public RestApiService(SwitchModel device)
+        public RestApiService(SwitchModel device, IProgress<ProgressReport> progress)
         {
             this.SwitchModel = device;
+            this._progress = progress;
             this.RestApiClient = new RestApiClient(SwitchModel);
             this.IsReady = false;
+            _progress = progress;
         }
         public RestApiService(string ipAddr, string username, string password, int cnxTimeout)
         {
@@ -39,11 +42,16 @@ namespace PoEWizard.Comm
         {
             try
             {
+                Dictionary<string, string> dict = new Dictionary<string, string>();
                 this.IsReady = true;
                 Logger.Debug($"Connecting Rest API");
+                _progress?.Report(new ProgressReport("Connecting to switch..."));
                 RestApiClient.Login();
                 this.SwitchModel = RestApiClient.SwitchInfo;
+                _progress?.Report(new ProgressReport("Reading System information..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
+                dict = CliParseUtils.ParseVTable(this._response["RESULT"]);
+                _progress?.Report(new ProgressReport("Readin chassis and port infomration..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
@@ -74,7 +82,7 @@ namespace PoEWizard.Comm
                 }
                 else
                 {
-                    throw ex;
+                    _progress?.Report(new ProgressReport(ReportType.Error, "Connect", ex.Message));
                 }
             }
         }
