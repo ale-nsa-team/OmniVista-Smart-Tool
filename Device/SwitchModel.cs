@@ -68,6 +68,20 @@ namespace PoEWizard.Device
 ;
         }
 
+        public void LoadFromList(List<Dictionary<string, string>> list, DictionaryType dt)
+        {
+            switch (dt)
+            {
+                case DictionaryType.LanPower:
+                    ChassisList = new List<ChassisInfo>();
+                    foreach(Dictionary<string, string> dict in list)
+                    {
+                        ChassisList.Add(new ChassisInfo(dict));
+                    }
+                    break;
+            }
+        }
+
         public ChassisInfo GetChassis(int chassisNumber)
         {
             return ChassisList.FirstOrDefault(c => c.Number == chassisNumber);

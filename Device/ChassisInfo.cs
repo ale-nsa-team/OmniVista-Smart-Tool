@@ -21,18 +21,23 @@ namespace PoEWizard.Device
         public string HardwareRevision { get; set; }
         public string MacAddress { get; set; }
 
+        public ChassisInfo(Dictionary<string, string> properties)
+        {
+            Number = ParseNumber(properties["Chas/ Slot/Port"]);
+
+        }
+
         public ChassisInfo(string sn, string mac, string model)
         {
             SerialNumber = sn;
             MacAddress = mac;
             Model = model;
         }
-        public bool IsOS6x
+
+        private int ParseNumber(string chassis)
         {
-            get
-            {
-                return Model.StartsWith("OS6350") || Model.StartsWith("OS6450");
-            }
+            return int.Parse(chassis.Split('/')[0]);
         }
+        
     }
 }

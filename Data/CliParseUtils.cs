@@ -47,8 +47,20 @@ namespace PoEWizard.Data
             if (match.Success)
             {
                 int line = LineNumberFromPosition(data, match.Index);
-                string head = lines[line - 1];
-                string[] header = GetValues(lines[line], head);
+                string[] header;
+                if (nbHeaders == 2)
+                {
+                    string h1 = lines[line - 2];
+                    string h2 = lines[line - 1];
+                    string[] hd1 = GetValues(lines[line], h1);
+                    string[] hd2 = GetValues(lines[line], h2);
+                    header = hd1.Zip(hd2, (a, b) => $"{a} {b}").ToArray();
+                }
+                else
+                {
+                    string head = lines[line - 1];
+                    header = GetValues(lines[line], head);
+                }
 
                 for (int i = line + 1; i < lines.Length; i++)
                 {

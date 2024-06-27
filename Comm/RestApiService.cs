@@ -47,12 +47,14 @@ namespace PoEWizard.Comm
                 dict = CliParseUtils.ParseVTable(this._response["RESULT"]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.Chassis);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[1] { "1/1" }));
+                List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response["RESULT"], 2);
+                SwitchModel.LoadFromList(diclist, DictionaryType.LanPower);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
 
-                SetPoePriority("1/1/26", PriorityLevelType.High);
-                SetPoePriority("1/1/26", PriorityLevelType.Critical);
-                SetPoePriority("1/1/26", PriorityLevelType.Low);
+                //SetPoePriority("1/1/26", PriorityLevelType.High);
+                //SetPoePriority("1/1/26", PriorityLevelType.Critical);
+                //SetPoePriority("1/1/26", PriorityLevelType.Low);
 
                 //this._response = PowerPort(RestUrlId.POWER_DOWN_PORT, "1/1/26");
                 //this._response = PowerPort(RestUrlId.POWER_UP_PORT, "1/1/26");
