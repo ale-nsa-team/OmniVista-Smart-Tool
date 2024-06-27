@@ -43,6 +43,10 @@ namespace PoEWizard.Comm
                 dict = CliParseUtils.ParseVTable(this._response["RESULT"]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.System);
                 _progress.Report(new ProgressReport("Reading chassis and port infomration..."));
+
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MICROCODE));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_RUNNING_DIR));
+
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
                 dict = CliParseUtils.ParseVTable(this._response["RESULT"]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.Chassis);
@@ -50,9 +54,9 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
 
-                SetPoePriority("1/1/26", PriorityLevelType.High);
-                SetPoePriority("1/1/26", PriorityLevelType.Critical);
-                SetPoePriority("1/1/26", PriorityLevelType.Low);
+                //SetPoePriority("1/1/26", PriorityLevelType.High);
+                //SetPoePriority("1/1/26", PriorityLevelType.Critical);
+                //SetPoePriority("1/1/26", PriorityLevelType.Low);
 
                 //this._response = PowerPort(RestUrlId.POWER_DOWN_PORT, "1/1/26");
                 //this._response = PowerPort(RestUrlId.POWER_UP_PORT, "1/1/26");
