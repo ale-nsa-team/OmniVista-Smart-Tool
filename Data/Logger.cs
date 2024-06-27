@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static PoEWizard.Data.Constants;
 
@@ -59,16 +60,7 @@ namespace PoEWizard.Data
                 if (level <= logLevel)
                 {
                     string strDate = DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt");
-                    // Get calling class name and method name
-                    int skipFrames = 1;
-                    var method = new StackFrame(skipFrames).GetMethod();
-                    while (method.DeclaringType.Name == "Logger" || method.Name == "HandleError")
-                    {
-                        skipFrames += 1;
-                        method = new StackFrame(skipFrames).GetMethod();
-                    }
-                    string caller = method.DeclaringType.DeclaringType.Name;
-                    //string caller = GetMethodClass();
+                    string caller = GetMethodClass();
                     string logMsg = $"{strDate} [{level,-5}] ({caller}) - {message}";
                     lock (lockObj)
                     {
@@ -85,26 +77,17 @@ namespace PoEWizard.Data
 
         private static string GetMethodClass()
         {
-            try
+            int skipFrames = 1;
+            var method = new StackFrame(skipFrames).GetMethod();
+            while (method.DeclaringType.Name == "Logger")
             {
-                var stackFrame = new StackTrace().GetFrame(2);
-                if (stackFrame == null) return "";
-                var methodInfo = stackFrame.GetMethod();
-                if (methodInfo != null)
-                {
-                    if (methodInfo.Name.Contains("Log"))
-                    {
-                        stackFrame = new StackTrace().GetFrame(3);
-                        if (stackFrame != null)
-                        {
-                            methodInfo = stackFrame.GetMethod();
-                        }
-                    }
-                    return $" {methodInfo.ReflectedType.Name}: {methodInfo.Name}";
-                }
+                skipFrames++;
+                method = new StackFrame(skipFrames).GetMethod();
             }
-            catch { }
-            return "";
+            string fname = method.DeclaringType.FullName;
+            string[] parts = fname.Split(new char[] { '.', '<', '>' });
+            if (parts.Length > 2) return $"{parts[1].Replace("+", "")}: {parts[2]}";
+            else return $"{method.DeclaringType.Name}: {method.Name}";
         }
 
         public static void Error(string message)
