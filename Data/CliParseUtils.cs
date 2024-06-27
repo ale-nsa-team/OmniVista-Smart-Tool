@@ -39,7 +39,7 @@ namespace PoEWizard.Data
             return ParseTable(data, etableRegex);
         }
 
-        public static List<Dictionary<string, string>> ParseHTable(string data)
+        public static List<Dictionary<string, string>> ParseHTable(string data, int nbHeaders = 1)
         {
             List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();
             string[] lines = Regex.Split(data, @"\r\n\r|\n");
