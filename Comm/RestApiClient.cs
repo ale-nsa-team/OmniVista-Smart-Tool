@@ -165,7 +165,7 @@ namespace PoEWizard.Comm
 
         public Dictionary<string, string> SendRequest(RestUrlEntry entry)
         {
-            string url = RestUrl.ParseUrl(RestUrl.RELEASE_8, entry);
+            string url = RestUrl.ParseUrl(entry);
             if (string.IsNullOrEmpty(url)) throw new SwitchCommandError("Command line is missing!");
             url = $"{this._httpClient.BaseAddress}{url}";
             entry.StartTime = DateTime.Now;

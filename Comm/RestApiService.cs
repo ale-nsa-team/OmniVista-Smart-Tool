@@ -106,7 +106,7 @@ namespace PoEWizard.Comm
         {
             RestUrlEntry entry = new RestUrlEntry(url, 60, data)
             {
-                Method = GetHttpMethod(RELEASE_8, url)
+                Method = GetHttpMethod(url)
                 //, Content = GetContent(RELEASE_8, url, data)
             };
             return entry;
