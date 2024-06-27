@@ -62,7 +62,10 @@ namespace PoEWizard.Device
                     MacAddr = dict["MAC Address"];
                     break;
                 case DictionaryType.RunningDir:
-                    RunningDir = dict["Running Configuration"];
+                    RunningDir = dict["Running configuration"];
+                    break;
+                case DictionaryType.MicroCode:
+                    Version = dict["Release"];
                     break;
             }
 ;

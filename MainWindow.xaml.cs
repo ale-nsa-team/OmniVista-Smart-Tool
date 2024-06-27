@@ -112,47 +112,9 @@ namespace PoEWizard
             }
         }
 
-        private async void Connect()
-        {
-            try
-            {
-                restApiService = new RestApiService(device, progress);
-                if (device.IsConnected)
-                {
-                    await Task.Run(() => restApiService.Close());
-                    SetDisconnectedState();
-                    return;
-                }
-                await Task.Run(() => restApiService.Connect());
-
-                if (device.IsConnected)
-                {
-                    Logger.Info($"Connected to switch S/N {device.SerialNumber}, model {device.Model}");
-                    SetConnectedState();
-                }
-                else
-                {
-                    Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
-                    SetDisconnectedState();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
-            }
-            HideProgress();
-            HideInfoBox();
-        }
-
-        private void ConnectMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            Connect();
-        }
-
         private void ConnectBtn_Click(object sender, MouseEventArgs e)
         {
             Connect();
-
         }
 
         private void ViewActivity_Click(object sender, RoutedEventArgs e)
@@ -231,6 +193,38 @@ namespace PoEWizard
             DwmSetWindowAttribute(handle, 36, ref textColor, Marshal.SizeOf(textColor));
         }
 
+        private async void Connect()
+        {
+            try
+            {
+                restApiService = new RestApiService(device, progress);
+                if (device.IsConnected)
+                {
+                    await Task.Run(() => restApiService.Close());
+                    SetDisconnectedState();
+                    return;
+                }
+                await Task.Run(() => restApiService.Connect());
+
+                if (device.IsConnected)
+                {
+                    Logger.Info($"Connected to switch S/N {device.SerialNumber}, model {device.Model}");
+                    SetConnectedState();
+                }
+                else
+                {
+                    Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
+                    SetDisconnectedState();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+            }
+            HideProgress();
+            HideInfoBox();
+        }
+
         private bool ShowMessageBox(string title, string message, MsgBoxIcons icon = MsgBoxIcons.Info, MsgBoxButtons buttons = MsgBoxButtons.Ok)
         {
             CustomMsgBox msgBox = new CustomMsgBox(this)
@@ -271,16 +265,21 @@ namespace PoEWizard
         {
             DataContext = device;
             _comImg.Source = (ImageSource)currentDict["connected"];
-            _switchAttributes.Text = $"{device.Name}";
-
+            _switchAttributes.Text = $"Connected to: {device.Name}";
+            _btnRunWiz.IsEnabled = true;
+            _btnConnect.Cursor = Cursors.Hand;
         }
 
         private void SetDisconnectedState() 
         {
             _comImg.Source = (ImageSource)currentDict["disconnected"];
+            string oldIp = device.IpAddr;
             device = new SwitchModel();
+            device.IpAddr = oldIp;
             _switchAttributes.Text = "";
-            DataContext = device;
+            _btnRunWiz.IsEnabled = false;
+            DataContext = null;
+            restApiService = null;
         }
 
         #endregion private methods

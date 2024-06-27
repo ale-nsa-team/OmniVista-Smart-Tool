@@ -33,25 +33,28 @@ namespace PoEWizard.Comm
         {
             try
             {
-                Dictionary<string, string> dict = new Dictionary<string, string>();
+                List<Dictionary<string, string>> diclist;
+                Dictionary<string, string> dict;
                 this.IsReady = true;
                 Logger.Debug($"Connecting Rest API");
                 _progress.Report(new ProgressReport("Connecting to switch..."));
                 RestApiClient.Login();
                 _progress.Report(new ProgressReport("Reading System information..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
-                dict = CliParseUtils.ParseVTable(this._response["RESULT"]);
+                dict = CliParseUtils.ParseVTable(_response["RESULT"]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.System);
-                _progress.Report(new ProgressReport("Reading chassis and port infomration..."));
-
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MICROCODE));
+                diclist = CliParseUtils.ParseHTable(_response["RESULT"]);
+                SwitchModel.LoadFromDictionary(diclist[0], DictionaryType.MicroCode);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_RUNNING_DIR));
-
+                dict = CliParseUtils.ParseVTable(_response["RESULT"]);
+                SwitchModel.LoadFromDictionary(dict, DictionaryType.RunningDir);
+                _progress.Report(new ProgressReport("Reading chassis and port information..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
-                dict = CliParseUtils.ParseVTable(this._response["RESULT"]);
+                dict = CliParseUtils.ParseVTable(_response["RESULT"]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.Chassis);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[1] { "1/1" }));
-                List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response["RESULT"], 2);
+                diclist = CliParseUtils.ParseHTable(_response["RESULT"], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.LanPower);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));

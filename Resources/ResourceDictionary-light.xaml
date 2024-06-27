@@ -475,6 +475,17 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 
+    <Style TargetType="Label" x:Key="keyLabel">
+        <Setter Property="Foreground" Value="{StaticResource linkColor}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="10,2,2,2" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style TargetType="Label" x:Key="valLabel" BasedOn="{StaticResource keyLabel}">
+        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+    </Style>
+
     <ControlTemplate x:Key="comboBoxTextBox" TargetType="{x:Type TextBox}">
         <Border x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}" />
     </ControlTemplate>
