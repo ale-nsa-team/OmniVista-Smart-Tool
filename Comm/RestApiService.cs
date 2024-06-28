@@ -59,6 +59,9 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
 
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_HEALTH));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_TEMPERATURE));
+
                 //SetPoePriority("1/1/26", PriorityLevelType.High);
                 //SetPoePriority("1/1/26", PriorityLevelType.Critical);
                 //SetPoePriority("1/1/26", PriorityLevelType.Low);
@@ -215,9 +218,23 @@ namespace PoEWizard.Comm
             {
                 response[RESULT] = result[OUTPUT];
             }
+            LogSendRequest(entry, response);
             return response;
         }
 
+        private void LogSendRequest(RestUrlEntry entry, Dictionary<string, string> response)
+        {
+            StringBuilder txt = new StringBuilder("Sent API Request").Append(Utils.PrintMethodClass(2)).Append(" with ").Append(entry.ToString());
+            if (entry.Response.ContainsKey(REST_URL))
+            {
+                txt.Append("\nRequest API URL: ").Append(response[REST_URL]);
+            }
+            if (entry.Response.ContainsKey(RESULT))
+            {
+                txt.Append("\nSwitch Response:\n").Append(new string('=', 132)).Append("\n").Append(response[RESULT]).Append("\n").Append(new string('=', 132));
+            }
+            Logger.Info(txt.ToString());
+        }
     }
 
 }

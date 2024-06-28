@@ -7,6 +7,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
+using System.Xml.Linq;
+using System.Xml;
+using System.Diagnostics;
 
 namespace PoEWizard.Data
 {
@@ -346,6 +349,37 @@ namespace PoEWizard.Data
             }
         }
 
+        public static string PrintMethodClass(int skipFrames = 1)
+        {
+            var method = new StackFrame(skipFrames).GetMethod();
+            string fname = method.DeclaringType.FullName;
+            if (fname.Contains("<"))
+            {
+                string[] parts = fname.Split(new char[] { '.', '<', '>' });
+                if (parts.Length > 2) return $"{parts[1].Replace("+", "")}: {parts[2]}";
+            }
+            return $" by Method {method.Name} of {method.DeclaringType.Name}";
+        }
+
+        public static string PrettyXml(string xml)
+        {
+            try
+            {
+                var stringBuilder = new StringBuilder();
+                var element = XElement.Parse(xml);
+                var settings = new XmlWriterSettings();
+                settings.OmitXmlDeclaration = true;
+                settings.Indent = true;
+                settings.NewLineOnAttributes = true;
+                using (var xmlWriter = XmlWriter.Create(stringBuilder, settings))
+                {
+                    element.Save(xmlWriter);
+                }
+                return stringBuilder.ToString();
+            }
+            catch { }
+            return xml;
+        }
     }
 }
 

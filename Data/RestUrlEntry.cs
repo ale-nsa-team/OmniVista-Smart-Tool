@@ -30,7 +30,7 @@ namespace PoEWizard.Data
         {
             try
             {
-                StringBuilder txt = new StringBuilder();
+                StringBuilder txt = new StringBuilder("Command ");
                 txt.Append(Utils.PrintEnum(this.RestUrl));
                 txt.Append(", MaxWait: ").Append(this.MaxWait).Append(" sec, Duration: ").Append(this.Duration);
                 return txt.ToString();

@@ -1,7 +1,5 @@
 ﻿using PoEWizard.Exceptions;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 
 namespace PoEWizard.Data
 {
@@ -62,46 +60,43 @@ namespace PoEWizard.Data
         public static Dictionary<RestUrlId, string> REST_URL_TABLE = new Dictionary<RestUrlId, string>
         {
             // 0 - 19: Basic commands to gather switch data
-            [RestUrlId.SHOW_SYSTEM] = "cli/aos?cmd=show system",                                            //  0
-            [RestUrlId.SHOW_MICROCODE] = "cli/aos?cmd=show microcode",                                      //  1
-            [RestUrlId.SHOW_RUNNING_DIR] = "cli/aos?cmd=show running-directory",                            //  2
-            [RestUrlId.SHOW_CHASSIS] = "cli/aos?cmd=show chassis",                                          //  3
-            [RestUrlId.SHOW_PORTS_LIST] = "cli/aos?cmd=show interfaces status",                             //  4
-            [RestUrlId.SHOW_POWER_SUPPLY] = $"cli/aos?cmd=show powersupply {DATA_0}",                       //  5
-            [RestUrlId.SHOW_LAN_POWER] = $"cli/aos?cmd=show lanpower slot {DATA_0}",                        //  6
-            [RestUrlId.SHOW_LAN_POWER_STATUS] = $"cli/aos?cmd=show lanpower slot {DATA_0} status",          //  7
-            [RestUrlId.SHOW_SLOT] = $"cli/aos?cmd=show slot {DATA_0}",                                      //  8
-            [RestUrlId.SHOW_MAC_LEARNING] = $"cli/aos?cmd=show mac-learning",                               //  9
-            [RestUrlId.SHOW_TEMPERATURE] = $"cli/aos?cmd=show temperature",                                 // 10
-            [RestUrlId.SHOW_HEALTH] = $"cli/aos?cmd=show health",                                           // 11
+            [RestUrlId.SHOW_SYSTEM] = "show system",                                            //  0
+            [RestUrlId.SHOW_MICROCODE] = "show microcode",                                      //  1
+            [RestUrlId.SHOW_RUNNING_DIR] = "show running-directory",                            //  2
+            [RestUrlId.SHOW_CHASSIS] = "show chassis",                                          //  3
+            [RestUrlId.SHOW_PORTS_LIST] = "show interfaces status",                             //  4
+            [RestUrlId.SHOW_POWER_SUPPLY] = $"show powersupply {DATA_0}",                       //  5
+            [RestUrlId.SHOW_LAN_POWER] = $"show lanpower slot {DATA_0}",                        //  6
+            [RestUrlId.SHOW_LAN_POWER_STATUS] = $"show lanpower slot {DATA_0} status",          //  7
+            [RestUrlId.SHOW_SLOT] = $"show slot {DATA_0}",                                      //  8
+            [RestUrlId.SHOW_MAC_LEARNING] = $"show mac-learning",                               //  9
+            [RestUrlId.SHOW_TEMPERATURE] = $"show temperature",                                 // 10
+            [RestUrlId.SHOW_HEALTH] = $"show health",                                           // 11
             // 20 - 39: Commands related to actions on power
-            [RestUrlId.POWER_DOWN_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} admin-state disable",        // 20
-            [RestUrlId.POWER_UP_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} admin-state enable",           // 21
-            [RestUrlId.POWER_PRIORITY_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} priority {DATA_1}",      // 22
-            [RestUrlId.POWER_4PAIR_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} 4pair enable",              // 23
-            [RestUrlId.POWER_2PAIR_PORT] = $"cli/aos?cmd=lanpower port {DATA_0} 4pair disable",             // 24
-            [RestUrlId.POWER_DOWN_SLOT] = $"cli/aos?cmd=lanpower slot {DATA_0} service stop",               // 25
-            [RestUrlId.POWER_UP_SLOT] = $"cli/aos?cmd=lanpower slot {DATA_0} service start",                // 26
-            [RestUrlId.POWER_823BT_ENABLE] = $"cli/aos?cmd=lanpower slot {DATA_0} 8023bt enable",           // 27
-            [RestUrlId.POWER_823BT_DISABLE] = $"cli/aos?cmd=lanpower slot {DATA_0} 8023bt disable",         // 28
-            [RestUrlId.POWER_HDMI_ENABLE] = $"cli/aos?cmd=lanpower port {DATA_0} power-over-hdmi enable",   // 29
-            [RestUrlId.POWER_HDMI_DISABLE] = $"cli/aos?cmd=lanpower port {DATA_0} power-over-hdmi disable", // 30
-            [RestUrlId.LLDP_POWER_MDI_ENABLE] = $"cli/aos?cmd=lldp nearest-bridge port {DATA_0} tlv dot3 power-via-mdi enable",          // 31
-            [RestUrlId.LLDP_POWER_MDI_DISABLE] = $"cli/aos?cmd=lldp nearest-bridge port {DATA_0} tlv dot3 power-via-mdi disable",        // 32
-            [RestUrlId.LLDP_EXT_POWER_MDI_ENABLE] = $"cli/aos?cmd=lldp nearest-bridge port {DATA_0} tlv med ext-power-via-mdi enable",   // 33
-            [RestUrlId.LLDP_EXT_POWER_MDI_DISABLE] = $"cli/aos?cmd=lldp nearest-bridge port {DATA_0} tlv med ext-power-via-mdi disable", // 34
-            [RestUrlId.POE_FAST_ENABLE] = $"cli/aos?cmd=lanpower slot {DATA_0} fpoe enable",                // 35
-            [RestUrlId.POE_PERPETUAL_ENABLE] = $"cli/aos?cmd=lanpower slot {DATA_0} ppoe enable",           // 36
+            [RestUrlId.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",        // 20
+            [RestUrlId.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",           // 21
+            [RestUrlId.POWER_PRIORITY_PORT] = $"lanpower port {DATA_0} priority {DATA_1}",      // 22
+            [RestUrlId.POWER_4PAIR_PORT] = $"lanpower port {DATA_0} 4pair enable",              // 23
+            [RestUrlId.POWER_2PAIR_PORT] = $"lanpower port {DATA_0} 4pair disable",             // 24
+            [RestUrlId.POWER_DOWN_SLOT] = $"lanpower slot {DATA_0} service stop",               // 25
+            [RestUrlId.POWER_UP_SLOT] = $"lanpower slot {DATA_0} service start",                // 26
+            [RestUrlId.POWER_823BT_ENABLE] = $"lanpower slot {DATA_0} 8023bt enable",           // 27
+            [RestUrlId.POWER_823BT_DISABLE] = $"lanpower slot {DATA_0} 8023bt disable",         // 28
+            [RestUrlId.POWER_HDMI_ENABLE] = $"lanpower port {DATA_0} power-over-hdmi enable",   // 29
+            [RestUrlId.POWER_HDMI_DISABLE] = $"lanpower port {DATA_0} power-over-hdmi disable", // 30
+            [RestUrlId.LLDP_POWER_MDI_ENABLE] = $"lldp nearest-bridge port {DATA_0} tlv dot3 power-via-mdi enable",          // 31
+            [RestUrlId.LLDP_POWER_MDI_DISABLE] = $"lldp nearest-bridge port {DATA_0} tlv dot3 power-via-mdi disable",        // 32
+            [RestUrlId.LLDP_EXT_POWER_MDI_ENABLE] = $"lldp nearest-bridge port {DATA_0} tlv med ext-power-via-mdi enable",   // 33
+            [RestUrlId.LLDP_EXT_POWER_MDI_DISABLE] = $"lldp nearest-bridge port {DATA_0} tlv med ext-power-via-mdi disable", // 34
+            [RestUrlId.POE_FAST_ENABLE] = $"lanpower slot {DATA_0} fpoe enable",                // 35
+            [RestUrlId.POE_PERPETUAL_ENABLE] = $"lanpower slot {DATA_0} ppoe enable",           // 36
             // 40 - 59: Special switch commands
-            [RestUrlId.WRITE_MEMORY] = "cli/aos?cmd=write memory flash-synchro"                             // 40
+            [RestUrlId.WRITE_MEMORY] = "write memory flash-synchro"                             // 40
         };
 
         public static string ParseUrl(RestUrlEntry entry)
         {
-            string url = GetUrlFromTable(entry.RestUrl, entry.Data).Trim();
-            string[] urlSplit = url.Split('=');
-            if (urlSplit.Length < 2) throw new SwitchCommandError($"Invalid command table\n{url}");
-            url = $"{urlSplit[0]}={urlSplit[1].Replace(" ", "%20").Replace("/", "%2F")}";
+            string url = $"cli/aos?cmd={GetUrlFromTable(entry.RestUrl, entry.Data).Trim().Replace(" ", "%20").Replace("/", "%2F")}";
             return url;
         }
 
