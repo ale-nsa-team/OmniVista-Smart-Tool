@@ -39,7 +39,7 @@ namespace PoEWizard.Comm
                 Logger.Debug($"Connecting Rest API");
                 _progress.Report(new ProgressReport("Connecting to switch..."));
                 RestApiClient.Login();
-                if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to Switch {SwitchModel.IpAddr}!");
+                if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to Switch {SwitchModel.IpAddress}!");
                 SwitchModel.IsConnected = true;
                 _progress.Report(new ProgressReport("Reading System information..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));

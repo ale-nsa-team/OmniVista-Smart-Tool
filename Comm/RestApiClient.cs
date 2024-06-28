@@ -40,12 +40,12 @@ namespace PoEWizard.Comm
 
         public RestApiClient(SwitchModel device)
         {
-            this._ip_address = device.IpAddr;
+            this._ip_address = device.IpAddress;
             this._login = device.Login;
             this._password = device.Password;
             this._cnx_timeout = device.CnxTimeout;
             this._httpClient = new HttpClient();
-            if (!string.IsNullOrEmpty(device.IpAddr))
+            if (!string.IsNullOrEmpty(device.IpAddress))
             {
                 this._httpClient.BaseAddress = new Uri($"https://{this._ip_address}");
                 this._httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.alcatellucentaos+xml");
