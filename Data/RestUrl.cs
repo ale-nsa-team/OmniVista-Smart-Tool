@@ -69,7 +69,7 @@ namespace PoEWizard.Data
             [RestUrlId.SHOW_LAN_POWER] = $"show lanpower slot {DATA_0}",                        //  6
             [RestUrlId.SHOW_LAN_POWER_STATUS] = $"show lanpower slot {DATA_0} status",          //  7
             [RestUrlId.SHOW_SLOT] = $"show slot {DATA_0}",                                      //  8
-            [RestUrlId.SHOW_MAC_LEARNING] = $"show mac-learning",                               //  9
+            [RestUrlId.SHOW_MAC_LEARNING] = $"show mac-learning domain vlan",                   //  9
             [RestUrlId.SHOW_TEMPERATURE] = $"show temperature",                                 // 10
             [RestUrlId.SHOW_HEALTH] = $"show health all cpu",                                   // 11
             // 20 - 39: Commands related to actions on power
