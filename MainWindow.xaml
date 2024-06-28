@@ -84,7 +84,7 @@
                 <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}">Contact:</Label>
                 <Label Grid.Row="5" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_contact" Content="{Binding Contact}" />
                 <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}">MAC:</Label>
-                <Label Grid.Row="6" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_mac" Content="{Binding MacAddr}"/>
+                <Label Grid.Row="6" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_mac" Content="{Binding MacAddress}"/>
                 <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}">Running Directory:</Label>
                 <Label Grid.Row="7" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_runningDir" Content="{Binding RunningDir}"/>
             </Grid>

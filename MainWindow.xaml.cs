@@ -99,7 +99,7 @@ namespace PoEWizard
             Login login = new Login(device.Login)
             {
                 Password = device.Password,
-                IpAddress = device.IpAddr,
+                IpAddress = device.IpAddress,
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
@@ -107,7 +107,7 @@ namespace PoEWizard
             {
                 device.Login = login.User;
                 device.Password = login.Password;
-                device.IpAddr = login.IpAddress;
+                device.IpAddress = login.IpAddress;
                 Connect();
             }
         }
@@ -119,7 +119,7 @@ namespace PoEWizard
 
         private void ConnectBtn_Click(object sender, MouseEventArgs e)
         {
-            if (!string.IsNullOrEmpty(device?.IpAddr)) Connect();
+            if (!string.IsNullOrEmpty(device?.IpAddress)) Connect();
         }
 
         private void ViewActivity_Click(object sender, RoutedEventArgs e)
@@ -301,9 +301,9 @@ namespace PoEWizard
         private void SetDisconnectedState()
         {
             _comImg.Source = (ImageSource)currentDict["disconnected"];
-            string oldIp = device.IpAddr;
+            string oldIp = device.IpAddress;
             device = new SwitchModel();
-            device.IpAddr = oldIp;
+            device.IpAddress = oldIp;
             _switchAttributes.Text = "";
             _btnRunWiz.IsEnabled = false;
             DataContext = null;

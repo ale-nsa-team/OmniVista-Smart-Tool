@@ -10,8 +10,8 @@ namespace PoEWizard.Device
     {
         public string Name { get; set; }
 
-        public string IpAddr { get; set; }
-        public string MacAddr { get; set; }
+        public string IpAddress { get; set; }
+        public string MacAddress { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
         public SwitchStatus Status { get; set; }
@@ -38,7 +38,7 @@ namespace PoEWizard.Device
 
         public SwitchModel(string ipAddr, string username, string password, int cnxTimeout)
         {
-            IpAddr = ipAddr;
+            IpAddress = ipAddr;
             Login = username;
             Password = password;
             CnxTimeout = cnxTimeout;
@@ -59,7 +59,7 @@ namespace PoEWizard.Device
                 case DictionaryType.Chassis:
                     Model = dict["Model Name"];
                     SerialNumber = dict["Serial Number"];
-                    MacAddr = dict["MAC Address"];
+                    MacAddress = dict["MAC Address"];
                     break;
                 case DictionaryType.RunningDir:
                     RunningDir = dict["Running configuration"];
@@ -75,12 +75,21 @@ namespace PoEWizard.Device
         {
             switch (dt)
             {
-                case DictionaryType.LanPower:
+                case DictionaryType.Chassis:
                     ChassisList = new List<ChassisInfo>();
-                    foreach(Dictionary<string, string> dict in list)
+                    foreach (Dictionary<string, string> dict in list)
                     {
-                        ChassisList.Add(new ChassisInfo(dict));
+                        ChassisInfo ci = new ChassisInfo(dict);
+                        ChassisList.Add(ci);
+                        if (ci.IsMaster)
+                        {
+                            this.Model = ci.Model;
+                            this.MacAddress = ci.MacAddress;
+                            this.SerialNumber = ci.SerialNumber;
+                        }
                     }
+                    break;
+                case DictionaryType.LanPower:
                     break;
             }
         }

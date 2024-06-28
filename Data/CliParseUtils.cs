@@ -10,9 +10,10 @@ namespace PoEWizard.Data
 {
     public static class CliParseUtils
     {
-        private static readonly Regex vtableRegex = new Regex("([^:]+):(.+)", RegexOptions.Compiled);
+        private static readonly Regex vtableRegex = new Regex("([^:]+):(.+)");
         private static readonly Regex etableRegex = new Regex("([^:]+)=(.+)");
         private static readonly Regex htableRegex = new Regex(@"(-+\++)+");
+        private static readonly Regex chassisRegex = new Regex(@"([Local|Remote] Chassis ID )(\d+) \((.+)\)");
 
         public static Dictionary<string, string> ParseXmlToDictionary(string xml, string xpath)
         {
@@ -76,6 +77,41 @@ namespace PoEWizard.Data
                 }
             }
 
+            return table;
+        }
+
+        public static List<Dictionary<string, string>> ParseChassisTable(string data)
+        {
+            List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();
+            using (StringReader reader = new StringReader(data))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.Trim().Length == 0) continue;
+                    Match match = chassisRegex.Match(line);
+                    if (match.Success)
+                    {
+                        Dictionary<string, string> dict = new Dictionary<string, string>();
+                        dict["ID"] = match.Groups[2].Value;
+                        dict["Role"] = match.Groups[3].Value;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            if ((match = vtableRegex.Match(line)) != null && match.Success) {
+                                string key = match.Groups[1].Value.Trim();
+                                string value = match.Groups[2].Value.Trim();
+                                value = value.EndsWith(",") ? value.Substring(0, value.Length - 1) : value;
+                                dict[key] = value;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        table.Add((dict));
+                    }
+                }
+            }
             return table;
         }
 

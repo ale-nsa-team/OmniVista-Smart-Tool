@@ -51,8 +51,8 @@ namespace PoEWizard.Comm
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.RunningDir);
                 _progress.Report(new ProgressReport("Reading chassis and port information..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
-                dict = CliParseUtils.ParseVTable(_response["RESULT"]);
-                SwitchModel.LoadFromDictionary(dict, DictionaryType.Chassis);
+                diclist = CliParseUtils.ParseChassisTable(_response["RESULT"]);
+                SwitchModel.LoadFromList(diclist, DictionaryType.Chassis);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[1] { "1/1" }));
                 diclist = CliParseUtils.ParseHTable(_response["RESULT"], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.LanPower);

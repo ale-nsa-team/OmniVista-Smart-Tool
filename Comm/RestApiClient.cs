@@ -40,9 +40,9 @@ namespace PoEWizard.Comm
         {
             this.SwitchInfo = switchInfo;
             this._httpClient = new HttpClient();
-            if (!string.IsNullOrEmpty(switchInfo.IpAddr))
+            if (!string.IsNullOrEmpty(switchInfo.IpAddress))
             {
-                this._httpClient.BaseAddress = new Uri($"https://{this.SwitchInfo.IpAddr}");
+                this._httpClient.BaseAddress = new Uri($"https://{this.SwitchInfo.IpAddress}");
                 this._httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.alcatellucentaos+xml");
                 this._httpClient.Timeout = TimeSpan.FromSeconds(this.SwitchInfo.CnxTimeout);
             }
@@ -128,7 +128,7 @@ namespace PoEWizard.Comm
                         error = ex.InnerException.InnerException.Message;
                         if (error.ToLower().Contains("unable to connect"))
                         {
-                            error = $"Failed to establish a connection to {this.SwitchInfo.IpAddr}!";
+                            error = $"Failed to establish a connection to {this.SwitchInfo.IpAddress}!";
                             throw new SwitchConnectionFailure(error);
                         }
                     }
@@ -147,7 +147,7 @@ namespace PoEWizard.Comm
             }
             catch
             {
-                throw new SwitchConnectionFailure(this.SwitchInfo.IpAddr + " doesn't support Rest Api!");
+                throw new SwitchConnectionFailure(this.SwitchInfo.IpAddress + " doesn't support Rest Api!");
             }
         }
 
@@ -278,7 +278,7 @@ namespace PoEWizard.Comm
         public override string ToString()
         {
             StringBuilder txt = new StringBuilder("RestApiClient for ");
-            txt.Append("Switch: \"").Append(this.SwitchInfo.Name).Append("\", IP Address: ").Append(this.SwitchInfo.IpAddr).Append(", BaseUrl: ").Append(this._httpClient.BaseAddress);
+            txt.Append("Switch: \"").Append(this.SwitchInfo.Name).Append("\", IP Address: ").Append(this.SwitchInfo.IpAddress).Append(", BaseUrl: ").Append(this._httpClient.BaseAddress);
             return txt.ToString();
         }
 

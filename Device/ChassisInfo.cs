@@ -21,10 +21,17 @@ namespace PoEWizard.Device
         public string HardwareRevision { get; set; }
         public string MacAddress { get; set; }
 
-        public ChassisInfo(Dictionary<string, string> properties)
+        public ChassisInfo(Dictionary<string, string> dict)
         {
-            Number = ParseNumber(properties["Chas/ Slot/Port"]);
-
+            Number = int.TryParse(dict["ID"], out int n) ? n : 1;
+            Model = dict["Model Name"];
+            Type = dict["Module Type"];
+            IsMaster = dict["Role"] == "Master";
+            AdminStatus = dict["Admin Status"];
+            SerialNumber = dict["Serial Number"];
+            PartNumber = dict["Part Number"];
+            HardwareRevision = dict["Hardware Revision"];
+            MacAddress = dict["MAC Address"];
         }
 
         public ChassisInfo(string sn, string mac, string model)
