@@ -59,6 +59,7 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
 
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_HEALTH));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_TEMPERATURE));
 
