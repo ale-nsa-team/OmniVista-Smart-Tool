@@ -1,9 +1,9 @@
 ﻿<Application x:Class="PoEWizard.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:PoEWizard.Device"
+             xmlns:device="clr-namespace:PoEWizard.Device"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <local:SwitchModel x:Key="SwitchModel" />
+        <device:SwitchModel x:Key="SwitchModel" />
     </Application.Resources>
 </Application>

@@ -33,12 +33,22 @@
             </MenuItem>
             <MenuItem Header="View">
                 <MenuItem Header="Activity" Click="ViewActivity_Click"/>
-                <MenuItem Header="Log" Click="ViewLog_Click"/>
+                <MenuItem Header="Log">
+                    <MenuItem Header="Display Log" Click="ViewLog_Click" />
+                    <MenuItem Header="Log Level" x:Name="_logLevels">
+                        <MenuItem Header="Error" Click="LogLevelItem_Click" />
+                        <MenuItem Header="Warn" Click="LogLevelItem_Click" />
+                        <MenuItem Header="Activity" Click="LogLevelItem_Click" />
+                        <MenuItem Header="Info" Click="LogLevelItem_Click" IsChecked="True"/>
+                        <MenuItem Header="Debug" Click="LogLevelItem_Click" />
+                        <MenuItem Header="Trace" Click="LogLevelItem_Click" />
+                    </MenuItem>
+                </MenuItem>
                 <MenuItem Header="Snapshot" x:Name="_snapshotMenuItem" Click="ViewSnapshot_Click"/>
                 <Separator/>
                 <MenuItem Header="Theme">
                     <MenuItem Header="Dark" x:Name="_darkMenuItem" IsChecked="True" Click="ThemeItem_Click"/>
-                    <MenuItem Header="Light" x:Name="_lightMenuItem"  Click="ThemeItem_Click"/>
+                    <MenuItem Header="Light" x:Name="_lightMenuItem" Click="ThemeItem_Click"/>
                 </MenuItem>
                 <MenuItem Header="Help" Click="Help_Click"/>
                 <MenuItem Header="About" Click="About_Click"/>

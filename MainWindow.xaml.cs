@@ -142,6 +142,20 @@ namespace PoEWizard
 
         }
 
+        private void LogLevelItem_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem mi = sender as MenuItem;
+            string level = mi.Header.ToString();
+            if (mi.IsChecked) return;
+            foreach (MenuItem item in _logLevels.Items)
+            {
+                item.IsChecked = false;
+            }
+            mi.IsChecked = true;
+            LogLevel lvl = (LogLevel)Enum.Parse(typeof(LogLevel), level);
+            Logger.LogLevel = lvl;
+        }
+
         private void ThemeItem_Click(object sender, RoutedEventArgs e)
         {
             MenuItem mi = sender as MenuItem;

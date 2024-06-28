@@ -16,7 +16,6 @@ namespace PoEWizard.Data
     public static class Logger
     {
         #region variables
-        private static LogLevel logLevel;
         private static int logSize;
         private static int logCount;
         private static EventLog eventLog;
@@ -24,6 +23,7 @@ namespace PoEWizard.Data
         private static bool eventLogOk;
 
         public static string LogPath { get; private set; }
+        public static LogLevel LogLevel { get; set; }
         #endregion
 
         #region constructor
@@ -31,7 +31,7 @@ namespace PoEWizard.Data
         {
             try
             {
-                logLevel = LogLevel.Info;
+                LogLevel = LogLevel.Info;
                 string filename = "PoEWizard.log";
                 LogPath = Path.Combine(MainWindow.dataPath, "Log", filename);
                 if (!Directory.Exists(Path.GetDirectoryName(LogPath)))
@@ -125,7 +125,7 @@ namespace PoEWizard.Data
                 {
                     eventLog.WriteEntry(message, EventLogEntryType.Error);
                 }
-                if (level <= logLevel)
+                if (level <= LogLevel)
                 {
                     string strDate = DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt");
                     string caller = GetMethodClass();
