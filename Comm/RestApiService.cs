@@ -163,37 +163,6 @@ namespace PoEWizard.Comm
             Logger.Debug($"Closing Rest API");
         }
 
-        public void Write(string text)
-        {
-            try
-            {
-                Logger.Debug($"Writing: {text.Replace("\n", "\\n")}");
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
-                Callback.OnError(ex.Message);
-            }
-        }
-        public void Write(byte[] bytes)
-        {
-            try
-            {
-                Logger.Debug($"Writing: {Encoding.Default.GetString(bytes).Replace("\n", "\\n")}");
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
-                Callback.OnError(ex.Message);
-            }
-        }
-
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-            return sb.ToString();
-        }
-
         private RestUrlEntry GetRestUrlEntry(RestUrlId url)
         {
             return GetRestUrlEntry(url, new string[1] { null });
@@ -201,7 +170,7 @@ namespace PoEWizard.Comm
 
         private RestUrlEntry GetRestUrlEntry(RestUrlId url, string[] data)
         {
-            RestUrlEntry entry = new RestUrlEntry(url, 60, data) { Method = HttpMethod.Get };
+            RestUrlEntry entry = new RestUrlEntry(url, data) { Method = HttpMethod.Get };
             return entry;
         }
 
@@ -224,11 +193,9 @@ namespace PoEWizard.Comm
 
         private void LogSendRequest(RestUrlEntry entry, Dictionary<string, string> response)
         {
-            StringBuilder txt = new StringBuilder("Sent API Request").Append(Utils.PrintMethodClass(2)).Append(" with ").Append(entry.ToString());
-            if (entry.Response.ContainsKey(REST_URL))
-            {
-                txt.Append("\nRequest API URL: ").Append(response[REST_URL]);
-            }
+            StringBuilder txt = new StringBuilder("API Request sent").Append(Utils.PrintMethodClass(3)).Append(" with ").Append(entry.ToString());
+            Logger.Info(txt.ToString());
+            txt = new StringBuilder("Request API URL: ").Append(response[REST_URL]);
             if (entry.Response.ContainsKey(RESULT))
             {
                 txt.Append("\nSwitch Response:\n").Append(new string('=', 132)).Append("\n").Append(response[RESULT]).Append("\n").Append(new string('=', 132));
