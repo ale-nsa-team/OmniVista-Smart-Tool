@@ -200,7 +200,7 @@ namespace PoEWizard.Comm
             {
                 txt.Append("\nSwitch Response:\n").Append(new string('=', 132)).Append("\n").Append(response[RESULT]).Append("\n").Append(new string('=', 132));
             }
-            Logger.Info(txt.ToString());
+            Logger.Debug(txt.ToString());
         }
     }
 
