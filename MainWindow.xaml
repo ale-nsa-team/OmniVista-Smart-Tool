@@ -27,7 +27,8 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" x:Name="_mainMenu" Style="{DynamicResource _mainMenu}">
             <MenuItem Header="Connection">
-                <MenuItem Header="Switch..." x:Name="_switchMenuItem" Click="SwitchMenuItem_Click"/>
+                <MenuItem Header="Switch..." x:Name="_switchMenuItem" Click="SwitchMenuItem_Click" />
+                <MenuItem Header="Disconnect" x:Name="_disconnectMenuItem" Click="DisconnectMenuItem_Click" Visibility="Collapsed"/>
                 <Separator/>
                 <MenuItem Header="Exit" Click="Exit_Click"/>
             </MenuItem>
@@ -44,7 +45,7 @@
                         <MenuItem Header="Trace" Click="LogLevelItem_Click" />
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="Snapshot" x:Name="_snapshotMenuItem" Click="ViewSnapshot_Click"/>
+                <MenuItem Header="Snapshot" x:Name="_snapshotMenuItem" IsEnabled="False" Click="ViewSnapshot_Click"/>
                 <Separator/>
                 <MenuItem Header="Theme">
                     <MenuItem Header="Dark" x:Name="_darkMenuItem" IsChecked="True" Click="ThemeItem_Click"/>

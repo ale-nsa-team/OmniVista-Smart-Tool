@@ -120,6 +120,9 @@
     <Compile Include="Components\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\TextViewer.xaml.cs">
+      <DependentUpon>TextViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Data\Activity.cs" />
     <Compile Include="Data\CliParseUtils.cs" />
     <Compile Include="Data\ConfigKeyObject.cs" />
@@ -178,6 +181,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Login.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\TextViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

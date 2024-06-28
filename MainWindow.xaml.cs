@@ -112,6 +112,11 @@ namespace PoEWizard
             }
         }
 
+        private void DisconnectMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Connect();
+        }
+
         private void ConnectBtn_Click(object sender, MouseEventArgs e)
         {
             Connect();
@@ -124,7 +129,12 @@ namespace PoEWizard
 
         private void ViewLog_Click(object sender, RoutedEventArgs e)
         {
-
+            TextViewer tv = new TextViewer("Application Log", canClear: true)
+            {
+                Owner = this,
+                Filename = Logger.LogPath,
+            };
+            tv.Show();
         }
 
         private void ViewSnapshot_Click(object sender, RoutedEventArgs e)
@@ -222,7 +232,7 @@ namespace PoEWizard
 
                 if (device.IsConnected)
                 {
-                    Logger.Info($"Connected to switch S/N {device.SerialNumber}, model {device.Model}");
+                    Logger.Info($"Connected to switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                     SetConnectedState();
                 }
                 else
@@ -258,7 +268,8 @@ namespace PoEWizard
             _infoBox.Visibility = Visibility.Visible;
         }
 
-        private void ShowProgress(string message) {
+        private void ShowProgress(string message)
+        {
             _progressBar.Visibility = Visibility.Visible;
             _status.Text = message;
 
@@ -282,9 +293,12 @@ namespace PoEWizard
             _switchAttributes.Text = $"Connected to: {device.Name}";
             _btnRunWiz.IsEnabled = true;
             _btnConnect.Cursor = Cursors.Hand;
+            _switchMenuItem.IsEnabled = false;
+            _snapshotMenuItem.IsEnabled = true;
+            _disconnectMenuItem.Visibility = Visibility.Visible;
         }
 
-        private void SetDisconnectedState() 
+        private void SetDisconnectedState()
         {
             _comImg.Source = (ImageSource)currentDict["disconnected"];
             string oldIp = device.IpAddr;
@@ -294,6 +308,9 @@ namespace PoEWizard
             _btnRunWiz.IsEnabled = false;
             DataContext = null;
             restApiService = null;
+            _switchMenuItem.IsEnabled = true;
+            _snapshotMenuItem.IsEnabled = false;
+            _disconnectMenuItem.Visibility = Visibility.Collapsed;
         }
 
         #endregion private methods
