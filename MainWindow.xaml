@@ -27,7 +27,8 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" x:Name="_mainMenu" Style="{DynamicResource _mainMenu}">
             <MenuItem Header="Connection">
-                <MenuItem Header="Switch..." x:Name="_switchMenuItem" Click="SwitchMenuItem_Click"/>
+                <MenuItem Header="Switch..." x:Name="_switchMenuItem" Click="SwitchMenuItem_Click" />
+                <MenuItem Header="Disconnect" x:Name="_disconnectMenuItem" Click="DisconnectMenuItem_Click" Visibility="Collapsed"/>
                 <Separator/>
                 <MenuItem Header="Exit" Click="Exit_Click"/>
             </MenuItem>

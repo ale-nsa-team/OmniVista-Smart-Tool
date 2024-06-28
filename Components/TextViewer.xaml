@@ -1,0 +1,32 @@
+﻿<Window x:Class="PoEWizard.Components.TextViewer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PoEWizard.Components"
+        mc:Ignorable="d"
+        Loaded="OnWindow_Loaded"
+        Title="TextViewer" ShowInTaskbar="False" WindowStyle="SingleBorderWindow">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
+                <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Style="{DynamicResource popupWindow}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <RichTextBox Grid.Row="0" x:Name="_content" Style="{DynamicResource fileBox}" />
+        <Border Grid.Row="1" Background="Transparent">
+            <StackPanel Grid.Row="1" Style="{DynamicResource buttonBar}">
+                <Button x:Name="_btnClear" Click="ClearLog_Click">Clear Log</Button>
+                <Button x:Name="_btnSave" Click="Save_Click">Save</Button>
+                <Button x:Name="_btnClose" Click="Close_Click">Close</Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
