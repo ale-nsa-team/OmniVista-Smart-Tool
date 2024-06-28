@@ -51,7 +51,6 @@ namespace PoEWizard.Comm
                 this._httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.alcatellucentaos+xml");
                 this._httpClient.Timeout = TimeSpan.FromSeconds(this._cnx_timeout);
             }
-
             System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
         #endregion Constructors
@@ -59,6 +58,11 @@ namespace PoEWizard.Comm
         #region Open Rest Api Client Method
 
         public void Login()
+        {
+            ConnectToSwitch();
+        }
+
+        private void ConnectToSwitch()
         {
             DateTime startTime = DateTime.Now;
             try
@@ -167,6 +171,11 @@ namespace PoEWizard.Comm
         #region Send Api Resquest
 
         public Dictionary<string, string> SendRequest(RestUrlEntry entry)
+        {
+            return SendRequestToSwitch(entry);
+        }
+
+        private Dictionary<string, string> SendRequestToSwitch(RestUrlEntry entry)
         {
             string url = RestUrl.ParseUrl(entry);
             if (string.IsNullOrEmpty(url)) throw new SwitchCommandError("Command line is missing!");
