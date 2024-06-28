@@ -9,7 +9,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Xml;
 
 namespace PoEWizard.Comm
@@ -25,7 +24,10 @@ namespace PoEWizard.Comm
         #region Internal Variables
 
         private readonly HttpClient _httpClient;
-        public SwitchModel SwitchInfo { get; set; }
+        private readonly string _ip_address;
+        private readonly string _login;
+        private readonly string _password;
+        private readonly double _cnx_timeout;
         private bool _connected = false;
 
         #endregion Internal Variables
@@ -38,13 +40,16 @@ namespace PoEWizard.Comm
 
         public RestApiClient(SwitchModel switchInfo)
         {
-            this.SwitchInfo = switchInfo;
+            this._ip_address = switchInfo.IpAddr;
+            this._login = switchInfo.Login;
+            this._password = switchInfo.Password;
+            this._cnx_timeout = switchInfo.CnxTimeout;
             this._httpClient = new HttpClient();
             if (!string.IsNullOrEmpty(switchInfo.IpAddr))
             {
-                this._httpClient.BaseAddress = new Uri($"https://{this.SwitchInfo.IpAddr}");
+                this._httpClient.BaseAddress = new Uri($"https://{this._ip_address}");
                 this._httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.alcatellucentaos+xml");
-                this._httpClient.Timeout = TimeSpan.FromSeconds(this.SwitchInfo.CnxTimeout);
+                this._httpClient.Timeout = TimeSpan.FromSeconds(this._cnx_timeout);
             }
 
             System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
@@ -59,12 +64,11 @@ namespace PoEWizard.Comm
             try
             {
                 string domain = "authv2";
-                string url = $"{this._httpClient.BaseAddress}?domain={domain}&username={this.SwitchInfo.Login}&password={this.SwitchInfo.Password}";
+                string url = $"{this._httpClient.BaseAddress}?domain={domain}&username={this._login}&password={this._password}";
                 var response = this._httpClient.GetAsync(url);
-                double cnxTimeout = this.SwitchInfo.CnxTimeout;
                 while (!response.IsCompleted)
                 {
-                    if (Utils.IsTimeExpired(startTime, cnxTimeout))
+                    if (Utils.IsTimeExpired(startTime, this._cnx_timeout))
                     {
                         throw new SwitchConnectionFailure($"{PrintUnreachableError(startTime)}\nTook too long to respond (>{Utils.CalcStringDuration(startTime)})");
                     }
@@ -78,7 +82,6 @@ namespace PoEWizard.Comm
                 XmlNode tokenNode;
                 if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
-                    this.SwitchInfo.IsConnected = true;
                     tokenNode = xmlDoc.SelectSingleNode("/nodes/result/data/token");
                     if (tokenNode != null && !string.IsNullOrEmpty(tokenNode.InnerText))
                     {
@@ -128,7 +131,7 @@ namespace PoEWizard.Comm
                         error = ex.InnerException.InnerException.Message;
                         if (error.ToLower().Contains("unable to connect"))
                         {
-                            error = $"Failed to establish a connection to {this.SwitchInfo.IpAddr}!";
+                            error = $"Failed to establish a connection to {this._ip_address}!";
                             throw new SwitchConnectionFailure(error);
                         }
                     }
@@ -147,7 +150,7 @@ namespace PoEWizard.Comm
             }
             catch
             {
-                throw new SwitchConnectionFailure(this.SwitchInfo.IpAddr + " doesn't support Rest Api!");
+                throw new SwitchConnectionFailure(this._ip_address + " doesn't support Rest Api!");
             }
         }
 
@@ -277,8 +280,8 @@ namespace PoEWizard.Comm
 
         public override string ToString()
         {
-            StringBuilder txt = new StringBuilder("RestApiClient for ");
-            txt.Append("Switch: \"").Append(this.SwitchInfo.Name).Append("\", IP Address: ").Append(this.SwitchInfo.IpAddr).Append(", BaseUrl: ").Append(this._httpClient.BaseAddress);
+            StringBuilder txt = new StringBuilder("RestApiClient for Switch IP Address: ");
+            txt.Append(this._ip_address).Append(", BaseUrl: ").Append(this._httpClient.BaseAddress);
             return txt.ToString();
         }
 
