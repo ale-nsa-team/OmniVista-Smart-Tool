@@ -172,17 +172,10 @@ namespace PoEWizard.Comm
 
         public Dictionary<string, string> SendRequest(RestUrlEntry entry)
         {
-            return SendRequestToSwitch(entry);
-        }
-
-        private Dictionary<string, string> SendRequestToSwitch(RestUrlEntry entry)
-        {
             string url = RestUrl.ParseUrl(entry);
             if (string.IsNullOrEmpty(url)) throw new SwitchCommandError("Command line is missing!");
-            url = $"{this._httpClient.BaseAddress}{url}";
             entry.StartTime = DateTime.Now;
-            Dictionary<string, string> response;
-            response = SendRestApiRequest(entry, url);
+            Dictionary<string, string> response = SendRestApiRequest(entry, url);
             response[RestUrl.DURATION] = Utils.CalcStringDuration(entry.StartTime);
             entry.Duration = response[RestUrl.DURATION];
             entry.Response = response;
@@ -193,13 +186,11 @@ namespace PoEWizard.Comm
         {
             Dictionary<string, string> response = new Dictionary<string, string>
             {
-                [RestUrl.REST_URL] = url,
-                [RestUrl.RESULT] = "",
-                [Constants.ERROR] = "",
-                [RestUrl.DURATION] = ""
+                [RestUrl.REST_URL] = url, [RestUrl.RESULT] = "", [Constants.ERROR] = "", [RestUrl.DURATION] = ""
             };
             try
             {
+                url = $"{this._httpClient.BaseAddress}{url}";
                 HttpRequestMessage request = GetHttpRequest(entry, url);
                 var http_response = this._httpClient.SendAsync(request);
                 while (!http_response.IsCompleted) { };
