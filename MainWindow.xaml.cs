@@ -119,7 +119,7 @@ namespace PoEWizard
 
         private void ConnectBtn_Click(object sender, MouseEventArgs e)
         {
-            Connect();
+            if (!string.IsNullOrEmpty(device?.IpAddr)) Connect();
         }
 
         private void ViewActivity_Click(object sender, RoutedEventArgs e)
