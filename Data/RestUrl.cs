@@ -64,14 +64,14 @@ namespace PoEWizard.Data
             [RestUrlId.SHOW_MICROCODE] = "show microcode",                                      //  1
             [RestUrlId.SHOW_RUNNING_DIR] = "show running-directory",                            //  2
             [RestUrlId.SHOW_CHASSIS] = "show chassis",                                          //  3
-            [RestUrlId.SHOW_PORTS_LIST] = "show interfaces status",                             //  4
+            [RestUrlId.SHOW_PORTS_LIST] = "show interfaces alias",                              //  4
             [RestUrlId.SHOW_POWER_SUPPLY] = $"show powersupply {DATA_0}",                       //  5
             [RestUrlId.SHOW_LAN_POWER] = $"show lanpower slot {DATA_0}",                        //  6
             [RestUrlId.SHOW_LAN_POWER_STATUS] = $"show lanpower slot {DATA_0} status",          //  7
             [RestUrlId.SHOW_SLOT] = $"show slot {DATA_0}",                                      //  8
             [RestUrlId.SHOW_MAC_LEARNING] = $"show mac-learning",                               //  9
             [RestUrlId.SHOW_TEMPERATURE] = $"show temperature",                                 // 10
-            [RestUrlId.SHOW_HEALTH] = $"show health",                                           // 11
+            [RestUrlId.SHOW_HEALTH] = $"show health all cpu",                                   // 11
             // 20 - 39: Commands related to actions on power
             [RestUrlId.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",        // 20
             [RestUrlId.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",           // 21
