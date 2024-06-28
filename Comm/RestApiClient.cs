@@ -38,14 +38,14 @@ namespace PoEWizard.Comm
 
         #region Constructors
 
-        public RestApiClient(SwitchModel switchInfo)
+        public RestApiClient(SwitchModel device)
         {
-            this._ip_address = switchInfo.IpAddr;
-            this._login = switchInfo.Login;
-            this._password = switchInfo.Password;
-            this._cnx_timeout = switchInfo.CnxTimeout;
+            this._ip_address = device.IpAddr;
+            this._login = device.Login;
+            this._password = device.Password;
+            this._cnx_timeout = device.CnxTimeout;
             this._httpClient = new HttpClient();
-            if (!string.IsNullOrEmpty(switchInfo.IpAddr))
+            if (!string.IsNullOrEmpty(device.IpAddr))
             {
                 this._httpClient.BaseAddress = new Uri($"https://{this._ip_address}");
                 this._httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.alcatellucentaos+xml");
