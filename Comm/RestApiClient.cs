@@ -9,7 +9,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Xml;
 
 namespace PoEWizard.Comm
@@ -25,7 +24,10 @@ namespace PoEWizard.Comm
         #region Internal Variables
 
         private readonly HttpClient _httpClient;
-        public SwitchModel SwitchInfo { get; set; }
+        private readonly string _ip_address;
+        private readonly string _login;
+        private readonly string _password;
+        private readonly double _cnx_timeout;
         private bool _connected = false;
 
         #endregion Internal Variables
@@ -36,17 +38,19 @@ namespace PoEWizard.Comm
 
         #region Constructors
 
-        public RestApiClient(SwitchModel switchInfo)
+        public RestApiClient(SwitchModel device)
         {
-            this.SwitchInfo = switchInfo;
+            this._ip_address = device.IpAddr;
+            this._login = device.Login;
+            this._password = device.Password;
+            this._cnx_timeout = device.CnxTimeout;
             this._httpClient = new HttpClient();
-            if (!string.IsNullOrEmpty(switchInfo.IpAddress))
+            if (!string.IsNullOrEmpty(device.IpAddr))
             {
-                this._httpClient.BaseAddress = new Uri($"https://{this.SwitchInfo.IpAddress}");
+                this._httpClient.BaseAddress = new Uri($"https://{this._ip_address}");
                 this._httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.alcatellucentaos+xml");
-                this._httpClient.Timeout = TimeSpan.FromSeconds(this.SwitchInfo.CnxTimeout);
+                this._httpClient.Timeout = TimeSpan.FromSeconds(this._cnx_timeout);
             }
-
             System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
         #endregion Constructors
@@ -55,16 +59,20 @@ namespace PoEWizard.Comm
 
         public void Login()
         {
+            ConnectToSwitch();
+        }
+
+        private void ConnectToSwitch()
+        {
             DateTime startTime = DateTime.Now;
             try
             {
                 string domain = "authv2";
-                string url = $"{this._httpClient.BaseAddress}?domain={domain}&username={this.SwitchInfo.Login}&password={this.SwitchInfo.Password}";
+                string url = $"{this._httpClient.BaseAddress}?domain={domain}&username={this._login}&password={this._password}";
                 var response = this._httpClient.GetAsync(url);
-                double cnxTimeout = this.SwitchInfo.CnxTimeout;
                 while (!response.IsCompleted)
                 {
-                    if (Utils.IsTimeExpired(startTime, cnxTimeout))
+                    if (Utils.IsTimeExpired(startTime, this._cnx_timeout))
                     {
                         throw new SwitchConnectionFailure($"{PrintUnreachableError(startTime)}\nTook too long to respond (>{Utils.CalcStringDuration(startTime)})");
                     }
@@ -78,24 +86,23 @@ namespace PoEWizard.Comm
                 XmlNode tokenNode;
                 if (response.Result.StatusCode == HttpStatusCode.OK)
                 {
-                    this.SwitchInfo.IsConnected = true;
                     tokenNode = xmlDoc.SelectSingleNode("/nodes/result/data/token");
                     if (tokenNode != null && !string.IsNullOrEmpty(tokenNode.InnerText))
                     {
                         RemoveToken();
                         var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", tokenNode.InnerText);
                         this._httpClient.DefaultRequestHeaders.Authorization = authenticationHeaderValue;
-                        _connected = true;
+                        this._connected = true;
                     }
                     else
                     {
-                        _connected = false;
+                        this._connected = false;
                         throw new SwitchAuthenticationFailure("Invalid response body - token not found!");
                     }
                 }
                 else
                 {
-                    _connected = false;
+                    this._connected = false;
                     tokenNode = xmlDoc.SelectSingleNode("/nodes/result/error");
                     if (tokenNode != null) throw new SwitchAuthenticationFailure(tokenNode.InnerText);
                 }
@@ -128,7 +135,7 @@ namespace PoEWizard.Comm
                         error = ex.InnerException.InnerException.Message;
                         if (error.ToLower().Contains("unable to connect"))
                         {
-                            error = $"Failed to establish a connection to {this.SwitchInfo.IpAddress}!";
+                            error = $"Failed to establish a connection to {this._ip_address}!";
                             throw new SwitchConnectionFailure(error);
                         }
                     }
@@ -147,7 +154,7 @@ namespace PoEWizard.Comm
             }
             catch
             {
-                throw new SwitchConnectionFailure(this.SwitchInfo.IpAddress + " doesn't support Rest Api!");
+                throw new SwitchConnectionFailure(this._ip_address + " doesn't support Rest Api!");
             }
         }
 
@@ -167,10 +174,8 @@ namespace PoEWizard.Comm
         {
             string url = RestUrl.ParseUrl(entry);
             if (string.IsNullOrEmpty(url)) throw new SwitchCommandError("Command line is missing!");
-            url = $"{this._httpClient.BaseAddress}{url}";
             entry.StartTime = DateTime.Now;
-            Dictionary<string, string> response;
-            response = SendRestApiRequest(entry, url);
+            Dictionary<string, string> response = SendRestApiRequest(entry, url);
             response[RestUrl.DURATION] = Utils.CalcStringDuration(entry.StartTime);
             entry.Duration = response[RestUrl.DURATION];
             entry.Response = response;
@@ -181,13 +186,11 @@ namespace PoEWizard.Comm
         {
             Dictionary<string, string> response = new Dictionary<string, string>
             {
-                [RestUrl.REST_URL] = url,
-                [RestUrl.RESULT] = "",
-                [Constants.ERROR] = "",
-                [RestUrl.DURATION] = ""
+                [RestUrl.REST_URL] = url, [RestUrl.RESULT] = "", [Constants.ERROR] = "", [RestUrl.DURATION] = ""
             };
             try
             {
+                url = $"{this._httpClient.BaseAddress}{url}";
                 HttpRequestMessage request = GetHttpRequest(entry, url);
                 var http_response = this._httpClient.SendAsync(request);
                 while (!http_response.IsCompleted) { };
@@ -271,14 +274,14 @@ namespace PoEWizard.Comm
 
         public bool IsConnected()
         {
-            if (!_connected) Login();
-            return _connected;
+            if (!this._connected) Login();
+            return this._connected;
         }
 
         public override string ToString()
         {
-            StringBuilder txt = new StringBuilder("RestApiClient for ");
-            txt.Append("Switch: \"").Append(this.SwitchInfo.Name).Append("\", IP Address: ").Append(this.SwitchInfo.IpAddress).Append(", BaseUrl: ").Append(this._httpClient.BaseAddress);
+            StringBuilder txt = new StringBuilder("RestApiClient for Switch IP Address: ");
+            txt.Append(this._ip_address).Append(", BaseUrl: ").Append(this._httpClient.BaseAddress);
             return txt.ToString();
         }
 
