@@ -92,17 +92,17 @@ namespace PoEWizard.Comm
                         RemoveToken();
                         var authenticationHeaderValue = new AuthenticationHeaderValue("Bearer", tokenNode.InnerText);
                         this._httpClient.DefaultRequestHeaders.Authorization = authenticationHeaderValue;
-                        _connected = true;
+                        this._connected = true;
                     }
                     else
                     {
-                        _connected = false;
+                        this._connected = false;
                         throw new SwitchAuthenticationFailure("Invalid response body - token not found!");
                     }
                 }
                 else
                 {
-                    _connected = false;
+                    this._connected = false;
                     tokenNode = xmlDoc.SelectSingleNode("/nodes/result/error");
                     if (tokenNode != null) throw new SwitchAuthenticationFailure(tokenNode.InnerText);
                 }
@@ -283,8 +283,8 @@ namespace PoEWizard.Comm
 
         public bool IsConnected()
         {
-            if (!_connected) Login();
-            return _connected;
+            if (!this._connected) Login();
+            return this._connected;
         }
 
         public override string ToString()
