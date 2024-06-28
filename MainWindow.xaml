@@ -45,7 +45,7 @@
                         <MenuItem Header="Trace" Click="LogLevelItem_Click" />
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="Snapshot" x:Name="_snapshotMenuItem" Click="ViewSnapshot_Click"/>
+                <MenuItem Header="Snapshot" x:Name="_snapshotMenuItem" IsEnabled="False" Click="ViewSnapshot_Click"/>
                 <Separator/>
                 <MenuItem Header="Theme">
                     <MenuItem Header="Dark" x:Name="_darkMenuItem" IsChecked="True" Click="ThemeItem_Click"/>

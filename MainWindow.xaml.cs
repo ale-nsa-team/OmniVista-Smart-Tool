@@ -232,7 +232,7 @@ namespace PoEWizard
 
                 if (device.IsConnected)
                 {
-                    Logger.Info($"Connected to switch S/N {device.SerialNumber}, model {device.Model}");
+                    Logger.Info($"Connected to switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                     SetConnectedState();
                 }
                 else

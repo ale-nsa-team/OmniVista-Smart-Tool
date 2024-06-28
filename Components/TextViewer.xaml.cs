@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Threading;
 using PoEWizard.Data;
+using System.Windows.Media;
 
 namespace PoEWizard.Components
 {
@@ -36,6 +37,8 @@ namespace PoEWizard.Components
             this.title = title;
             this.content = content;
             Title = title;
+            _content.FontFamily = new FontFamily("Courier New");
+            _content.FontSize = 14;
             _btnClear.Visibility = canClear ? Visibility.Visible : Visibility.Collapsed;
         }
 
