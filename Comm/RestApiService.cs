@@ -43,41 +43,30 @@ namespace PoEWizard.Comm
                 SwitchModel.IsConnected = true;
                 _progress.Report(new ProgressReport("Reading System information..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
-                dict = CliParseUtils.ParseVTable(_response["RESULT"]);
+                dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.System);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MICROCODE));
-                diclist = CliParseUtils.ParseHTable(_response["RESULT"]);
+                diclist = CliParseUtils.ParseHTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(diclist[0], DictionaryType.MicroCode);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_RUNNING_DIR));
-                dict = CliParseUtils.ParseVTable(_response["RESULT"]);
+                dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.RunningDir);
                 _progress.Report(new ProgressReport("Reading chassis and port information..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
-                diclist = CliParseUtils.ParseChassisTable(_response["RESULT"]);
+                diclist = CliParseUtils.ParseChassisTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.Chassis);
+
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLIES));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLY, new string[1] { "1" }));
+
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[1] { "1/1" }));
-                diclist = CliParseUtils.ParseHTable(_response["RESULT"], 2);
+                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.LanPower);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
 
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_HEALTH));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_TEMPERATURE));
-
-                //SetPoePriority("1/1/26", PriorityLevelType.High);
-                //SetPoePriority("1/1/26", PriorityLevelType.Critical);
-                //SetPoePriority("1/1/26", PriorityLevelType.Low);
-
-                //this._response = PowerPort(RestUrlId.POWER_DOWN_PORT, "1/1/26");
-                //this._response = PowerPort(RestUrlId.POWER_UP_PORT, "1/1/26");
-                //this._response = PowerPort(RestUrlId.POWER_4PAIR_PORT, "1/1/28");
-                //this._response = PowerPort(RestUrlId.POWER_2PAIR_PORT, "1/1/28");
-
-                //this._response = SetPoeConfiguration(RestUrlId.POWER_823BT_ENABLE, "1/1");
-                //this._response = SetPoeConfiguration(RestUrlId.POWER_823BT_DISABLE, "1/1");
-
-                //this._response = SetPoeConfiguration(RestUrlId.POE_FAST_ENABLE, "1/1");
-                //this._response = SetPoeConfiguration(RestUrlId.POE_PERPETUAL_ENABLE, "1/1");
 
             }
             catch (Exception ex)
@@ -94,11 +83,48 @@ namespace PoEWizard.Comm
             }
         }
 
-        private Dictionary<string, string> SetPoeConfiguration(RestUrlId cmd, string slot)
+        public void RunPoeWizard()
         {
             try
             {
-                return SendRequest(GetRestUrlEntry(cmd, new string[1] { slot }));
+                Logger.Debug($"Starting PoE Wizard");
+                _progress.Report(new ProgressReport("Starting PoE Wizard..."));
+
+                SetPoePriority("1/1/26", PriorityLevelType.High);
+                SetPoePriority("1/1/26", PriorityLevelType.Critical);
+                SetPoePriority("1/1/26", PriorityLevelType.Low);
+
+                PowerPort(RestUrlId.POWER_DOWN_PORT, "1/1/26");
+                PowerPort(RestUrlId.POWER_UP_PORT, "1/1/26");
+                PowerPort(RestUrlId.POWER_4PAIR_PORT, "1/1/28");
+                PowerPort(RestUrlId.POWER_2PAIR_PORT, "1/1/28");
+
+                SetPoeConfiguration(RestUrlId.POWER_823BT_ENABLE, "1/1");
+                SetPoeConfiguration(RestUrlId.POWER_823BT_DISABLE, "1/1");
+
+                SetPoeConfiguration(RestUrlId.POE_FAST_ENABLE, "1/1");
+                SetPoeConfiguration(RestUrlId.POE_PERPETUAL_ENABLE, "1/1");
+
+            }
+            catch (Exception ex)
+            {
+                if (ex is SwitchConnectionFailure || ex is SwitchConnectionDropped || ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure)
+                {
+                    if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure) this.SwitchModel.Status = SwitchStatus.LoginFail;
+                    else this.SwitchModel.Status = SwitchStatus.Unreachable;
+                }
+                else
+                {
+                    _progress?.Report(new ProgressReport(ReportType.Error, "Connect", ex.Message));
+                }
+            }
+        }
+
+        private void SetPoeConfiguration(RestUrlId cmd, string slot)
+        {
+            try
+            {
+                this._response = SendRequest(GetRestUrlEntry(cmd, new string[1] { slot }));
             }
             catch (Exception ex)
             {
@@ -107,7 +133,6 @@ namespace PoEWizard.Comm
                 {
                     if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure) this.SwitchModel.Status = SwitchStatus.LoginFail;
                     else this.SwitchModel.Status = SwitchStatus.Unreachable;
-                    return null;
                 }
                 else
                 {
@@ -116,11 +141,11 @@ namespace PoEWizard.Comm
             }
         }
 
-        private Dictionary<string, string> PowerPort(RestUrlId cmd, string port)
+        private void PowerPort(RestUrlId cmd, string port)
         {
             try
             {
-                return SendRequest(GetRestUrlEntry(cmd, new string[1] { port }));
+                this._response = SendRequest(GetRestUrlEntry(cmd, new string[1] { port }));
             }
             catch (Exception ex)
             {
@@ -129,7 +154,6 @@ namespace PoEWizard.Comm
                 {
                     if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure) this.SwitchModel.Status = SwitchStatus.LoginFail;
                     else this.SwitchModel.Status = SwitchStatus.Unreachable;
-                    return null;
                 }
                 else
                 {
@@ -138,11 +162,11 @@ namespace PoEWizard.Comm
             }
         }
 
-        private Dictionary<string, string> SetPoePriority(string port, PriorityLevelType priority)
+        private void SetPoePriority(string port, PriorityLevelType priority)
         {
             try
             {
-                return SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
             }
             catch (Exception ex)
             {
@@ -151,7 +175,6 @@ namespace PoEWizard.Comm
                 {
                     if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure) this.SwitchModel.Status = SwitchStatus.LoginFail;
                     else this.SwitchModel.Status = SwitchStatus.Unreachable;
-                    return null;
                 }
                 else
                 {

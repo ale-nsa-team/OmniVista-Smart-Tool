@@ -144,7 +144,7 @@ namespace PoEWizard
 
         private void RunWiz_Click(object sender, RoutedEventArgs e)
         {
-
+            LaunchPoeWizard();
         }
 
         private void Help_Click(object sender, RoutedEventArgs e)
@@ -240,6 +240,24 @@ namespace PoEWizard
                     Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
                     SetDisconnectedState();
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+            }
+            HideProgress();
+            HideInfoBox();
+        }
+
+        private async void LaunchPoeWizard()
+        {
+            try
+            {
+                restApiService = new RestApiService(device, progress);
+                await Task.Run(() => restApiService.RunPoeWizard());
+
+                Logger.Info($"PoE Wizard completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+
             }
             catch (Exception ex)
             {
