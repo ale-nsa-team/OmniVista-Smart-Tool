@@ -363,14 +363,19 @@ namespace PoEWizard.Data
 
         public static string PrintXMLDoc(string xmlDoc)
         {
-            var stringBuilder = new StringBuilder();
-            var element = XElement.Parse(xmlDoc);
-            var settings = new XmlWriterSettings { OmitXmlDeclaration = true, Indent = true, NewLineOnAttributes = true };
-            using (var xmlWriter = XmlWriter.Create(stringBuilder, settings))
+            try
             {
-                element.Save(xmlWriter);
+                var stringBuilder = new StringBuilder();
+                var element = XElement.Parse(xmlDoc);
+                var settings = new XmlWriterSettings { OmitXmlDeclaration = true, Indent = true, NewLineOnAttributes = true };
+                using (var xmlWriter = XmlWriter.Create(stringBuilder, settings))
+                {
+                    element.Save(xmlWriter);
+                }
+                return stringBuilder.ToString();
             }
-            return stringBuilder.ToString();
+            catch { }
+            return xmlDoc;
         }
     }
 }
