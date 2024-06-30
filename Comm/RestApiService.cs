@@ -90,12 +90,15 @@ namespace PoEWizard.Comm
                 Logger.Debug($"Starting PoE Wizard");
                 _progress.Report(new ProgressReport("Starting PoE Wizard..."));
 
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { "1/1/26" }));
+
                 SetPoePriority("1/1/26", PriorityLevelType.High);
                 SetPoePriority("1/1/26", PriorityLevelType.Critical);
                 SetPoePriority("1/1/26", PriorityLevelType.Low);
 
                 PowerPort(RestUrlId.POWER_DOWN_PORT, "1/1/26");
                 PowerPort(RestUrlId.POWER_UP_PORT, "1/1/26");
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { "1/1/26" }));
                 PowerPort(RestUrlId.POWER_4PAIR_PORT, "1/1/28");
                 PowerPort(RestUrlId.POWER_2PAIR_PORT, "1/1/28");
 
@@ -207,12 +210,12 @@ namespace PoEWizard.Comm
             {
                 throw new SwitchCommandError(response[ERROR]);
             }
+            LogSendRequest(entry, response);
             Dictionary<string, string> result = CliParseUtils.ParseXmlToDictionary(response[RESULT], "//nodes//result//*");
             if (result != null && result.ContainsKey(OUTPUT) && !string.IsNullOrEmpty(result[OUTPUT]))
             {
                 response[RESULT] = result[OUTPUT];
             }
-            LogSendRequest(entry, response);
             return response;
         }
 
@@ -223,7 +226,8 @@ namespace PoEWizard.Comm
             txt = new StringBuilder("Request API URL: ").Append(response[REST_URL]);
             if (entry.Response.ContainsKey(RESULT))
             {
-                txt.Append("\nSwitch Response:\n").Append(new string('=', 132)).Append("\n").Append(response[RESULT]).Append("\n").Append(new string('=', 132));
+                txt.Append("\nSwitch Response:\n").Append(new string('=', 132)).Append("\n").Append(Utils.PrintXMLDoc(response[RESULT]));
+                txt.Append("\n").Append(new string('=', 132));
             }
             Logger.Debug(txt.ToString());
         }

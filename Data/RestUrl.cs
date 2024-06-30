@@ -54,6 +54,7 @@ namespace PoEWizard.Data
             LLDP_EXT_POWER_MDI_DISABLE = 34,
             POE_FAST_ENABLE = 35,
             POE_PERPETUAL_ENABLE = 36,
+            SHOW_MAC_LEARNING_PORT = 37,
             // 40 - 59: Special switch commands
             WRITE_MEMORY = 40
         }
@@ -92,6 +93,7 @@ namespace PoEWizard.Data
             [RestUrlId.LLDP_EXT_POWER_MDI_DISABLE] = $"lldp nearest-bridge port {DATA_0} tlv med ext-power-via-mdi disable", // 34
             [RestUrlId.POE_FAST_ENABLE] = $"lanpower slot {DATA_0} fpoe enable",                // 35
             [RestUrlId.POE_PERPETUAL_ENABLE] = $"lanpower slot {DATA_0} ppoe enable",           // 36
+            [RestUrlId.SHOW_MAC_LEARNING_PORT] = $"show mac-learning port {DATA_0}",            // 37
             // 40 - 59: Special switch commands
             [RestUrlId.WRITE_MEMORY] = "write memory flash-synchro"                             // 40
         };
@@ -145,6 +147,7 @@ namespace PoEWizard.Data
                     case RestUrlId.LLDP_EXT_POWER_MDI_DISABLE:  // 34
                     case RestUrlId.POE_FAST_ENABLE:             // 35
                     case RestUrlId.POE_PERPETUAL_ENABLE:        // 36
+                    case RestUrlId.SHOW_MAC_LEARNING_PORT:      // 37
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 

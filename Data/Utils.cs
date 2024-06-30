@@ -361,24 +361,16 @@ namespace PoEWizard.Data
             return $" by Method {method.Name} of {method.DeclaringType.Name}";
         }
 
-        public static string PrettyXml(string xml)
+        public static string PrintXMLDoc(string xmlDoc)
         {
-            try
+            var stringBuilder = new StringBuilder();
+            var element = XElement.Parse(xmlDoc);
+            var settings = new XmlWriterSettings { OmitXmlDeclaration = true, Indent = true, NewLineOnAttributes = true };
+            using (var xmlWriter = XmlWriter.Create(stringBuilder, settings))
             {
-                var stringBuilder = new StringBuilder();
-                var element = XElement.Parse(xml);
-                var settings = new XmlWriterSettings();
-                settings.OmitXmlDeclaration = true;
-                settings.Indent = true;
-                settings.NewLineOnAttributes = true;
-                using (var xmlWriter = XmlWriter.Create(stringBuilder, settings))
-                {
-                    element.Save(xmlWriter);
-                }
-                return stringBuilder.ToString();
+                element.Save(xmlWriter);
             }
-            catch { }
-            return xml;
+            return stringBuilder.ToString();
         }
     }
 }
