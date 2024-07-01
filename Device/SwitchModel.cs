@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PoEWizard.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static PoEWizard.Data.Constants;
@@ -87,6 +88,14 @@ namespace PoEWizard.Device
                             this.MacAddress = ci.MacAddress;
                             this.SerialNumber = ci.SerialNumber;
                         }
+                    }
+                    break;
+
+                case DictionaryType.PortsList:
+                    foreach (Dictionary<string, string> dict in list)
+                    {
+                        Dictionary<string, object> slotPort = Utils.GetChassisSlotPort(dict["Chas/ Slot/ Port"]);
+                        ChassisInfo chassis = GetChassis((int)slotPort[P_CHASSIS]);
                     }
                     break;
                 case DictionaryType.LanPower:

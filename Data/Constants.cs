@@ -19,7 +19,7 @@
         public enum PriorityLevelType { Low, High, Critical, Unknown }
         public enum PowerSupplyState { Up, Down, Unknown }
         public enum ChassisStatus { Unknown, Up, Down }
-        public enum DictionaryType { System, Chassis, RunningDir, MicroCode, LanPower }
+        public enum DictionaryType { System, Chassis, RunningDir, MicroCode, LanPower, PortsList }
 
         #endregion
 

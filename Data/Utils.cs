@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -172,32 +173,32 @@ namespace PoEWizard.Data
             return xmlDoc;
         }
 
-        public static Dictionary<string, string> GetChassisSlotPort(string slotPortNr)
+        public static Dictionary<string, object> GetChassisSlotPort(string slotPortNr)
         {
             try
             {
                 string[] valuesList = slotPortNr.Split('/');
                 if (valuesList != null)
                 {
-                    Dictionary<string, string> slotPort = new Dictionary<string, string>();
+                    Dictionary<string, object> slotPort = new Dictionary<string, object>();
                     if (valuesList.Length > 2)
                     {
-                        slotPort[Constants.P_CHASSIS] = valuesList[0].Trim();
-                        slotPort[Constants.P_SLOT] = valuesList[1].Trim();
+                        slotPort[Constants.P_CHASSIS] = StringToInt(valuesList[0].Trim());
+                        slotPort[Constants.P_SLOT] = StringToInt(valuesList[1].Trim());
                         slotPort[Constants.P_PORT] = valuesList[2].Trim();
                     }
                     else
                     {
                         if (valuesList.Length > 1)
                         {
-                            slotPort[Constants.P_CHASSIS] = valuesList[0].Trim();
-                            slotPort[Constants.P_SLOT] = valuesList[1].Trim();
+                            slotPort[Constants.P_CHASSIS] = StringToInt(valuesList[0].Trim());
+                            slotPort[Constants.P_SLOT] = StringToInt(valuesList[1].Trim());
                             slotPort[Constants.P_PORT] = "";
                         }
                         else
                         {
-                            slotPort[Constants.P_CHASSIS] = valuesList[0].Trim();
-                            slotPort[Constants.P_SLOT] = "";
+                            slotPort[Constants.P_CHASSIS] = StringToInt(valuesList[0].Trim());
+                            slotPort[Constants.P_SLOT] = 1;
                             slotPort[Constants.P_PORT] = "";
                         }
                     }
@@ -207,6 +208,36 @@ namespace PoEWizard.Data
             catch { }
             return null;
         }
+
+        public static string ToPascalCase(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return string.Empty;
+            string[] parts = Regex.Split(text, @"\s|_");
+            StringBuilder sb = new StringBuilder();
+            foreach (string p in parts)
+            {
+                sb.Append(FirstChToUpper(p));
+            }
+            return sb.ToString();
+        }
+
+        public static string FirstChToUpper(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return string.Empty;
+            return $"{char.ToUpper(text[0])}{text.Substring(1).ToLower()}";
+        }
+
+        public static bool IsNumber(string strNumber)
+        {
+            if (strNumber == null) return false;
+            try
+            {
+                return int.TryParse(strNumber.Trim(), out int intVal);
+            }
+            catch { }
+            return false;
+        }
+
     }
 
 }
