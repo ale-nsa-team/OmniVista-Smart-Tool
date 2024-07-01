@@ -48,26 +48,11 @@ namespace PoEWizard.Data
             if (match.Success)
             {
                 int line = LineNumberFromPosition(data, match.Index);
-                string[] header;
-                if (nbHeaders >= 2)
+                string[] header = new string[match.Value.Count(c => c == '+') + 1];
+                for (int i = 1; i <= nbHeaders; i++)
                 {
-                    string h1 = (line >= nbHeaders) ? lines[line - nbHeaders] : "";
-                    string h2 = (line >= nbHeaders - 1) ? lines[line - (nbHeaders - 1)] : "";
-                    string h3 = (line >= nbHeaders - 2) ? lines[line - (nbHeaders - 2)] : "";
-                    if (h3.Contains("+")) h3 = "";
-                    string[] hd1 = GetValues(lines[line], h1);
-                    string[] hd2 = GetValues(lines[line], h2);
-                    string[] hd3 = GetValues(lines[line], h3);
-                    header = hd1.Zip(hd2, (a, b) => $"{a} {b}").ToArray();
-                    if (!string.IsNullOrEmpty(h3))
-                    {
-                        header = header.Zip(hd3, (a, b) => $"{a} {b}").ToArray();
-                    }
-                }
-                else
-                {
-                    string head = lines[line - 1];
-                    header = GetValues(lines[line], head);
+                    string[] hd = GetValues(lines[line], lines[line - i]);
+                    header = header.Zip(hd, (a, b) => b.EndsWith("/") ? $"{b}{a}" : $"{b} {a}").ToArray();
                 }
 
                 for (int i = line + 1; i < lines.Length; i++)
@@ -77,7 +62,7 @@ namespace PoEWizard.Data
                     string[] values = GetValues(lines[line], lines[i]);
                     for (int j = 0; j < header.Length; j++)
                     {
-                        dict.Add(header[j], values?.Skip(j).FirstOrDefault());
+                        dict.Add(header[j].Trim(), values?.Skip(j).FirstOrDefault());
                     }
                     table.Add(dict);
                 }

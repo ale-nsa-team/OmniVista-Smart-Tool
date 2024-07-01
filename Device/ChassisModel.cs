@@ -3,7 +3,7 @@ using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Device
 {
-    public class ChassisInfo
+    public class ChassisModel
     {
         public int Number { get; set; }
         public string Model { get; set; }
@@ -14,14 +14,14 @@ namespace PoEWizard.Device
         public double PowerBudget { get; set; }
         public double PowerConsumed { get; set; }
         public double PowerRemaining { get; set; }
-        public List<SlotInfo> Slots { get; set; }
-        public List<PowerSupplyInfo> PowerSupplies { get; set; } = new List<PowerSupplyInfo>();
+        public List<SlotModel> Slots { get; set; }
+        public List<PowerSupplyInfo> PowerSupplies { get; set; }
         public string SerialNumber { get; set; }
         public string PartNumber { get; set; }
         public string HardwareRevision { get; set; }
         public string MacAddress { get; set; }
 
-        public ChassisInfo(Dictionary<string, string> dict)
+        public ChassisModel(Dictionary<string, string> dict)
         {
             Number = int.TryParse(dict["ID"], out int n) ? n : 1;
             Model = dict["Model Name"];
@@ -32,18 +32,32 @@ namespace PoEWizard.Device
             PartNumber = dict["Part Number"];
             HardwareRevision = dict["Hardware Revision"];
             MacAddress = dict["MAC Address"];
+            Slots = new List<SlotModel>();
+            PowerSupplies = new List<PowerSupplyInfo>();
         }
 
-        public ChassisInfo(string sn, string mac, string model)
+        public ChassisModel(string sn, string mac, string model)
         {
             SerialNumber = sn;
             MacAddress = mac;
             Model = model;
         }
 
+        public void LoadFromList(List<Dictionary<string, string>> list)
+        {
+            Slots = new List<SlotModel>();
+            foreach (Dictionary<string, string> dict in list)
+            {
+                this.Slots.Add(new SlotModel(dict));
+            }
+            if (Slots.Count > 0) {
+                this.PowerBudget = Slots[0].Budget;
+            }
+        }
+
         private int ParseNumber(string chassis)
         {
-            return int.Parse(chassis.Split('/')[0]);
+            return int.TryParse(chassis.Split('/')[0], out int n) ? n : 0;
         }
         
     }

@@ -55,13 +55,24 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
                 diclist = CliParseUtils.ParseChassisTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.Chassis);
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
+                diclist = CliParseUtils.ParseHTable(_response[RESULT], 3);
+                SwitchModel.LoadFromList(diclist, DictionaryType.PortsList);
                 foreach (var chassis in SwitchModel.ChassisList)
                 {
-
+                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
+                    diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+                    chassis.LoadFromList(diclist);
                 }
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[1] { "1/1" }));
-                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
-                SwitchModel.LoadFromList(diclist, DictionaryType.LanPower);
+                foreach (var chassis in SwitchModel.ChassisList)
+                {
+                    foreach (var slot in chassis.Slots)
+                    {
+                        this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
+
+                    }
+                }
+
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
 
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_HEALTH));
@@ -78,7 +89,7 @@ namespace PoEWizard.Comm
                 else
                 {
                     Logger.Error(ex.Message + ":\n" + ex.StackTrace);
-                    _progress?.Report(new ProgressReport(ReportType.Error, "Connect", ex.Message));
+                    _progress.Report(new ProgressReport(ReportType.Error, "Connect", ex.Message));
                 }
             }
         }

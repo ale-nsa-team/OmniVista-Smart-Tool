@@ -70,7 +70,7 @@ namespace PoEWizard.Data
             [RestUrlId.SHOW_POWER_SUPPLIES] = $"show powersupply",                              //  5
             [RestUrlId.SHOW_POWER_SUPPLY] = $"show powersupply {DATA_0}",                       //  6
             [RestUrlId.SHOW_LAN_POWER] = $"show lanpower slot {DATA_0}",                        //  7
-            [RestUrlId.SHOW_LAN_POWER_STATUS] = $"show lanpower slot {DATA_0} status",          //  8
+            [RestUrlId.SHOW_LAN_POWER_STATUS] = $"show lanpower chassis {DATA_0} status",       //  8
             [RestUrlId.SHOW_SLOT] = $"show slot {DATA_0}",                                      //  9
             [RestUrlId.SHOW_MAC_LEARNING] = $"show mac-learning domain vlan",                   // 10
             [RestUrlId.SHOW_TEMPERATURE] = $"show temperature",                                 // 11
