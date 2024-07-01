@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
 
@@ -46,8 +47,8 @@ namespace PoEWizard.Comm
                 dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.System);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MICROCODE));
-                dict = CliParseUtils.ParseSingleHTable(_response["RESULT"]);
-                SwitchModel.LoadFromDictionary(dict, DictionaryType.MicroCode);
+                diclist = CliParseUtils.ParseHTable(_response[RESULT]);
+                SwitchModel.LoadFromDictionary(diclist[0], DictionaryType.MicroCode);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_RUNNING_DIR));
                 dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.RunningDir);
@@ -70,10 +71,20 @@ namespace PoEWizard.Comm
                     {
                         this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
 
-                    }
-                }
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
+                Dictionary<int, Dictionary<int, List<Dictionary<string, string>>>> portsList = CliParseUtils.ParsePortsListApi(_response[RESULT]);
 
+
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLIES));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLY, new string[1] { "1" }));
+
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[1] { "1/1" }));
+                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+                SwitchModel.LoadFromList(diclist, DictionaryType.LanPower);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
+
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_CONFIG, new string[1] { "1/1" }));
+                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
 
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_HEALTH));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_TEMPERATURE));
@@ -94,30 +105,36 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void RunPoeWizard()
+        public void RunPoeWizard(string port)
         {
             try
             {
                 Logger.Debug($"Starting PoE Wizard");
                 _progress.Report(new ProgressReport("Starting PoE Wizard..."));
+                StringBuilder report = new StringBuilder();
+                report.Append("Enable Port ").Append(port);
+                if (TryDisable4Pair(port))
+                {
+                    report.Append(" 2-Pair Power Success");
+                }
+                else
+                {
+                    report.Append("Enable 2-Pair Power Failed");
+                }
+                report.Append("\nChange Port ").Append(port).Append(" priority to ");
+                PriorityLevelType priorityLevel = TryChangePriority(port);
 
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { "1/1/26" }));
+                SetPoeConfiguration(RestUrlId.POWER_823BT_ENABLE, port);
+                SetPoeConfiguration(RestUrlId.POWER_823BT_DISABLE, port);
 
-                SetPoePriority("1/1/26", PriorityLevelType.High);
-                SetPoePriority("1/1/26", PriorityLevelType.Critical);
-                SetPoePriority("1/1/26", PriorityLevelType.Low);
+                SetPoeConfiguration(RestUrlId.POWER_HDMI_ENABLE, port);
+                SetPoeConfiguration(RestUrlId.POWER_HDMI_DISABLE, port);
 
-                PowerPort(RestUrlId.POWER_DOWN_PORT, "1/1/26");
-                PowerPort(RestUrlId.POWER_UP_PORT, "1/1/26");
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { "1/1/26" }));
-                PowerPort(RestUrlId.POWER_4PAIR_PORT, "1/1/28");
-                PowerPort(RestUrlId.POWER_2PAIR_PORT, "1/1/28");
+                SetPoeConfiguration(RestUrlId.LLDP_POWER_MDI_ENABLE, port);
+                SetPoeConfiguration(RestUrlId.LLDP_POWER_MDI_DISABLE, port);
 
-                SetPoeConfiguration(RestUrlId.POWER_823BT_ENABLE, "1/1");
-                SetPoeConfiguration(RestUrlId.POWER_823BT_DISABLE, "1/1");
-
-                SetPoeConfiguration(RestUrlId.POE_FAST_ENABLE, "1/1");
-                SetPoeConfiguration(RestUrlId.POE_PERPETUAL_ENABLE, "1/1");
+                SetPoeConfiguration(RestUrlId.LLDP_EXT_POWER_MDI_ENABLE, port);
+                SetPoeConfiguration(RestUrlId.LLDP_EXT_POWER_MDI_DISABLE, port);
 
             }
             catch (Exception ex)
@@ -132,6 +149,32 @@ namespace PoEWizard.Comm
                     _progress?.Report(new ProgressReport(ReportType.Error, "Connect", ex.Message));
                 }
             }
+        }
+
+        private bool TryDisable4Pair(string port)
+        {
+            PowerPort(RestUrlId.POWER_DOWN_PORT, port);
+            PowerPort(RestUrlId.POWER_2PAIR_PORT, port);
+            Thread.Sleep(5000);
+            PowerPort(RestUrlId.POWER_UP_PORT, port);
+            Thread.Sleep(3000);
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
+            Thread.Sleep(5000);
+            return true;
+        }
+
+        private PriorityLevelType TryChangePriority(string port)
+        {
+            PriorityLevelType priorityLevel = PriorityLevelType.High;
+            PowerPort(RestUrlId.POWER_DOWN_PORT, port);
+            SetPoePriority(port, priorityLevel);
+            Thread.Sleep(5000);
+            PowerPort(RestUrlId.POWER_UP_PORT, port);
+            Thread.Sleep(3000);
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
+            Thread.Sleep(5000);
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { port }));
+            return priorityLevel;
         }
 
         private void SetPoeConfiguration(RestUrlId cmd, string slot)

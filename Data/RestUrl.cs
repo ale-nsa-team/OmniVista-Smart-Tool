@@ -36,6 +36,7 @@ namespace PoEWizard.Data
             SHOW_MAC_LEARNING = 10,
             SHOW_TEMPERATURE = 11,
             SHOW_HEALTH = 12,
+            SHOW_LAN_POWER_CONFIG = 13,
             // 20 - 39: Commands related to actions on power
             POWER_DOWN_PORT = 20,
             POWER_UP_PORT = 21,
@@ -55,6 +56,7 @@ namespace PoEWizard.Data
             POE_FAST_ENABLE = 35,
             POE_PERPETUAL_ENABLE = 36,
             SHOW_MAC_LEARNING_PORT = 37,
+            SHOW_PORT_STATUS = 38,
             // 40 - 59: Special switch commands
             WRITE_MEMORY = 40
         }
@@ -75,6 +77,7 @@ namespace PoEWizard.Data
             [RestUrlId.SHOW_MAC_LEARNING] = $"show mac-learning domain vlan",                   // 10
             [RestUrlId.SHOW_TEMPERATURE] = $"show temperature",                                 // 11
             [RestUrlId.SHOW_HEALTH] = $"show health all cpu",                                   // 12
+            [RestUrlId.SHOW_LAN_POWER_CONFIG] = $"show lanpower slot {DATA_0} port-config",     // 13
             // 20 - 39: Commands related to actions on power
             [RestUrlId.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",        // 20
             [RestUrlId.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",           // 21
@@ -94,6 +97,7 @@ namespace PoEWizard.Data
             [RestUrlId.POE_FAST_ENABLE] = $"lanpower slot {DATA_0} fpoe enable",                // 35
             [RestUrlId.POE_PERPETUAL_ENABLE] = $"lanpower slot {DATA_0} ppoe enable",           // 36
             [RestUrlId.SHOW_MAC_LEARNING_PORT] = $"show mac-learning port {DATA_0}",            // 37
+            [RestUrlId.SHOW_PORT_STATUS] = $"show interfaces port {DATA_0} alias",              // 38
             // 40 - 59: Special switch commands
             [RestUrlId.WRITE_MEMORY] = "write memory flash-synchro"                             // 40
         };
@@ -130,6 +134,7 @@ namespace PoEWizard.Data
                     case RestUrlId.SHOW_POWER_SUPPLY:           //  6
                     case RestUrlId.SHOW_LAN_POWER:              //  7
                     case RestUrlId.SHOW_LAN_POWER_STATUS:       //  8
+                    case RestUrlId.SHOW_LAN_POWER_CONFIG:       // 13
                     // 20 - 39: Commands related to actions on power
                     case RestUrlId.POWER_DOWN_PORT:             // 20
                     case RestUrlId.POWER_UP_PORT:               // 21
@@ -148,11 +153,12 @@ namespace PoEWizard.Data
                     case RestUrlId.POE_FAST_ENABLE:             // 35
                     case RestUrlId.POE_PERPETUAL_ENABLE:        // 36
                     case RestUrlId.SHOW_MAC_LEARNING_PORT:      // 37
+                    case RestUrlId.SHOW_PORT_STATUS:            // 38
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 
                     // 20 - 39: Commands related to actions on power
-                    case RestUrlId.POWER_PRIORITY_PORT:     // 22
+                    case RestUrlId.POWER_PRIORITY_PORT:         // 22
                         if (data == null || data.Length < 2) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, data[0]).Replace(DATA_1, data[1]);
 
