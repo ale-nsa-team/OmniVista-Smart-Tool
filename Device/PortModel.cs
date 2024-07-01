@@ -6,7 +6,7 @@ using static PoEWizard.Data.Constants;
 namespace PoEWizard.Device
 {
     [Serializable]
-    public class SwitchPort
+    public class PortModel
     {
         public string Number { get; set; }
         public List<string> MacList { get; set; }
@@ -22,18 +22,18 @@ namespace PoEWizard.Device
         public bool Is4Pair { get; set; } = true;
         public bool IsEnabled { get; set; } = false;
 
-        public SwitchPort(Dictionary<string, string> dict)
+        public PortModel(Dictionary<string, string> dict)
         {
-            Dictionary<string, object> slotPort = Utils.GetChassisSlotPort(dict["Chas/ Slot/ Port"]);
-            Number = slotPort[P_PORT].ToString();
-            UpdatePortStatus(dict["Link Status"]);
-            IsEnabled = dict["Admin Status"] == "enable";
+
+            Number = GetPortId(dict[CHAS_SLOT_PORT]);
+            UpdatePortStatus(dict[LINK_STATUS]);
+            IsEnabled = dict[ADMIN_STATUS] == "enable";
             MacList = new List<string>();
             HasPoe = false;
             Power = "0 mw";
             Poe = PoeStatus.NoPoe;
             MaxPower = "0 mw";
-            PriorityLevel = PriorityLevelType.Unknown;
+            PriorityLevel = PriorityLevelType.Low;
             IsUplink = false;
             IsLldp = false;
             IsVfLink = false;
@@ -42,11 +42,10 @@ namespace PoEWizard.Device
 
         private void UpdatePortStatus(string status)
         {
-            string sValStatus = Utils.ToPascalCase(char.ToUpperInvariant(status[0]) + status.Substring(1));
+            string sValStatus = Utils.FirstChToUpper(status);
             if (!string.IsNullOrEmpty(sValStatus) && Enum.TryParse(sValStatus, out PortStatus portStatus))
             {
-                if (!Utils.IsNumber(portStatus.ToString())) Status = portStatus; else Status = PortStatus.Unknown;
-                if (Status == PortStatus.Down) Power = "0 mW";
+                Status = portStatus;
             }
             else
             {
@@ -54,6 +53,10 @@ namespace PoEWizard.Device
             }
         }
 
-    }
+        private string GetPortId(string chas)
+        {
+            return chas.Split('/')[2] ?? "0";
+        }
 
+    }
 }

@@ -56,10 +56,23 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
                 diclist = CliParseUtils.ParseChassisTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.Chassis);
-
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
-                Dictionary<int, Dictionary<int, List<Dictionary<string, string>>>> portsList = CliParseUtils.ParsePortsListApi(_response[RESULT]);
-
+                diclist = CliParseUtils.ParseHTable(_response[RESULT], 3);
+                SwitchModel.LoadFromList(diclist, DictionaryType.PortsList);
+                foreach (var chassis in SwitchModel.ChassisList)
+                {
+                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
+                    diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+                    //chassis.LoadFromList(diclist);
+                }
+                foreach (var chassis in SwitchModel.ChassisList)
+                {
+                    foreach (var slot in chassis.Slots)
+                    {
+                        this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
+                    }
+                }
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
 
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLIES));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLY, new string[1] { "1" }));
@@ -86,7 +99,7 @@ namespace PoEWizard.Comm
                 else
                 {
                     Logger.Error(ex.Message + ":\n" + ex.StackTrace);
-                    _progress?.Report(new ProgressReport(ReportType.Error, "Connect", ex.Message));
+                    _progress.Report(new ProgressReport(ReportType.Error, "Connect", ex.Message));
                 }
             }
         }

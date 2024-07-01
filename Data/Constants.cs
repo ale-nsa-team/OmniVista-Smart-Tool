@@ -95,6 +95,11 @@
         public const string WORKING_DIR = "Working";
         public const string Y = "Y";
         public const string Y_LITERAL = "Y";
+        public const string CHAS_SLOT_PORT = "Chas/Slot/Port";
+        public const string MAX_POWER = "Max Power";
+        public const string USAGE_THRESHOLD = "Usage Threshold";
+        public const string ADMIN_STATUS = "Admin Status";
+        public const string LINK_STATUS = "Link Status";
         public const string P_CHASSIS = "CHASSIS_ID";
         public const string P_SLOT = "SLOT_ID";
         public const string P_PORT = "PORT_ID";

@@ -43,27 +43,6 @@ namespace PoEWizard.Data
             return ParseTable(data, etableRegex);
         }
 
-        public static Dictionary<int, Dictionary<int, List<Dictionary<string, string>>>> ParsePortsListApi(string response)
-        {
-            List<Dictionary<string, string>> diclist = ParseHTable(response, 3);
-            Dictionary<int, Dictionary<int, List<Dictionary<string, string>>>> slotPortsList = new Dictionary<int, Dictionary<int, List<Dictionary<string, string>>>>();
-            foreach (Dictionary<string, string> port in diclist)
-            {
-                if (string.IsNullOrEmpty(port["Chas/ Slot/ Port"])) continue;
-                Dictionary<string, object> slotPort = Utils.GetChassisSlotPort(port["Chas/ Slot/ Port"]);
-                if (!slotPortsList.ContainsKey((int)slotPort[P_CHASSIS]))
-                {
-                    slotPortsList[(int)slotPort[P_CHASSIS]] = new Dictionary<int, List<Dictionary<string, string>>>();
-                }
-                if (!slotPortsList[(int)slotPort[P_CHASSIS]].ContainsKey((int)slotPort[P_SLOT]))
-                {
-                    slotPortsList[(int)slotPort[P_CHASSIS]][(int)slotPort[P_SLOT]] = new List<Dictionary<string, string>>();
-                }
-                slotPortsList[(int)slotPort[P_CHASSIS]][(int)slotPort[P_SLOT]].Add(port);
-            }
-            return slotPortsList;
-        }
-
         public static List<Dictionary<string, string>> ParseHTable(string data, int nbHeaders = 1)
         {
             List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();
@@ -72,26 +51,11 @@ namespace PoEWizard.Data
             if (match.Success)
             {
                 int line = LineNumberFromPosition(data, match.Index);
-                string[] header;
-                if (nbHeaders >= 2)
+                string[] header = new string[match.Value.Count(c => c == '+') + 1];
+                for (int i = 1; i <= nbHeaders; i++)
                 {
-                    string h1 = (line >= nbHeaders) ? lines[line - nbHeaders] : "";
-                    string h2 = (line >= nbHeaders - 1) ? lines[line - (nbHeaders - 1)] : "";
-                    string h3 = (line >= nbHeaders - 2) ? lines[line - (nbHeaders - 2)] : "";
-                    if (h3.Contains("+")) h3 = "";
-                    string[] hd1 = GetValues(lines[line], h1);
-                    string[] hd2 = GetValues(lines[line], h2);
-                    string[] hd3 = GetValues(lines[line], h3);
-                    header = hd1.Zip(hd2, (a, b) => $"{a} {b}").ToArray();
-                    if (!string.IsNullOrEmpty(h3))
-                    {
-                        header = header.Zip(hd3, (a, b) => $"{a} {b}").ToArray();
-                    }
-                }
-                else
-                {
-                    string head = lines[line - 1];
-                    header = GetValues(lines[line], head);
+                    string[] hd = GetValues(lines[line], lines[line - i]);
+                    header = header.Zip(hd, (a, b) => b.EndsWith("/") ? $"{b}{a}" : $"{b} {a}").ToArray();
                 }
 
                 for (int i = line + 1; i < lines.Length; i++)
@@ -101,7 +65,7 @@ namespace PoEWizard.Data
                     string[] values = GetValues(lines[line], lines[i]);
                     for (int j = 0; j < header.Length; j++)
                     {
-                        dict.Add(header[j], values?.Skip(j).FirstOrDefault());
+                        dict.Add(header[j].Trim(), values?.Skip(j).FirstOrDefault());
                     }
                     table.Add(dict);
                 }

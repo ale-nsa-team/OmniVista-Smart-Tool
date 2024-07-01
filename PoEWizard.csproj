@@ -132,15 +132,15 @@
     <Compile Include="Data\RestUrl.cs" />
     <Compile Include="Data\RestUrlEntry.cs" />
     <Compile Include="Data\Utils.cs" />
-    <Compile Include="Device\ChassisInfo.cs" />
+    <Compile Include="Device\ChassisModel.cs" />
     <Compile Include="Device\Commands.cs" />
     <Compile Include="Device\PoeModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Device\PowerSupplyInfo.cs" />
-    <Compile Include="Device\SlotInfo.cs" />
+    <Compile Include="Device\SlotModel.cs" />
     <Compile Include="Device\SwitchModel.cs" />
-    <Compile Include="Device\SwitchPort.cs" />
+    <Compile Include="Device\PortModel.cs" />
     <Compile Include="Exceptions\CustomExceptions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
