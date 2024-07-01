@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using PoEWizard.Device;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,6 +41,27 @@ namespace PoEWizard.Data
         public static Dictionary<string, string> ParseETable(string data)
         {
             return ParseTable(data, etableRegex);
+        }
+
+        public static Dictionary<int, Dictionary<int, List<Dictionary<string, string>>>> ParsePortsListApi(string response)
+        {
+            List<Dictionary<string, string>> diclist = ParseHTable(response, 3);
+            Dictionary<int, Dictionary<int, List<Dictionary<string, string>>>> slotPortsList = new Dictionary<int, Dictionary<int, List<Dictionary<string, string>>>>();
+            foreach (Dictionary<string, string> port in diclist)
+            {
+                if (string.IsNullOrEmpty(port["Chas/ Slot/ Port"])) continue;
+                Dictionary<string, object> slotPort = Utils.GetChassisSlotPort(port["Chas/ Slot/ Port"]);
+                if (!slotPortsList.ContainsKey((int)slotPort[P_CHASSIS]))
+                {
+                    slotPortsList[(int)slotPort[P_CHASSIS]] = new Dictionary<int, List<Dictionary<string, string>>>();
+                }
+                if (!slotPortsList[(int)slotPort[P_CHASSIS]].ContainsKey((int)slotPort[P_SLOT]))
+                {
+                    slotPortsList[(int)slotPort[P_CHASSIS]][(int)slotPort[P_SLOT]] = new List<Dictionary<string, string>>();
+                }
+                slotPortsList[(int)slotPort[P_CHASSIS]][(int)slotPort[P_SLOT]].Add(port);
+            }
+            return slotPortsList;
         }
 
         public static List<Dictionary<string, string>> ParseHTable(string data, int nbHeaders = 1)
@@ -84,42 +108,6 @@ namespace PoEWizard.Data
             }
 
             return table;
-        }
-
-        public static Dictionary<string, string> ParseSingleHTable(string data, int nbHeaders = 1)
-        {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            string[] lines = Regex.Split(data, @"\r\n\r|\n");
-            Match match = htableRegex.Match(data);
-            if (match.Success)
-            {
-                int line = LineNumberFromPosition(data, match.Index);
-                string[] header;
-                if (nbHeaders == 2)
-                {
-                    string h1 = lines[line - 2];
-                    string h2 = lines[line - 1];
-                    string[] hd1 = GetValues(lines[line], h1);
-                    string[] hd2 = GetValues(lines[line], h2);
-                    header = hd1.Zip(hd2, (a, b) => $"{a} {b}").ToArray();
-                }
-                else
-                {
-                    string head = lines[line - 1];
-                    header = GetValues(lines[line], head);
-                }
-
-                for (int i = line + 1; i < lines.Length; i++)
-                {
-                    if (lines[i] == string.Empty) break;
-                    string[] values = GetValues(lines[line], lines[i]);
-                    for (int j = 0; j < header.Length; j++)
-                    {
-                        dict.Add(header[j], values?.Skip(j).FirstOrDefault());
-                    }
-                }
-            }
-            return dict;
         }
 
         public static List<Dictionary<string, string>> ParseChassisTable(string data)
