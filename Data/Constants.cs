@@ -19,7 +19,7 @@
         public enum PriorityLevelType { Low, High, Critical, Unknown }
         public enum PowerSupplyState { Up, Down, Unknown }
         public enum ChassisStatus { Unknown, Up, Down }
-        public enum DictionaryType { System, Chassis, RunningDir, MicroCode, LanPower }
+        public enum DictionaryType { System, Chassis, RunningDir, MicroCode, LanPower, PortsList }
 
         #endregion
 
@@ -95,6 +95,9 @@
         public const string WORKING_DIR = "Working";
         public const string Y = "Y";
         public const string Y_LITERAL = "Y";
+        public const string P_CHASSIS = "CHASSIS_ID";
+        public const string P_SLOT = "SLOT_ID";
+        public const string P_PORT = "PORT_ID";
         #endregion
 
         #region integers

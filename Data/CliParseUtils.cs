@@ -49,13 +49,20 @@ namespace PoEWizard.Data
             {
                 int line = LineNumberFromPosition(data, match.Index);
                 string[] header;
-                if (nbHeaders == 2)
+                if (nbHeaders >= 2)
                 {
-                    string h1 = lines[line - 2];
-                    string h2 = lines[line - 1];
+                    string h1 = (line >= nbHeaders) ? lines[line - nbHeaders] : "";
+                    string h2 = (line >= nbHeaders - 1) ? lines[line - (nbHeaders - 1)] : "";
+                    string h3 = (line >= nbHeaders - 2) ? lines[line - (nbHeaders - 2)] : "";
+                    if (h3.Contains("+")) h3 = "";
                     string[] hd1 = GetValues(lines[line], h1);
                     string[] hd2 = GetValues(lines[line], h2);
+                    string[] hd3 = GetValues(lines[line], h3);
                     header = hd1.Zip(hd2, (a, b) => $"{a} {b}").ToArray();
+                    if (!string.IsNullOrEmpty(h3))
+                    {
+                        header = header.Zip(hd3, (a, b) => $"{a} {b}").ToArray();
+                    }
                 }
                 else
                 {
@@ -67,7 +74,6 @@ namespace PoEWizard.Data
                 {
                     if (lines[i] == string.Empty) break;
                     Dictionary<string, string> dict = new Dictionary<string, string>();
-                    dict.Clear();
                     string[] values = GetValues(lines[line], lines[i]);
                     for (int j = 0; j < header.Length; j++)
                     {
@@ -453,8 +459,15 @@ namespace PoEWizard.Data
             foreach (string s in split)
             {
                 int len = idx + s.Length < line.Length ? s.Length + 1 : line.Length - idx;
-                vals.Add(line.Substring(idx, len).Trim());
-                idx = sep.IndexOf('+', idx + 1);
+                if (len > 0)
+                {
+                    vals.Add(line.Substring(idx, len).Trim());
+                    idx = sep.IndexOf('+', idx + 1);
+                }
+                else
+                {
+                    vals.Add("");
+                }
             }
 
             return vals.ToArray();

@@ -28,13 +28,14 @@ namespace PoEWizard.Data
             SHOW_RUNNING_DIR = 2,
             SHOW_CHASSIS = 3,
             SHOW_PORTS_LIST = 4,
-            SHOW_POWER_SUPPLY = 5,
-            SHOW_LAN_POWER = 6,
-            SHOW_LAN_POWER_STATUS = 7,
-            SHOW_SLOT = 8,
-            SHOW_MAC_LEARNING = 9,
-            SHOW_TEMPERATURE = 10,
-            SHOW_HEALTH = 11,
+            SHOW_POWER_SUPPLIES = 5,
+            SHOW_POWER_SUPPLY = 6,
+            SHOW_LAN_POWER = 7,
+            SHOW_LAN_POWER_STATUS = 8,
+            SHOW_SLOT = 9,
+            SHOW_MAC_LEARNING = 10,
+            SHOW_TEMPERATURE = 11,
+            SHOW_HEALTH = 12,
             // 20 - 39: Commands related to actions on power
             POWER_DOWN_PORT = 20,
             POWER_UP_PORT = 21,
@@ -53,6 +54,7 @@ namespace PoEWizard.Data
             LLDP_EXT_POWER_MDI_DISABLE = 34,
             POE_FAST_ENABLE = 35,
             POE_PERPETUAL_ENABLE = 36,
+            SHOW_MAC_LEARNING_PORT = 37,
             // 40 - 59: Special switch commands
             WRITE_MEMORY = 40
         }
@@ -65,13 +67,14 @@ namespace PoEWizard.Data
             [RestUrlId.SHOW_RUNNING_DIR] = "show running-directory",                            //  2
             [RestUrlId.SHOW_CHASSIS] = "show chassis",                                          //  3
             [RestUrlId.SHOW_PORTS_LIST] = "show interfaces alias",                              //  4
-            [RestUrlId.SHOW_POWER_SUPPLY] = $"show powersupply {DATA_0}",                       //  5
-            [RestUrlId.SHOW_LAN_POWER] = $"show lanpower slot {DATA_0}",                        //  6
-            [RestUrlId.SHOW_LAN_POWER_STATUS] = $"show lanpower chassis {DATA_0} status",       //  7
-            [RestUrlId.SHOW_SLOT] = $"show slot {DATA_0}",                                      //  8
-            [RestUrlId.SHOW_MAC_LEARNING] = $"show mac-learning domain vlan",                   //  9
-            [RestUrlId.SHOW_TEMPERATURE] = $"show temperature",                                 // 10
-            [RestUrlId.SHOW_HEALTH] = $"show health all cpu",                                   // 11
+            [RestUrlId.SHOW_POWER_SUPPLIES] = $"show powersupply",                              //  5
+            [RestUrlId.SHOW_POWER_SUPPLY] = $"show powersupply {DATA_0}",                       //  6
+            [RestUrlId.SHOW_LAN_POWER] = $"show lanpower slot {DATA_0}",                        //  7
+            [RestUrlId.SHOW_LAN_POWER_STATUS] = $"show lanpower slot {DATA_0} status",          //  8
+            [RestUrlId.SHOW_SLOT] = $"show slot {DATA_0}",                                      //  9
+            [RestUrlId.SHOW_MAC_LEARNING] = $"show mac-learning domain vlan",                   // 10
+            [RestUrlId.SHOW_TEMPERATURE] = $"show temperature",                                 // 11
+            [RestUrlId.SHOW_HEALTH] = $"show health all cpu",                                   // 12
             // 20 - 39: Commands related to actions on power
             [RestUrlId.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",        // 20
             [RestUrlId.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",           // 21
@@ -90,6 +93,7 @@ namespace PoEWizard.Data
             [RestUrlId.LLDP_EXT_POWER_MDI_DISABLE] = $"lldp nearest-bridge port {DATA_0} tlv med ext-power-via-mdi disable", // 34
             [RestUrlId.POE_FAST_ENABLE] = $"lanpower slot {DATA_0} fpoe enable",                // 35
             [RestUrlId.POE_PERPETUAL_ENABLE] = $"lanpower slot {DATA_0} ppoe enable",           // 36
+            [RestUrlId.SHOW_MAC_LEARNING_PORT] = $"show mac-learning port {DATA_0}",            // 37
             // 40 - 59: Special switch commands
             [RestUrlId.WRITE_MEMORY] = "write memory flash-synchro"                             // 40
         };
@@ -113,18 +117,19 @@ namespace PoEWizard.Data
                     case RestUrlId.SHOW_RUNNING_DIR:            //  2
                     case RestUrlId.SHOW_CHASSIS:                //  3
                     case RestUrlId.SHOW_PORTS_LIST:             //  4
-                    case RestUrlId.SHOW_POWER_SUPPLY:           //  5
-                    case RestUrlId.SHOW_SLOT:                   //  8
-                    case RestUrlId.SHOW_MAC_LEARNING:           //  9
-                    case RestUrlId.SHOW_TEMPERATURE:            // 10
-                    case RestUrlId.SHOW_HEALTH:                 // 11
+                    case RestUrlId.SHOW_POWER_SUPPLIES:         //  5
+                    case RestUrlId.SHOW_SLOT:                   //  9
+                    case RestUrlId.SHOW_MAC_LEARNING:           // 10
+                    case RestUrlId.SHOW_TEMPERATURE:            // 11
+                    case RestUrlId.SHOW_HEALTH:                 // 12
                     // 20 - 39: Commands related to actions on power
                     case RestUrlId.WRITE_MEMORY:                // 40
                         return url;
 
                     // 0 - 19: Basic commands to gather switch data
-                    case RestUrlId.SHOW_LAN_POWER:              //  6
-                    case RestUrlId.SHOW_LAN_POWER_STATUS:       //  7
+                    case RestUrlId.SHOW_POWER_SUPPLY:           //  6
+                    case RestUrlId.SHOW_LAN_POWER:              //  7
+                    case RestUrlId.SHOW_LAN_POWER_STATUS:       //  8
                     // 20 - 39: Commands related to actions on power
                     case RestUrlId.POWER_DOWN_PORT:             // 20
                     case RestUrlId.POWER_UP_PORT:               // 21
@@ -142,6 +147,7 @@ namespace PoEWizard.Data
                     case RestUrlId.LLDP_EXT_POWER_MDI_DISABLE:  // 34
                     case RestUrlId.POE_FAST_ENABLE:             // 35
                     case RestUrlId.POE_PERPETUAL_ENABLE:        // 36
+                    case RestUrlId.SHOW_MAC_LEARNING_PORT:      // 37
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 
