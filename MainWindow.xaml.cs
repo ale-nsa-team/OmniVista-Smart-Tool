@@ -254,7 +254,7 @@ namespace PoEWizard
             try
             {
                 restApiService = new RestApiService(device, progress);
-                await Task.Run(() => restApiService.RunPoeWizard());
+                await Task.Run(() => restApiService.RunPoeWizard("1/1/28"));
 
                 Logger.Info($"PoE Wizard completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
 

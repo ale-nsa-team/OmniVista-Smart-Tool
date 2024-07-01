@@ -55,6 +55,7 @@ namespace PoEWizard.Data
             POE_FAST_ENABLE = 35,
             POE_PERPETUAL_ENABLE = 36,
             SHOW_MAC_LEARNING_PORT = 37,
+            SHOW_PORT_STATUS = 38,
             // 40 - 59: Special switch commands
             WRITE_MEMORY = 40
         }
@@ -94,6 +95,7 @@ namespace PoEWizard.Data
             [RestUrlId.POE_FAST_ENABLE] = $"lanpower slot {DATA_0} fpoe enable",                // 35
             [RestUrlId.POE_PERPETUAL_ENABLE] = $"lanpower slot {DATA_0} ppoe enable",           // 36
             [RestUrlId.SHOW_MAC_LEARNING_PORT] = $"show mac-learning port {DATA_0}",            // 37
+            [RestUrlId.SHOW_PORT_STATUS] = $"show interfaces port {DATA_0} alias",              // 38
             // 40 - 59: Special switch commands
             [RestUrlId.WRITE_MEMORY] = "write memory flash-synchro"                             // 40
         };
