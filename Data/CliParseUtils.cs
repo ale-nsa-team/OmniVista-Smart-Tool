@@ -80,6 +80,42 @@ namespace PoEWizard.Data
             return table;
         }
 
+        public static Dictionary<string, string> ParseSingleHTable(string data, int nbHeaders = 1)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            string[] lines = Regex.Split(data, @"\r\n\r|\n");
+            Match match = htableRegex.Match(data);
+            if (match.Success)
+            {
+                int line = LineNumberFromPosition(data, match.Index);
+                string[] header;
+                if (nbHeaders == 2)
+                {
+                    string h1 = lines[line - 2];
+                    string h2 = lines[line - 1];
+                    string[] hd1 = GetValues(lines[line], h1);
+                    string[] hd2 = GetValues(lines[line], h2);
+                    header = hd1.Zip(hd2, (a, b) => $"{a} {b}").ToArray();
+                }
+                else
+                {
+                    string head = lines[line - 1];
+                    header = GetValues(lines[line], head);
+                }
+
+                for (int i = line + 1; i < lines.Length; i++)
+                {
+                    if (lines[i] == string.Empty) break;
+                    string[] values = GetValues(lines[line], lines[i]);
+                    for (int j = 0; j < header.Length; j++)
+                    {
+                        dict.Add(header[j], values?.Skip(j).FirstOrDefault());
+                    }
+                }
+            }
+            return dict;
+        }
+
         public static List<Dictionary<string, string>> ParseChassisTable(string data)
         {
             List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();

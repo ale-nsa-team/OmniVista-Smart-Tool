@@ -46,8 +46,8 @@ namespace PoEWizard.Comm
                 dict = CliParseUtils.ParseVTable(_response["RESULT"]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.System);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MICROCODE));
-                diclist = CliParseUtils.ParseHTable(_response["RESULT"]);
-                SwitchModel.LoadFromDictionary(diclist[0], DictionaryType.MicroCode);
+                dict = CliParseUtils.ParseSingleHTable(_response["RESULT"]);
+                SwitchModel.LoadFromDictionary(dict, DictionaryType.MicroCode);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_RUNNING_DIR));
                 dict = CliParseUtils.ParseVTable(_response["RESULT"]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.RunningDir);
@@ -55,6 +55,10 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
                 diclist = CliParseUtils.ParseChassisTable(_response["RESULT"]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.Chassis);
+                foreach (var chassis in SwitchModel.ChassisList)
+                {
+
+                }
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[1] { "1/1" }));
                 diclist = CliParseUtils.ParseHTable(_response["RESULT"], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.LanPower);

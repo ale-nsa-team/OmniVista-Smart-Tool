@@ -67,7 +67,7 @@ namespace PoEWizard.Data
             [RestUrlId.SHOW_PORTS_LIST] = "show interfaces alias",                              //  4
             [RestUrlId.SHOW_POWER_SUPPLY] = $"show powersupply {DATA_0}",                       //  5
             [RestUrlId.SHOW_LAN_POWER] = $"show lanpower slot {DATA_0}",                        //  6
-            [RestUrlId.SHOW_LAN_POWER_STATUS] = $"show lanpower slot {DATA_0} status",          //  7
+            [RestUrlId.SHOW_LAN_POWER_STATUS] = $"show lanpower chassis {DATA_0} status",       //  7
             [RestUrlId.SHOW_SLOT] = $"show slot {DATA_0}",                                      //  8
             [RestUrlId.SHOW_MAC_LEARNING] = $"show mac-learning domain vlan",                   //  9
             [RestUrlId.SHOW_TEMPERATURE] = $"show temperature",                                 // 10
