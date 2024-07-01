@@ -69,6 +69,9 @@ namespace PoEWizard.Comm
                 SwitchModel.LoadFromList(diclist, DictionaryType.LanPower);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
 
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_CONFIG, new string[1] { "1/1" }));
+                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_HEALTH));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_TEMPERATURE));
 
