@@ -14,7 +14,7 @@
         public enum AosVersion { V6, V8 };
         public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
         public enum PortStatus { Unknown, Up, Down }
-        public enum PoeStatus { On, Off, Fault, Deny, NoPoe }
+        public enum PoeStatus { On, Off, Fault, Deny, Conflict, NoPoe }
         public enum EType { Fiber, Copper, Unknown }
         public enum PriorityLevelType { Low, High, Critical, Unknown }
         public enum PowerSupplyState { Up, Down, Unknown }
@@ -96,11 +96,24 @@
         public const string Y = "Y";
         public const string Y_LITERAL = "Y";
         public const string CHAS_SLOT_PORT = "Chas/Slot/Port";
+        public const string PORT = "Port";
         public const string MAX_POWER = "Max Power";
+        public const string MAXIMUM = "Maximum(mW)";
+        public const string USED = "Actual Used(mW)";
         public const string USAGE_THRESHOLD = "Usage Threshold";
         public const string ADMIN_STATUS = "Admin Status";
         public const string LINK_STATUS = "Link Status";
+        public const string STATUS = "Status";
         public const string P_CHASSIS = "CHASSIS_ID";
+        public const string BT_SUPPORT = "8023BT Support";
+        public const string CLASS_DETECTION = "Class Detection";
+        public const string HI_RES_DETECTION = "High-Res Detection";
+        public const string FPOE = "FPOE";
+        public const string PPOE = "PPOE";
+        public const string PRIORITY = "Priority";
+        public const string CLASS = "Class";
+        public const string TYPE = "Type";
+        public const string PRIO_DISCONNECT = "Priority Disconnect";
         public const string P_SLOT = "SLOT_ID";
         public const string P_PORT = "PORT_ID";
         #endregion

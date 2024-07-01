@@ -21,6 +21,8 @@ namespace PoEWizard.Device
         public bool IsVfLink { get; set; } = false;
         public bool Is4Pair { get; set; } = true;
         public bool IsEnabled { get; set; } = false;
+        public string Class { get; set; }
+        public string Type { get; set; }
 
         public PortModel(Dictionary<string, string> dict)
         {
@@ -38,6 +40,34 @@ namespace PoEWizard.Device
             IsLldp = false;
             IsVfLink = false;
             Is4Pair = false;
+        }
+
+        public void LoadFromDictionary(Dictionary<string, string> dict)
+        {
+            MaxPower = dict[MAXIMUM];
+            Power = dict[USED];
+            switch (dict[STATUS])
+            {
+                case "Powered On":
+                case "Searching":
+                    Poe = PoeStatus.On;
+                    break;
+                case "Powered Off":
+                    Poe = PoeStatus.Off;
+                    break;
+                case "Fault":
+                    Poe = PoeStatus.Fault;
+                    break;
+                case "Bad!VoltInj":
+                    Poe = PoeStatus.Conflict;
+                    break;
+                case "Deny":
+                    Poe = PoeStatus.Deny;
+                    break;
+            }
+            PriorityLevel = Enum.TryParse<PriorityLevelType>(dict[PRIORITY], true, out PriorityLevelType res) ? res : PriorityLevelType.Unknown;
+            Class = dict[CLASS];
+            Type = dict[TYPE];
         }
 
         private void UpdatePortStatus(string status)

@@ -70,16 +70,14 @@ namespace PoEWizard.Comm
                     foreach (var slot in chassis.Slots)
                     {
                         this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
+                        diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
+                        slot.LoadFromList(diclist);
                     }
                 }
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
 
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLIES));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLY, new string[1] { "1" }));
 
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[1] { "1/1" }));
-                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
-                SwitchModel.LoadFromList(diclist, DictionaryType.LanPower);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
 
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_CONFIG, new string[1] { "1/1" }));

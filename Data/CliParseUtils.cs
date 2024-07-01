@@ -27,7 +27,8 @@ namespace PoEWizard.Data
             foreach (XmlNode node in nodes)
             {
                 string key = node.Name;
-                string value = node.InnerText.Trim(new char[] { ':', ' ', '\n' }); ;
+                //string value = node.InnerText.Trim(new char[] { ':', ' ', '\n' }); ;
+                string value = node.InnerText.Trim(new char[] { ':', '\n' }); ;
                 dictionary[key] = value;
             }
             return dictionary;

@@ -47,17 +47,15 @@ namespace PoEWizard.Device
         {
             foreach (Dictionary<string, string> dict in list)
             {
-                var slot = this.Slots[ParseNumber(dict[CHAS_SLOT_PORT])];
+                var slot = this.Slots[ParseIndex(dict[CHAS_SLOT_PORT])];
                 if (slot == null) return;
-            }
-            if (Slots.Count > 0) {
-                this.PowerBudget = Slots[0].Budget;
+                slot.LoadFromDictionary(dict);
             }
         }
 
-        private int ParseNumber(string chassis)
+        private int ParseIndex(string chassis)
         {
-            return int.TryParse(chassis.Split('/')[1], out int n) ? n : 0;
+            return int.TryParse(chassis.Split('/')[1], out int n) ? n -1 : 0;
         }
         
     }
