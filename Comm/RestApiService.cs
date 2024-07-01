@@ -78,6 +78,7 @@ namespace PoEWizard.Comm
                 }
                 else
                 {
+                    Logger.Error(ex.Message + ":\n" + ex.StackTrace);
                     _progress?.Report(new ProgressReport(ReportType.Error, "Connect", ex.Message));
                 }
             }
