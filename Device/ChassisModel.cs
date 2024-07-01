@@ -45,10 +45,10 @@ namespace PoEWizard.Device
 
         public void LoadFromList(List<Dictionary<string, string>> list)
         {
-            Slots = new List<SlotModel>();
             foreach (Dictionary<string, string> dict in list)
             {
-                this.Slots.Add(new SlotModel(dict));
+                var slot = this.Slots[ParseNumber(dict[CHAS_SLOT_PORT])];
+                if (slot == null) return;
             }
             if (Slots.Count > 0) {
                 this.PowerBudget = Slots[0].Budget;
@@ -57,7 +57,7 @@ namespace PoEWizard.Device
 
         private int ParseNumber(string chassis)
         {
-            return int.TryParse(chassis.Split('/')[0], out int n) ? n : 0;
+            return int.TryParse(chassis.Split('/')[1], out int n) ? n : 0;
         }
         
     }

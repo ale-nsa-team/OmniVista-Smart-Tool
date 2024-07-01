@@ -63,7 +63,7 @@ namespace PoEWizard.Comm
                 {
                     this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
                     diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
-                    //chassis.LoadFromList(diclist);
+                    chassis.LoadFromList(diclist);
                 }
                 foreach (var chassis in SwitchModel.ChassisList)
                 {
