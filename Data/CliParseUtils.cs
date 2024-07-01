@@ -43,27 +43,6 @@ namespace PoEWizard.Data
             return ParseTable(data, etableRegex);
         }
 
-        public static Dictionary<int, Dictionary<int, List<Dictionary<string, string>>>> ParsePortsListApi(string response)
-        {
-            List<Dictionary<string, string>> diclist = ParseHTable(response, 3);
-            Dictionary<int, Dictionary<int, List<Dictionary<string, string>>>> slotPortsList = new Dictionary<int, Dictionary<int, List<Dictionary<string, string>>>>();
-            foreach (Dictionary<string, string> port in diclist)
-            {
-                if (string.IsNullOrEmpty(port["Chas/ Slot/ Port"])) continue;
-                Dictionary<string, object> slotPort = Utils.GetChassisSlotPort(port["Chas/ Slot/ Port"]);
-                if (!slotPortsList.ContainsKey((int)slotPort[P_CHASSIS]))
-                {
-                    slotPortsList[(int)slotPort[P_CHASSIS]] = new Dictionary<int, List<Dictionary<string, string>>>();
-                }
-                if (!slotPortsList[(int)slotPort[P_CHASSIS]].ContainsKey((int)slotPort[P_SLOT]))
-                {
-                    slotPortsList[(int)slotPort[P_CHASSIS]][(int)slotPort[P_SLOT]] = new List<Dictionary<string, string>>();
-                }
-                slotPortsList[(int)slotPort[P_CHASSIS]][(int)slotPort[P_SLOT]].Add(port);
-            }
-            return slotPortsList;
-        }
-
         public static List<Dictionary<string, string>> ParseHTable(string data, int nbHeaders = 1)
         {
             List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();
