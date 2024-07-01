@@ -173,6 +173,12 @@ namespace PoEWizard.Data
             return xmlDoc;
         }
 
+        public static string GetSlotNumberFromPort(string slotPortNr)
+        {
+            Dictionary<string, object> slotPort = Utils.GetChassisSlotPort(slotPortNr);
+            return $"{slotPort[Constants.P_CHASSIS]}/{slotPort[Constants.P_SLOT]}";
+        }
+
         public static Dictionary<string, object> GetChassisSlotPort(string slotPortNr)
         {
             try

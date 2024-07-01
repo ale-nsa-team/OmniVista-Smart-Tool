@@ -96,32 +96,35 @@ namespace PoEWizard.Comm
             try
             {
                 Logger.Debug($"Starting PoE Wizard");
-                _progress.Report(new ProgressReport("Starting PoE Wizard..."));
-                StringBuilder report = new StringBuilder();
-                report.Append("Enable Port ").Append(port);
-                if (TryDisable4Pair(port))
+                ProgressReport progressReport = new ProgressReport("Starting PoE Wizard...");
+                _progress.Report(progressReport);
+                progressReport = new ProgressReport("PoE Wizard Report:");
+                progressReport.Message += $"\n - Enabling 2-Pair Power on Port {port} ";
+                ExecuteActionOnPort(port, RestUrlId.POWER_2PAIR_PORT, progressReport);
+                if (progressReport.Type == ReportType.Error)
                 {
-                    report.Append(" 2-Pair Power Success");
+                    TryChangePriority(port, progressReport);
                 }
-                else
+                if (progressReport.Type == ReportType.Error)
                 {
-                    report.Append("Enable 2-Pair Power Failed");
+                    progressReport.Message += $"\n - Enabling Power HDMI on Port {port} ";
+                    ExecuteActionOnPort(port, RestUrlId.POWER_HDMI_ENABLE, progressReport);
                 }
-                report.Append("\nChange Port ").Append(port).Append(" priority to ");
-                PriorityLevelType priorityLevel = TryChangePriority(port);
-
-                SetPoeConfiguration(RestUrlId.POWER_823BT_ENABLE, port);
-                SetPoeConfiguration(RestUrlId.POWER_823BT_DISABLE, port);
-
-                SetPoeConfiguration(RestUrlId.POWER_HDMI_ENABLE, port);
-                SetPoeConfiguration(RestUrlId.POWER_HDMI_DISABLE, port);
-
-                SetPoeConfiguration(RestUrlId.LLDP_POWER_MDI_ENABLE, port);
-                SetPoeConfiguration(RestUrlId.LLDP_POWER_MDI_DISABLE, port);
-
-                SetPoeConfiguration(RestUrlId.LLDP_EXT_POWER_MDI_ENABLE, port);
-                SetPoeConfiguration(RestUrlId.LLDP_EXT_POWER_MDI_DISABLE, port);
-
+                if (progressReport.Type == ReportType.Error)
+                {
+                    progressReport.Message += $"\n - Enabling LLDP Power via MDI on Port {port} ";
+                    ExecuteActionOnPort(port, RestUrlId.LLDP_POWER_MDI_ENABLE, progressReport);
+                }
+                if (progressReport.Type == ReportType.Error)
+                {
+                    progressReport.Message += $"\n - Enabling LLDP Ext Power via MDI on Port {port} ";
+                    ExecuteActionOnPort(port, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE, progressReport);
+                }
+                if (progressReport.Type == ReportType.Error)
+                {
+                    TryEnable823BT(port, progressReport);
+                }
+                _progress.Report(progressReport);
             }
             catch (Exception ex)
             {
@@ -137,30 +140,58 @@ namespace PoEWizard.Comm
             }
         }
 
-        private bool TryDisable4Pair(string port)
+        private void TryChangePriority(string port, ProgressReport progressReport)
         {
-            PowerPort(RestUrlId.POWER_DOWN_PORT, port);
-            PowerPort(RestUrlId.POWER_2PAIR_PORT, port);
-            Thread.Sleep(5000);
-            PowerPort(RestUrlId.POWER_UP_PORT, port);
-            Thread.Sleep(3000);
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
-            Thread.Sleep(5000);
-            return true;
-        }
-
-        private PriorityLevelType TryChangePriority(string port)
-        {
+            progressReport.Message += $"\n - Changing priority on Port {port} ";
+            SetPoeConfiguration(RestUrlId.POWER_DOWN_PORT, port);
             PriorityLevelType priorityLevel = PriorityLevelType.High;
-            PowerPort(RestUrlId.POWER_DOWN_PORT, port);
             SetPoePriority(port, priorityLevel);
             Thread.Sleep(5000);
-            PowerPort(RestUrlId.POWER_UP_PORT, port);
+            SetPoeConfiguration(RestUrlId.POWER_UP_PORT, port);
             Thread.Sleep(3000);
             this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
             Thread.Sleep(5000);
             this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { port }));
-            return priorityLevel;
+
+            progressReport.Message += $"to {priorityLevel} ";
+            progressReport.Type = ReportType.Info;
+            progressReport.Message += "solved the problem";
+            progressReport.Type = ReportType.Error;
+            progressReport.Message += "didn't solve the problem";
+        }
+
+        private void TryEnable823BT(string port, ProgressReport progressReport)
+        {
+            string slotNr = Utils.GetSlotNumberFromPort(port);
+            progressReport.Message += $"\n - Enabling 802.3.bt on slot {slotNr} ";
+            PowerPort(RestUrlId.POWER_DOWN_SLOT, slotNr);
+            SetPoeConfiguration(RestUrlId.POWER_823BT_ENABLE, slotNr);
+            Thread.Sleep(5000);
+            PowerPort(RestUrlId.POWER_UP_SLOT, slotNr);
+            Thread.Sleep(3000);
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
+            Thread.Sleep(5000);
+
+            progressReport.Type = ReportType.Info;
+            progressReport.Message += "solved the problem";
+            progressReport.Type = ReportType.Error;
+            progressReport.Message += "didn't solve the problem";
+        }
+
+        private void ExecuteActionOnPort(string port, RestUrlId action, ProgressReport progressReport)
+        {
+            SetPoeConfiguration(RestUrlId.POWER_DOWN_PORT, port);
+            SetPoeConfiguration(action, port);
+            Thread.Sleep(5000);
+            SetPoeConfiguration(RestUrlId.POWER_UP_PORT, port);
+            Thread.Sleep(3000);
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
+            Thread.Sleep(5000);
+
+            progressReport.Type = ReportType.Info;
+            progressReport.Message += "OK";
+            progressReport.Type = ReportType.Error;
+            progressReport.Message += "Failed";
         }
 
         private void SetPoeConfiguration(RestUrlId cmd, string slot)
