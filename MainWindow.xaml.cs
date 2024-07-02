@@ -36,6 +36,7 @@ namespace PoEWizard
         private string selectedConfig;
         private readonly IProgress<ProgressReport> progress;
         private bool checkPort = true;
+        private bool reportAck;
         private RestApiService restApiService;
         private SwitchModel device;
         #endregion
@@ -68,19 +69,20 @@ namespace PoEWizard
             // progress report handling
             progress = new Progress<ProgressReport>(report =>
             {
+                reportAck = false;
                 switch (report.Type)
                 {
                     case ReportType.Status:
                         ShowInfoBox(report.Message);
                         break;
                     case ReportType.Error:
-                        ShowMessageBox(report.Title, report.Message, MsgBoxIcons.Error);
+                        reportAck = ShowMessageBox(report.Title, report.Message, MsgBoxIcons.Error);
                         break;
                     case ReportType.Warning:
-                        ShowMessageBox(report.Title, report.Message, MsgBoxIcons.Warning);
+                        reportAck = ShowMessageBox(report.Title, report.Message, MsgBoxIcons.Warning);
                         break;
                     case ReportType.Info:
-                        ShowMessageBox(report.Title, report.Message, MsgBoxIcons.Info);
+                        reportAck = ShowMessageBox(report.Title, report.Message, MsgBoxIcons.Info);
                         break;
                     default:
                         break;
