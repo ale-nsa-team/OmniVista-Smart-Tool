@@ -15,7 +15,7 @@ namespace PoEWizard.Device
         public double PowerConsumed { get; set; }
         public double PowerRemaining { get; set; }
         public List<SlotModel> Slots { get; set; }
-        public List<PowerSupplyInfo> PowerSupplies { get; set; }
+        public List<PowerSupplyModel> PowerSupplies { get; set; }
         public string SerialNumber { get; set; }
         public string PartNumber { get; set; }
         public string HardwareRevision { get; set; }
@@ -23,18 +23,17 @@ namespace PoEWizard.Device
 
         public ChassisModel(Dictionary<string, string> dict)
         {
-            Number = int.TryParse(dict[ID], out int n) ? n : 1;
-            Model = dict[MODEL_NAME];
-            Type = dict[MODULE_TYPE];
-            IsMaster = dict[ROLE] == "Master";
-            Status = (dict[OPERATIONAL_STATUS] == "UP") ? ChassisStatus.Up : ChassisStatus.Down;
-            AdminStatus = dict[ADMIN_STATUS];
-            SerialNumber = dict[SERIAL_NUMBER];
-            PartNumber = dict[PART_NUMBER];
-            HardwareRevision = dict[HARDWARE_REVISION];
-            MacAddress = dict[CHASSIS_MAC_ADDRESS];
+            Number = int.TryParse(dict["ID"], out int n) ? n : 1;
+            Model = dict["Model Name"];
+            Type = dict["Module Type"];
+            IsMaster = dict["Role"] == "Master";
+            AdminStatus = dict["Admin Status"];
+            SerialNumber = dict["Serial Number"];
+            PartNumber = dict["Part Number"];
+            HardwareRevision = dict["Hardware Revision"];
+            MacAddress = dict["MAC Address"];
             Slots = new List<SlotModel>();
-            PowerSupplies = new List<PowerSupplyInfo>();
+            PowerSupplies = new List<PowerSupplyModel>();
         }
 
         public ChassisModel(string sn, string mac, string model)
