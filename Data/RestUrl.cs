@@ -58,7 +58,9 @@ namespace PoEWizard.Data
             SHOW_MAC_LEARNING_PORT = 37,
             SHOW_PORT_STATUS = 38,
             // 40 - 59: Special switch commands
-            WRITE_MEMORY = 40
+            WRITE_MEMORY = 40,
+            // 100 - 119: Virtual commands
+            CHECK_POWER_PRIORITY = 100
         }
 
         public static Dictionary<RestUrlId, string> REST_URL_TABLE = new Dictionary<RestUrlId, string>
