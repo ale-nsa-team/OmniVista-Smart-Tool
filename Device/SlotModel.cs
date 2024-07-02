@@ -46,12 +46,13 @@ namespace PoEWizard.Device
             this.IsFPoE = dict[FPOE] == "enable";
         }
 
-        public void LoadFromList(List<Dictionary<string, string>> list)
+        public void LoadFromList(List<Dictionary<string, string>> list, DictionaryType dt)
         {
             foreach (var dict in list)
             {
                 int p = ParseNumber(dict[PORT], 2) - 1;
-                this.Ports[p].LoadFromDictionary(dict);
+                if (dt == DictionaryType.LanPower) this.Ports[p].LoadPoEData(dict);
+                else this.Ports[p].LoadPoEConfig(dict);
             }
         }
 

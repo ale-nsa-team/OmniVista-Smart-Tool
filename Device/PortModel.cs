@@ -42,7 +42,7 @@ namespace PoEWizard.Device
             Is4Pair = false;
         }
 
-        public void LoadFromDictionary(Dictionary<string, string> dict)
+        public void LoadPoEData(Dictionary<string, string> dict)
         {
             MaxPower = dict[MAXIMUM];
             Power = dict[USED];
@@ -68,6 +68,11 @@ namespace PoEWizard.Device
             PriorityLevel = Enum.TryParse<PriorityLevelType>(dict[PRIORITY], true, out PriorityLevelType res) ? res : PriorityLevelType.Unknown;
             Class = dict[CLASS];
             Type = dict[TYPE];
+        }
+
+        public void LoadPoEConfig(Dictionary<string, string> dict) 
+        {
+            
         }
 
         private void UpdatePortStatus(string status)
