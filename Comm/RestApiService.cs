@@ -102,38 +102,50 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void RunPoeWizard(string port)
+        public bool RunPoeWizard(string port, List<RestUrlId> commands)
         {
+            ProgressReport progressReport = new ProgressReport("PoE Wizard Report:");
             try
             {
                 Logger.Debug($"Starting PoE Wizard");
-                ProgressReport progressReport = new ProgressReport("Starting PoE Wizard...");
-                _progress.Report(progressReport);
-                progressReport = new ProgressReport("PoE Wizard Report:");
-                progressReport.Message += $"\n - Enabling 2-Pair Power on Port {port} ";
-                ExecuteActionOnPort(port, RestUrlId.POWER_2PAIR_PORT, progressReport);
-                if (progressReport.Type == ReportType.Error)
+                foreach (RestUrlId command in commands)
                 {
-                    TryChangePriority(port, progressReport);
-                }
-                if (progressReport.Type == ReportType.Error)
-                {
-                    progressReport.Message += $"\n - Enabling Power HDMI on Port {port} ";
-                    ExecuteActionOnPort(port, RestUrlId.POWER_HDMI_ENABLE, progressReport);
-                }
-                if (progressReport.Type == ReportType.Error)
-                {
-                    progressReport.Message += $"\n - Enabling LLDP Power via MDI on Port {port} ";
-                    ExecuteActionOnPort(port, RestUrlId.LLDP_POWER_MDI_ENABLE, progressReport);
-                }
-                if (progressReport.Type == ReportType.Error)
-                {
-                    progressReport.Message += $"\n - Enabling LLDP Ext Power via MDI on Port {port} ";
-                    ExecuteActionOnPort(port, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE, progressReport);
-                }
-                if (progressReport.Type == ReportType.Error)
-                {
-                    TryEnable823BT(port, progressReport);
+                    switch (command)
+                    {
+
+                        case RestUrlId.POWER_2PAIR_PORT:
+                            progressReport.Message += $"\n - Enabling 2-Pair Power on Port {port} ";
+                            ExecuteActionOnPort(port, RestUrlId.POWER_2PAIR_PORT, progressReport);
+                            break;
+
+                        case RestUrlId.POWER_HDMI_ENABLE:
+                            progressReport.Message += $"\n - Enabling Power HDMI on Port {port} ";
+                            ExecuteActionOnPort(port, RestUrlId.POWER_HDMI_ENABLE, progressReport);
+                            break;
+
+                        case RestUrlId.LLDP_POWER_MDI_ENABLE:
+                            progressReport.Message += $"\n - Enabling LLDP Power via MDI on Port {port} ";
+                            ExecuteActionOnPort(port, RestUrlId.LLDP_POWER_MDI_ENABLE, progressReport);
+                            break;
+
+                        case RestUrlId.LLDP_EXT_POWER_MDI_ENABLE:
+                            progressReport.Message += $"\n - Enabling LLDP Ext Power via MDI on Port {port} ";
+                            ExecuteActionOnPort(port, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE, progressReport);
+                            break;
+
+                        case RestUrlId.POWER_PRIORITY_PORT:
+                            progressReport.Message += $"\n - Changing priority on Port {port} ";
+                            TryChangePriority(port, progressReport);
+                            break;
+
+                        case RestUrlId.POWER_823BT_ENABLE:
+                            string slotNr = Utils.GetSlotNumberFromPort(port);
+                            progressReport.Message += $"\n - Enabling 802.3.bt on slot {slotNr} ";
+                            TryEnable823BT(port, progressReport, slotNr);
+                            break;
+
+                    }
+                    if (progressReport.Type != ReportType.Error) break;
                 }
                 _progress.Report(progressReport);
             }
@@ -149,11 +161,11 @@ namespace PoEWizard.Comm
                     _progress?.Report(new ProgressReport(ReportType.Error, "Connect", ex.Message));
                 }
             }
+            return progressReport.Type == ReportType.Error;
         }
 
         private void TryChangePriority(string port, ProgressReport progressReport)
         {
-            progressReport.Message += $"\n - Changing priority on Port {port} ";
             SetPoeConfiguration(RestUrlId.POWER_DOWN_PORT, port);
             PriorityLevelType priorityLevel = PriorityLevelType.High;
             SetPoePriority(port, priorityLevel);
@@ -171,10 +183,8 @@ namespace PoEWizard.Comm
             progressReport.Message += "didn't solve the problem";
         }
 
-        private void TryEnable823BT(string port, ProgressReport progressReport)
+        private void TryEnable823BT(string port, ProgressReport progressReport, string slotNr)
         {
-            string slotNr = Utils.GetSlotNumberFromPort(port);
-            progressReport.Message += $"\n - Enabling 802.3.bt on slot {slotNr} ";
             PowerPort(RestUrlId.POWER_DOWN_SLOT, slotNr);
             SetPoeConfiguration(RestUrlId.POWER_823BT_ENABLE, slotNr);
             Thread.Sleep(5000);

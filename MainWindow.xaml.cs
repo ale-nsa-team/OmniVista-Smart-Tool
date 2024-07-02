@@ -3,6 +3,7 @@ using PoEWizard.Components;
 using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -13,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.RestUrl;
 
 namespace PoEWizard
 {
@@ -253,11 +255,58 @@ namespace PoEWizard
         {
             try
             {
+                bool proceed = false;
+                ShowProgress("Running PoE Wizard...");
                 restApiService = new RestApiService(device, progress);
-                await Task.Run(() => restApiService.RunPoeWizard("1/1/28"));
+                await Task.Run(() =>
 
-                Logger.Info($"PoE Wizard completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                    proceed = restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
+                                RestUrlId.POWER_2PAIR_PORT, RestUrlId.POWER_HDMI_ENABLE, RestUrlId.LLDP_POWER_MDI_ENABLE, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE
+                              })
+                
+                );
+                Logger.Info($"PoE Wizard 1st Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                if (proceed)
+                {
+                    proceed = ShowMessageBox("Enable 802.3.bt", "All devices on the same slot will restart. Do you want to proceed?",
+                                             MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                    if (proceed)
+                    {
+                        await Task.Run(() =>
 
+                            proceed = restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
+                                        RestUrlId.POWER_823BT_ENABLE
+                                      })
+
+                        );
+
+                        Logger.Info($"PoE Wizard 2nd Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                    }
+                }
+                if (proceed)
+                {
+                    await Task.Run(() =>
+
+                        proceed = restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
+                                    RestUrlId.CHECK_POWER_PRIORITY
+                                  }));
+
+                    Logger.Info($"PoE Wizard Check Power Priority completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+
+                    if (!proceed) return;
+                    proceed = ShowMessageBox("Power Priority Change", "Some other devices with lower priority may stop. Do you want to proceed?",
+                                             MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                    if (proceed)
+                    {
+                        await Task.Run(() =>
+
+                            restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
+                                    RestUrlId.POWER_PRIORITY_PORT
+                                }));
+
+                        Logger.Info($"PoE Wizard 3rd Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                    }
+                }
             }
             catch (Exception ex)
             {
