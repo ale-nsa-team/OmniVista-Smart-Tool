@@ -28,13 +28,13 @@ namespace PoEWizard.Device
 
         public void LoadFromDictionary(Dictionary<string, string> dict)
         {
-            this.Model = dict[MODEL_NAME];
-            this.Type = dict[MODULE_TYPE];
-            this.Description = dict[DESCRIPTION];
-            this.PowerProvision = dict[POWER];
-            this.PartNumber = dict[PART_NUMBER];
-            this.SerialNumber = dict[SERIAL_NUMBER];
-            this.HardwareRevision = dict[HARDWARE_REVISION];
+            this.Model = dict.TryGetValue(MODEL_NAME, out string s) ? s : "";
+            this.Type = dict.TryGetValue(MODULE_TYPE, out s) ? s : "";
+            this.Description = dict.TryGetValue(DESCRIPTION, out s) ? s : "";
+            this.PowerProvision = dict.TryGetValue(POWER, out s) ? s : "";
+            this.PartNumber = dict.TryGetValue(PART_NUMBER, out s) ? s : "";
+            this.SerialNumber = dict.TryGetValue(SERIAL_NUMBER, out s) ? s : "";
+            this.HardwareRevision = dict.TryGetValue(HARDWARE_REVISION, out s) ? s : "";
         }
     }
 }

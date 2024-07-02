@@ -46,25 +46,26 @@ namespace PoEWizard.Device
 
         public void LoadFromDictionary(Dictionary<string, string> dict, DictionaryType dt)
         {
+            string s;
             switch (dt)
             {
                 case DictionaryType.System:
-                    Name = dict[NAME];
-                    Description = dict[DESCRIPTION];
-                    Location = dict[LOCATION];
-                    Contact = dict[CONTACT];
-                    UpTime = dict[UP_TIME];
+                    Name = dict.TryGetValue(NAME, out s) ? s : "";
+                    Description = dict.TryGetValue(DESCRIPTION, out s) ? s : "";
+                    Location = dict.TryGetValue(LOCATION, out s) ? s : "";
+                    Contact = dict.TryGetValue(CONTACT, out s) ? s : "";
+                    UpTime = dict.TryGetValue(UP_TIME, out s) ? s : "";
                     break;
                 case DictionaryType.Chassis:
-                    Model = dict[MODEL_NAME];
-                    SerialNumber = dict[SERIAL_NUMBER];
-                    MacAddress = dict[CHASSIS_MAC_ADDRESS];
+                    Model = dict.TryGetValue(MODEL_NAME, out s) ? s : "";
+                    SerialNumber = dict.TryGetValue(SERIAL_NUMBER, out s) ? s : "";
+                    MacAddress = dict.TryGetValue(CHASSIS_MAC_ADDRESS, out s) ? s : "";
                     break;
                 case DictionaryType.RunningDir:
-                    RunningDir = dict[RUNNING_CONFIGURATION];
+                    RunningDir = dict.TryGetValue(RUNNING_CONFIGURATION, out s) ? s : "";
                     break;
                 case DictionaryType.MicroCode:
-                    Version = dict[RELEASE];
+                    Version = dict.TryGetValue(RELEASE, out s) ? s : "";
                     break;
             }
 ;
@@ -202,19 +203,18 @@ namespace PoEWizard.Device
         private string GetPortId(string chSlotPort)
         {
             string[] parts = chSlotPort.Split('/');
-            return parts[2] ?? "0";
+            return parts.Length > 2 ? parts[2] : "0";
         }
 
         private int GetPsId(string chId)
         {
-            string[] parts = chId.Split('/');
-            return int.TryParse(parts[1], out int i) ? i : 0;
+            return ParseId(chId, 1);
         }
 
         private int ParseId(string chSlotPort, int index)
         {
             string[] parts = chSlotPort.Split('/');
-            return int.TryParse(parts[index], out int i) ? i : 0;
+            return parts.Length > index ? (int.TryParse(parts[index], out int i) ? i : 0) : 0;
         }
     }
 }

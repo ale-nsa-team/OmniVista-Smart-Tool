@@ -9,7 +9,6 @@ namespace PoEWizard.Device
     public class PortModel
     {
         public string Number { get; set; }
-        public List<string> MacList { get; set; }
         public bool HasPoe { get; set; }
         public PoeStatus Poe { get; set; }
         public string Power { get; set; }
@@ -27,10 +26,9 @@ namespace PoEWizard.Device
         public PortModel(Dictionary<string, string> dict)
         {
 
-            Number = GetPortId(dict[CHAS_SLOT_PORT]);
-            UpdatePortStatus(dict[LINK_STATUS]);
-            IsEnabled = dict[ADMIN_STATUS] == "enable";
-            MacList = new List<string>();
+            Number = GetPortId(dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "");
+            UpdatePortStatus(dict.TryGetValue(LINK_STATUS, out s) ? s : "");
+            IsEnabled = (dict.TryGetValue(ADMIN_STATUS, out s) ? s : "") == "enable";
             HasPoe = false;
             Power = "0 mw";
             Poe = PoeStatus.NoPoe;
@@ -44,10 +42,10 @@ namespace PoEWizard.Device
 
         public void LoadPoEData(Dictionary<string, string> dict)
         {
-            MaxPower = dict[MAXIMUM];
-            Power = dict[USED];
+            MaxPower = dict.TryGetValue(MAXIMUM, out string s) ? s : "";
+            Power = dict.TryGetValue(USED, out s) ? s : "";
             HasPoe = true;
-            switch (dict[STATUS])
+            switch (dict.TryGetValue(STATUS, out s) ? s : "")
             {
                 case POWERED_ON:
                 case SEARCHING:
@@ -66,9 +64,10 @@ namespace PoEWizard.Device
                     Poe = PoeStatus.Deny;
                     break;
             }
-            PriorityLevel = Enum.TryParse<PriorityLevelType>(dict[PRIORITY], true, out PriorityLevelType res) ? res : PriorityLevelType.Unknown;
-            Class = dict[CLASS];
-            Type = dict[TYPE];
+            string level = dict.TryGetValue(PRIORITY, out s) ? s : "";
+            PriorityLevel = Enum.TryParse<PriorityLevelType>(level, true, out PriorityLevelType res) ? res : PriorityLevelType.Unknown;
+            Class = dict.TryGetValue(CLASS, out s) ? s : "";
+            Type = dict.TryGetValue(TYPE, out s) ? s : "";
         }
 
         public void LoadPoEConfig(Dictionary<string, string> dict) 
@@ -91,7 +90,7 @@ namespace PoEWizard.Device
 
         private string GetPortId(string chas)
         {
-            return chas.Split('/')[2] ?? "0";
+            return chas.Split('/')?[2] ?? "0";
         }
 
     }

@@ -23,15 +23,17 @@ namespace PoEWizard.Device
 
         public ChassisModel(Dictionary<string, string> dict)
         {
-            Number = int.TryParse(dict[ID], out int n) ? n : 1;
-            Model = dict[MODEL_NAME];
-            Type = dict[MODULE_TYPE];
-            IsMaster = dict[ROLE] == "Master";
-            AdminStatus = dict[ADMIN_STATUS];
-            SerialNumber = dict[SERIAL_NUMBER];
-            PartNumber = dict[PART_NUMBER];
-            HardwareRevision = dict[HARDWARE_REVISION];
-            MacAddress = dict[CHASSIS_MAC_ADDRESS];
+            string nb = dict.TryGetValue(ID, out string s) ? s : "";
+            Number = int.TryParse(nb, out int n) ? n : 1;
+            Model =  dict.TryGetValue(MODEL_NAME, out s) ? s : "";
+            Type = dict.TryGetValue(MODULE_TYPE, out s) ? s : "";
+            string role = dict.TryGetValue(ROLE, out s) ? s : "";
+            IsMaster = role == "Master";
+            AdminStatus = dict.TryGetValue(ADMIN_STATUS, out s) ? s : "";
+            SerialNumber = dict.TryGetValue(SERIAL_NUMBER, out s) ? s : "";
+            PartNumber = dict.TryGetValue(PART_NUMBER, out s) ? s : "";
+            HardwareRevision = dict.TryGetValue(HARDWARE_REVISION, out s) ? s : "";
+            MacAddress = dict.TryGetValue(CHASSIS_MAC_ADDRESS, out s) ? s : "";
             Slots = new List<SlotModel>();
             PowerSupplies = new List<PowerSupplyModel>();
         }
@@ -47,7 +49,9 @@ namespace PoEWizard.Device
         {
             foreach (Dictionary<string, string> dict in list)
             {
-                var slot = this.Slots[ParseIndex(dict[CHAS_SLOT_PORT])];
+                int idx = ParseIndex(dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "");
+                if (idx < 0) continue;
+                var slot = this.Slots[idx];
                 if (slot == null) return;
                 slot.LoadFromDictionary(dict);
             }
@@ -55,7 +59,8 @@ namespace PoEWizard.Device
 
         private int ParseIndex(string chassis)
         {
-            return int.TryParse(chassis.Split('/')[1], out int n) ? n -1 : 0;
+            string[] parts = chassis.Split('/');
+            return parts.Length > 1 ? (int.TryParse(parts[1], out int n) ? n - 1 : -1) : -1;
         }
         
     }

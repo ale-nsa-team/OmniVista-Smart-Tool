@@ -32,18 +32,21 @@ namespace PoEWizard.Device
 
         public SlotModel(Dictionary<string, string> dict)
         {
-            this.Number = ParseNumber(dict[CHAS_SLOT_PORT], 0);
-            this.Budget = ParseDouble(dict[MAX_POWER]);
-            this.Threshold = ParseNumber(dict[USAGE_THRESHOLD], 0);
+            string nb = dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "0";
+            this.Number = ParseNumber(nb, 0);
+            nb = dict.TryGetValue(MAX_POWER, out s) ? s : "0";
+            this.Budget = ParseDouble(nb);
+            nb = dict.TryGetValue(USAGE_THRESHOLD, out s) ? s : "0";
+            this.Threshold = ParseNumber(nb, 0);
         }
 
         public void LoadFromDictionary(Dictionary<string, string> dict)
         {
-            this.Is8023bt = dict[BT_SUPPORT] == "Yes";
-            this.IsClassDetection = dict[CLASS_DETECTION] == "enable";
-            this.IsHiResDetection = dict[HI_RES_DETECTION] == "enable";
-            this.IsPPoE = dict[PPOE] == "enable";
-            this.IsFPoE = dict[FPOE] == "enable";
+            this.Is8023bt = (dict.TryGetValue(BT_SUPPORT, out string s) ? s : "") == "Yes";
+            this.IsClassDetection = (dict.TryGetValue(CLASS_DETECTION, out s) ? s : "") == "enable";
+            this.IsHiResDetection = (dict.TryGetValue(HI_RES_DETECTION, out s) ? s : "") == "enable";
+            this.IsPPoE = (dict.TryGetValue(PPOE, out s) ? s : "") == "enable";
+            this.IsFPoE = (dict.TryGetValue(FPOE, out s) ? s : "") == "enable";
         }
 
         public void LoadFromList(List<Dictionary<string, string>> list, DictionaryType dt)
@@ -52,13 +55,15 @@ namespace PoEWizard.Device
             {
                 if (dt == DictionaryType.LanPower)
                 {
-                    int p = ParseNumber(dict[PORT], 2) - 1;
+                    int p = ParseNumber(dict.TryGetValue(PORT, out string s) ? s : "0", 2) - 1;
+                    if (p < 0) continue;
                     this.Ports[p].LoadPoEData(dict);
                     this.NbPoePorts = list.Count;
                 }
                 else
                 {
-                    int p = ParseNumber(dict[CHAS_SLOT_PORT], 2) - 1;
+                    int p = ParseNumber(dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "0", 2) - 1;
+                    if (p < 0) continue;    
                     this.Ports[p].LoadPoEConfig(dict);
                 }
             }
@@ -81,7 +86,8 @@ namespace PoEWizard.Device
 
         public int ParseNumber(string slot, int index)
         {
-            return int.TryParse(slot.Split('/')[index], out int n) ? n : 0;
+            string[] parts = slot.Split('/');
+            return parts.Length > index ? (int.TryParse(parts[index], out int n) ? n : 0) : 0;
         }
 
         public double ParseDouble(string val)

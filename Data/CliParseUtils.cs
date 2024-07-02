@@ -60,7 +60,6 @@ namespace PoEWizard.Data
                     if (lines[i] == string.Empty) break;
                     Dictionary<string, string> dict = new Dictionary<string, string>();
                     string[] values = GetValues(lines[line], lines[i]);
-                    if (values.Length != header.Length) continue;
                     for (int j = 0; j < header.Length; j++)
                     {
                         dict.Add(header[j].Trim(), values?.Skip(j).FirstOrDefault());
