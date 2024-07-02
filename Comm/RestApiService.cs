@@ -230,7 +230,7 @@ namespace PoEWizard.Comm
                 {
                     this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
                     List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 1);
-                    slot.LoadFromList(dictList);
+                    slot.LoadFromList(dictList, DictionaryType.LanPower);
                 }
             }
         }
