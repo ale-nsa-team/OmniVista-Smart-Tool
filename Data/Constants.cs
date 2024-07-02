@@ -31,7 +31,6 @@
         public const string AUTHENTICATION_FAILED = "Authentication failure";
         public const string CENTRAL_SWITCH = "Central Switch";
         public const string CERTIFIED_DIR = "Certified";
-        public const string CHASSIS_MAC = "MAC Address";
         public const string CLI_FULL_PROMPT = "Cli Default Full Prompt";
         public const string CLI_PROMPT = "Cli Default Prompt";
         public const string CLI_TIMEOUT = "Cli Inactivity Timer in minutes";

@@ -138,6 +138,11 @@ namespace PoEWizard.Comm
                             TryChangePriority(port, progressReport);
                             break;
 
+                        case RestUrlId.CHECK_POWER_PRIORITY:
+                            progressReport.Message += $"\n - Check power priority on Port {port} ";
+                            CheckPowerPriority(port, progressReport);
+                            break;
+
                         case RestUrlId.POWER_823BT_ENABLE:
                             string slotNr = Utils.GetSlotNumberFromPort(port);
                             progressReport.Message += $"\n - Enabling 802.3.bt on slot {slotNr} ";
@@ -164,23 +169,20 @@ namespace PoEWizard.Comm
             return progressReport.Type == ReportType.Error;
         }
 
-        private void TryChangePriority(string port, ProgressReport progressReport)
+        private void ExecuteActionOnPort(string port, RestUrlId action, ProgressReport progressReport)
         {
             SetPoeConfiguration(RestUrlId.POWER_DOWN_PORT, port);
-            PriorityLevelType priorityLevel = PriorityLevelType.High;
-            SetPoePriority(port, priorityLevel);
+            SetPoeConfiguration(action, port);
             Thread.Sleep(5000);
             SetPoeConfiguration(RestUrlId.POWER_UP_PORT, port);
             Thread.Sleep(3000);
             this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
             Thread.Sleep(5000);
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { port }));
 
-            progressReport.Message += $"to {priorityLevel} ";
             progressReport.Type = ReportType.Info;
-            progressReport.Message += "solved the problem";
+            progressReport.Message += "OK";
             progressReport.Type = ReportType.Error;
-            progressReport.Message += "didn't solve the problem";
+            progressReport.Message += "Failed";
         }
 
         private void TryEnable823BT(string port, ProgressReport progressReport, string slotNr)
@@ -199,20 +201,42 @@ namespace PoEWizard.Comm
             progressReport.Message += "didn't solve the problem";
         }
 
-        private void ExecuteActionOnPort(string port, RestUrlId action, ProgressReport progressReport)
+        private void CheckPowerPriority(string port, ProgressReport progressReport)
         {
             SetPoeConfiguration(RestUrlId.POWER_DOWN_PORT, port);
-            SetPoeConfiguration(action, port);
+            PriorityLevelType priorityLevel = PriorityLevelType.High;
+            SetPoePriority(port, priorityLevel);
             Thread.Sleep(5000);
             SetPoeConfiguration(RestUrlId.POWER_UP_PORT, port);
             Thread.Sleep(3000);
             this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
             Thread.Sleep(5000);
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { port }));
 
+            progressReport.Message += $"to {priorityLevel} ";
             progressReport.Type = ReportType.Info;
-            progressReport.Message += "OK";
+            progressReport.Message += "solved the problem";
             progressReport.Type = ReportType.Error;
-            progressReport.Message += "Failed";
+            progressReport.Message += "didn't solve the problem";
+        }
+
+        private void TryChangePriority(string port, ProgressReport progressReport)
+        {
+            SetPoeConfiguration(RestUrlId.POWER_DOWN_PORT, port);
+            PriorityLevelType priorityLevel = PriorityLevelType.High;
+            SetPoePriority(port, priorityLevel);
+            Thread.Sleep(5000);
+            SetPoeConfiguration(RestUrlId.POWER_UP_PORT, port);
+            Thread.Sleep(3000);
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
+            Thread.Sleep(5000);
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { port }));
+
+            progressReport.Message += $"to {priorityLevel} ";
+            progressReport.Type = ReportType.Info;
+            progressReport.Message += "solved the problem";
+            progressReport.Type = ReportType.Error;
+            progressReport.Message += "didn't solve the problem";
         }
 
         private void SetPoeConfiguration(RestUrlId cmd, string slot)
