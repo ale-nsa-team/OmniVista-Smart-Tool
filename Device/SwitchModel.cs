@@ -92,13 +92,12 @@ namespace PoEWizard.Device
                         }
                     }
                     break;
-
                 case DictionaryType.PortsList:
                     int nchas = list.GroupBy(d => GetChassisId(d)).Count();
                     for (int i = 1; i <= nchas; i++)
                     {
                         List<Dictionary<string, string>> chasList = list.Where(d => GetChassisId(d) == i).ToList();
-                        if (chasList?.Count == 0) return;
+                        if (chasList?.Count == 0) continue;
                         ChassisModel chas = this.GetChassis(GetChassisId(chasList[0]));
                         int nslots = chasList.GroupBy(c => GetSlotId(c)).Count();
                         for (int j = 1; j <= nslots; j++)
@@ -112,8 +111,15 @@ namespace PoEWizard.Device
                             }
                             chas.Slots.Add(slot);
                         }
+                    }                 
+                    break;
+                case DictionaryType.PowerSupply:
+                    foreach (var dic in list)
+                    {
+                        var chas = GetChassis(GetChassisId(dic[CHAS_PS]));
+                        if (chas == null) continue;
+                        chas.PowerSupplies.Add(new PowerSupplyModel(GetPsId(dic[CHAS_PS]), dic[LOCATION]));
                     }
-                    
                     break;
                 case DictionaryType.LanPower:
                     break;
@@ -205,9 +211,21 @@ namespace PoEWizard.Device
             return int.TryParse(parts[0], out int i) ? i : 0;
         }
 
+        private int GetChassisId(string chId)
+        {
+            string[] parts = chId.Split('/');
+            return int.TryParse(parts[0], out int i) ? i : 0;
+        }
+
         private int GetSlotId(Dictionary<string, string> chas)
         {
             string chId = chas[CHAS_SLOT_PORT];
+            string[] parts = chId.Split('/');
+            return int.TryParse(parts[1], out int i) ? i : 0;
+        }
+
+        private int GetPsId(string chId)
+        {
             string[] parts = chId.Split('/');
             return int.TryParse(parts[1], out int i) ? i : 0;
         }

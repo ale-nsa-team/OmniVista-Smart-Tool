@@ -133,8 +133,6 @@
     <Compile Include="Data\RestUrlEntry.cs" />
     <Compile Include="Data\Utils.cs" />
     <Compile Include="Device\ChassisModel.cs" />
-    <Compile Include="Device\Commands.cs" />
-    <Compile Include="Device\PoeModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Device\PowerSupplyModel.cs" />

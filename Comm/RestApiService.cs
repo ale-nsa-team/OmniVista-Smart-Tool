@@ -59,18 +59,34 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 3);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PortsList);
+                _progress.Report(new ProgressReport("Reading power supply information"));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLIES));
+                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+                SwitchModel.LoadFromList(diclist, DictionaryType.PowerSupply);
+                _progress.Report(new ProgressReport("Reading PoE information"));
                 foreach (var chassis in SwitchModel.ChassisList)
                 {
                     this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
                     diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                     chassis.LoadFromList(diclist);
+                    foreach (var slot in chassis.Slots)
+                    {
+                        this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
+                        diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
+                        slot.LoadFromList(diclist, DictionaryType.LanPower);
+                        this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_CONFIG, new string[1] { $"{chassis.Number}/{slot.Number}" }));
+                        diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+
+                    }
+                    foreach (var ps in chassis.PowerSupplies)
+                    {
+                        this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLY, new string[1] { ps.Id.ToString() }));
+                        dict = CliParseUtils.ParseVTable(_response[RESULT]);
+                        ps.LoadFromDictionary(dict);
+                    }
                 }
-                GetLanPower();
 
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLIES));
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLY, new string[1] { "1" }));
 
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { "1/1" }));
 
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_CONFIG, new string[1] { "1/1" }));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
