@@ -65,15 +65,7 @@ namespace PoEWizard.Comm
                     diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                     chassis.LoadFromList(diclist);
                 }
-                foreach (var chassis in SwitchModel.ChassisList)
-                {
-                    foreach (var slot in chassis.Slots)
-                    {
-                        this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
-                        diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
-                        slot.LoadFromList(diclist);
-                    }
-                }
+                GetLanPower();
 
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLIES));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLY, new string[1] { "1" }));
@@ -107,6 +99,7 @@ namespace PoEWizard.Comm
             ProgressReport progressReport = new ProgressReport("PoE Wizard Report:");
             try
             {
+                Dictionary<string, object> slotPort = Utils.GetChassisSlotPort(port);
                 Logger.Debug($"Starting PoE Wizard");
                 foreach (RestUrlId command in commands)
                 {
@@ -139,12 +132,12 @@ namespace PoEWizard.Comm
                             break;
 
                         case RestUrlId.CHECK_POWER_PRIORITY:
-                            progressReport.Message += $"\n - Check power priority on Port {port} ";
-                            CheckPowerPriority(port, progressReport);
+                            progressReport.Message += $"\n - Checking power priority on Port {port} ";
+                            CheckPowerPriority(port, progressReport, slotPort);
                             break;
 
                         case RestUrlId.POWER_823BT_ENABLE:
-                            string slotNr = Utils.GetSlotNumberFromPort(port);
+                            string slotNr = $"{slotPort[P_CHASSIS]}/{slotPort[P_SLOT]}";
                             progressReport.Message += $"\n - Enabling 802.3.bt on slot {slotNr} ";
                             TryEnable823BT(port, progressReport, slotNr);
                             break;
@@ -201,23 +194,29 @@ namespace PoEWizard.Comm
             progressReport.Message += "didn't solve the problem";
         }
 
-        private void CheckPowerPriority(string port, ProgressReport progressReport)
+        private void CheckPowerPriority(string port, ProgressReport progressReport, Dictionary<string, object> slotPort)
         {
-            SetPoeConfiguration(RestUrlId.POWER_DOWN_PORT, port);
-            PriorityLevelType priorityLevel = PriorityLevelType.High;
-            SetPoePriority(port, priorityLevel);
-            Thread.Sleep(5000);
-            SetPoeConfiguration(RestUrlId.POWER_UP_PORT, port);
-            Thread.Sleep(3000);
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
-            Thread.Sleep(5000);
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { port }));
-
-            progressReport.Message += $"to {priorityLevel} ";
             progressReport.Type = ReportType.Info;
-            progressReport.Message += "solved the problem";
-            progressReport.Type = ReportType.Error;
-            progressReport.Message += "didn't solve the problem";
+            progressReport.Message += "completed";
+            GetLanPower();
+            ChassisModel chassis = this.SwitchModel.GetChassis((int)slotPort[P_CHASSIS]);
+            if (chassis == null) return;
+            PortModel switchPort = this.SwitchModel.GetPort(port);
+            if (switchPort == null) return;
+            if (chassis.PowerRemaining < Utils.StringToDouble(switchPort.MaxPower)) progressReport.Type = ReportType.Error;
+        }
+
+        private void GetLanPower()
+        {
+            foreach (var chassis in SwitchModel.ChassisList)
+            {
+                foreach (var slot in chassis.Slots)
+                {
+                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
+                    List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 1);
+                    slot.LoadFromList(dictList);
+                }
+            }
         }
 
         private void TryChangePriority(string port, ProgressReport progressReport)

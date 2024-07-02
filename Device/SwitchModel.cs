@@ -26,8 +26,8 @@ namespace PoEWizard.Device
         public string Description { get; set; }
         public string SerialNumber { get; set; }
         public string Contact { get; set; }
-        public string Power { get; set; } = "0";
-        public string Budget { get; set; } = "0";
+        public double Power { get; set; } = 0;
+        public double Budget { get; set; } = 0;
         public string UpTime { get; set; }
 
         public List<ChassisModel> ChassisList { get; set; }
@@ -176,6 +176,26 @@ namespace PoEWizard.Device
                     });
                 });
             });
+        }
+
+        public PortModel GetPort(string slotPortNr)
+        {
+            PortModel port = null;
+            this.ChassisList?.ForEach(c =>
+            {
+                c.Slots?.ForEach(s =>
+                {
+                    s.Ports.ForEach(p =>
+                    {
+                        string name = $"{c.Number}/{s.Number}/{p.Number}";
+                        if (name.Equals(slotPortNr))
+                        {
+                            port = p;
+                        }
+                    });
+                });
+            });
+            return port;
         }
 
         private int GetChassisId(Dictionary<string, string> chas)

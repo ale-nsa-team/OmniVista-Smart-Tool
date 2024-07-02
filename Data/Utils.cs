@@ -102,7 +102,7 @@ namespace PoEWizard.Data
             return 0;
         }
 
-        private static string ExtractNumber(string strNumber)
+        public static string ExtractNumber(string strNumber)
         {
             try
             {
