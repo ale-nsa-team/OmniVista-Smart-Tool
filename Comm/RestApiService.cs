@@ -88,6 +88,7 @@ namespace PoEWizard.Comm
 
         public bool RunPoeWizard(string port, List<RestUrlId> commands)
         {
+            GetLanPower();
             ProgressReport progressReport = new ProgressReport("PoE Wizard Report:");
             try
             {
@@ -186,40 +187,62 @@ namespace PoEWizard.Comm
         private void ExecuteActionOnPort(string port, RestUrlId action, ProgressReport progressReport)
         {
             SetPoeConfiguration(RestUrlId.POWER_DOWN_PORT, port);
-            SetPoeConfiguration(action, port);
-            Thread.Sleep(5000);
-            SetPoeConfiguration(RestUrlId.POWER_UP_PORT, port);
-            Thread.Sleep(3000);
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
-            Thread.Sleep(5000);
+            try
+            {
+                SetPoeConfiguration(action, port);
+                Thread.Sleep(5000);
+                SetPoeConfiguration(RestUrlId.POWER_UP_PORT, port);
+                Thread.Sleep(3000);
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
+                Thread.Sleep(5000);
 
-            progressReport.Type = ReportType.Info;
-            progressReport.Message += "OK";
-            progressReport.Type = ReportType.Error;
-            progressReport.Message += "Failed";
+                progressReport.Type = ReportType.Info;
+                progressReport.Message += "OK";
+                progressReport.Type = ReportType.Error;
+                progressReport.Message += "Failed";
+            }
+            catch (Exception ex)
+            {
+                ParseException(port, progressReport, ex);
+            }
         }
 
         private void TryEnable823BT(string port, ProgressReport progressReport, string slotNr)
         {
             PowerPort(RestUrlId.POWER_DOWN_SLOT, slotNr);
-            SetPoeConfiguration(RestUrlId.POWER_823BT_ENABLE, slotNr);
-            Thread.Sleep(5000);
-            PowerPort(RestUrlId.POWER_UP_SLOT, slotNr);
-            Thread.Sleep(3000);
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
-            Thread.Sleep(5000);
+            try
+            {
+                SetPoeConfiguration(RestUrlId.POWER_823BT_ENABLE, slotNr);
+                Thread.Sleep(5000);
+                PowerPort(RestUrlId.POWER_UP_SLOT, slotNr);
+                Thread.Sleep(3000);
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
+                Thread.Sleep(5000);
 
-            progressReport.Type = ReportType.Info;
-            progressReport.Message += "solved the problem";
+                progressReport.Type = ReportType.Info;
+                progressReport.Message += "solved the problem";
+                progressReport.Type = ReportType.Error;
+                progressReport.Message += "didn't solve the problem";
+            }
+            catch (Exception ex)
+            {
+                ParseException(port, progressReport, ex);
+            }
+        }
+
+        private void ParseException(string port, ProgressReport progressReport, Exception ex)
+        {
+            Logger.Error(ex.Message + ":\n" + ex.StackTrace);
             progressReport.Type = ReportType.Error;
-            progressReport.Message += "didn't solve the problem";
+            progressReport.Message += $"Failed\n{ex.Message}";
+            Thread.Sleep(5000);
+            SetPoeConfiguration(RestUrlId.POWER_UP_PORT, port);
         }
 
         private void CheckPowerPriority(string port, ProgressReport progressReport, Dictionary<string, object> slotPort)
         {
             progressReport.Type = ReportType.Info;
             progressReport.Message += "completed";
-            GetLanPower();
             ChassisModel chassis = this.SwitchModel.GetChassis((int)slotPort[P_CHASSIS]);
             if (chassis == null) return;
             PortModel switchPort = this.SwitchModel.GetPort(port);
@@ -230,20 +253,28 @@ namespace PoEWizard.Comm
         private void TryChangePriority(string port, ProgressReport progressReport)
         {
             SetPoeConfiguration(RestUrlId.POWER_DOWN_PORT, port);
-            PriorityLevelType priorityLevel = PriorityLevelType.High;
-            SetPoePriority(port, priorityLevel);
-            Thread.Sleep(5000);
-            SetPoeConfiguration(RestUrlId.POWER_UP_PORT, port);
-            Thread.Sleep(3000);
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
-            Thread.Sleep(5000);
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { port }));
+            try
+            {
+                PriorityLevelType priorityLevel = PriorityLevelType.High;
+                SetPoePriority(port, priorityLevel);
+                Thread.Sleep(5000);
+                SetPoeConfiguration(RestUrlId.POWER_UP_PORT, port);
+                Thread.Sleep(3000);
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
+                Thread.Sleep(5000);
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { port }));
 
-            progressReport.Message += $"to {priorityLevel} ";
-            progressReport.Type = ReportType.Info;
-            progressReport.Message += "solved the problem";
-            progressReport.Type = ReportType.Error;
-            progressReport.Message += "didn't solve the problem";
+                progressReport.Message += $"to {priorityLevel} ";
+                progressReport.Type = ReportType.Info;
+                progressReport.Message += "solved the problem";
+                progressReport.Type = ReportType.Error;
+                progressReport.Message += "didn't solve the problem";
+
+            }
+            catch (Exception ex)
+            {
+                ParseException(port, progressReport, ex);
+            }
         }
 
         private void SetPoeConfiguration(RestUrlId cmd, string slot)
