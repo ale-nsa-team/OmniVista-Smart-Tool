@@ -131,7 +131,7 @@ namespace PoEWizard.Device
             {
                 foreach (ChassisModel chassis in ChassisList)
                 {
-                    foreach (PowerSupplyInfo ps in chassis.PowerSupplies)
+                    foreach (PowerSupplyModel ps in chassis.PowerSupplies)
                     {
                         if (ps.Status == PowerSupplyState.Down)
                         {
