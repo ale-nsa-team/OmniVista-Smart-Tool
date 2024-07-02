@@ -48,20 +48,20 @@ namespace PoEWizard.Device
             Power = dict[USED];
             switch (dict[STATUS])
             {
-                case "Powered On":
-                case "Searching":
+                case POWERED_ON:
+                case SEARCHING:
                     Poe = PoeStatus.On;
                     break;
-                case "Powered Off":
+                case POWERED_OFF:
                     Poe = PoeStatus.Off;
                     break;
-                case "Fault":
+                case FAULT:
                     Poe = PoeStatus.Fault;
                     break;
-                case "Bad!VoltInj":
+                case BAD_VOLTAGE_INJECTION:
                     Poe = PoeStatus.Conflict;
                     break;
-                case "Deny":
+                case DENY:
                     Poe = PoeStatus.Deny;
                     break;
             }

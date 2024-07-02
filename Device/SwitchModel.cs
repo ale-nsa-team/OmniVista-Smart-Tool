@@ -53,22 +53,22 @@ namespace PoEWizard.Device
             switch (dt)
             {
                 case DictionaryType.System:
-                    Name = dict["Name"];
-                    Description = dict["Description"];
-                    Location = dict["Location"];
-                    Contact = dict["Contact"];
-                    UpTime = dict["Up Time"];
+                    Name = dict[NAME];
+                    Description = dict[DESCRIPTION];
+                    Location = dict[LOCATION];
+                    Contact = dict[CONTACT];
+                    UpTime = dict[UP_TIME];
                     break;
                 case DictionaryType.Chassis:
-                    Model = dict["Model Name"];
-                    SerialNumber = dict["Serial Number"];
-                    MacAddress = dict["MAC Address"];
+                    Model = dict[MODEL_NAME];
+                    SerialNumber = dict[SERIAL_NUMBER];
+                    MacAddress = dict[CHASSIS_MAC_ADDRESS];
                     break;
                 case DictionaryType.RunningDir:
-                    RunningDir = dict["Running configuration"];
+                    RunningDir = dict[RUNNING_CONFIGURATION];
                     break;
                 case DictionaryType.MicroCode:
-                    Version = dict["Release"];
+                    Version = dict[RELEASE];
                     break;
             }
 ;
@@ -98,6 +98,7 @@ namespace PoEWizard.Device
                     for (int i = 1; i <= nchas; i++)
                     {
                         List<Dictionary<string, string>> chasList = list.Where(d => GetChassisId(d) == i).ToList();
+                        if (chasList?.Count == 0) return;
                         ChassisModel chas = this.GetChassis(GetChassisId(chasList[0]));
                         int nslots = chasList.GroupBy(c => GetSlotId(c)).Count();
                         for (int j = 1; j <= nslots; j++)

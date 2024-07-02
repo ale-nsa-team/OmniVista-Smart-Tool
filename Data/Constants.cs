@@ -78,7 +78,6 @@
         public const string PASSWORD_PROMPT_6X = "assword :";
         public const string RESTRICTED = "RESTRICTED";
         public const string RUNNING_CMM = "Running CMM";
-        public const string RUNNING_CONFIGURATION = "Running configuration";
         public const string SECONDARY = "SECONDARY";
         public const string SERIAL_NUMBER = "Serial Number";
         public const string SESSION_TIMEOUT = "30";
@@ -95,6 +94,12 @@
         public const string WORKING_DIR = "Working";
         public const string Y = "Y";
         public const string Y_LITERAL = "Y";
+
+        // Used by "Utils" class
+        public const string P_CHASSIS = "CHASSIS_ID";
+        public const string P_SLOT = "SLOT_ID";
+        public const string P_PORT = "PORT_ID";
+        // Used by "SHOW_PORTS_LIST"
         public const string CHAS_SLOT_PORT = "Chas/Slot/Port";
         public const string PORT = "Port";
         public const string MAX_POWER = "Max Power";
@@ -104,7 +109,6 @@
         public const string ADMIN_STATUS = "Admin Status";
         public const string LINK_STATUS = "Link Status";
         public const string STATUS = "Status";
-        public const string P_CHASSIS = "CHASSIS_ID";
         public const string BT_SUPPORT = "8023BT Support";
         public const string CLASS_DETECTION = "Class Detection";
         public const string HI_RES_DETECTION = "High-Res Detection";
@@ -114,8 +118,30 @@
         public const string CLASS = "Class";
         public const string TYPE = "Type";
         public const string PRIO_DISCONNECT = "Priority Disconnect";
-        public const string P_SLOT = "SLOT_ID";
-        public const string P_PORT = "PORT_ID";
+        public const string POWERED_ON = "Powered On";
+        public const string POWERED_OFF = "Powered Off";
+        public const string SEARCHING = "Searching";
+        public const string FAULT = "Fault";
+        public const string DENY = "Deny";
+        public const string BAD_VOLTAGE_INJECTION = "Bad!VoltInj";
+        // Used by "SHOW_CHASSIS"
+        public const string ID = "ID";
+        public const string MODULE_TYPE = "Module Type";
+        public const string ROLE = "Role";
+        public const string OPERATIONAL_STATUS = "Operational Status";
+        public const string PART_NUMBER = "Part Number";
+        public const string HARDWARE_REVISION = "Hardware Revision";
+        public const string CHASSIS_MAC_ADDRESS = "MAC Address";
+        // Used by "SHOW_SYSTEM"
+        public const string NAME = "Name";
+        public const string DESCRIPTION = "Description";
+        public const string LOCATION = "Location";
+        public const string CONTACT = "Contact";
+        public const string UP_TIME = "Up Time";
+        // Used by "SHOW_RUNNING_DIR"
+        public const string RUNNING_CONFIGURATION = "Running configuration";
+        // Used by "SHOW_MICROCODE"
+        public const string RELEASE = "Release";
         #endregion
 
         #region integers

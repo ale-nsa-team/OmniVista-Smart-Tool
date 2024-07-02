@@ -23,15 +23,16 @@ namespace PoEWizard.Device
 
         public ChassisModel(Dictionary<string, string> dict)
         {
-            Number = int.TryParse(dict["ID"], out int n) ? n : 1;
-            Model = dict["Model Name"];
-            Type = dict["Module Type"];
-            IsMaster = dict["Role"] == "Master";
-            AdminStatus = dict["Admin Status"];
-            SerialNumber = dict["Serial Number"];
-            PartNumber = dict["Part Number"];
-            HardwareRevision = dict["Hardware Revision"];
-            MacAddress = dict["MAC Address"];
+            Number = int.TryParse(dict[ID], out int n) ? n : 1;
+            Model = dict[MODEL_NAME];
+            Type = dict[MODULE_TYPE];
+            IsMaster = dict[ROLE] == "Master";
+            Status = (dict[OPERATIONAL_STATUS] == "UP") ? ChassisStatus.Up : ChassisStatus.Down;
+            AdminStatus = dict[ADMIN_STATUS];
+            SerialNumber = dict[SERIAL_NUMBER];
+            PartNumber = dict[PART_NUMBER];
+            HardwareRevision = dict[HARDWARE_REVISION];
+            MacAddress = dict[CHASSIS_MAC_ADDRESS];
             Slots = new List<SlotModel>();
             PowerSupplies = new List<PowerSupplyInfo>();
         }
