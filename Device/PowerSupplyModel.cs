@@ -4,7 +4,7 @@ using static PoEWizard.Data.Constants;
 namespace PoEWizard.Device
 {
     [Serializable]
-    public class PowerSupplyInfo
+    public class PowerSupplyModel
     {
         public int ChassisNumber { get; set; }
         public int PowerSupplyNumber { get; set; }
@@ -17,6 +17,6 @@ namespace PoEWizard.Device
         public string HardwareRevision { get; set; }
         public string SerialNumber { get; set; }
 
-        public PowerSupplyInfo() { }
+        public PowerSupplyModel() { }
     }
 }
