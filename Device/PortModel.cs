@@ -46,6 +46,7 @@ namespace PoEWizard.Device
         {
             MaxPower = dict[MAXIMUM];
             Power = dict[USED];
+            HasPoe = true;
             switch (dict[STATUS])
             {
                 case POWERED_ON:

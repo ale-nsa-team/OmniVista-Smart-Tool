@@ -2,6 +2,7 @@
 using PoEWizard.Device;
 using PoEWizard.Exceptions;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -63,33 +64,8 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLIES));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PowerSupply);
-                _progress.Report(new ProgressReport("Reading PoE information"));
-                foreach (var chassis in SwitchModel.ChassisList)
-                {
-                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
-                    diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
-                    chassis.LoadFromList(diclist);
-                    foreach (var slot in chassis.Slots)
-                    {
-                        this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
-                        diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
-                        slot.LoadFromList(diclist, DictionaryType.LanPower);
-                        this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_CONFIG, new string[1] { $"{chassis.Number}/{slot.Number}" }));
-                        diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+                GetLanPower();
 
-                    }
-                    foreach (var ps in chassis.PowerSupplies)
-                    {
-                        this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLY, new string[1] { ps.Id.ToString() }));
-                        dict = CliParseUtils.ParseVTable(_response[RESULT]);
-                        ps.LoadFromDictionary(dict);
-                    }
-                }
-
-
-
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_CONFIG, new string[1] { "1/1" }));
-                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
 
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_HEALTH));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_TEMPERATURE));
@@ -178,6 +154,35 @@ namespace PoEWizard.Comm
             return progressReport.Type == ReportType.Error;
         }
 
+        private void GetLanPower()
+        {
+            List<Dictionary<string, string>> diclist;
+            Dictionary<string, string> dict;
+
+            _progress.Report(new ProgressReport("Reading PoE information"));
+            foreach (var chassis in SwitchModel.ChassisList)
+            {
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
+                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+                chassis.LoadFromList(diclist);
+                foreach (var slot in chassis.Slots)
+                {
+                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
+                    diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
+                    slot.LoadFromList(diclist, DictionaryType.LanPower);
+                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_CONFIG, new string[1] { $"{chassis.Number}/{slot.Number}" }));
+                    diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+                    slot.LoadFromList(diclist, DictionaryType.LanPowerCfg);
+                }
+                foreach (var ps in chassis.PowerSupplies)
+                {
+                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLY, new string[1] { ps.Id.ToString() }));
+                    dict = CliParseUtils.ParseVTable(_response[RESULT]);
+                    ps.LoadFromDictionary(dict);
+                }
+            }
+        }
+
         private void ExecuteActionOnPort(string port, RestUrlId action, ProgressReport progressReport)
         {
             SetPoeConfiguration(RestUrlId.POWER_DOWN_PORT, port);
@@ -220,19 +225,6 @@ namespace PoEWizard.Comm
             PortModel switchPort = this.SwitchModel.GetPort(port);
             if (switchPort == null) return;
             if (chassis.PowerRemaining < Utils.StringToDouble(switchPort.MaxPower)) progressReport.Type = ReportType.Error;
-        }
-
-        private void GetLanPower()
-        {
-            foreach (var chassis in SwitchModel.ChassisList)
-            {
-                foreach (var slot in chassis.Slots)
-                {
-                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
-                    List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 1);
-                    slot.LoadFromList(dictList, DictionaryType.LanPower);
-                }
-            }
         }
 
         private void TryChangePriority(string port, ProgressReport progressReport)

@@ -50,9 +50,16 @@ namespace PoEWizard.Device
         {
             foreach (var dict in list)
             {
-                int p = ParseNumber(dict[PORT], 2) - 1;
-                if (dt == DictionaryType.LanPower) this.Ports[p].LoadPoEData(dict);
-                else this.Ports[p].LoadPoEConfig(dict);
+                if (dt == DictionaryType.LanPower)
+                {
+                    int p = ParseNumber(dict[PORT], 2) - 1;
+                    this.Ports[p].LoadPoEData(dict);
+                }
+                else
+                {
+                    int p = ParseNumber(dict[CHAS_SLOT_PORT], 2) - 1;
+                    this.Ports[p].LoadPoEConfig(dict);
+                }
             }
         }
 
