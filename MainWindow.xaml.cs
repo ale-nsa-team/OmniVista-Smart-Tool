@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -261,13 +262,12 @@ namespace PoEWizard
                 ShowProgress("Running PoE Wizard...");
                 restApiService = new RestApiService(device, progress);
                 await Task.Run(() =>
-
                     proceed = restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
-                                RestUrlId.POWER_2PAIR_PORT, RestUrlId.POWER_HDMI_ENABLE, RestUrlId.LLDP_POWER_MDI_ENABLE, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE
+                                    RestUrlId.POWER_2PAIR_PORT, RestUrlId.POWER_HDMI_ENABLE, RestUrlId.LLDP_POWER_MDI_ENABLE, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE
                               })
-                
                 );
                 Logger.Info($"PoE Wizard 1st Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                await WaitAckProgress();
                 if (proceed)
                 {
                     proceed = ShowMessageBox("Enable 802.3.bt", "All devices on the same slot will restart. Do you want to proceed?",
@@ -275,37 +275,33 @@ namespace PoEWizard
                     if (proceed)
                     {
                         await Task.Run(() =>
-
                             proceed = restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
-                                        RestUrlId.POWER_823BT_ENABLE
+                                            RestUrlId.POWER_823BT_ENABLE
                                       })
-
                         );
-
                         Logger.Info($"PoE Wizard 2nd Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                     }
                 }
+                await WaitAckProgress();
                 if (proceed)
                 {
                     await Task.Run(() =>
-
                         proceed = restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
-                                    RestUrlId.CHECK_POWER_PRIORITY
-                                  }));
-
+                                        RestUrlId.CHECK_POWER_PRIORITY
+                                  })
+                    );
                     Logger.Info($"PoE Wizard Check Power Priority completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-
+                    await WaitAckProgress();
                     if (!proceed) return;
                     proceed = ShowMessageBox("Power Priority Change", "Some other devices with lower priority may stop. Do you want to proceed?",
                                              MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                     if (proceed)
                     {
                         await Task.Run(() =>
-
                             restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
                                     RestUrlId.POWER_PRIORITY_PORT
-                                }));
-
+                            })
+                        );
                         Logger.Info($"PoE Wizard 3rd Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                     }
                 }
@@ -316,6 +312,19 @@ namespace PoEWizard
             }
             HideProgress();
             HideInfoBox();
+        }
+
+        private async Task WaitAckProgress()
+        {
+            await Task.Run(() =>
+            {
+                DateTime startTime = DateTime.Now;
+                while (!reportAck)
+                {
+                    if (Utils.GetTimeDuration(startTime) > 120) break;
+                    Thread.Sleep(100);
+                }
+            });
         }
 
         private bool ShowMessageBox(string title, string message, MsgBoxIcons icon = MsgBoxIcons.Info, MsgBoxButtons buttons = MsgBoxButtons.Ok)

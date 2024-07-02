@@ -4,6 +4,7 @@ using PoEWizard.Exceptions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -81,7 +82,7 @@ namespace PoEWizard.Comm
                 else
                 {
                     Logger.Error(ex.Message + ":\n" + ex.StackTrace);
-                    _progress.Report(new ProgressReport(ReportType.Error, "Connect", ex.Message));
+                    _progress.Report(new ProgressReport(ReportType.Error, "Connect", WebUtility.UrlDecode(ex.Message)));
                 }
             }
         }
@@ -100,37 +101,44 @@ namespace PoEWizard.Comm
                     {
 
                         case RestUrlId.POWER_2PAIR_PORT:
+                            _progress.Report(new ProgressReport($"Enabling 2-Pair Power on Port {port}"));
                             progressReport.Message += $"\n - Enabling 2-Pair Power on Port {port} ";
                             ExecuteActionOnPort(port, RestUrlId.POWER_2PAIR_PORT, progressReport);
                             break;
 
                         case RestUrlId.POWER_HDMI_ENABLE:
+                            _progress.Report(new ProgressReport($"Enabling Power HDMI on Port {port}"));
                             progressReport.Message += $"\n - Enabling Power HDMI on Port {port} ";
                             ExecuteActionOnPort(port, RestUrlId.POWER_HDMI_ENABLE, progressReport);
                             break;
 
                         case RestUrlId.LLDP_POWER_MDI_ENABLE:
+                            _progress.Report(new ProgressReport($"Enabling LLDP Power via MDI on Port {port}"));
                             progressReport.Message += $"\n - Enabling LLDP Power via MDI on Port {port} ";
                             ExecuteActionOnPort(port, RestUrlId.LLDP_POWER_MDI_ENABLE, progressReport);
                             break;
 
                         case RestUrlId.LLDP_EXT_POWER_MDI_ENABLE:
+                            _progress.Report(new ProgressReport($"Enabling LLDP Ext Power via MDI on Port {port}"));
                             progressReport.Message += $"\n - Enabling LLDP Ext Power via MDI on Port {port} ";
                             ExecuteActionOnPort(port, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE, progressReport);
                             break;
 
-                        case RestUrlId.POWER_PRIORITY_PORT:
-                            progressReport.Message += $"\n - Changing priority on Port {port} ";
-                            TryChangePriority(port, progressReport);
-                            break;
-
                         case RestUrlId.CHECK_POWER_PRIORITY:
+                            _progress.Report(new ProgressReport($"Checking power priority on Port {port}"));
                             progressReport.Message += $"\n - Checking power priority on Port {port} ";
                             CheckPowerPriority(port, progressReport, slotPort);
                             break;
 
+                        case RestUrlId.POWER_PRIORITY_PORT:
+                            _progress.Report(new ProgressReport($"Changing priority on Port {port}"));
+                            progressReport.Message += $"\n - Changing priority on Port {port} ";
+                            TryChangePriority(port, progressReport);
+                            break;
+
                         case RestUrlId.POWER_823BT_ENABLE:
                             string slotNr = $"{slotPort[P_CHASSIS]}/{slotPort[P_SLOT]}";
+                            _progress.Report(new ProgressReport($"Enabling 802.3.bt on slot {slotNr}"));
                             progressReport.Message += $"\n - Enabling 802.3.bt on slot {slotNr} ";
                             TryEnable823BT(port, progressReport, slotNr);
                             break;
@@ -149,7 +157,7 @@ namespace PoEWizard.Comm
                 }
                 else
                 {
-                    _progress?.Report(new ProgressReport(ReportType.Error, "Connect", ex.Message));
+                    _progress?.Report(new ProgressReport(ReportType.Error, "Connect", WebUtility.UrlDecode(ex.Message)));
                 }
             }
             return progressReport.Type == ReportType.Error;
@@ -186,41 +194,17 @@ namespace PoEWizard.Comm
 
         private void ExecuteActionOnPort(string port, RestUrlId action, ProgressReport progressReport)
         {
-            SetPoeConfiguration(RestUrlId.POWER_DOWN_PORT, port);
             try
             {
+                SetPoeConfiguration(RestUrlId.POWER_DOWN_PORT, port);
                 SetPoeConfiguration(action, port);
                 Thread.Sleep(5000);
                 SetPoeConfiguration(RestUrlId.POWER_UP_PORT, port);
                 Thread.Sleep(3000);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
-                Thread.Sleep(5000);
 
-                progressReport.Type = ReportType.Info;
-                progressReport.Message += "OK";
-                progressReport.Type = ReportType.Error;
-                progressReport.Message += "Failed";
-            }
-            catch (Exception ex)
-            {
-                ParseException(port, progressReport, ex);
-            }
-        }
-
-        private void TryEnable823BT(string port, ProgressReport progressReport, string slotNr)
-        {
-            PowerPort(RestUrlId.POWER_DOWN_SLOT, slotNr);
-            try
-            {
-                SetPoeConfiguration(RestUrlId.POWER_823BT_ENABLE, slotNr);
-                Thread.Sleep(5000);
-                PowerPort(RestUrlId.POWER_UP_SLOT, slotNr);
-                Thread.Sleep(3000);
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
-                Thread.Sleep(5000);
-
-                progressReport.Type = ReportType.Info;
-                progressReport.Message += "solved the problem";
+                //progressReport.Type = ReportType.Info;
+                //progressReport.Message += "solved the problem";
                 progressReport.Type = ReportType.Error;
                 progressReport.Message += "didn't solve the problem";
             }
@@ -230,13 +214,26 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void ParseException(string port, ProgressReport progressReport, Exception ex)
+        private void TryEnable823BT(string port, ProgressReport progressReport, string slotNr)
         {
-            Logger.Error(ex.Message + ":\n" + ex.StackTrace);
-            progressReport.Type = ReportType.Error;
-            progressReport.Message += $"Failed\n{ex.Message}";
-            Thread.Sleep(5000);
-            SetPoeConfiguration(RestUrlId.POWER_UP_PORT, port);
+            try
+            {
+                PowerPort(RestUrlId.POWER_DOWN_SLOT, slotNr);
+                SetPoeConfiguration(RestUrlId.POWER_823BT_ENABLE, slotNr);
+                Thread.Sleep(5000);
+                PowerPort(RestUrlId.POWER_UP_SLOT, slotNr);
+                Thread.Sleep(3000);
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
+
+                //progressReport.Type = ReportType.Info;
+                //progressReport.Message += "solved the problem";
+                progressReport.Type = ReportType.Error;
+                progressReport.Message += "didn't solve the problem";
+            }
+            catch (Exception ex)
+            {
+                ParseException(port, progressReport, ex);
+            }
         }
 
         private void CheckPowerPriority(string port, ProgressReport progressReport, Dictionary<string, object> slotPort)
@@ -265,8 +262,8 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { port }));
 
                 progressReport.Message += $"to {priorityLevel} ";
-                progressReport.Type = ReportType.Info;
-                progressReport.Message += "solved the problem";
+                //progressReport.Type = ReportType.Info;
+                //progressReport.Message += "solved the problem";
                 progressReport.Type = ReportType.Error;
                 progressReport.Message += "didn't solve the problem";
 
@@ -275,6 +272,15 @@ namespace PoEWizard.Comm
             {
                 ParseException(port, progressReport, ex);
             }
+        }
+
+        private void ParseException(string port, ProgressReport progressReport, Exception ex)
+        {
+            Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+            progressReport.Type = ReportType.Error;
+            progressReport.Message += WebUtility.UrlDecode($"didn't solve the problem\n{ex.Message}");
+            Thread.Sleep(5000);
+            SetPoeConfiguration(RestUrlId.POWER_UP_PORT, port);
         }
 
         private void SetPoeConfiguration(RestUrlId cmd, string slot)
