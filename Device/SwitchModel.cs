@@ -116,7 +116,7 @@ namespace PoEWizard.Device
                 case DictionaryType.PowerSupply:
                     foreach (var dic in list)
                     {
-                        var chas = GetChassis(GetChassisId(dic[CHAS_PS]));
+                        var chas = GetChassis(ParseId(dic[CHAS_PS], 0));
                         if (chas == null) continue;
                         chas.PowerSupplies.Add(new PowerSupplyModel(GetPsId(dic[CHAS_PS]), dic[LOCATION]));
                     }
@@ -186,42 +186,27 @@ namespace PoEWizard.Device
 
         public PortModel GetPort(string slotPortNr)
         {
-            PortModel port = null;
-            this.ChassisList?.ForEach(c =>
-            {
-                c.Slots?.ForEach(s =>
-                {
-                    s.Ports.ForEach(p =>
-                    {
-                        string name = $"{c.Number}/{s.Number}/{p.Number}";
-                        if (name.Equals(slotPortNr))
-                        {
-                            port = p;
-                        }
-                    });
-                });
-            });
-            return port;
+            var ch = ChassisList.FirstOrDefault(c => c.Number == ParseId(slotPortNr, 0));
+            if (ch == null) return null;
+            var slot = ch.Slots.FirstOrDefault(s => s.Number == ParseId(slotPortNr, 1));
+            if (slot == null) return null;
+            return slot.Ports.FirstOrDefault(p => p.Number == GetPortId(slotPortNr));
         }
 
         private int GetChassisId(Dictionary<string, string> chas)
         {
-            string chId = chas[CHAS_SLOT_PORT];
-            string[] parts = chId.Split('/');
-            return int.TryParse(parts[0], out int i) ? i : 0;
-        }
-
-        private int GetChassisId(string chId)
-        {
-            string[] parts = chId.Split('/');
-            return int.TryParse(parts[0], out int i) ? i : 0;
+            return ParseId(chas[CHAS_SLOT_PORT], 0);
         }
 
         private int GetSlotId(Dictionary<string, string> chas)
         {
-            string chId = chas[CHAS_SLOT_PORT];
-            string[] parts = chId.Split('/');
-            return int.TryParse(parts[1], out int i) ? i : 0;
+            return ParseId(chas[CHAS_SLOT_PORT], 1);
+        }
+
+        private string GetPortId(string chSlotPort)
+        {
+            string[] parts = chSlotPort.Split('/');
+            return parts[2] ?? "0";
         }
 
         private int GetPsId(string chId)
@@ -229,6 +214,11 @@ namespace PoEWizard.Device
             string[] parts = chId.Split('/');
             return int.TryParse(parts[1], out int i) ? i : 0;
         }
-    }
 
+        private int ParseId(string chSlotPort, int index)
+        {
+            string[] parts = chSlotPort.Split('/');
+            return int.TryParse(parts[index], out int i) ? i : 0;
+        }
+    }
 }
