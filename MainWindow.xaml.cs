@@ -30,12 +30,7 @@ namespace PoEWizard
         private readonly ResourceDictionary lightDict;
         private ResourceDictionary currentDict;
         private readonly string appVersion;
-        private readonly string appPath;
-        private readonly string templatePath;
-        private string selectedFunction;
-        private string selectedConfig;
         private readonly IProgress<ProgressReport> progress;
-        private bool checkPort = true;
         private bool reportAck;
         private RestApiService restApiService;
         private SwitchModel device;

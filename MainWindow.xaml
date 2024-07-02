@@ -89,7 +89,29 @@
                 <Label Grid.Row="7" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_runningDir" Content="{Binding RunningDir}"/>
             </Grid>
         </StackPanel>
-        <Border Grid.Row="2" x:Name="_psInfo" Style="{DynamicResource templateOpt}">
+        <Border Grid.Row="2" x:Name="_slotInfo" Style="{DynamicResource templateOpt}">
+            <DataGrid x:Name="_slotsView"
+                      Visibility="Hidden"
+                      Style="{DynamicResource defaultGrid}" ColumnHeaderStyle="{DynamicResource gridHeader}"
+                      CellStyle="{DynamicResource gridCell}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Slot" Width="140" Binding="{Binding Path=Name}"/>
+                    <DataGridTextColumn Header="#Ports" Width="160" Binding="{Binding Path=NbPorts}"/>
+                    <DataGridTextColumn Header="#Poe Ports" Width="150" Binding="{Binding Path=NbPoePorts}" />
+                    <DataGridTextColumn Header="Budget (Watts)" Width="200" Binding="{Binding Path=Budget}" />
+                    <DataGridTextColumn Header="Power (Watts)" Width="190" Binding="{Binding Path=Power}"/>
+                    <DataGridTemplateColumn Header="PoE Status" Width="180">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=PoeStatus}" 
+                                           Foreground="{Binding Path=PoeStatus,
+                                           Converter={StaticResource ValueToColorConverter},
+                                           ConverterParameter=PoeStatus}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
         </Border>
         <Border Grid.Row="2" x:Name="_infoBox" Style="{DynamicResource infoBorder}" Visibility="Collapsed">
             <TextBlock x:Name="_infoBlock" />

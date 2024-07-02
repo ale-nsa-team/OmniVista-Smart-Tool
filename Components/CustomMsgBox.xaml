@@ -10,7 +10,7 @@
         ShowInTaskbar="False" 
         WindowStyle="None"
         SizeToContent="WidthAndHeight"
-        MaxWidth="400" MaxHeight="400">
+        MaxWidth="800" MaxHeight="400">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

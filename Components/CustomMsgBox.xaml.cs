@@ -36,8 +36,8 @@ namespace PoEWizard.Components
                 currDict = light;
             }
             this.Owner = owner;
-            msgOkBtn.Visibility = Visibility.Hidden;
-            msgCancelBtn.Visibility = Visibility.Hidden;
+            msgOkBtn.Visibility = Visibility.Collapsed;
+            msgCancelBtn.Visibility = Visibility.Collapsed;
             msgIcon.Source = null;
         }
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
