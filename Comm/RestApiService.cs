@@ -2,7 +2,6 @@
 using PoEWizard.Device;
 using PoEWizard.Exceptions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -65,11 +64,6 @@ namespace PoEWizard.Comm
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PowerSupply);
                 GetLanPower();
-
-
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_HEALTH));
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_TEMPERATURE));
-
             }
             catch (Exception ex)
             {
