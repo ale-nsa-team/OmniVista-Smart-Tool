@@ -54,6 +54,7 @@ namespace PoEWizard.Device
                 {
                     int p = ParseNumber(dict[PORT], 2) - 1;
                     this.Ports[p].LoadPoEData(dict);
+                    this.NbPoePorts = list.Count;
                 }
                 else
                 {

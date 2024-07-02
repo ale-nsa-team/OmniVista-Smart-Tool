@@ -29,12 +29,8 @@ namespace PoEWizard.Device
         public double Power { get; set; } = 0;
         public double Budget { get; set; } = 0;
         public string UpTime { get; set; }
-
         public List<ChassisModel> ChassisList { get; set; }
-
-        public string ReleaseNumber { get; set; }
         public bool IsConnected { get; set; }
-
         public PowerSupplyState PowerSupplyState => GetPowerSupplyState();
 
         public SwitchModel() : this("", DEFAULT_USERNAME, DEFAULT_PASSWORD, 5) { }
