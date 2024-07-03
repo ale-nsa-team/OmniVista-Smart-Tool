@@ -83,67 +83,72 @@ namespace PoEWizard.Comm
 
         public bool RunPoeWizard(string port, List<RestUrlId> commands)
         {
-            GetLanPower();
             ProgressReport progressReport = new ProgressReport("PoE Wizard Report:");
             try
             {
-                port = "1/1/25";
-
-                PortModel switchPort = this.SwitchModel.GetPort(port);
-                if (switchPort == null) throw new Exception($"Port {port} not found!");
-                if (switchPort.Status == PortStatus.Up)
+                GetLanPower();
+                PortModel switchPort = UpdatePortData(port);
+                if (switchPort.Poe != PoeStatus.Fault && switchPort.Poe != PoeStatus.Deny)
                 {
-                    _progress.Report(new ProgressReport(ReportType.Info, "PoE Wizard", $"Nothing to do, port {port} is already UP"));
+                    _progress.Report(new ProgressReport(ReportType.Info, "PoE Wizard", $"Nothing to do, port {port} PoE status is {switchPort.Poe}"));
                     return false;
                 }
                 ChassisSlotPort slotPort = new ChassisSlotPort(port);
-                Logger.Debug($"Starting PoE Wizard");
+                Logger.Debug($"Starting PoE Wizard on port {port} (PoE status: {switchPort.Poe}, Status: {switchPort.Status}, MAC List: {String.Join(",", switchPort.MacList)})");
+                string source;
                 foreach (RestUrlId command in commands)
                 {
                     switch (command)
                     {
 
                         case RestUrlId.POWER_2PAIR_PORT:
-                            _progress.Report(new ProgressReport($"Enabling 2-Pair Power on Port {port}"));
+                            source = $"Enabling 2-Pair Power on Port {port}";
+                            _progress.Report(new ProgressReport($"{source}\nPoE status: {switchPort.Poe}, Port Status: {switchPort.Status}"));
                             progressReport.Message += $"\n - Enabling 2-Pair Power on Port {port} ";
-                            ExecuteActionOnPort(port, RestUrlId.POWER_2PAIR_PORT, progressReport);
+                            ExecuteActionOnPort(port, RestUrlId.POWER_2PAIR_PORT, progressReport, source);
                             break;
 
                         case RestUrlId.POWER_HDMI_ENABLE:
-                            _progress.Report(new ProgressReport($"Enabling Power HDMI on Port {port}"));
+                            source = $"Enabling Power HDMI on Port {port}";
+                            _progress.Report(new ProgressReport($"{source}\nPoE status: {switchPort.Poe}, Port Status: {switchPort.Status}"));
                             progressReport.Message += $"\n - Enabling Power HDMI on Port {port} ";
-                            ExecuteActionOnPort(port, RestUrlId.POWER_HDMI_ENABLE, progressReport);
+                            ExecuteActionOnPort(port, RestUrlId.POWER_HDMI_ENABLE, progressReport, source);
                             break;
 
                         case RestUrlId.LLDP_POWER_MDI_ENABLE:
-                            _progress.Report(new ProgressReport($"Enabling LLDP Power via MDI on Port {port}"));
+                            source = $"Enabling LLDP Power via MDI on Port {port}";
+                            _progress.Report(new ProgressReport($"{source}\nPoE status: {switchPort.Poe}, Port Status: {switchPort.Status}"));
                             progressReport.Message += $"\n - Enabling LLDP Power via MDI on Port {port} ";
-                            ExecuteActionOnPort(port, RestUrlId.LLDP_POWER_MDI_ENABLE, progressReport);
+                            ExecuteActionOnPort(port, RestUrlId.LLDP_POWER_MDI_ENABLE, progressReport, source);
                             break;
 
                         case RestUrlId.LLDP_EXT_POWER_MDI_ENABLE:
-                            _progress.Report(new ProgressReport($"Enabling LLDP Ext Power via MDI on Port {port}"));
+                            source = $"Enabling LLDP Ext Power via MDI on Port {port}";
+                            _progress.Report(new ProgressReport($"{source}\nPoE status: {switchPort.Poe}, Port Status: {switchPort.Status}"));
                             progressReport.Message += $"\n - Enabling LLDP Ext Power via MDI on Port {port} ";
-                            ExecuteActionOnPort(port, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE, progressReport);
+                            ExecuteActionOnPort(port, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE, progressReport, source);
                             break;
 
                         case RestUrlId.CHECK_POWER_PRIORITY:
-                            _progress.Report(new ProgressReport($"Checking power priority on Port {port}"));
+                            source = $"Checking power priority on Port {port}";
+                            _progress.Report(new ProgressReport($"{source}\nPoE status: {switchPort.Poe}, Port Status: {switchPort.Status}"));
                             progressReport.Message += $"\n - Checking power priority on Port {port} ";
                             CheckPowerPriority(port, progressReport, slotPort);
                             break;
 
                         case RestUrlId.POWER_PRIORITY_PORT:
-                            _progress.Report(new ProgressReport($"Changing priority on Port {port}"));
+                            source = $"Changing priority on Port {port}";
+                            _progress.Report(new ProgressReport($"{source}\nPoE status: {switchPort.Poe}, Port Status: {switchPort.Status}"));
                             progressReport.Message += $"\n - Changing priority on Port {port} ";
-                            TryChangePriority(port, progressReport);
+                            TryChangePriority(port, progressReport, source);
                             break;
 
                         case RestUrlId.POWER_823BT_ENABLE:
                             string slotNr = $"{slotPort.ChassisNr}/{slotPort.SlotNr}";
-                            _progress.Report(new ProgressReport($"Enabling 802.3.bt on slot {slotNr}"));
+                            source = $"Enabling 802.3.bt on Slot {slotNr}";
+                            _progress.Report(new ProgressReport($"{source}\nPoE status: {switchPort.Poe}, Port Status: {switchPort.Status}"));
                             progressReport.Message += $"\n - Enabling 802.3.bt on slot {slotNr} ";
-                            TryEnable823BT(port, progressReport, slotNr);
+                            TryEnable823BT(port, progressReport, slotNr, source);
                             break;
 
                     }
@@ -160,6 +165,7 @@ namespace PoEWizard.Comm
                 }
                 else
                 {
+                    Logger.Error(ex.Message + ":\n" + ex.StackTrace);
                     _progress?.Report(new ProgressReport(ReportType.Error, "Connect", WebUtility.UrlDecode(ex.Message)));
                 }
             }
@@ -196,7 +202,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void ExecuteActionOnPort(string port, RestUrlId action, ProgressReport progressReport)
+        private void ExecuteActionOnPort(string port, RestUrlId action, ProgressReport progressReport, string source)
         {
             try
             {
@@ -205,12 +211,7 @@ namespace PoEWizard.Comm
                 Thread.Sleep(5000);
                 SendRequest(GetRestUrlEntry(RestUrlId.POWER_UP_PORT, new string[1] { port }));
                 Thread.Sleep(3000);
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
-
-                //progressReport.Type = ReportType.Info;
-                //progressReport.Message += "solved the problem";
-                progressReport.Type = ReportType.Error;
-                progressReport.Message += "didn't solve the problem";
+                WaitPortUp(port, progressReport, source);
             }
             catch (Exception ex)
             {
@@ -218,7 +219,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void TryEnable823BT(string port, ProgressReport progressReport, string slotNr)
+        private void TryEnable823BT(string port, ProgressReport progressReport, string slotNr, string source)
         {
             try
             {
@@ -227,12 +228,7 @@ namespace PoEWizard.Comm
                 Thread.Sleep(5000);
                 SendRequest(GetRestUrlEntry(RestUrlId.POWER_UP_SLOT, new string[1] { slotNr }));
                 Thread.Sleep(3000);
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
-
-                //progressReport.Type = ReportType.Info;
-                //progressReport.Message += "solved the problem";
-                progressReport.Type = ReportType.Error;
-                progressReport.Message += "didn't solve the problem";
+                WaitPortUp(port, progressReport, source);
             }
             catch (Exception ex)
             {
@@ -252,7 +248,7 @@ namespace PoEWizard.Comm
             if (chassis.PowerRemaining < Utils.StringToDouble(switchPort.MaxPower)) progressReport.Type = ReportType.Error;
         }
 
-        private void TryChangePriority(string port, ProgressReport progressReport)
+        private void TryChangePriority(string port, ProgressReport progressReport, string source)
         {
             try
             {
@@ -262,22 +258,57 @@ namespace PoEWizard.Comm
                 Thread.Sleep(5000);
                 SendRequest(GetRestUrlEntry(RestUrlId.POWER_UP_PORT, new string[1] { port }));
                 Thread.Sleep(3000);
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
-                Thread.Sleep(5000);
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { port }));
-
                 progressReport.Message += $"to {priorityLevel} ";
-                //progressReport.Type = ReportType.Info;
-                //progressReport.Message += "solved the problem";
-                progressReport.Type = ReportType.Error;
-                progressReport.Message += "didn't solve the problem";
-
+                WaitPortUp(port, progressReport, source);
+                Thread.Sleep(5000);
             }
             catch (Exception ex)
             {
                 ParseException(port, progressReport, ex);
             }
         }
+
+        private void WaitPortUp(string port, ProgressReport progressReport, string source)
+        {
+            DateTime startTime = DateTime.Now;
+            PortModel switchPort = UpdatePortData(port);
+            PortStatus prevStatus = switchPort.Status;
+            PoeStatus prevPoe = switchPort.Poe;
+            while (Utils.GetTimeDuration(startTime) <= 120)
+            {
+                switchPort = UpdatePortData(port);
+                if (switchPort != null && switchPort.Status == PortStatus.Up) break;
+                Thread.Sleep(5000);
+            }
+            StringBuilder txt = new StringBuilder("Port ").Append(port).Append(" Status: ").Append(switchPort.Status).Append(" (Duration: ");
+            txt.Append(Utils.CalcStringDuration(startTime)).Append(", MAC List: ").Append(String.Join(",", switchPort.MacList)).Append(")");
+            Logger.Info(txt.ToString());
+            if (switchPort != null && switchPort.Status == PortStatus.Up)
+            {
+                progressReport.Type = ReportType.Info;
+                progressReport.Message += $"solved the problem\n   Duration: {Utils.PrintTimeDurationSec(startTime)}";
+                if (switchPort.MacList?.Count > 0) progressReport.Message += $"\n   MAC Address found: {switchPort.MacList[0]}";
+            }
+            else
+            {
+                progressReport.Type = ReportType.Error;
+                progressReport.Message += $"didn't solve the problem\n   Duration: {Utils.CalcStringDuration(startTime)}";
+            }
+        }
+
+        private PortModel UpdatePortData(string port)
+        {
+            PortModel switchPort = this.SwitchModel.GetPort(port);
+            if (switchPort == null) throw new Exception($"Port {port} not found!");
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
+            List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 3);
+            if (dictList != null && dictList.Count > 0) switchPort.UpdatePortStatus(dictList[0]);
+            //this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { port }));
+            //dictList = CliParseUtils.ParseHTable(_response[RESULT], 3);
+            //if (dictList != null && dictList.Count > 0) switchPort.UpdateMacList(dictList);
+            return switchPort;
+        }
+
 
         private void ParseException(string port, ProgressReport progressReport, Exception ex)
         {

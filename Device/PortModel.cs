@@ -22,13 +22,13 @@ namespace PoEWizard.Device
         public bool IsEnabled { get; set; } = false;
         public string Class { get; set; }
         public string Type { get; set; }
+        public List<string> MacList { get; set; } = new List<string>();
 
         public PortModel(Dictionary<string, string> dict)
         {
 
             Number = GetPortId(dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "");
-            UpdatePortStatus(dict.TryGetValue(LINK_STATUS, out s) ? s : "");
-            IsEnabled = (dict.TryGetValue(ADMIN_STATUS, out s) ? s : "") == "enable";
+            UpdatePortStatus(dict);
             HasPoe = false;
             Power = "0 mw";
             Poe = PoeStatus.NoPoe;
@@ -75,17 +75,23 @@ namespace PoEWizard.Device
             
         }
 
-        private void UpdatePortStatus(string status)
+        public void UpdatePortStatus(Dictionary<string, string> dict)
         {
-            string sValStatus = Utils.FirstChToUpper(status);
-            if (!string.IsNullOrEmpty(sValStatus) && Enum.TryParse(sValStatus, out PortStatus portStatus))
+            IsEnabled = (dict.TryGetValue(ADMIN_STATUS, out string s) ? s : "") == "enable";
+            string sValStatus = Utils.FirstChToUpper(dict.TryGetValue(LINK_STATUS, out s) ? s : "");
+            if (!string.IsNullOrEmpty(sValStatus) && Enum.TryParse(sValStatus, out PortStatus portStatus)) Status = portStatus; else Status = PortStatus.Unknown;
+        }
+
+        public void UpdateMacList(List<Dictionary<string, string>> dictList)
+        {
+            int nbMac = 1;
+            foreach (Dictionary<string, string> dict in dictList)
             {
-                Status = portStatus;
+                MacList.Add(dict.TryGetValue(PORT_MAC_LIST, out string s) ? s : "");
+                nbMac++;
+                if (nbMac > 10) break;
             }
-            else
-            {
-                Status = PortStatus.Unknown;
-            }
+            IsUplink = (nbMac > 2);
         }
 
         private string GetPortId(string chas)

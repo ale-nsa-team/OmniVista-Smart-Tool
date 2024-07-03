@@ -84,6 +84,8 @@ namespace PoEWizard.Data
         public const string CHAS_PS = "Chassis/PS";
         public const string POWER = "Power Provision";
         public const string PS_TYPE = "Module Type";
+        // Used by "SHOW_MAC_LEARNING_PORT"
+        public const string PORT_MAC_LIST = "static address,  Mac Address";
         #endregion
 
         #region regex patterns

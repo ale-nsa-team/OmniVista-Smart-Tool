@@ -202,6 +202,19 @@ namespace PoEWizard.Data
             return false;
         }
 
+        public static string PrintTimeDurationSec(DateTime startTime)
+        {
+            return $"{RoundUp(GetTimeDuration(startTime))} sec";
+        }
+
+        public static double RoundUp(double input)
+        {
+            double multiplier = Math.Pow(10, 0);
+            double multiplication = input * multiplier;
+            double result = Math.Round(multiplication) / multiplier;
+            return result;
+        }
+
     }
 
 }
