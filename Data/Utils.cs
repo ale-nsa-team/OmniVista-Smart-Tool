@@ -173,48 +173,6 @@ namespace PoEWizard.Data
             return xmlDoc;
         }
 
-        public static string GetSlotNumberFromPort(string slotPortNr)
-        {
-            Dictionary<string, object> slotPort = Utils.GetChassisSlotPort(slotPortNr);
-            return $"{slotPort[Constants.P_CHASSIS]}/{slotPort[Constants.P_SLOT]}";
-        }
-
-        public static Dictionary<string, object> GetChassisSlotPort(string slotPortNr)
-        {
-            try
-            {
-                string[] valuesList = slotPortNr.Split('/');
-                if (valuesList != null)
-                {
-                    Dictionary<string, object> slotPort = new Dictionary<string, object>();
-                    if (valuesList.Length > 2)
-                    {
-                        slotPort[Constants.P_CHASSIS] = StringToInt(valuesList[0].Trim());
-                        slotPort[Constants.P_SLOT] = StringToInt(valuesList[1].Trim());
-                        slotPort[Constants.P_PORT] = valuesList[2].Trim();
-                    }
-                    else
-                    {
-                        if (valuesList.Length > 1)
-                        {
-                            slotPort[Constants.P_CHASSIS] = StringToInt(valuesList[0].Trim());
-                            slotPort[Constants.P_SLOT] = StringToInt(valuesList[1].Trim());
-                            slotPort[Constants.P_PORT] = "";
-                        }
-                        else
-                        {
-                            slotPort[Constants.P_CHASSIS] = StringToInt(valuesList[0].Trim());
-                            slotPort[Constants.P_SLOT] = 1;
-                            slotPort[Constants.P_PORT] = "";
-                        }
-                    }
-                    return slotPort;
-                }
-            }
-            catch { }
-            return null;
-        }
-
         public static string ToPascalCase(string text)
         {
             if (string.IsNullOrEmpty(text)) return string.Empty;

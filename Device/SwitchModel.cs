@@ -183,11 +183,12 @@ namespace PoEWizard.Device
 
         public PortModel GetPort(string slotPortNr)
         {
-            var ch = ChassisList.FirstOrDefault(c => c.Number == ParseId(slotPortNr, 0));
-            if (ch == null) return null;
-            var slot = ch.Slots.FirstOrDefault(s => s.Number == ParseId(slotPortNr, 1));
-            if (slot == null) return null;
-            return slot.Ports.FirstOrDefault(p => p.Number == GetPortId(slotPortNr));
+            ChassisSlotPort slotPort = new ChassisSlotPort(slotPortNr);
+            ChassisModel chassisModel = ChassisList.FirstOrDefault(c => c.Number == slotPort.ChassisNr);
+            if (chassisModel == null) return null;
+            SlotModel slotModel = chassisModel.Slots.FirstOrDefault(c => c.Number == slotPort.SlotNr);
+            if (slotModel == null) return null;
+            return slotModel.Ports.FirstOrDefault(c => c.Number == slotPort.PortNr);
         }
 
         private int GetChassisId(Dictionary<string, string> chas)

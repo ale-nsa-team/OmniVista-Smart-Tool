@@ -124,6 +124,7 @@
       <DependentUpon>TextViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\Activity.cs" />
+    <Compile Include="Data\ChassisSlotPort.cs" />
     <Compile Include="Data\CliParseUtils.cs" />
     <Compile Include="Data\ConfigKeyObject.cs" />
     <Compile Include="Data\Constants.cs" />
