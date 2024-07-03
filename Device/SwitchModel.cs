@@ -193,12 +193,16 @@ namespace PoEWizard.Device
 
         private int GetChassisId(Dictionary<string, string> chas)
         {
+            string[] parts = chas[CHAS_SLOT_PORT].Split('/');
+            if (parts.Length < 3) return 1;
             return ParseId(chas[CHAS_SLOT_PORT], 0);
         }
 
         private int GetSlotId(Dictionary<string, string> chas)
         {
-            return ParseId(chas[CHAS_SLOT_PORT], 1);
+            string[] parts = chas[CHAS_SLOT_PORT].Split('/');
+            int idx = (parts.Length > 2) ? 1 : 0;
+            return ParseId(chas[CHAS_SLOT_PORT], idx);
         }
 
         private string GetPortId(string chSlotPort)

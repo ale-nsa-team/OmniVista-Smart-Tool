@@ -179,6 +179,7 @@ namespace PoEWizard.Comm
                 chassis.LoadFromList(diclist);
                 foreach (var slot in chassis.Slots)
                 {
+                    if (slot.Ports.Count == 0) continue;
                     this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
                     diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
                     slot.LoadFromList(diclist, DictionaryType.LanPower);

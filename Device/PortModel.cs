@@ -90,7 +90,9 @@ namespace PoEWizard.Device
 
         private string GetPortId(string chas)
         {
-            return chas.Split('/')?[2] ?? "0";
+            string[] split = chas.Split('/');
+            if (split.Length < 1) return "0";
+            return split[split.Length - 1];
         }
 
     }
