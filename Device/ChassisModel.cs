@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Device
@@ -55,6 +56,11 @@ namespace PoEWizard.Device
                 if (slot == null) return;
                 slot.LoadFromDictionary(dict);
             }
+        }
+
+        public SlotModel GetSlot(int slotNumber)
+        {
+            return Slots.FirstOrDefault(c => c.Number == slotNumber);
         }
 
         private int ParseIndex(string chassis)

@@ -78,6 +78,7 @@ namespace PoEWizard.Data
         public const string UP_TIME = "Up Time";
         // Used by "SHOW_RUNNING_DIR"
         public const string RUNNING_CONFIGURATION = "Running configuration";
+        public const string SYNCHRONIZATION_STATUS = "Running Configuration";
         // Used by "SHOW_MICROCODE"
         public const string RELEASE = "Release";
         // Used by SHOW_POWER_SUPPLY

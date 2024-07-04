@@ -65,6 +65,8 @@ namespace PoEWizard.Comm
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PowerSupply);
                 GetLanPower();
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CONFIGURATION));
+                SwitchModel.ConfigSnapshot = _response[RESULT];
             }
             catch (Exception ex)
             {
@@ -186,9 +188,7 @@ namespace PoEWizard.Comm
                 foreach (var slot in chassis.Slots)
                 {
                     if (slot.Ports.Count == 0) continue;
-                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
-                    diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
-                    slot.LoadFromList(diclist, DictionaryType.LanPower);
+                    GetSlotPower(chassis, slot);
                     this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_CONFIG, new string[1] { $"{chassis.Number}/{slot.Number}" }));
                     diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                     slot.LoadFromList(diclist, DictionaryType.LanPowerCfg);
@@ -272,43 +272,53 @@ namespace PoEWizard.Comm
         {
             DateTime startTime = DateTime.Now;
             PortModel switchPort = UpdatePortData(port);
-            PortStatus prevStatus = switchPort.Status;
-            PoeStatus prevPoe = switchPort.Poe;
             while (Utils.GetTimeDuration(startTime) <= 120)
             {
                 switchPort = UpdatePortData(port);
-                if (switchPort != null && switchPort.Status == PortStatus.Up) break;
+                if (switchPort != null && switchPort.Status == PortStatus.Up && Utils.StringToInt(switchPort.Power) > 500) break;
                 Thread.Sleep(5000);
             }
-            StringBuilder txt = new StringBuilder("Port ").Append(port).Append(" Status: ").Append(switchPort.Status).Append(" (Duration: ");
-            txt.Append(Utils.CalcStringDuration(startTime)).Append(", MAC List: ").Append(String.Join(",", switchPort.MacList)).Append(")");
+            StringBuilder txt = new StringBuilder("Port ").Append(port).Append(" Status: ").Append(switchPort.Status).Append(", PoE Status: ").Append(switchPort.Poe);
+            txt.Append(", Power: ").Append(switchPort.Power).Append(" (Duration: ").Append(Utils.CalcStringDuration(startTime)).Append(", MAC List: ");
+            txt.Append(String.Join(",", switchPort.MacList)).Append(")");
             Logger.Info(txt.ToString());
+            txt = new StringBuilder();
             if (switchPort != null && switchPort.Status == PortStatus.Up)
             {
                 progressReport.Type = ReportType.Info;
-                progressReport.Message += $"solved the problem\n   Duration: {Utils.PrintTimeDurationSec(startTime)}";
-                if (switchPort.MacList?.Count > 0) progressReport.Message += $"\n   MAC Address found: {switchPort.MacList[0]}";
+                txt.Append("solved the problem");
             }
             else
             {
                 progressReport.Type = ReportType.Error;
-                progressReport.Message += $"didn't solve the problem\n   Duration: {Utils.CalcStringDuration(startTime)}";
+                txt.Append("didn't solve the problem");
             }
+            txt.Append("\n    PoE Status: ").Append(switchPort.Poe).Append(", Power: ").Append(switchPort.Power).Append(" mW, Port Status: ").Append(switchPort.Status);
+            if (switchPort.MacList?.Count > 0) txt.Append(", Device MAC Address: ").Append(switchPort.MacList[0]);
+            txt.Append(" (Duration: ").Append(Utils.PrintTimeDurationSec(startTime)).Append(")");
+            progressReport.Message += txt;
         }
 
         private PortModel UpdatePortData(string port)
         {
-            PortModel switchPort = this.SwitchModel.GetPort(port);
-            if (switchPort == null) throw new Exception($"Port {port} not found!");
+            ChassisSlotPort slotPort = new ChassisSlotPort(port);
+            ChassisModel chassis = SwitchModel.GetChassis(slotPort.ChassisNr);
+            SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
+            GetSlotPower(chassis, slot);
+            PortModel switchPort = this.SwitchModel.GetPort(port) ?? throw new Exception($"Port {port} not found!");
             this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
             List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 3);
             if (dictList != null && dictList.Count > 0) switchPort.UpdatePortStatus(dictList[0]);
-            //this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING_PORT, new string[1] { port }));
-            //dictList = CliParseUtils.ParseHTable(_response[RESULT], 3);
-            //if (dictList != null && dictList.Count > 0) switchPort.UpdateMacList(dictList);
             return switchPort;
         }
 
+        private void GetSlotPower(ChassisModel chassis, SlotModel slot)
+        {
+            List<Dictionary<string, string>> diclist;
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
+            diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
+            slot.LoadFromList(diclist, DictionaryType.LanPower);
+        }
 
         private void ParseException(string port, ProgressReport progressReport, Exception ex)
         {
