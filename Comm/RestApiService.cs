@@ -16,6 +16,7 @@ namespace PoEWizard.Comm
     {
         private Dictionary<string, string> _response = new Dictionary<string, string>();
         private readonly IProgress<ProgressReport> _progress;
+        private DateTime _startWizardTime;
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
         public ResultCallback Callback { get; set; }
@@ -88,15 +89,22 @@ namespace PoEWizard.Comm
             ProgressReport progressReport = new ProgressReport("PoE Wizard Report:");
             try
             {
+                _startWizardTime = DateTime.Now;
                 GetLanPower();
                 PortModel switchPort = UpdatePortData(port);
+                StringBuilder txt = new StringBuilder("\n    PoE status: ").Append(switchPort.Poe).Append(", Power: ").Append(switchPort.Power);
+                txt.Append(" mW, Port Status: ").Append(switchPort.Status);
+                if (switchPort.MacList?.Count > 0) txt.Append(", Device MAC Address: ").Append(switchPort.MacList[0]);
                 if (switchPort.Poe != PoeStatus.Fault && switchPort.Poe != PoeStatus.Deny)
                 {
-                    _progress.Report(new ProgressReport(ReportType.Info, "PoE Wizard", $"Nothing to do, port {port} PoE status is {switchPort.Poe}"));
+                    progressReport.Type = ReportType.Info;
+                    progressReport.Message += $"\n - Nothing to do on port {port}.{txt}";
+                    _progress.Report(progressReport);
+                    //_progress.Report(new ProgressReport(ReportType.Info, "PoE Wizard", $"Nothing to do on port {port}.{txt}"));
+                    Logger.Info($"PoE Wizard completed on port {port}\n{progressReport.Message}");
                     return false;
                 }
                 ChassisSlotPort slotPort = new ChassisSlotPort(port);
-                Logger.Debug($"Starting PoE Wizard on port {port} (PoE status: {switchPort.Poe}, Status: {switchPort.Status}, MAC List: {String.Join(",", switchPort.MacList)})");
                 string source;
                 foreach (RestUrlId command in commands)
                 {
@@ -156,7 +164,9 @@ namespace PoEWizard.Comm
                     }
                     if (progressReport.Type != ReportType.Error) break;
                 }
+                progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(_startWizardTime)}";
                 _progress.Report(progressReport);
+                Logger.Info($"PoE Wizard completed on port {port}\n{progressReport.Message}");
             }
             catch (Exception ex)
             {
@@ -260,7 +270,6 @@ namespace PoEWizard.Comm
                 Thread.Sleep(3000);
                 progressReport.Message += $"to {priorityLevel} ";
                 WaitPortUp(port, progressReport, source);
-                Thread.Sleep(5000);
             }
             catch (Exception ex)
             {
@@ -281,7 +290,7 @@ namespace PoEWizard.Comm
             StringBuilder txt = new StringBuilder("Port ").Append(port).Append(" Status: ").Append(switchPort.Status).Append(", PoE Status: ").Append(switchPort.Poe);
             txt.Append(", Power: ").Append(switchPort.Power).Append(" (Duration: ").Append(Utils.CalcStringDuration(startTime)).Append(", MAC List: ");
             txt.Append(String.Join(",", switchPort.MacList)).Append(")");
-            Logger.Info(txt.ToString());
+            Logger.Debug(txt.ToString());
             txt = new StringBuilder();
             if (switchPort != null && switchPort.Status == PortStatus.Up)
             {
@@ -295,7 +304,6 @@ namespace PoEWizard.Comm
             }
             txt.Append("\n    PoE Status: ").Append(switchPort.Poe).Append(", Power: ").Append(switchPort.Power).Append(" mW, Port Status: ").Append(switchPort.Status);
             if (switchPort.MacList?.Count > 0) txt.Append(", Device MAC Address: ").Append(switchPort.MacList[0]);
-            txt.Append(" (Duration: ").Append(Utils.PrintTimeDurationSec(startTime)).Append(")");
             progressReport.Message += txt;
         }
 
@@ -308,7 +316,10 @@ namespace PoEWizard.Comm
             PortModel switchPort = this.SwitchModel.GetPort(port) ?? throw new Exception($"Port {port} not found!");
             this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
             List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 3);
-            if (dictList != null && dictList.Count > 0) switchPort.UpdatePortStatus(dictList[0]);
+            if (dictList?.Count > 0) switchPort.UpdatePortStatus(dictList[0]);
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_MAC_ADDRESS, new string[1] { port }));
+            dictList = CliParseUtils.ParseHTable(_response[RESULT], 3);
+            if (dictList?.Count > 0) switchPort.UpdateMacList(dictList);
             return switchPort;
         }
 
