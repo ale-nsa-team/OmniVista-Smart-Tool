@@ -19,6 +19,9 @@ namespace PoEWizard.Device
         public bool IsLldp { get; set; } = false;
         public bool IsVfLink { get; set; } = false;
         public bool Is4Pair { get; set; } = true;
+        public bool IsPowerOverHdmi { get; set; } = true;
+        public bool IsCapacitorDetection { get; set; } = true;
+        public ConfigType Protocol8023bt { get; set; } = ConfigType.Unavailable;
         public bool IsEnabled { get; set; } = false;
         public string Class { get; set; }
         public string Type { get; set; }
@@ -72,7 +75,24 @@ namespace PoEWizard.Device
 
         public void LoadPoEConfig(Dictionary<string, string> dict) 
         {
-            
+            Is4Pair = (dict.TryGetValue(POWER_4PAIR, out string s) ? s : "") == "enabled";
+            IsPowerOverHdmi = (dict.TryGetValue(POWER_OVER_HDMI, out s) ? s : "") == "enabled";
+            IsCapacitorDetection = (dict.TryGetValue(POWER_CAPACITOR_DETECTION, out s) ? s : "") == "enabled";
+            dict.TryGetValue(POWER_823BT, out s);
+            switch (s)
+            {
+                case "NA":
+                    Protocol8023bt = ConfigType.Unavailable;
+                    break;
+
+                case "enabled":
+                    Protocol8023bt = ConfigType.Enabled;
+                    break;
+
+                case "disabled":
+                    Protocol8023bt = ConfigType.Disabled;
+                    break;
+            }
         }
 
         public void UpdatePortStatus(Dictionary<string, string> dict)

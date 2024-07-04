@@ -22,6 +22,7 @@ namespace PoEWizard.Data
         public enum PowerSupplyState { Up, Down, Unknown }
         public enum ChassisStatus { Unknown, Up, Down }
         public enum DictionaryType { System, Chassis, RunningDir, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply }
+        public enum ConfigType { Enabled, Disabled, Unavailable }
 
         #endregion
 
@@ -87,6 +88,11 @@ namespace PoEWizard.Data
         public const string PS_TYPE = "Module Type";
         // Used by "SHOW_MAC_LEARNING_PORT"
         public const string PORT_MAC_LIST = "static address,  Mac Address";
+        // Used by "SHOW_LAN_POWER_CONFIG"
+        public const string POWER_4PAIR = "4-Pair";
+        public const string POWER_OVER_HDMI = "power-over -HDMI";
+        public const string POWER_CAPACITOR_DETECTION = "Capacitor Detection";
+        public const string POWER_823BT = "802.3bt";
         #endregion
 
         #region regex patterns
