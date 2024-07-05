@@ -159,7 +159,7 @@ namespace PoEWizard.Device
                 {
                     slot.Ports?.ToList().ForEach(port =>
                     {
-                        port.IsUplink = port.IsLldp || port.IsVfLink;
+                        port.IsUplink = port.IsLldpMdi || port.IsLldpExtMdi || port.IsVfLink;
                     });
                 }
             }

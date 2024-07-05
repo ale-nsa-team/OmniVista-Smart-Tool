@@ -16,7 +16,8 @@ namespace PoEWizard.Device
         public PortStatus Status { get; set; }
         public PriorityLevelType PriorityLevel { get; set; }
         public bool IsUplink { get; set; } = false;
-        public bool IsLldp { get; set; } = false;
+        public bool IsLldpMdi { get; set; } = false;
+        public bool IsLldpExtMdi { get; set; } = false;
         public bool IsVfLink { get; set; } = false;
         public bool Is4Pair { get; set; } = true;
         public bool IsPowerOverHdmi { get; set; } = true;
@@ -38,7 +39,8 @@ namespace PoEWizard.Device
             MaxPower = "0 mw";
             PriorityLevel = PriorityLevelType.Low;
             IsUplink = false;
-            IsLldp = false;
+            IsLldpMdi = false;
+            IsLldpExtMdi = false;
             IsVfLink = false;
             Is4Pair = false;
         }
