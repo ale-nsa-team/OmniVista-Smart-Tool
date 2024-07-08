@@ -803,6 +803,7 @@
         <Setter Property="Height" Value="24"/>
         <Setter Property="Foreground" Value="{StaticResource fontColor}"/>
         <Setter Property="FontSize" Value="12" />
+        <Setter Property="Margin" Value="10,10,10,5" />
         <Setter Property="Padding" Value="0,0,0,2" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">

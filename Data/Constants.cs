@@ -17,6 +17,7 @@ namespace PoEWizard.Data
         public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
         public enum PortStatus { Unknown, Up, Down }
         public enum PoeStatus { On, Off, Fault, Deny, Conflict, NoPoe }
+        public enum SlotPoeStatus { Normal, NearThreshold, Critical }
         public enum EType { Fiber, Copper, Unknown }
         public enum PriorityLevelType { Low, High, Critical, Unknown }
         public enum PowerSupplyState { Up, Down, Unknown }
@@ -46,6 +47,7 @@ namespace PoEWizard.Data
         public const string USED = "Actual Used(mW)";
         public const string USAGE_THRESHOLD = "Usage Threshold";
         public const string ADMIN_STATUS = "Admin Status";
+        public const string OPERATIONAL_STATUS = "Operational Status";
         public const string LINK_STATUS = "Link Status";
         public const string STATUS = "Status";
         public const string BT_SUPPORT = "8023BT Support";
@@ -67,7 +69,6 @@ namespace PoEWizard.Data
         public const string ID = "ID";
         public const string MODULE_TYPE = "Module Type";
         public const string ROLE = "Role";
-        public const string OPERATIONAL_STATUS = "Operational Status";
         public const string PART_NUMBER = "Part Number";
         public const string HARDWARE_REVISION = "Hardware Revision";
         public const string CHASSIS_MAC_ADDRESS = "MAC Address";

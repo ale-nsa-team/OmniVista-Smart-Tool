@@ -201,6 +201,21 @@ namespace PoEWizard
             about.Show();
         }
 
+        private void SlotSelection_Changed(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void FPoE_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void PPoE_Click(Object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
@@ -370,7 +385,9 @@ namespace PoEWizard
             _snapshotMenuItem.IsEnabled = true;
             _disconnectMenuItem.Visibility = Visibility.Visible;
             _slotsView.ItemsSource = new SlotView(device).Slots;
+            _slotsView.SelectedIndex = 0;
             _slotsView.Visibility = Visibility.Visible;
+            _poeActions.Visibility = Visibility.Visible;
         }
 
         private void SetDisconnectedState()
@@ -386,6 +403,7 @@ namespace PoEWizard
             _switchMenuItem.IsEnabled = true;
             _snapshotMenuItem.IsEnabled = false;
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
+            _poeActions.Visibility= Visibility.Hidden;
         }
 
         #endregion private methods

@@ -45,7 +45,7 @@ namespace PoEWizard.Components
                     float percent = RectangleValueConverter.GetFloat(value);
                     return percent > 10 ? Brushes.Lime : (percent > 0 ? Brushes.Orange : Brushes.IndianRed);
                 case "PoeStatus":
-                    return value.ToString() == "Normal" ? Brushes.Lime : Brushes.IndianRed;
+                    return value.ToString() == "Normal" ? Brushes.Lime : value.ToString() == "NearThreshold" ? Brushes.Orange : Brushes.Red;
                 case "CPUStatus":
                     return value.ToString() == "UnderThreshold" ? Brushes.Lime : Brushes.IndianRed;
                 case "UplinkPort":

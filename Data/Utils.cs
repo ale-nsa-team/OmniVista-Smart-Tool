@@ -20,7 +20,7 @@ namespace PoEWizard.Data
             int sec = dur.Seconds;
             int min = dur.Minutes;
             int milliSec = dur.Milliseconds;
-            string duration = "";
+            string duration = string.Empty;
             if (hour > 0)
             {
                 duration = hour.ToString() + " hour";
@@ -119,7 +119,7 @@ namespace PoEWizard.Data
                 return $"\"{ParseEnumToString(enumVar)}\"";
             }
             catch { }
-            return "";
+            return string.Empty;
         }
 
         public static string ParseEnumToString(Enum enumVar)
@@ -129,7 +129,7 @@ namespace PoEWizard.Data
                 return Enum.GetName(enumVar.GetType(), enumVar);
             }
             catch { }
-            return "";
+            return string.Empty;
         }
 
         public static HttpStatusCode ConvertToHttpStatusCode(Dictionary<string, string> errorList)
@@ -151,7 +151,7 @@ namespace PoEWizard.Data
             if (fname.Contains("<"))
             {
                 string[] parts = fname.Split(new char[] { '.', '<', '>' });
-                if (parts.Length > 2) return $"{parts[1].Replace("+", "")}: {parts[2]}";
+                if (parts.Length > 2) return $"{parts[1].Replace("+", string.Empty)}: {parts[2]}";
             }
             return $" by Method {method.Name} of {method.DeclaringType.Name}";
         }
@@ -217,10 +217,10 @@ namespace PoEWizard.Data
 
         public static string ExtractSubString(string inputStr, string startStr, string endStr)
         {
-            if (string.IsNullOrEmpty(inputStr) || string.IsNullOrEmpty(startStr) || string.IsNullOrEmpty(endStr)) return "";
+            if (string.IsNullOrEmpty(inputStr) || string.IsNullOrEmpty(startStr) || string.IsNullOrEmpty(endStr)) return string.Empty;
             int startPos = inputStr.LastIndexOf(startStr) + startStr.Length;
             int length = inputStr.IndexOf(endStr) - startPos;
-            if (length < 1 || length > inputStr.Length) return "";
+            if (length < 1 || length > inputStr.Length) return string.Empty;
             return inputStr.Substring(startPos, length);
         }
 

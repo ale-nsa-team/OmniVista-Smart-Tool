@@ -28,6 +28,47 @@
         <GradientStop Color="#0063b1" Offset="1" />
     </LinearGradientBrush>
 
+    <Style TargetType="DataGrid" x:Key="defaultGrid">
+        <Setter Property="AutoGenerateColumns" Value="False" />
+        <Setter Property="HeadersVisibility" Value="Column" />
+        <Setter Property="Foreground" Value="black" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Width" Value="Auto" />
+        <Setter Property="Height" Value="Auto" />
+        <Setter Property="MaxHeight" Value="570" />
+        <Setter Property="RowBackground" Value="white" />
+        <Setter Property="AlternatingRowBackground" Value="#eee" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="GridLinesVisibility" Value="None" />
+        <Setter Property="HorizontalGridLinesBrush" Value="#666" />
+        <Setter Property="VerticalGridLinesBrush" Value="#666" />
+        <Setter Property="CanUserAddRows" Value="False" />
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
+        <Setter Property="IsReadOnly" Value="True" />
+    </Style>
+
+    <Style TargetType="DataGridColumnHeader" x:Key="gridHeader">
+        <Setter Property="Background" Value="#eee" />
+        <Setter Property="Foreground" Value="DarkBlue" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Padding" Value="6,2,2,2" />
+    </Style>
+
+    <Style TargetType="DataGridCell" x:Key="gridCell">
+        <Setter Property="Margin" Value="5,0,0,0" />
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Foreground" Value="black" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <ControlTemplate x:Key="validationTemplate">
         <Grid>
             <Ellipse Fill="Red" Opacity="0.8" Width="12" Height="12"
@@ -320,6 +361,7 @@
         <Setter Property="Height" Value="24" />
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
         <Setter Property="FontSize" Value="12" />
+        <Setter Property="Margin" Value="10,10,10,5" />
         <Setter Property="Padding" Value="0,0,0,2" />
         <Setter Property="Cursor" Value="Hand" />
     </Style>

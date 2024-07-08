@@ -11,6 +11,7 @@ namespace PoEWizard.Device
         public string Type { get; set; }
         public bool IsMaster { get; set; }
         public string AdminStatus { get; set; }
+        public string OperationalStatus { get; set; }
         public ChassisStatus Status { get; set; }
         public double PowerBudget { get; set; }
         public double PowerConsumed { get; set; }
@@ -31,6 +32,7 @@ namespace PoEWizard.Device
             string role = dict.TryGetValue(ROLE, out s) ? s : "";
             IsMaster = role == "Master";
             AdminStatus = dict.TryGetValue(ADMIN_STATUS, out s) ? s : "";
+            OperationalStatus = dict.TryGetValue(OPERATIONAL_STATUS, out s) ? s : string.Empty;
             SerialNumber = dict.TryGetValue(SERIAL_NUMBER, out s) ? s : "";
             PartNumber = dict.TryGetValue(PART_NUMBER, out s) ? s : "";
             HardwareRevision = dict.TryGetValue(HARDWARE_REVISION, out s) ? s : "";

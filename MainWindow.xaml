@@ -67,6 +67,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120"/>
@@ -84,45 +85,65 @@
                 <Label Grid.Row="4" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_location" Content="{Binding Location}" />
                 <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}">Contact:</Label>
                 <Label Grid.Row="5" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_contact" Content="{Binding Contact}" />
-                <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}">MAC:</Label>
+                <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}">MAC Address:</Label>
                 <Label Grid.Row="6" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_mac" Content="{Binding MacAddress}"/>
-                <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}">Running Directory:</Label>
-                <Label Grid.Row="7" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_runningDir" Content="{Binding RunningDir}"/>
-                <Label Grid.Row="8" Grid.Column="0" Style="{DynamicResource keyLabel}">Synchronization:</Label>
-                <Label Grid.Row="8" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_syncStatus" Content="{Binding SyncStatus}"/>
+                <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}">IP Address:</Label>
+                <Label Grid.Row="7" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_ip" Content="{Binding IpAddress}"/>
+                <Label Grid.Row="8" Grid.Column="0" Style="{DynamicResource keyLabel}">Running Directory:</Label>
+                <Label Grid.Row="8" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_runningDir" Content="{Binding RunningDir}"/>
+                <Label Grid.Row="9" Grid.Column="0" Style="{DynamicResource keyLabel}">Synchronization:</Label>
+                <Label Grid.Row="9" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_syncStatus" Content="{Binding SyncStatus}"/>
             </Grid>
         </StackPanel>
         <Border Grid.Row="2" x:Name="_slotInfo" Style="{DynamicResource templateOpt}">
-            <DataGrid x:Name="_slotsView"
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <DataGrid x:Name="_slotsView" Grid.Row="0"
                       Visibility="Hidden"
-                      Style="{DynamicResource defaultGrid}" ColumnHeaderStyle="{DynamicResource gridHeader}"
-                      CellStyle="{DynamicResource gridCell}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Slot" Width="140" Binding="{Binding Path=Name}"/>
-                    <DataGridTextColumn Header="#Ports" Width="160" Binding="{Binding Path=NbPorts}"/>
-                    <DataGridTextColumn Header="#Poe Ports" Width="150" Binding="{Binding Path=NbPoePorts}" />
-                    <DataGridTextColumn Header="Budget (Watts)" Width="200" Binding="{Binding Path=Budget}" />
-                    <DataGridTextColumn Header="Power (Watts)" Width="190" Binding="{Binding Path=Power}"/>
-                    <DataGridTemplateColumn Header="PoE Status" Width="180">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=PoeStatus}" 
+                      Style="{DynamicResource defaultGrid}" 
+                      ColumnHeaderStyle="{DynamicResource gridHeader}"
+                      CellStyle="{DynamicResource gridCell}"
+                      SelectionChanged="SlotSelection_Changed">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Slot" Width="*" Binding="{Binding Path=Name}"/>
+                        <DataGridTextColumn Header="#Ports" Width="*" Binding="{Binding Path=NbPorts}"/>
+                        <DataGridTextColumn Header="#Poe Ports" Width="*" Binding="{Binding Path=NbPoePorts}" />
+                        <DataGridTextColumn Header="Budget (Watts)" Width="*" Binding="{Binding Path=Budget}" />
+                        <DataGridTextColumn Header="Power (Watts)" Width="*" Binding="{Binding Path=Power}"/>
+                        <DataGridTemplateColumn Header="PoE Status" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=PoeStatus}" 
                                            Foreground="{Binding Path=PoeStatus,
                                            Converter={StaticResource ValueToColorConverter},
                                            ConverterParameter=PoeStatus}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <StackPanel x:Name="_poeActions" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Hidden">
+                    <Button x:Name="_btnFPoE" Style="{DynamicResource defaultButton}"
+                            Click="FPoE_Click">Fast PoE</Button>
+                    <Button x:Name="_btnPPoE" Style="{DynamicResource defaultButton}"
+                            Click="PPoE_Click">Perpetual PoE</Button>
+                </StackPanel>
+            </Grid>
         </Border>
         <Border Grid.Row="2" x:Name="_infoBox" Style="{DynamicResource infoBorder}" Visibility="Collapsed">
             <TextBlock x:Name="_infoBlock" />
         </Border>
-        <Border Grid.Row="3" x:Name="_psDetails" Style="{DynamicResource templateOpt}">
+        <Border Grid.Row="3" x:Name="_portInfo" Style="{DynamicResource templateOpt}">
+            <DataGrid x:Name="_portList"
+                      Style="{DynamicResource defaultGrid}"
+                      ColumnHeaderStyle="{DynamicResource gridHeader}"
+                      CellStyle="{DynamicResource gridCell}" />
         </Border>
         <Border Grid.Row="4" x:Name="_buttonArea" Style="{DynamicResource templateOpt}">
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button x:Name="_btnRunWiz" Style="{DynamicResource defaultButton}"
                         IsEnabled="False"
                         Height="28" Margin="10" Width="100"

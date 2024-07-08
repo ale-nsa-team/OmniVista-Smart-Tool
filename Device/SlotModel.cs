@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using static PoEWizard.Data.Constants;
 
@@ -13,10 +12,11 @@ namespace PoEWizard.Device
         public string Name { get; set; }
         public int NbPorts { get; set; }
         public int NbPoePorts { get; set; }
+        public SlotPoeStatus PoeStatus { get; set; }  
         public double Power { get; set; }
         public double Budget { get; set; }
         public List<PortModel> Ports { get; set; }
-        public int Threshold { get; set; }
+        public double Threshold { get; set; }
         public bool Is8023bt {get;set;}
         public bool IsPriorityDisconnect { get; set; }
         public bool IsFPoE { get; set; }
@@ -41,6 +41,7 @@ namespace PoEWizard.Device
             this.IsHiResDetection = (dict.TryGetValue(HI_RES_DETECTION, out s) ? s : "") == "enable";
             this.IsPPoE = (dict.TryGetValue(PPOE, out s) ? s : "") == "enable";
             this.IsFPoE = (dict.TryGetValue(FPOE, out s) ? s : "") == "enable";
+            this.Threshold = ParseDouble(dict.TryGetValue(USAGE_THRESHOLD, out s) ? s : "0");
         }
 
         public void LoadFromList(List<Dictionary<string, string>> list, DictionaryType dt)
@@ -62,6 +63,20 @@ namespace PoEWizard.Device
                 }
             }
             this.Power = Ports.Sum(p => p.Power) / 1000;
+            double powerConsumedMetric = 100 * this.Power / this.Budget;
+            double nearThreshold = 0.9 * this.Threshold;
+            if (powerConsumedMetric < nearThreshold)
+            {
+                this.PoeStatus = SlotPoeStatus.Normal;
+            }
+            else if (powerConsumedMetric >= nearThreshold && powerConsumedMetric < Threshold)
+            {
+                this.PoeStatus = SlotPoeStatus.NearThreshold;
+            }
+            else
+            {
+                this.PoeStatus = SlotPoeStatus.Critical;
+            }
         }
 
         public PortModel GetPort(string portNumber)
