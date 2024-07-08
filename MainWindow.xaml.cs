@@ -403,6 +403,7 @@ namespace PoEWizard
             _switchMenuItem.IsEnabled = true;
             _snapshotMenuItem.IsEnabled = false;
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
+            _slotsView.Visibility= Visibility.Hidden;
             _poeActions.Visibility= Visibility.Hidden;
         }
 
