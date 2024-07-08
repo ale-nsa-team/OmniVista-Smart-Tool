@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Runtime.InteropServices;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Device
@@ -12,7 +11,6 @@ namespace PoEWizard.Device
     public class SwitchModel
     {
         public string Name { get; set; }
-
         public string IpAddress { get; set; }
         public string MacAddress { get; set; }
         public string Login { get; set; }
