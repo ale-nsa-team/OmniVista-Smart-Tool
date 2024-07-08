@@ -128,7 +128,17 @@ namespace PoEWizard.Data
                     if (line.Contains("=")) sep = "="; else if (line.Contains(",")) sep = ",";
                     if (string.IsNullOrEmpty(sep)) continue;
                     split = line.Trim().Split(sep.ToCharArray());
-                    if (split.Length == 2) dict[split[0].Trim()] = split[1].Replace(",", "").Trim();
+                    if (split.Length == 2)
+                    {
+                        if (split[0].Contains("Chassis") && !split[0].Contains("Subtype"))
+                        {
+                            string[] splitVal = split[0].Trim().Split(' ');
+                            dict[CHASSIS_MAC_ADDRESS] = splitVal[1].Trim();
+                            splitVal = split[1].Trim().Split(' ');
+                            dict[REMOTE_PORT] = splitVal[1].Trim().Replace(":", "");
+                        }
+                        else dict[split[0].Trim()] = split[1].Replace(",", "").Trim();
+                    }
                 }
                 if (dict.Count > 3) dictList.Add(dict);
             }

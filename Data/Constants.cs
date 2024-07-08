@@ -93,6 +93,17 @@ namespace PoEWizard.Data
         public const string POWER_OVER_HDMI = "power-over -HDMI";
         public const string POWER_CAPACITOR_DETECTION = "Capacitor Detection";
         public const string POWER_823BT = "802.3bt";
+        // Used by "SHOW_LLDP_REMOTE"
+        public const string LOCAL_PORT = "Local Port";
+        public const string REMOTE_PORT = "Remote Port";
+        public const string CAPABILITIES_ENABLED = "Capabilities Enabled";
+        public const string MED_DEVICE_TYPE = "MED Device Type";
+        public const string MED_CAPABILITIES = "MED Capabilities";
+        public const string MAU_TYPE = "Mau Type";
+        public const string MED_POWER_TYPE = "MED Power Type";
+        public const string MED_POWER_SOURCE = "MED Power Source";
+        public const string MED_POWER_PRIORITY = "MED Power Priority";
+        public const string MED_POWER_VALUE = "MED Power Value";
         #endregion
 
         #region regex patterns
