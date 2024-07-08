@@ -215,6 +215,28 @@ namespace PoEWizard.Data
             return result;
         }
 
+        public static string ExtractSubString(string inputStr, string startStr, string endStr)
+        {
+            if (string.IsNullOrEmpty(inputStr) || string.IsNullOrEmpty(startStr) || string.IsNullOrEmpty(endStr)) return "";
+            int startPos = inputStr.LastIndexOf(startStr) + startStr.Length;
+            int length = inputStr.IndexOf(endStr) - startPos;
+            if (length < 1 || length > inputStr.Length) return "";
+            return inputStr.Substring(startPos, length);
+        }
+
+        public static bool IsValidMacAddress(string mac)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(mac))
+                {
+                    return Regex.IsMatch(mac, "^[0-9a-fA-F]{2}(((:[0-9a-fA-F]{2}){5})|((:[0-9a-fA-F]{2}){5}))$");
+                }
+            }
+            catch { }
+            return false;
+        }
+
     }
 
 }

@@ -71,6 +71,8 @@ namespace PoEWizard.Comm
                 GetLanPower();
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CONFIGURATION));
                 SwitchModel.ConfigSnapshot = _response[RESULT];
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LLDP_REMOTE));
+                diclist = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
             }
             catch (Exception ex)
             {
@@ -359,6 +361,8 @@ namespace PoEWizard.Comm
             this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_MAC_ADDRESS, new string[1] { port }));
             dictList = CliParseUtils.ParseHTable(_response[RESULT], 3);
             if (dictList?.Count > 0) _wizardSwitchPort.UpdateMacList(dictList);
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_LLDP_REMOTE, new string[] { "1/1/26" }));
+            dictList = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
         }
 
         private void GetSlotPower(ChassisModel chassis, SlotModel slot)

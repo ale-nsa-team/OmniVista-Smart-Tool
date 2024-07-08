@@ -106,6 +106,35 @@ namespace PoEWizard.Data
             return table;
         }
 
+        public static List<Dictionary<string, string>> ParseLldpRemoteTable(string data)
+        {
+            Dictionary<string, List<Dictionary<string, string>>> table = new Dictionary<string, List<Dictionary<string, string>>>();
+            List <Dictionary<string, string>> dictList = new List<Dictionary<string, string>>();
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            string[] split;
+            using (StringReader reader = new StringReader(data))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.Trim().Length == 0) continue;
+                    if (line.Contains("Local Port "))
+                    {
+                        if (dict.Count > 3) dictList.Add(dict);
+                        dict = new Dictionary<string, string> { ["Local Port"] = Utils.ExtractSubString(line.Trim(), "Local Port ", ":") };
+                        continue;
+                    }
+                    string sep = "";
+                    if (line.Contains("=")) sep = "="; else if (line.Contains(",")) sep = ",";
+                    if (string.IsNullOrEmpty(sep)) continue;
+                    split = line.Trim().Split(sep.ToCharArray());
+                    if (split.Length == 2) dict[split[0].Trim()] = split[1].Replace(",", "").Trim();
+                }
+                if (dict.Count > 3) dictList.Add(dict);
+            }
+            return dictList;
+        }
+
         private static Dictionary<string, string> ParseTable(string data, Regex regex)
         {
             Dictionary<string, string> table = new Dictionary<string, string>();

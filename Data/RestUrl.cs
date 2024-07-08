@@ -38,6 +38,7 @@ namespace PoEWizard.Data
             SHOW_TEMPERATURE = 11,
             SHOW_HEALTH = 12,
             SHOW_LAN_POWER_CONFIG = 13,
+            SHOW_LLDP_REMOTE = 14,
             // 30 - 69: Commands related to actions on port
             POWER_DOWN_PORT = 30,
             POWER_UP_PORT = 31,
@@ -59,11 +60,12 @@ namespace PoEWizard.Data
             SHOW_PORT_MAC_ADDRESS = 47,
             SHOW_PORT_STATUS = 48,
             SHOW_PORT_POWER = 49,
+            SHOW_PORT_LLDP_REMOTE = 50,
             // 70 - 99: Special switch commands
             WRITE_MEMORY = 70,
             SHOW_CONFIGURATION = 71,
             // 100 - 119: Virtual commands
-            CHECK_POWER_PRIORITY = 100,
+            CHECK_POWER_PRIORITY = 100
         }
 
         public static Dictionary<RestUrlId, string> REST_URL_TABLE = new Dictionary<RestUrlId, string>
@@ -83,6 +85,7 @@ namespace PoEWizard.Data
             [RestUrlId.SHOW_TEMPERATURE] = $"show temperature",                                 // 11
             [RestUrlId.SHOW_HEALTH] = $"show health all cpu",                                   // 12
             [RestUrlId.SHOW_LAN_POWER_CONFIG] = $"show lanpower slot {DATA_0} port-config",     // 13
+            [RestUrlId.SHOW_LLDP_REMOTE] = "show lldp remote-system",                           // 14
             // 30 - 69: Commands related to actions on port
             [RestUrlId.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",        // 30
             [RestUrlId.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",           // 31
@@ -104,6 +107,7 @@ namespace PoEWizard.Data
             [RestUrlId.SHOW_PORT_MAC_ADDRESS] = $"show mac-learning port {DATA_0}",             // 47
             [RestUrlId.SHOW_PORT_STATUS] = $"show interfaces port {DATA_0} alias",              // 48
             [RestUrlId.SHOW_PORT_POWER] = $"show lanpower slot {DATA_0}|grep {DATA_1}",         // 49
+            [RestUrlId.SHOW_PORT_LLDP_REMOTE] = $"show lldp port {DATA_0} remote-system",       // 50
             // 70 - 99: Special switch commands
             [RestUrlId.WRITE_MEMORY] = "write memory flash-synchro",                            // 70
             [RestUrlId.SHOW_CONFIGURATION] = "show configuration snapshot"                      // 71
@@ -133,6 +137,7 @@ namespace PoEWizard.Data
                     case RestUrlId.SHOW_MAC_LEARNING:           // 10
                     case RestUrlId.SHOW_TEMPERATURE:            // 11
                     case RestUrlId.SHOW_HEALTH:                 // 12
+                        case RestUrlId.SHOW_LLDP_REMOTE:        // 14
                     // 70 - 99: Special switch commands
                     case RestUrlId.WRITE_MEMORY:                // 70
                     case RestUrlId.SHOW_CONFIGURATION:          // 71
@@ -162,6 +167,7 @@ namespace PoEWizard.Data
                     case RestUrlId.POE_PERPETUAL_ENABLE:        // 46
                     case RestUrlId.SHOW_PORT_MAC_ADDRESS:       // 47
                     case RestUrlId.SHOW_PORT_STATUS:            // 48
+                    case RestUrlId.SHOW_PORT_LLDP_REMOTE:       // 50
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 
