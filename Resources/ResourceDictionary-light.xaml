@@ -3,7 +3,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <converters:ValueToColorConverter x:Key="ValueToColorConverter" />
-    
+
     <BitmapImage x:Key="connected" UriSource="connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="disconnected-light.png" />
     <BitmapImage x:Key="info" UriSource="info.png" />

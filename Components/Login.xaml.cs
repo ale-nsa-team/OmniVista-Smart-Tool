@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using static PoEWizard.Data.Constants;
 
@@ -40,6 +41,7 @@ namespace PoEWizard.Components
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
+            if (HasErrors()) return;
             IpAddress = ipAddress.Text;
             User = username.Text;
             Password = password.Password;
@@ -54,15 +56,17 @@ namespace PoEWizard.Components
 
         private void TextBox_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter && IsAllValid()) BtnOk_Click(sender, e);
+            if (e.Key == Key.Enter && !HasErrors()) BtnOk_Click(sender, e);
         }
 
-        private bool IsAllValid()
+        private bool HasErrors()
         {
-            return !string.IsNullOrEmpty(ipAddress.Text.Trim())
-                && !string.IsNullOrEmpty(username.Text.Trim()) 
-                && !string.IsNullOrEmpty(password.Password.Trim());
-        }
+            bool ipErr = string.IsNullOrEmpty(ipAddress.Text) || ipAddress.GetBindingExpression(TextBox.TextProperty).HasError;
+            bool nameErr = string.IsNullOrEmpty(username.Text.Trim());
+            bool pwdErr = string.IsNullOrEmpty(password.Password.Trim());
+
+            return ipErr || nameErr || pwdErr;
+        } 
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {

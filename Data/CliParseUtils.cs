@@ -23,7 +23,6 @@ namespace PoEWizard.Data
             foreach (XmlNode node in nodes)
             {
                 string key = node.Name;
-                //string value = node.InnerText.Trim(new char[] { ':', ' ', '\n' }); ;
                 string value = node.InnerText.Trim(new char[] { ':', '\n' }); ;
                 dictionary[key] = value;
             }
@@ -83,9 +82,11 @@ namespace PoEWizard.Data
                     Match match = chassisRegex.Match(line);
                     if (match.Success)
                     {
-                        Dictionary<string, string> dict = new Dictionary<string, string>();
-                        dict["ID"] = match.Groups[2].Value;
-                        dict["Role"] = match.Groups[3].Value;
+                        Dictionary<string, string> dict = new Dictionary<string, string>
+                        {
+                            ["ID"] = match.Groups[2].Value,
+                            ["Role"] = match.Groups[3].Value
+                        };
                         while ((line = reader.ReadLine()) != null)
                         {
                             if ((match = vtableRegex.Match(line)) != null && match.Success) {
@@ -108,7 +109,6 @@ namespace PoEWizard.Data
 
         public static List<Dictionary<string, string>> ParseLldpRemoteTable(string data)
         {
-            Dictionary<string, List<Dictionary<string, string>>> table = new Dictionary<string, List<Dictionary<string, string>>>();
             List <Dictionary<string, string>> dictList = new List<Dictionary<string, string>>();
             Dictionary<string, string> dict = new Dictionary<string, string>();
             string[] split;
@@ -124,10 +124,9 @@ namespace PoEWizard.Data
                         dict = new Dictionary<string, string> { ["Local Port"] = Utils.ExtractSubString(line.Trim(), "Local Port ", ":") };
                         continue;
                     }
-                    string sep = "";
-                    if (line.Contains("=")) sep = "="; else if (line.Contains(",")) sep = ",";
-                    if (string.IsNullOrEmpty(sep)) continue;
-                    split = line.Trim().Split(sep.ToCharArray());
+                    char sep = line.Contains("=") ? '=' : (line.Contains(",") ? ',' : '\0'); 
+                    if (sep == '\0') continue;
+                    split = line.Trim().Split(sep);
                     if (split.Length == 2)
                     {
                         if (split[0].Contains("Chassis") && !split[0].Contains("Subtype"))
