@@ -22,6 +22,7 @@ namespace PoEWizard.Data
         public enum PowerSupplyState { Up, Down, Unknown }
         public enum ChassisStatus { Unknown, Up, Down }
         public enum DictionaryType { System, Chassis, RunningDir, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply }
+        public enum ConfigType { Enabled, Disabled, Unavailable }
 
         #endregion
 
@@ -78,12 +79,31 @@ namespace PoEWizard.Data
         public const string UP_TIME = "Up Time";
         // Used by "SHOW_RUNNING_DIR"
         public const string RUNNING_CONFIGURATION = "Running configuration";
+        public const string SYNCHRONIZATION_STATUS = "Running Configuration";
         // Used by "SHOW_MICROCODE"
         public const string RELEASE = "Release";
         // Used by SHOW_POWER_SUPPLY
         public const string CHAS_PS = "Chassis/PS";
         public const string POWER = "Power Provision";
         public const string PS_TYPE = "Module Type";
+        // Used by "SHOW_MAC_LEARNING_PORT"
+        public const string PORT_MAC_LIST = "static address,  Mac Address";
+        // Used by "SHOW_LAN_POWER_CONFIG"
+        public const string POWER_4PAIR = "4-Pair";
+        public const string POWER_OVER_HDMI = "power-over -HDMI";
+        public const string POWER_CAPACITOR_DETECTION = "Capacitor Detection";
+        public const string POWER_823BT = "802.3bt";
+        // Used by "SHOW_LLDP_REMOTE"
+        public const string LOCAL_PORT = "Local Port";
+        public const string REMOTE_PORT = "Remote Port";
+        public const string CAPABILITIES_ENABLED = "Capabilities Enabled";
+        public const string MED_DEVICE_TYPE = "MED Device Type";
+        public const string MED_CAPABILITIES = "MED Capabilities";
+        public const string MAU_TYPE = "Mau Type";
+        public const string MED_POWER_TYPE = "MED Power Type";
+        public const string MED_POWER_SOURCE = "MED Power Source";
+        public const string MED_POWER_PRIORITY = "MED Power Priority";
+        public const string MED_POWER_VALUE = "MED Power Value";
         #endregion
 
         #region regex patterns

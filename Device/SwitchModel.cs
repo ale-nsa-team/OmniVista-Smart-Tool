@@ -20,6 +20,7 @@ namespace PoEWizard.Device
         public string Model { get; set; }
         public string Version { get; set; }
         public string RunningDir { get; set; }
+        public string SyncStatus { get; set; }
         public string Location { get; set; }
         public string Description { get; set; }
         public string SerialNumber { get; set; }
@@ -30,6 +31,7 @@ namespace PoEWizard.Device
         public List<ChassisModel> ChassisList { get; set; }
         public bool IsConnected { get; set; }
         public PowerSupplyState PowerSupplyState => GetPowerSupplyState();
+        public string ConfigSnapshot { get; set; }
 
         public SwitchModel() : this("", DEFAULT_USERNAME, DEFAULT_PASSWORD, 5) { }
 
@@ -61,6 +63,7 @@ namespace PoEWizard.Device
                     break;
                 case DictionaryType.RunningDir:
                     RunningDir = dict.TryGetValue(RUNNING_CONFIGURATION, out s) ? s : "";
+                    SyncStatus = dict.TryGetValue(SYNCHRONIZATION_STATUS, out s) ? s : "";
                     break;
                 case DictionaryType.MicroCode:
                     Version = dict.TryGetValue(RELEASE, out s) ? s : "";
@@ -154,7 +157,7 @@ namespace PoEWizard.Device
                 {
                     slot.Ports?.ToList().ForEach(port =>
                     {
-                        port.IsUplink = port.IsLldp || port.IsVfLink;
+                        port.IsUplink = port.IsLldpMdi || port.IsLldpExtMdi || port.IsVfLink;
                     });
                 }
             }

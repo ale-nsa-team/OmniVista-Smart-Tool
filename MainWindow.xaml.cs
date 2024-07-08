@@ -259,7 +259,7 @@ namespace PoEWizard
                 await Task.Run(() =>
                     proceed = restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
                                     RestUrlId.POWER_2PAIR_PORT, RestUrlId.POWER_HDMI_ENABLE, RestUrlId.LLDP_POWER_MDI_ENABLE, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE
-                              })
+                              }, 15)
                 );
                 Logger.Info($"PoE Wizard 1st Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                 await WaitAckProgress();
@@ -272,7 +272,7 @@ namespace PoEWizard
                         await Task.Run(() =>
                             proceed = restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
                                             RestUrlId.POWER_823BT_ENABLE
-                                      })
+                                      }, 15)
                         );
                         Logger.Info($"PoE Wizard 2nd Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                     }
@@ -283,7 +283,7 @@ namespace PoEWizard
                     await Task.Run(() =>
                         proceed = restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
                                         RestUrlId.CHECK_POWER_PRIORITY
-                                  })
+                                  }, 15)
                     );
                     Logger.Info($"PoE Wizard Check Power Priority completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                     await WaitAckProgress();
@@ -295,7 +295,7 @@ namespace PoEWizard
                         await Task.Run(() =>
                             restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
                                     RestUrlId.POWER_PRIORITY_PORT
-                            })
+                            }, 15)
                         );
                         Logger.Info($"PoE Wizard 3rd Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                     }

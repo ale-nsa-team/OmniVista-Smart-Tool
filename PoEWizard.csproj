@@ -137,6 +137,7 @@
     <Compile Include="Components\ValueConverts.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Device\EndPointDeviceModel.cs" />
     <Compile Include="Device\PowerSupplyModel.cs" />
     <Compile Include="Device\SlotModel.cs" />
     <Compile Include="Device\SwitchModel.cs" />
