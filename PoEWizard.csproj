@@ -141,6 +141,7 @@
     <Compile Include="Device\EndPointDeviceModel.cs" />
     <Compile Include="Device\PowerSupplyModel.cs" />
     <Compile Include="Device\SlotModel.cs" />
+    <Compile Include="Device\SlotView.cs" />
     <Compile Include="Device\SwitchModel.cs" />
     <Compile Include="Device\PortModel.cs" />
     <Compile Include="Exceptions\CustomExceptions.cs" />

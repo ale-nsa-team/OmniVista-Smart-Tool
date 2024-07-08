@@ -291,7 +291,7 @@ namespace PoEWizard.Comm
             if (chassis == null) return;
             PortModel switchPort = this.SwitchModel.GetPort(port);
             if (switchPort == null) return;
-            if (chassis.PowerRemaining < Utils.StringToDouble(switchPort.MaxPower)) _wizardProgressReport.Type = ReportType.Error;
+            if (chassis.PowerRemaining < switchPort.MaxPower) _wizardProgressReport.Type = ReportType.Error;
         }
 
         private void TryChangePriority(string wizardAction, string port, int waitSec)
@@ -324,7 +324,7 @@ namespace PoEWizard.Comm
             while (Utils.GetTimeDuration(startTime) <= waitSec)
             {
                 UpdatePortData(port);
-                if (_wizardSwitchPort != null && _wizardSwitchPort.Status == PortStatus.Up && Utils.StringToInt(_wizardSwitchPort.Power) > 500) break;
+                if (_wizardSwitchPort != null && _wizardSwitchPort.Status == PortStatus.Up && _wizardSwitchPort.Power > 500) break;
                 Thread.Sleep(5000);
             }
             StringBuilder txt = new StringBuilder("Port ").Append(port).Append(" Status: ").Append(_wizardSwitchPort.Status).Append(", PoE Status: ");

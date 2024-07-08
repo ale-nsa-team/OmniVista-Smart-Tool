@@ -369,7 +369,8 @@ namespace PoEWizard
             _switchMenuItem.IsEnabled = false;
             _snapshotMenuItem.IsEnabled = true;
             _disconnectMenuItem.Visibility = Visibility.Visible;
-            _slotsView.ItemsSource = device.ChassisList;
+            _slotsView.ItemsSource = new SlotView(device).Slots;
+            _slotsView.Visibility = Visibility.Visible;
         }
 
         private void SetDisconnectedState()

@@ -11,8 +11,8 @@ namespace PoEWizard.Device
         public string Number { get; set; }
         public bool HasPoe { get; set; }
         public PoeStatus Poe { get; set; }
-        public string Power { get; set; }
-        public string MaxPower { get; set; }
+        public int Power { get; set; }
+        public int MaxPower { get; set; }
         public PortStatus Status { get; set; }
         public PriorityLevelType PriorityLevel { get; set; }
         public bool IsUplink { get; set; } = false;
@@ -34,9 +34,9 @@ namespace PoEWizard.Device
             Number = GetPortId(dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "");
             UpdatePortStatus(dict);
             HasPoe = false;
-            Power = "0 mw";
+            Power = 0;
             Poe = PoeStatus.NoPoe;
-            MaxPower = "0 mw";
+            MaxPower = 0;
             PriorityLevel = PriorityLevelType.Low;
             IsUplink = false;
             IsLldpMdi = false;
@@ -47,8 +47,8 @@ namespace PoEWizard.Device
 
         public void LoadPoEData(Dictionary<string, string> dict)
         {
-            MaxPower = dict.TryGetValue(MAXIMUM, out string s) ? s : "";
-            Power = dict.TryGetValue(USED, out s) ? s : "";
+            MaxPower = ParseNumber(dict.TryGetValue(MAXIMUM, out string s) ? s : "0");
+            Power = ParseNumber(dict.TryGetValue(USED, out s) ? s : "0");
             HasPoe = true;
             switch (dict.TryGetValue(STATUS, out s) ? s : "")
             {
@@ -121,6 +121,11 @@ namespace PoEWizard.Device
             string[] split = chas.Split('/');
             if (split.Length < 1) return "0";
             return split[split.Length - 1];
+        }
+
+        public int ParseNumber(string val)
+        {
+            return int.TryParse(val, out int n) ? n : 0;
         }
 
     }

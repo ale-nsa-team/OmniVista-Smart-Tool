@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using static PoEWizard.Data.Constants;
 
@@ -9,6 +10,7 @@ namespace PoEWizard.Device
     public class SlotModel
     {
         public int Number { get; set; }
+        public string Name { get; set; }
         public int NbPorts { get; set; }
         public int NbPoePorts { get; set; }
         public double Power { get; set; }
@@ -27,22 +29,14 @@ namespace PoEWizard.Device
         public SlotModel(string slotString)
         {
             this.Number = ParseNumber(slotString, 1);
+            this.Name = slotString.Substring(0, slotString.Length - 2);
             this.Ports = new List<PortModel>();
-        }
-
-        public SlotModel(Dictionary<string, string> dict)
-        {
-            string nb = dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "0";
-            this.Number = ParseNumber(nb, 0);
-            nb = dict.TryGetValue(MAX_POWER, out s) ? s : "0";
-            this.Budget = ParseDouble(nb);
-            nb = dict.TryGetValue(USAGE_THRESHOLD, out s) ? s : "0";
-            this.Threshold = ParseNumber(nb, 0);
         }
 
         public void LoadFromDictionary(Dictionary<string, string> dict)
         {
-            this.Is8023bt = (dict.TryGetValue(BT_SUPPORT, out string s) ? s : "") == "Yes";
+            this.Budget = ParseDouble(dict.TryGetValue(MAX_POWER, out string s) ? s: "0");
+            this.Is8023bt = (dict.TryGetValue(BT_SUPPORT, out s) ? s : "") == "Yes";
             this.IsClassDetection = (dict.TryGetValue(CLASS_DETECTION, out s) ? s : "") == "enable";
             this.IsHiResDetection = (dict.TryGetValue(HI_RES_DETECTION, out s) ? s : "") == "enable";
             this.IsPPoE = (dict.TryGetValue(PPOE, out s) ? s : "") == "enable";
@@ -67,6 +61,7 @@ namespace PoEWizard.Device
                     this.Ports[p].LoadPoEConfig(dict);
                 }
             }
+            this.Power = Ports.Sum(p => p.Power) / 1000;
         }
 
         public PortModel GetPort(string portNumber)
