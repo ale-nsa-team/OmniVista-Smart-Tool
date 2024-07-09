@@ -113,6 +113,8 @@
                         <DataGridTextColumn Header="#Poe Ports" Width="*" Binding="{Binding Path=NbPoePorts}" />
                         <DataGridTextColumn Header="Budget (Watts)" Width="*" Binding="{Binding Path=Budget}" />
                         <DataGridTextColumn Header="Power (Watts)" Width="*" Binding="{Binding Path=Power}"/>
+                        <DataGridTextColumn Header="Fast PoE" Width="*" Binding="{Binding Path=IsFPoE}" />
+                        <DataGridTextColumn Header="Perpetual PoE" Width="*" Binding="{Binding Path=IsPPoE}" />
                         <DataGridTemplateColumn Header="PoE Status" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -146,7 +148,26 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Port" Width="*" Binding="{Binding Path=Name}" />
                     <DataGridTextColumn Header="Status" Width="*" Binding="{Binding Path=Status}" />
-                    <DataGridTextColumn Header="PoE" Width="*" Binding="{Binding Path=Poe, Converter={StaticResource PoeTypeToSymbolConverter}}" />
+                    <DataGridTemplateColumn Header="Status" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Status}"
+                                    Foreground="{Binding Path=Status,
+                                    Converter={StaticResource ValueToColorConverter},
+                                    ConverterParameter=PortStatus}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="PoE Status" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Poe}"
+                                    Foreground="{Binding Path=Poe, 
+                                    Converter={StaticResource ValueToColorConverter}, 
+                                    ConverterParameter=Poe}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Priority" Width="*">
                         <DataGridTextColumn.Binding>
                             <MultiBinding Converter="{StaticResource PoeToPriorityLevelConverter}">
