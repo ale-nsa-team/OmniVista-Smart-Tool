@@ -177,8 +177,8 @@
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
                     <DataGridTextColumn Header="Power (mW)" Width="*" Binding="{Binding Path=Power}"/>
-                    <DataGridTextColumn Header="Max Power (mW)" Width="*" Binding="{Binding Path=MaxPower}" />
-                    <DataGridTextColumn Header="Device Type" Width="1.5*" Binding="{Binding Path=EndPointDevice.DeviceType}" />
+                    <DataGridTextColumn Header="Max Power (mW)" Width="Auto" Binding="{Binding Path=MaxPower}" />
+                    <DataGridTextColumn Header="Device Type" Width="2*" Binding="{Binding Path=EndPointDevice.DeviceType}" />
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
