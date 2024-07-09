@@ -120,13 +120,17 @@ namespace PoEWizard.Comm
             {
                 throw ex;
             }
+            catch (SwitchRejectConnection ex)
+            {
+                throw ex;
+            }
             catch (SwitchAuthenticationFailure ex)
             {
                 throw ex;
             }
             catch (Exception ex)
             {
-                string error = PrintUnreachableError(startTime);
+                string error = ex.Message;
                 if (ex.InnerException != null)
                 {
                     error = ex.InnerException.Message;
@@ -154,7 +158,7 @@ namespace PoEWizard.Comm
             }
             catch
             {
-                throw new SwitchConnectionFailure(this._ip_address + " doesn't support Rest Api!");
+                throw new SwitchRejectConnection($"Switch {this._ip_address} doesn't support Rest Api!");
             }
         }
 
