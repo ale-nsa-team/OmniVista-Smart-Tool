@@ -3,6 +3,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <converters:ValueToColorConverter x:Key="ValueToColorConverter" />
+    <converters:PoeTypeToSymbolValueConverter x:Key="PoeTypeToSymbolConverter" />
+    <converters:PoeToPriorityLevelConverter x:Key="PoeToPriorityLevelConverter" />
 
     <BitmapImage x:Key="connected" UriSource="connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="disconnected-light.png" />
@@ -127,7 +129,7 @@
         <Setter Property="Background" Value="{StaticResource popupBackgroundColor}" />
     </Style>
 
-    <Style x:Key="cfgWindow" TargetType="StackPanel">
+    <Style x:Key="loginWindow" TargetType="StackPanel">
         <Setter Property="Background" Value="{StaticResource popupBackgroundColor}" />
         <Style.Resources>
             <Style TargetType="{x:Type Label}">
@@ -156,147 +158,11 @@
         </Style.Resources>
     </Style>
 
-    <Style x:Key="newTmplWndw" TargetType="StackPanel">
-        <Setter Property="Orientation" Value="Horizontal"/>
-        <Setter Property="Margin" Value="20,10,0,10"/>
-        <Setter Property="Background" Value="{StaticResource popupBackgroundColor}"/>
-        <Style.Resources>
-            <Style TargetType="{x:Type Label}">
-                <Setter Property="Foreground" Value="{StaticResource fontColor}"/>
-                <Setter Property="FontSize" Value="10"/>
-                <Setter Property="Padding" Value="0,5,0,0"/>
-                <Setter Property="Height" Value="25"/>
-                <Setter Property="Width" Value="150"/>
-            </Style>
-            <Style TargetType="{x:Type TextBox}">
-                <Setter Property="Foreground" Value="{StaticResource fontColor}"/>
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Padding" Value="0,3,0,0"/>
-                <Setter Property="Height" Value="20"/>
-                <Setter Property="Width" Value="100"/>
-                <Setter Property="FontSize" Value="10"/>
-                <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                <Setter Property="CaretBrush" Value="{StaticResource fontColor}"/>
-            </Style>
-        </Style.Resources>
-    </Style>
-
-    <Style x:Key="diagWindow" TargetType="Grid">
-        <Setter Property="Background" Value="{StaticResource popupBackgroundColor}" />
-        <Style.Resources>
-            <Style TargetType="{x:Type TextBlock}">
-                <Setter Property="Background" Value="{StaticResource blueGradientBrush}"/>
-                <Setter Property="Foreground" Value="White"/>
-                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                <Setter Property="TextAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="0,3,0,3"/>
-            </Style>
-            <Style TargetType="{x:Type DataGrid}">
-                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
-                <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
-                <Setter Property="Background" Value="{StaticResource popupBackgroundColor}"/>
-                <Setter Property="ColumnWidth" Value="Auto" />
-                <Setter Property="GridLinesVisibility" Value="All"/>
-                <Setter Property="HeadersVisibility" Value="None"/>
-                <Setter Property="IsReadOnly" Value="True"/>
-                <Setter Property="CanUserResizeColumns" Value="False"/>
-                <Setter Property="CanUserReorderColumns" Value="False"/>
-                <Setter Property="Margin" Value="0,0,0,12"/>
-                <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource borderColor}"/>
-                <Setter Property="VerticalGridLinesBrush" Value="{StaticResource borderColor}"/>
-                <Setter Property="BorderThickness" Value="0" />
-                <Style.Resources>
-                    <Style TargetType="{x:Type DataGridColumnHeader}">
-                        <Setter Property="Background" Value="{StaticResource popupBackgroundColor}"/>
-                        <Setter Property="Foreground" Value="{StaticResource fontColor}"/>
-                        <Setter Property="Padding" Value="5,5,0,5"/>
-                        <Setter Property="BorderBrush" Value="{StaticResource borderColor}"/>
-                        <Setter Property="BorderThickness" Value="0.5,0,0.5,1"/>
-                    </Style>
-                </Style.Resources>
-            </Style>
-            <Style TargetType="{x:Type DataGridRow}">
-                <Setter Property="Background" Value="{StaticResource popupBackgroundColor}" />
-                <Setter Property="Foreground" Value="{StaticResource fontColor}" />
-            </Style>
-            <Style TargetType="{x:Type DataGridCell}">
-                <Setter Property="Padding" Value="3"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type DataGridCell}">
-                            <Border Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding BorderBrush}" 
-                                    BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
-                                <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <Trigger Property="IsSelected" Value="True">
-                        <Setter Property="Foreground" Value="{StaticResource fontColor}"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-        </Style.Resources>
-    </Style>
-
-    <Style x:Key="diagGrid" TargetType="Grid">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Margin" Value="0,0,0,12"/>
-        <Style.Resources>
-            <Style TargetType="Label">
-                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                <Setter Property="Foreground" Value="{StaticResource fontColor}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource borderColor}"/>
-                <Setter Property="BorderThickness" Value="0.5"/>
-                <Setter Property="Padding" Value="0,3,0,0"/>
-            </Style>
-        </Style.Resources>
-    </Style>
-    
-    <Style x:Key="cfgTitle" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource blueGradientBrush}" />
-        <Setter Property="Height" Value="50" />
-        <Setter Property="Margin" Value="0,0,0,10" />
-        <Setter Property="Effect">
-            <Setter.Value>
-                <DropShadowEffect ShadowDepth="1" />
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="templateOpt" TargetType="Border">
+    <Style x:Key="gridBorder" TargetType="Border">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Margin" Value="5,5,5,5" />
         <Setter Property="BorderThickness" Value="0.5" />
         <Setter Property="BorderBrush" Value="{StaticResource borderColor}" />
-    </Style>
-
-    <Style x:Key="templatePnl" TargetType="StackPanel">
-        <Style.Resources>
-            <Style TargetType="RadioButton">
-                <Setter Property="Foreground" Value="{StaticResource fontColor}" />
-                <Setter Property="Margin" Value="50,5,0,5" />
-            </Style>
-            <Style TargetType="CheckBox">
-                <Setter Property="Foreground" Value="{StaticResource fontColor}" />
-                <Setter Property="Margin" Value="50,5,0,5" />
-            </Style>
-            <Style TargetType="{x:Type TextBox}">
-                <Setter Property="Height" Value="25" />
-                <Setter Property="Width" Value="100" />
-                <Setter Property="HorizontalAlignment" Value="Stretch" />
-                <Setter Property="Foreground" Value="{StaticResource fontColor}" />
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Margin" Value="20,0,10,10" />
-                <Setter Property="BorderThickness" Value="0,0,0,1" />
-                <Setter Property="CaretBrush" Value="{StaticResource fontColor}" />
-            </Style>
-        </Style.Resources>
     </Style>
 
     <Style TargetType="ComboBox" x:Key="defaultCombo" BasedOn="{StaticResource {x:Type ComboBox}}">
@@ -307,13 +173,6 @@
         <Setter Property="Height" Value="20" />
         <Setter Property="FontSize" Value="10" />
         <Setter Property="Background" Value="Transparent" />
-    </Style>
-
-    <Style x:Key="cfgHeader" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="16" />
-        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Margin" Value="10,0,0,0" />
     </Style>
 
     <Style TargetType="TextBlock" x:Key="aboutTitle">
@@ -341,20 +200,6 @@
         <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
     </Style>
 
-    <Style x:Key="tmplFiles" TargetType="RichTextBox">
-        <Setter Property="Background" Value="{StaticResource popupBackgroundColor}" />
-        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
-        <Setter Property="IsReadOnly" Value="True" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Style.Resources>
-            <Style TargetType="{x:Type Paragraph}">
-                <Setter Property="FontSize" Value="10"/>
-                <Setter Property="Margin" Value="0"/>
-                <Setter Property="LineHeight" Value="2"/>
-            </Style>
-        </Style.Resources>
-    </Style>
-    
     <Style TargetType="Button" x:Key="defaultButton">
         <Setter Property="Background" Value="{StaticResource buttonBackground}" />
         <Setter Property="Width" Value="80" />
@@ -415,35 +260,6 @@
         </Style.Resources>
     </Style>
 
-    <Style TargetType="Button" x:Key="logoButton">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Margin" Value="20,0,0,0" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Border Background="{TemplateBinding Background}" 
-							BorderBrush="{TemplateBinding BorderBrush}"
-							BorderThickness ="{TemplateBinding BorderThickness}">
-                        <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" />
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Cursor" Value="Hand" />
-            </Trigger>
-        </Style.Triggers>
-        <Style.Resources>
-            <Style TargetType="Image">
-                <Setter Property="MaxWidth" Value="140" />
-                <Setter Property="HorizontalAlignment" Value="Left" />
-                <Setter Property="Stretch" Value="Uniform" />
-            </Style>
-        </Style.Resources>
-    </Style>
-    
     <Style x:Key="buttonBar" TargetType="StackPanel">
         <Setter Property="Orientation" Value="Horizontal" />
         <Setter Property="HorizontalAlignment" Value="Right" />
@@ -463,11 +279,6 @@
 
     <Style TargetType="Border" BasedOn="{StaticResource aboutBorder}" x:Key="propsBorder">
         <Setter Property="Margin" Value="10,0,10,0" />
-    </Style>
-
-    <Style TargetType="Border" x:Key="logoBorder">
-        <Setter Property="BorderBrush" Value="{StaticResource borderColor}" />
-        <Setter Property="BorderThickness" Value="0,0.5,0,0" />
     </Style>
 
     <Style TargetType="Border" x:Key="msgBoxTitleBorder">
@@ -506,17 +317,6 @@
                 <Setter Property="Foreground" Value="{StaticResource linkColor}"/>
             </Style>
         </Style.Resources>
-    </Style>
-
-    <Style TargetType="Label" x:Key="rightJustifLabel">
-        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="HorizontalAlignment" Value="Right" />
-        <Setter Property="FontSize" Value="12" />
-    </Style>
-
-    <Style TargetType="Label" x:Key="leftJustifLabel" BasedOn="{StaticResource rightJustifLabel}">
-        <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 
     <Style TargetType="Label" x:Key="keyLabel">

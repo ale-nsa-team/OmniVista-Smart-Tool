@@ -9,6 +9,7 @@ namespace PoEWizard.Device
     public class PortModel
     {
         public string Number { get; set; }
+        public string Name { get; set; }
         public bool HasPoe { get; set; }
         public PoeStatus Poe { get; set; }
         public int Power { get; set; }
@@ -20,19 +21,19 @@ namespace PoEWizard.Device
         public bool IsLldpExtMdi { get; set; } = false;
         public bool IsVfLink { get; set; } = false;
         public bool Is4Pair { get; set; } = true;
-        public bool IsPowerOverHdmi { get; set; } = true;
-        public bool IsCapacitorDetection { get; set; } = true;
-        public ConfigType Protocol8023bt { get; set; } = ConfigType.Unavailable;
+        public bool IsPowerOverHdmi { get; set; }
+        public bool IsCapacitorDetection { get; set; }
+        public ConfigType Protocol8023bt { get; set; }
         public bool IsEnabled { get; set; } = false;
         public string Class { get; set; }
         public string Type { get; set; }
-        public List<string> MacList { get; set; } = new List<string>();
-        public EndPointDeviceModel EndPointDevice { get; set; } = new EndPointDeviceModel();
+        public List<string> MacList { get; set; }
+        public EndPointDeviceModel EndPointDevice { get; set; }
 
         public PortModel(Dictionary<string, string> dict)
         {
-
-            Number = GetPortId(dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "");
+            Name = dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "";
+            Number = GetPortId(Name);
             UpdatePortStatus(dict);
             HasPoe = false;
             Power = 0;
@@ -44,6 +45,11 @@ namespace PoEWizard.Device
             IsLldpExtMdi = false;
             IsVfLink = false;
             Is4Pair = false;
+            IsPowerOverHdmi = true;
+            IsCapacitorDetection = true;
+            Protocol8023bt = ConfigType.Unavailable;
+            MacList = new List<string>();
+            EndPointDevice = new EndPointDeviceModel();
         }
 
         public void LoadPoEData(Dictionary<string, string> dict)

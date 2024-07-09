@@ -95,7 +95,7 @@
                 <Label Grid.Row="9" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_syncStatus" Content="{Binding SyncStatus}"/>
             </Grid>
         </StackPanel>
-        <Border Grid.Row="2" x:Name="_slotInfo" Style="{DynamicResource templateOpt}">
+        <Border Grid.Row="2" x:Name="_slotInfo" Style="{DynamicResource gridBorder}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -136,13 +136,31 @@
         <Border Grid.Row="2" x:Name="_infoBox" Style="{DynamicResource infoBorder}" Visibility="Collapsed">
             <TextBlock x:Name="_infoBlock" />
         </Border>
-        <Border Grid.Row="3" x:Name="_portInfo" Style="{DynamicResource templateOpt}">
+        <Border Grid.Row="3" x:Name="_portInfo" Style="{DynamicResource gridBorder}">
             <DataGrid x:Name="_portList"
                       Style="{DynamicResource defaultGrid}"
+                      Visibility="Hidden"
                       ColumnHeaderStyle="{DynamicResource gridHeader}"
-                      CellStyle="{DynamicResource gridCell}" />
+                      CellStyle="{DynamicResource gridCell}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Port" Width="*" Binding="{Binding Path=Name}" />
+                    <DataGridTextColumn Header="Status" Width="*" Binding="{Binding Path=Status}" />
+                    <DataGridTextColumn Header="PoE" Width="*" Binding="{Binding Path=Poe, Converter={StaticResource PoeTypeToSymbolConverter}}" />
+                    <DataGridTextColumn Header="Priority" Width="*">
+                        <DataGridTextColumn.Binding>
+                            <MultiBinding Converter="{StaticResource PoeToPriorityLevelConverter}">
+                                <Binding Path="HasPoe" />
+                                <Binding Path="PriorityLevel" />
+                            </MultiBinding>
+                        </DataGridTextColumn.Binding>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Power" Width="*" Binding="{Binding Path=Power}"/>
+                    <DataGridTextColumn Header="Max Power" Width="*" Binding="{Binding Path=MaxPower}" />
+                    <DataGridTextColumn Header="Device Type" Width="*" Binding="{Binding Path=EndPointDeviceModel.DeviceType}" />
+                </DataGrid.Columns>
+            </DataGrid>
         </Border>
-        <Border Grid.Row="4" x:Name="_buttonArea" Style="{DynamicResource templateOpt}">
+        <Border Grid.Row="4" x:Name="_buttonArea" Style="{DynamicResource gridBorder}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button x:Name="_btnRunWiz" Style="{DynamicResource defaultButton}"
                         IsEnabled="False"

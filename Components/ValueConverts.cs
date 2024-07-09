@@ -65,4 +65,45 @@ namespace PoEWizard.Components
             return DependencyProperty.UnsetValue;
         }
     }
+
+    public class PoeTypeToSymbolValueConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string poeType = (string)value.ToString();
+            switch (poeType.ToLower())
+            {
+                case "on":
+                    return "✓";
+
+                case "off":
+                    return "✗";
+
+                default:
+                    return "-";
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class PoeToPriorityLevelConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool hasPoe = (bool)values[0];
+            string priorityLevel = values[1].ToString();
+
+            return hasPoe ? priorityLevel : "-";
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            string[] splitValues = ((string)value).Split(' ');
+            return splitValues;
+        }
+    }
 }
