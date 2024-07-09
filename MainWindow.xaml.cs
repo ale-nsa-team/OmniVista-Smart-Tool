@@ -15,6 +15,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
 
@@ -217,6 +218,12 @@ namespace PoEWizard
             if (_slotsView.SelectedItem is SlotModel slot)
             {
                 _portList.ItemsSource = slot.Ports;
+                if (slotView.Slots.Count == 1) //do not highlight is only one row
+                {
+                    _slotsView.SelectionChanged -= SlotSelection_Changed;
+                    _slotsView.SelectedIndex = -1;
+                    _slotsView.SelectionChanged += SlotSelection_Changed;
+                }
             }
 
         }
