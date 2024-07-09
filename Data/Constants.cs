@@ -103,6 +103,7 @@
         public const string MED_POWER_SOURCE = "MED Power Source";
         public const string MED_POWER_PRIORITY = "MED Power Priority";
         public const string MED_POWER_VALUE = "MED Power Value";
+        public const string MED_IP_ADDRESS = "Management IP Address";
         #endregion
 
         #region regex patterns
