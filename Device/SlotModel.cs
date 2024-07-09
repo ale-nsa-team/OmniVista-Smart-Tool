@@ -48,20 +48,13 @@ namespace PoEWizard.Device
         {
             foreach (var dict in list)
             {
-                if (dt == DictionaryType.LanPower)
-                {
-                    int p = ParseNumber(dict.TryGetValue(PORT, out string s) ? s : "0", 2) - 1;
-                    if (p < 0) continue;
-                    this.Ports[p].LoadPoEData(dict);
-                    this.NbPoePorts = list.Count;
-                }
-                else
-                {
-                    int p = ParseNumber(dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "0", 2) - 1;
-                    if (p < 0) continue;    
-                    this.Ports[p].LoadPoEConfig(dict);
-                }
+                string[] split = (dict.TryGetValue((dt == DictionaryType.LanPower) ? PORT : CHAS_SLOT_PORT, out string s) ? s : "0").Split('/');
+                if (split.Length < 2) continue;
+                string port = (split.Length == 3) ? split[2] : split[1];
+                if (port == null) continue;
+                if (dt == DictionaryType.LanPower) GetPort(port).LoadPoEData(dict); else GetPort(port).LoadPoEConfig(dict);
             }
+            this.NbPoePorts = list.Count;
             this.Power = Ports.Sum(p => p.Power) / 1000;
             double powerConsumedMetric = 100 * this.Power / this.Budget;
             double nearThreshold = 0.9 * this.Threshold;

@@ -69,8 +69,7 @@ namespace PoEWizard.Device
                     Poe = PoeStatus.Deny;
                     break;
             }
-            string level = dict.TryGetValue(PRIORITY, out s) ? s : "";
-            PriorityLevel = Enum.TryParse<PriorityLevelType>(level, true, out PriorityLevelType res) ? res : PriorityLevelType.Unknown;
+            PriorityLevel = Enum.TryParse<PriorityLevelType>(dict.TryGetValue(PRIORITY, out s) ? s : "", true, out PriorityLevelType res) ? res : PriorityLevelType.Unknown;
             Class = dict.TryGetValue(CLASS, out s) ? s : "";
             Type = dict.TryGetValue(TYPE, out s) ? s : "";
         }
