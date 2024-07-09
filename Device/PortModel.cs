@@ -135,7 +135,7 @@ namespace PoEWizard.Device
 
         public int ParseNumber(string val)
         {
-            return int.TryParse(val, out int n) ? n : 0;
+            return int.TryParse(val.Replace("*", ""), out int n) ? n : 0;
         }
 
     }

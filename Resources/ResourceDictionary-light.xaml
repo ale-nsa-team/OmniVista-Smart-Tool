@@ -50,6 +50,11 @@
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
         <Setter Property="IsReadOnly" Value="True" />
+        <Style.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="Margin" Value="5,0,0,0" />
+            </Style>
+        </Style.Resources>
     </Style>
 
     <Style TargetType="DataGridColumnHeader" x:Key="gridHeader">
@@ -61,12 +66,11 @@
     </Style>
 
     <Style TargetType="DataGridCell" x:Key="gridCell">
-        <Setter Property="Margin" Value="5,0,0,0" />
         <Style.Triggers>
             <Trigger Property="IsSelected" Value="True">
-                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Background" Value="#ddd" />
                 <Setter Property="Foreground" Value="black" />
-                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="#ddd" />
             </Trigger>
         </Style.Triggers>
     </Style>

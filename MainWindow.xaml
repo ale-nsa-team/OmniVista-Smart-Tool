@@ -141,7 +141,8 @@
                       Style="{DynamicResource defaultGrid}"
                       Visibility="Hidden"
                       ColumnHeaderStyle="{DynamicResource gridHeader}"
-                      CellStyle="{DynamicResource gridCell}">
+                      CellStyle="{DynamicResource gridCell}"
+                      SelectionChanged="PortSelection_Changed">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Port" Width="*" Binding="{Binding Path=Name}" />
                     <DataGridTextColumn Header="Status" Width="*" Binding="{Binding Path=Status}" />
@@ -154,9 +155,9 @@
                             </MultiBinding>
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="Power" Width="*" Binding="{Binding Path=Power}"/>
-                    <DataGridTextColumn Header="Max Power" Width="*" Binding="{Binding Path=MaxPower}" />
-                    <DataGridTextColumn Header="Device Type" Width="2*" Binding="{Binding Path=EndPointDevice.DeviceType}" />
+                    <DataGridTextColumn Header="Power (mW)" Width="*" Binding="{Binding Path=Power}"/>
+                    <DataGridTextColumn Header="Max Power (mW)" Width="*" Binding="{Binding Path=MaxPower}" />
+                    <DataGridTextColumn Header="Device Type" Width="1.5*" Binding="{Binding Path=EndPointDevice.DeviceType}" />
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

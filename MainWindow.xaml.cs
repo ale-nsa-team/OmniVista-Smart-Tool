@@ -4,7 +4,6 @@ using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -36,6 +35,7 @@ namespace PoEWizard
         private bool reportAck;
         private RestApiService restApiService;
         private SwitchModel device;
+        private string selectedPort;
         #endregion
         #region public variables
         public static Window Instance;
@@ -219,6 +219,15 @@ namespace PoEWizard
 
         }
 
+        private void PortSelection_Changed(Object sender, RoutedEventArgs e)
+        {
+            if (_portList.SelectedItem is PortModel port)
+            {
+                selectedPort = port.Name;
+                _btnRunWiz.IsEnabled = true;
+            }
+        }
+
         private void FPoE_Click(object sender, RoutedEventArgs e)
         {
 
@@ -281,11 +290,12 @@ namespace PoEWizard
         {
             try
             {
+                if (selectedPort == null) return;
                 bool proceed = false;
-                ShowProgress("Running PoE Wizard...");
+                ShowProgress($"Running PoE Wizard on port {selectedPort}...");
                 restApiService = new RestApiService(device, progress);
                 await Task.Run(() =>
-                    proceed = restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
+                    proceed = restApiService.RunPoeWizard(selectedPort, new List<RestUrlId>() {
                                     RestUrlId.POWER_2PAIR_PORT, RestUrlId.POWER_HDMI_ENABLE, RestUrlId.LLDP_POWER_MDI_ENABLE, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE
                               }, 15)
                 );
@@ -392,7 +402,6 @@ namespace PoEWizard
             DataContext = device;
             _comImg.Source = (ImageSource)currentDict["connected"];
             _switchAttributes.Text = $"Connected to: {device.Name}";
-            _btnRunWiz.IsEnabled = true;
             _btnConnect.Cursor = Cursors.Hand;
             _switchMenuItem.IsEnabled = false;
             _snapshotMenuItem.IsEnabled = true;
