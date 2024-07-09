@@ -156,7 +156,7 @@
                     </DataGridTextColumn>
                     <DataGridTextColumn Header="Power" Width="*" Binding="{Binding Path=Power}"/>
                     <DataGridTextColumn Header="Max Power" Width="*" Binding="{Binding Path=MaxPower}" />
-                    <DataGridTextColumn Header="Device Type" Width="*" Binding="{Binding Path=EndPointDeviceModel.DeviceType}" />
+                    <DataGridTextColumn Header="Device Type" Width="2*" Binding="{Binding Path=EndPointDevice.DeviceType}" />
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
