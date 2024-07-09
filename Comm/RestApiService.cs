@@ -73,6 +73,7 @@ namespace PoEWizard.Comm
                 SwitchModel.ConfigSnapshot = _response[RESULT];
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LLDP_REMOTE));
                 diclist = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
+                SwitchModel.LoadFromList(diclist, DictionaryType.LldpRemoteList);
             }
             catch (Exception ex)
             {

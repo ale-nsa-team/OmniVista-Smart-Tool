@@ -9,19 +9,21 @@ namespace PoEWizard.Device
 {
     public class EndPointDeviceModel
     {
-        public string LocalPort { get; set; }
-        public string MacAddress { get; set; }
-        public string DeviceType { get; set; }
-        public string EthernetType { get; set; }
-        public string RemotePort { get; set; }
-        public string MEDType { get; set; }
+        public string LocalPort { get; set; } = string.Empty;
+        public string MacAddress { get; set; } = string.Empty;
+        public string DeviceType { get; set; } = string.Empty;
+        public string EthernetType { get; set; } = string.Empty;
+        public string RemotePort { get; set; } = string.Empty;
+        public string MEDType { get; set; } = string.Empty;
         public string MEDCapabilities { get; set; } = string.Empty;
-        public string MEDPowerType { get; set; }
-        public string MEDPowerSource { get; set; }
-        public string MEDPowerPriority { get; set; }
-        public string MEDPowerValue { get; set; }
+        public string MEDPowerType { get; set; } = string.Empty;
+        public string MEDPowerSource { get; set; } = string.Empty;
+        public string MEDPowerPriority { get; set; } = string.Empty;
+        public string MEDPowerValue { get; set; } = string.Empty;
 
-        public EndPointDeviceModel(Dictionary<string, string> dict)
+        public EndPointDeviceModel() { }
+
+        public void LoadLldpRemoteTable(Dictionary<string, string> dict)
         {
             LocalPort = (dict.TryGetValue(LOCAL_PORT, out string s) ? s : "").Trim();
             MacAddress = (dict.TryGetValue(CHASSIS_MAC_ADDRESS, out s) ? s : "").Trim();

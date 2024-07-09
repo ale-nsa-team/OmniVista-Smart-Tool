@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace PoEWizard.Data
+﻿namespace PoEWizard.Data
 {
     public static class Constants
     {
@@ -22,7 +20,7 @@ namespace PoEWizard.Data
         public enum PriorityLevelType { Low, High, Critical, Unknown }
         public enum PowerSupplyState { Up, Down, Unknown }
         public enum ChassisStatus { Unknown, Up, Down }
-        public enum DictionaryType { System, Chassis, RunningDir, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply }
+        public enum DictionaryType { System, Chassis, RunningDir, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList }
         public enum ConfigType { Enabled, Disabled, Unavailable }
 
         #endregion

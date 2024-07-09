@@ -104,7 +104,7 @@ namespace PoEWizard.Device
                             }
                             chas.Slots.Add(slot);
                         }
-                    }                 
+                    }
                     break;
                 case DictionaryType.PowerSupply:
                     foreach (var dic in list)
@@ -115,6 +115,19 @@ namespace PoEWizard.Device
                     }
                     break;
                 case DictionaryType.LanPower:
+                    break;
+                case DictionaryType.LldpRemoteList:
+                    foreach (var dic in list)
+                    {
+                        ChassisSlotPort slotPort = new ChassisSlotPort(dic[LOCAL_PORT]);
+                        ChassisModel chassis = GetChassis(slotPort.ChassisNr);
+                        if (chassis == null) continue;
+                        SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
+                        if (slot == null) continue;
+                        PortModel port = slot.GetPort(slotPort.PortNr);
+                        if (port == null) continue;
+                        port.EndPointDevice.LoadLldpRemoteTable(dic);
+                    }
                     break;
             }
         }

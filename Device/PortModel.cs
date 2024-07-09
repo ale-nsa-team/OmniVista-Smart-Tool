@@ -27,6 +27,7 @@ namespace PoEWizard.Device
         public string Class { get; set; }
         public string Type { get; set; }
         public List<string> MacList { get; set; } = new List<string>();
+        public EndPointDeviceModel EndPointDevice { get; set; } = new EndPointDeviceModel();
 
         public PortModel(Dictionary<string, string> dict)
         {
