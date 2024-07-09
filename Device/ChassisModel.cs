@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using PoEWizard.Data;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Device
@@ -52,9 +53,8 @@ namespace PoEWizard.Device
         {
             foreach (Dictionary<string, string> dict in list)
             {
-                int idx = ParseIndex(dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "");
-                if (idx < 0) continue;
-                var slot = this.Slots[idx];
+                int slotId = Utils.ParseNumber(dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "", 1);
+                var slot = this.Slots.FirstOrDefault(x => x.Number == slotId);
                 if (slot == null) return;
                 slot.LoadFromDictionary(dict);
             }
@@ -63,13 +63,6 @@ namespace PoEWizard.Device
         public SlotModel GetSlot(int slotNumber)
         {
             return Slots.FirstOrDefault(c => c.Number == slotNumber);
-        }
-
-        private int ParseIndex(string chassis)
-        {
-            string[] parts = chassis.Split('/');
-            return parts.Length > 1 ? (int.TryParse(parts[1], out int n) ? n - 1 : -1) : -1;
-        }
-        
+        }        
     }
 }

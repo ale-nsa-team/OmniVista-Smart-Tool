@@ -20,7 +20,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Border Style="{DynamicResource templateOpt}" Margin="0">
+    <Border Style="{DynamicResource gridBorder}" Margin="0">
         <Grid x:Name="_mainGrid" x:FieldModifier="private" Style="{DynamicResource popupWindow}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" x:Name="_colOne" />

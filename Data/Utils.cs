@@ -86,6 +86,12 @@ namespace PoEWizard.Data
             return -1;
         }
 
+        public static int ParseNumber(string chasSlotPort, int index)
+        {
+            string[] parts = chasSlotPort.Split('/');
+            return parts.Length > index ? (int.TryParse(parts[index], out int n) ? n : 0) : 0;
+        }
+
         public static double StringToDouble(string strNumber)
         {
             if (strNumber == null) return 0;

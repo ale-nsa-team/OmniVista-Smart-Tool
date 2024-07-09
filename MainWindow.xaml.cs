@@ -4,6 +4,7 @@ using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -203,6 +204,10 @@ namespace PoEWizard
 
         private void SlotSelection_Changed(object sender, RoutedEventArgs e)
         {
+            if (_slotsView.SelectedItem is SlotModel slot)
+            {
+                _portList.ItemsSource = slot.Ports;
+            }
 
         }
 
@@ -387,6 +392,7 @@ namespace PoEWizard
             _slotsView.ItemsSource = new SlotView(device).Slots;
             _slotsView.SelectedIndex = 0;
             _slotsView.Visibility = Visibility.Visible;
+            _portList.Visibility = Visibility.Visible;
             _poeActions.Visibility = Visibility.Visible;
         }
 
@@ -404,6 +410,7 @@ namespace PoEWizard
             _snapshotMenuItem.IsEnabled = false;
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
             _slotsView.Visibility= Visibility.Hidden;
+            _portList.Visibility= Visibility.Hidden;
             _poeActions.Visibility= Visibility.Hidden;
         }
 
