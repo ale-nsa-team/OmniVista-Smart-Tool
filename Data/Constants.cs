@@ -10,7 +10,7 @@
         public enum DeviceFunction { Edge, Core };
         public enum MsgBoxButtons { Ok, Cancel, OkCancel, None };
         public enum MsgBoxIcons { Info, Warning, Error, Question, None };
-        public enum gridBorderions { Dhcp, Edge, Core, Lps, Lldp, Security, MaxConfigs };
+        public enum GridBorderions { Dhcp, Edge, Core, Lps, Lldp, Security, MaxConfigs };
         public enum AosVersion { V6, V8 };
         public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
         public enum PortStatus { Unknown, Up, Down }

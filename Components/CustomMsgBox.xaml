@@ -39,7 +39,7 @@
             <Border Grid.Row="2" Grid.ColumnSpan="2" Style="{DynamicResource propsBorder}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button x:Name="msgOkBtn" Style="{DynamicResource defaultButton}" Margin="0,0,10,0" Click="MsgOkBtn_Click">OK</Button>
-                    <Button x:Name="msgCancelBtn" Style="{DynamicResource defaultButton}" Click="MsgCancelBtn_Click">Cancel</Button>
+                    <Button x:Name="msgCancelBtn" Style="{DynamicResource defaultButton}" Margin="0,0,10,0"  Click="MsgCancelBtn_Click">Cancel</Button>
                 </StackPanel>
             </Border>
         </Grid>

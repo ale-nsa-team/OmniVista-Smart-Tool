@@ -4,6 +4,7 @@ using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,6 +15,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
 
@@ -35,6 +37,7 @@ namespace PoEWizard
         private bool reportAck;
         private RestApiService restApiService;
         private SwitchModel device;
+        private SlotView slotView;
         private string selectedPort;
         #endregion
         #region public variables
@@ -215,6 +218,12 @@ namespace PoEWizard
             if (_slotsView.SelectedItem is SlotModel slot)
             {
                 _portList.ItemsSource = slot.Ports;
+                if (slotView.Slots.Count == 1) //do not highlight is only one row
+                {
+                    _slotsView.SelectionChanged -= SlotSelection_Changed;
+                    _slotsView.SelectedIndex = -1;
+                    _slotsView.SelectionChanged += SlotSelection_Changed;
+                }
             }
 
         }
@@ -406,7 +415,8 @@ namespace PoEWizard
             _switchMenuItem.IsEnabled = false;
             _snapshotMenuItem.IsEnabled = true;
             _disconnectMenuItem.Visibility = Visibility.Visible;
-            _slotsView.ItemsSource = new SlotView(device).Slots;
+            slotView = new SlotView(device);
+            _slotsView.ItemsSource = slotView.Slots;
             _slotsView.SelectedIndex = 0;
             _slotsView.Visibility = Visibility.Visible;
             _portList.Visibility = Visibility.Visible;
