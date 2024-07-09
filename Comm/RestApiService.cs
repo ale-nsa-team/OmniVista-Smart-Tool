@@ -70,8 +70,7 @@ namespace PoEWizard.Comm
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PowerSupply);
                 GetLanPower();
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CONFIGURATION));
-                SwitchModel.ConfigSnapshot = _response[RESULT];
+                GetSnapshot();
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LLDP_REMOTE));
                 diclist = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.LldpRemoteList);
@@ -89,6 +88,12 @@ namespace PoEWizard.Comm
                     _progress.Report(new ProgressReport(ReportType.Error, "Connect", WebUtility.UrlDecode(ex.Message)));
                 }
             }
+        }
+
+        public void GetSnapshot()
+        {
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CONFIGURATION));
+            SwitchModel.ConfigSnapshot = _response[RESULT];
         }
 
         public bool RunPoeWizard(string port, List<RestUrlId> commands, int waitSec)

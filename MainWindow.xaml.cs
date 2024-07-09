@@ -138,9 +138,17 @@ namespace PoEWizard
             tv.Show();
         }
 
-        private void ViewSnapshot_Click(object sender, RoutedEventArgs e)
+        private async void ViewSnapshot_Click(object sender, RoutedEventArgs e)
         {
-
+            ShowProgress("Reading configuration snapshot...");
+            await Task.Run(() => restApiService.GetSnapshot());
+            HideProgress();
+            TextViewer tv = new TextViewer("Configuration Snapshot", device.ConfigSnapshot)
+            {
+                Owner = this,
+                SaveFilename = device.Name + "-snapshot.txt"
+            };
+            tv.Show();
         }
 
         private void RunWiz_Click(object sender, RoutedEventArgs e)
