@@ -2,6 +2,7 @@
 using PoEWizard.Device;
 using PoEWizard.Exceptions;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -364,6 +365,7 @@ namespace PoEWizard.Comm
             if (dictList?.Count > 0) _wizardSwitchPort.UpdateMacList(dictList);
             this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_LLDP_REMOTE, new string[] { "1/1/26" }));
             dictList = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
+            if (dictList?.Count > 0) _wizardSwitchPort.LoadLldpRemoteTable(dictList[0]);
         }
 
         private void GetSlotPower(ChassisModel chassis, SlotModel slot)

@@ -117,16 +117,16 @@ namespace PoEWizard.Device
                 case DictionaryType.LanPower:
                     break;
                 case DictionaryType.LldpRemoteList:
-                    foreach (var dic in list)
+                    foreach (Dictionary<string, string> dict in list)
                     {
-                        ChassisSlotPort slotPort = new ChassisSlotPort(dic[LOCAL_PORT]);
+                        ChassisSlotPort slotPort = new ChassisSlotPort(dict[LOCAL_PORT]);
                         ChassisModel chassis = GetChassis(slotPort.ChassisNr);
                         if (chassis == null) continue;
                         SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
                         if (slot == null) continue;
                         PortModel port = slot.GetPort(slotPort.PortNr);
                         if (port == null) continue;
-                        port.EndPointDevice.LoadLldpRemoteTable(dic);
+                        port.LoadLldpRemoteTable(dict);
                     }
                     break;
             }

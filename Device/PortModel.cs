@@ -96,6 +96,10 @@ namespace PoEWizard.Device
                     break;
             }
         }
+        public void LoadLldpRemoteTable(Dictionary<string, string> dict)
+        {
+            EndPointDevice.LoadLldpRemoteTable(dict);
+        }
 
         public void UpdatePortStatus(Dictionary<string, string> dict)
         {
