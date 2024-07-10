@@ -20,7 +20,7 @@
         public enum PriorityLevelType { Low, High, Critical, Unknown }
         public enum PowerSupplyState { Up, Down, Unknown }
         public enum ChassisStatus { Unknown, Up, Down }
-        public enum DictionaryType { System, Chassis, RunningDir, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList }
+        public enum DictionaryType { System, Chassis, RunningDir, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList, MacAddressList }
         public enum ConfigType { Enabled, Disabled, Unavailable }
 
         #endregion
@@ -85,8 +85,9 @@
         public const string CHAS_PS = "Chassis/PS";
         public const string POWER = "Power Provision";
         public const string PS_TYPE = "Module Type";
-        // Used by "SHOW_MAC_LEARNING_PORT"
-        public const string PORT_MAC_LIST = "static address,  Mac Address";
+        // Used by "SHOW_MAC_LEARNING" and "SHOW_MAC_LEARNING_PORT"
+        public const string PORT_MAC_LIST = "Mac Address";
+        public const string INTERFACE = "Interface";
         // Used by "SHOW_LAN_POWER_CONFIG"
         public const string POWER_4PAIR = "4-Pair";
         public const string POWER_OVER_HDMI = "power-over -HDMI";

@@ -129,6 +129,26 @@ namespace PoEWizard.Device
                         port.LoadLldpRemoteTable(dict);
                     }
                     break;
+                case DictionaryType.MacAddressList:
+                    string prevPort = "";
+                    foreach (Dictionary<string, string> dict in list)
+                    {
+                        string currPort = dict.TryGetValue(INTERFACE, out string s) ? s : "";
+                        ChassisSlotPort slotPort = new ChassisSlotPort(currPort);
+                        ChassisModel chassis = GetChassis(slotPort.ChassisNr);
+                        if (chassis == null) continue;
+                        SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
+                        if (slot == null) continue;
+                        PortModel port = slot.GetPort(slotPort.PortNr);
+                        if (port == null) continue;
+                        if (currPort != prevPort)
+                        {
+                            port.MacList.Clear();
+                            prevPort = currPort;
+                        }
+                        if (port.AddMacToList(dict) >= 10) break;
+                    }
+                    break;
             }
         }
 
