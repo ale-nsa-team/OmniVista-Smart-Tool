@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PoEWizard.Comm
 {

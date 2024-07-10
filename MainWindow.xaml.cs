@@ -4,7 +4,6 @@ using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,7 +14,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
 
@@ -221,13 +219,11 @@ namespace PoEWizard
             {
                 selectedSlot = slot.Name;
                 _portList.ItemsSource = slot.Ports;
-                if (slotView.Slots.Count == 1) //do not highlight is only one row
+                if (slotView.Slots.Count == 1) //do not highlight if only one row
                 {
                     _slotsView.SelectionChanged -= SlotSelection_Changed;
                     _slotsView.SelectedIndex = -1;
                     _slotsView.SelectionChanged += SlotSelection_Changed;
-                    _btnFPoE.IsEnabled = true;
-                    _btnPPoE.IsEnabled = true;
                 }
             }
 
@@ -242,16 +238,38 @@ namespace PoEWizard
             }
         }
 
+        private void Priority_Changed(object sender, SelectionChangedEventArgs e)
+        {
+            var cb = sender as ComboBox;
+            PortModel port = _portList.CurrentItem as PortModel;
+            if (cb.SelectedValue.ToString() != port.PriorityLevel.ToString())
+            {
+                ShowMessageBox("Priority", $"Selected priority: {cb.SelectedValue}");
+                port.PriorityLevel = (PriorityLevelType)Enum.Parse(typeof(PriorityLevelType), cb.SelectedValue.ToString());
+            }
+        }
+
         private async void FPoE_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (selectedSlot == null) return;
-                ShowProgress($"Enabling Fast PoE on slot {selectedSlot}...");
-                restApiService = new RestApiService(device, progress);
-                await Task.Run(() => restApiService.RunEnableFastPerpetualPoE(selectedSlot, RestUrlId.POE_FAST_ENABLE, 15));
-                Logger.Info($"Enabling Fast PoE on slot {selectedSlot} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                await WaitAckProgress();
+                CheckBox cb = sender as CheckBox;
+                if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
+                if (cb.IsChecked == true)
+                {
+                    ShowProgress($"Enabling Fast PoE on slot {selectedSlot}...");
+                    await Task.Run(() => restApiService.RunEnableFastPerpetualPoE(selectedSlot, RestUrlId.POE_FAST_ENABLE, 15));
+                    Logger.Info($"Enabling Fast PoE on slot {selectedSlot} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                    await WaitAckProgress();
+                }
+                else
+                {
+                    ShowProgress($"Disabling Fast PoE on slot {selectedSlot}...");
+                    //await Task.Run(() => restApiService.RunEnableFastPerpetualPoE(selectedSlot, RestUrlId.POE_FAST_ENABLE, 15));
+                    Logger.Info($"Disableing Fast PoE on slot {selectedSlot} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                    //await WaitAckProgress();
+                }
+
             }
             catch (Exception ex)
             {
@@ -268,12 +286,24 @@ namespace PoEWizard
         {
             try
             {
-                if (selectedSlot == null) return;
-                ShowProgress($"Enabling Perpetual PoE on slot {selectedSlot}...");
-                restApiService = new RestApiService(device, progress);
-                await Task.Run(() => restApiService.RunEnableFastPerpetualPoE(selectedSlot, RestUrlId.POE_PERPETUAL_ENABLE, 15));
-                Logger.Info($"Enabling Perpetual PoE on slot {selectedSlot} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                await WaitAckProgress();
+                CheckBox cb = sender as CheckBox;
+                if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
+                if (cb.IsChecked == true)
+                {
+                    ShowProgress($"Enabling Perpetual PoE on slot {selectedSlot}...");
+                    restApiService = new RestApiService(device, progress);
+                    await Task.Run(() => restApiService.RunEnableFastPerpetualPoE(selectedSlot, RestUrlId.POE_PERPETUAL_ENABLE, 15));
+                    Logger.Info($"Enabling Perpetual PoE on slot {selectedSlot} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                    await WaitAckProgress();
+                }
+                else
+                {
+                    ShowProgress($"Disabling Perpetual PoE on slot {selectedSlot}...");
+                    restApiService = new RestApiService(device, progress);
+                    //await Task.Run(() => restApiService.RunEnableFastPerpetualPoE(selectedSlot, RestUrlId.POE_PERPETUAL_ENABLE, 15));
+                    Logger.Info($"Ddisabling Perpetual PoE on slot {selectedSlot} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                    await WaitAckProgress();
+                }
             }
             catch (Exception ex)
             {
@@ -446,7 +476,6 @@ namespace PoEWizard
             _slotsView.SelectedIndex = 0;
             _slotsView.Visibility = Visibility.Visible;
             _portList.Visibility = Visibility.Visible;
-            _poeActions.Visibility = Visibility.Visible;
         }
 
         private void SetDisconnectedState()
@@ -457,8 +486,6 @@ namespace PoEWizard
             device.IpAddress = oldIp;
             _switchAttributes.Text = "";
             _btnRunWiz.IsEnabled = false;
-            _btnFPoE.IsEnabled = false;
-            _btnPPoE.IsEnabled = false;
             DataContext = null;
             restApiService = null;
             _switchMenuItem.IsEnabled = true;
@@ -466,7 +493,6 @@ namespace PoEWizard
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
             _slotsView.Visibility= Visibility.Hidden;
             _portList.Visibility= Visibility.Hidden;
-            _poeActions.Visibility= Visibility.Hidden;
         }
 
         #endregion private methods

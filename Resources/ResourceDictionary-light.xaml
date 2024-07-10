@@ -50,7 +50,6 @@
         <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
-        <Setter Property="IsReadOnly" Value="True" />
         <Style.Resources>
             <Style TargetType="TextBlock">
                 <Setter Property="Margin" Value="5,0,0,0" />
@@ -555,7 +554,6 @@
                                     </Style>
                                 </Ellipse.Style>
                             </Ellipse>
-
                         </Grid>
                         <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" 
                                 Grid.Column="1" ContentStringFormat="{TemplateBinding ContentStringFormat}" Focusable="False" 
