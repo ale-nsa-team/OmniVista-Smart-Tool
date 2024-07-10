@@ -531,7 +531,8 @@ namespace PoEWizard.Comm
             this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassisSlotPort.ChassisNr.ToString() }));
             List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 2);
             chassis.LoadFromList(dictList);
-            if ((cmd == RestUrlId.POE_PERPETUAL_ENABLE && slot.IsPPoE) || (cmd == RestUrlId.POE_FAST_ENABLE && slot.IsFPoE))
+            if (cmd == RestUrlId.POE_PERPETUAL_ENABLE && slot.IsPPoE || cmd == RestUrlId.POE_FAST_ENABLE && slot.IsFPoE ||
+                cmd == RestUrlId.POE_PERPETUAL_DISABLE && !slot.IsPPoE || cmd == RestUrlId.POE_FAST_DISABLE && !slot.IsFPoE)
             {
                 result += "executed";
             }
