@@ -128,15 +128,15 @@ namespace PoEWizard.Components
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            bool hasPoe = (bool)values[0];
+            bool hasPoe = bool.TryParse(values[0].ToString(), out bool b) && b;
             string priorityLevel = values[1].ToString();
 
-            return hasPoe ? $"  {priorityLevel}" : "  -";
+            return hasPoe ? Enum.Parse(typeof(Data.Constants.PriorityLevelType), priorityLevel) : null;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            string[] splitValues = ((string)value).Split(' ');
+            string[] splitValues = (value.ToString()).Split(' ');
             return splitValues;
         }
     }

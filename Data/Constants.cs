@@ -17,7 +17,7 @@
         public enum PoeStatus { On, Off, Fault, Deny, Conflict, NoPoe }
         public enum SlotPoeStatus { Normal, NearThreshold, Critical }
         public enum EType { Fiber, Copper, Unknown }
-        public enum PriorityLevelType { Low, High, Critical, Unknown }
+        public enum PriorityLevelType { Low, High, Critical }
         public enum PowerSupplyState { Up, Down, Unknown }
         public enum ChassisStatus { Unknown, Up, Down }
         public enum DictionaryType { System, Chassis, RunningDir, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList, MacAddressList }
