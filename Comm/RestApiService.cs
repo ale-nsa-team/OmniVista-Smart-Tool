@@ -75,6 +75,9 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LLDP_REMOTE));
                 diclist = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.LldpRemoteList);
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING));
+                diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
+                SwitchModel.LoadFromList(diclist, DictionaryType.MacAddressList);
             }
             catch (Exception ex)
             {
@@ -98,7 +101,18 @@ namespace PoEWizard.Comm
                 UpdatePortData(port);
                 StringBuilder txt = new StringBuilder("\n    PoE status: ").Append(_wizardSwitchPort.Poe).Append(", Power: ").Append(_wizardSwitchPort.Power);
                 txt.Append(" mW, Port Status: ").Append(_wizardSwitchPort.Status);
-                if (_wizardSwitchPort.MacList?.Count > 0) txt.Append(", Device MAC Address: ").Append(_wizardSwitchPort.MacList[0]);
+                if (_wizardSwitchPort.EndPointDevice != null && !string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.MacAddress))
+                {
+                    txt.Append(", Device MAC: ").Append(_wizardSwitchPort.EndPointDevice.MacAddress);
+                    if (!string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.IpAddress))
+                    {
+                        txt.Append(", IP: ").Append(_wizardSwitchPort.EndPointDevice.IpAddress);
+                    }
+                }
+                else if (_wizardSwitchPort.MacList?.Count > 0 && !string.IsNullOrEmpty(_wizardSwitchPort.MacList[0]))
+                {
+                    txt.Append(", Device MAC: ").Append(_wizardSwitchPort.MacList[0]);
+                }
                 if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny)
                 {
                     _wizardProgressReport.Type = ReportType.Info;
@@ -390,7 +404,7 @@ namespace PoEWizard.Comm
             List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 3);
             if (dictList?.Count > 0) _wizardSwitchPort.UpdatePortStatus(dictList[0]);
             this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_MAC_ADDRESS, new string[1] { port }));
-            dictList = CliParseUtils.ParseHTable(_response[RESULT], 3);
+            dictList = CliParseUtils.ParseHTable(_response[RESULT], 1);
             if (dictList?.Count > 0) _wizardSwitchPort.UpdateMacList(dictList);
             this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_LLDP_REMOTE, new string[] { "1/1/26" }));
             dictList = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);

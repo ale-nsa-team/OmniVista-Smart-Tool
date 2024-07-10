@@ -116,14 +116,22 @@ namespace PoEWizard.Device
 
         public void UpdateMacList(List<Dictionary<string, string>> dictList)
         {
-            int nbMac = 1;
+            MacList.Clear();
             foreach (Dictionary<string, string> dict in dictList)
             {
-                MacList.Add(dict.TryGetValue(PORT_MAC_LIST, out string s) ? s : "");
-                nbMac++;
-                if (nbMac > 10) break;
+                if (AddMacToList(dict) >= 10) break;
             }
-            IsUplink = (nbMac > 2);
+            IsUplink = (MacList.Count > 2);
+        }
+
+        public int AddMacToList(Dictionary<string, string> dict)
+        {
+            if (MacList.Count < 10)
+            {
+                MacList.Add(dict.TryGetValue(PORT_MAC_LIST, out string s) ? s : "");
+            }
+            IsUplink = (MacList.Count > 2);
+            return MacList.Count;
         }
 
         private string GetPortId(string chas)
