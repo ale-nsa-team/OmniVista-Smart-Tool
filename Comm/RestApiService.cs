@@ -169,8 +169,9 @@ namespace PoEWizard.Comm
                     }
                     if (_wizardProgressReport.Type != ReportType.Error)
                     {
-                        if (enablePPoe) _wizardProgressReport.Message += EnablePerpetualFastPoe(chassisSlotPort, RestUrlId.POE_PERPETUAL_ENABLE);
-                        SendRequest(GetRestUrlEntry(RestUrlId.WRITE_MEMORY));
+                        string result = EnablePerpetualFastPoe(chassisSlotPort, RestUrlId.POE_PERPETUAL_ENABLE);
+                        if (enablePPoe && !string.IsNullOrEmpty(result) && !result.Contains("already")) _wizardProgressReport.Message += result;
+                        WriteMemory();
                         break;
                     }
                 }
@@ -414,7 +415,7 @@ namespace PoEWizard.Comm
 
         public void RunEnableFastPerpetualPoE(string slot, RestUrlId command, int waitSec)
         {
-            ProgressReport progressReport = new ProgressReport($"Enable {((command == RestUrlId.POE_PERPETUAL_ENABLE) ? "Perpetual" : "Fast")} on slot {slot} Report:")
+            ProgressReport progressReport = new ProgressReport($"Enable {((command == RestUrlId.POE_PERPETUAL_ENABLE) ? "Perpetual" : "Fast")} PoE on slot {slot} Report:")
             {
                 Type = ReportType.Info
             };
