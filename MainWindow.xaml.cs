@@ -249,7 +249,7 @@ namespace PoEWizard
                 if (selectedSlot == null) return;
                 ShowProgress($"Enabling Fast PoE on slot {selectedSlot}...");
                 restApiService = new RestApiService(device, progress);
-                await Task.Run(() => restApiService.RunEnableFastPerpetualPoE(selectedSlot, RestUrlId.POE_FAST_ENABLE, 15));
+                await Task.Run(() => restApiService.EnableFastPoE(selectedSlot));
                 Logger.Info($"Enabling Fast PoE on slot {selectedSlot} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                 await WaitAckProgress();
             }
@@ -271,7 +271,7 @@ namespace PoEWizard
                 if (selectedSlot == null) return;
                 ShowProgress($"Enabling Perpetual PoE on slot {selectedSlot}...");
                 restApiService = new RestApiService(device, progress);
-                await Task.Run(() => restApiService.RunEnableFastPerpetualPoE(selectedSlot, RestUrlId.POE_PERPETUAL_ENABLE, 15));
+                await Task.Run(() => restApiService.EnablePerpetualPoE(selectedSlot));
                 Logger.Info($"Enabling Perpetual PoE on slot {selectedSlot} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                 await WaitAckProgress();
             }

@@ -183,7 +183,7 @@ namespace PoEWizard.Comm
                     }
                     if (_wizardProgressReport.Type != ReportType.Error)
                     {
-                        string result = EnablePerpetualFastPoe(chassisSlotPort, RestUrlId.POE_PERPETUAL_ENABLE);
+                        string result = SetPerpetualFastPoe(chassisSlotPort, RestUrlId.POE_PERPETUAL_ENABLE);
                         if (enablePPoe && !string.IsNullOrEmpty(result) && !result.Contains("already")) _wizardProgressReport.Message += result;
                         WriteMemory();
                         break;
@@ -343,12 +343,13 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport(txt.ToString()));
                 _wizardProgressReport.Message += $"\n - {wizardAction} ";
                 SendRequest(GetRestUrlEntry(RestUrlId.POWER_DOWN_PORT, new string[1] { port }));
-                PriorityLevelType priorityLevel = PriorityLevelType.High;
-                SetPoePriority(port, priorityLevel);
+                PriorityLevelType priority = PriorityLevelType.High;
+                SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
+                SetPoePriority(port, priority);
                 Thread.Sleep(5000);
                 SendRequest(GetRestUrlEntry(RestUrlId.POWER_UP_PORT, new string[1] { port }));
                 Thread.Sleep(3000);
-                _wizardProgressReport.Message += $"to {priorityLevel} ";
+                _wizardProgressReport.Message += $"to {priority} ";
                 WaitPortUp(port, waitSec);
                 UpdateProgressReport();
             }
@@ -427,9 +428,31 @@ namespace PoEWizard.Comm
             PowerDevice(RestUrlId.POWER_UP_PORT, port);
         }
 
-        public void RunEnableFastPerpetualPoE(string slot, RestUrlId command, int waitSec)
+        public void EnablePerpetualPoE(string slot)
         {
-            ProgressReport progressReport = new ProgressReport($"Enable {((command == RestUrlId.POE_PERPETUAL_ENABLE) ? "Perpetual" : "Fast")} PoE on slot {slot} Report:")
+            EnableDisableFastPerpetualPoE(slot, RestUrlId.POE_PERPETUAL_ENABLE);
+        }
+
+        public void EnableFastPoE(string slot)
+        {
+            EnableDisableFastPerpetualPoE(slot, RestUrlId.POE_FAST_ENABLE);
+        }
+
+        public void DisablePerpetualPoE(string slot)
+        {
+            EnableDisableFastPerpetualPoE(slot, RestUrlId.POE_PERPETUAL_DISABLE);
+        }
+
+        public void DisableFastPoE(string slot)
+        {
+            EnableDisableFastPerpetualPoE(slot, RestUrlId.POE_FAST_DISABLE);
+        }
+
+        private void EnableDisableFastPerpetualPoE(string slot, RestUrlId cmd)
+        {
+            bool enable = cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_FAST_ENABLE;
+            string poeType = (cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
+            ProgressReport progressReport = new ProgressReport($"{(enable ? "Enable" : "Disable")} {poeType} PoE Report:")
             {
                 Type = ReportType.Info
             };
@@ -438,12 +461,35 @@ namespace PoEWizard.Comm
                 DateTime startTime = DateTime.Now;
                 GetLanPower();
                 ChassisSlotPort chassisSlotPort = new ChassisSlotPort($"{slot}/0");
-                string result = EnablePerpetualFastPoe(chassisSlotPort, command);
+                string result = SetPerpetualFastPoe(chassisSlotPort, cmd);
                 progressReport.Message += result;
-                if (!string.IsNullOrEmpty(result) && !result.Contains("already")) WriteMemory(); else Thread.Sleep(5000);
+                //if (!string.IsNullOrEmpty(result)) Thread.Sleep(5000);
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
                 _progress.Report(progressReport);
-                Logger.Info($"{result}, Waiting Time: {waitSec} sec\n{progressReport.Message}");
+                Logger.Info($"{result}\n{progressReport.Message}");
+            }
+            catch (Exception ex)
+            {
+                SendSwitchConnectionFailed(ex);
+            }
+        }
+
+        public void ChangePowerPriority(string port, PriorityLevelType priority)
+        {
+            ProgressReport progressReport = new ProgressReport($"Change priority Report:")
+            {
+                Type = ReportType.Info
+            };
+            try
+            {
+                DateTime startTime = DateTime.Now;
+                GetLanPower();
+                ChassisSlotPort chassisSlotPort = new ChassisSlotPort(port);
+                SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
+                progressReport.Message += $"\n - Priority on port {port} set to {priority}";
+                progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
+                _progress.Report(progressReport);
+                Logger.Info($"Change priority on port {port}\n{progressReport.Message}");
             }
             catch (Exception ex)
             {
@@ -460,22 +506,24 @@ namespace PoEWizard.Comm
             Thread.Sleep(25000);
         }
 
-        private string EnablePerpetualFastPoe(ChassisSlotPort chassisSlotPort, RestUrlId cmd)
+        private string SetPerpetualFastPoe(ChassisSlotPort chassisSlotPort, RestUrlId cmd)
         {
             ChassisModel chassis = SwitchModel.GetChassis(chassisSlotPort.ChassisNr);
             if (chassis == null) return "";
             SlotModel slot = chassis.GetSlot(chassisSlotPort.SlotNr);
             if (slot == null) return "";
-            string poeType = ((cmd == RestUrlId.POE_PERPETUAL_ENABLE) ? "Perpetual" : "Fast");
+            bool enable = cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_FAST_ENABLE;
+            string poeType = (cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
             string txt = $"{poeType} PoE on Slot {chassisSlotPort.ChassisNr}/{chassisSlotPort.SlotNr}";
-            if ((cmd == RestUrlId.POE_PERPETUAL_ENABLE && slot.IsPPoE) || (cmd == RestUrlId.POE_FAST_ENABLE && slot.IsFPoE))
+            if (cmd == RestUrlId.POE_PERPETUAL_ENABLE && slot.IsPPoE || cmd == RestUrlId.POE_FAST_ENABLE && slot.IsFPoE ||
+                cmd == RestUrlId.POE_PERPETUAL_DISABLE && !slot.IsPPoE || cmd == RestUrlId.POE_FAST_DISABLE && !slot.IsFPoE)
             {
-                _progress.Report(new ProgressReport($"Enabling {txt}"));
-                txt = $"{txt} is already enabled";
+                _progress.Report(new ProgressReport($"{(enable ? "Enabling" : "Disabling")} {txt}"));
+                txt = $"{txt} is already {(enable ? "enabled" : "disabled")}";
                 Logger.Debug(txt);
                 return $"\n - {txt} ";
             }
-            txt = $"Enabling {txt}";
+            txt = $"{(enable ? "Enabling" : "Disabling")} {txt}";
             _progress.Report(new ProgressReport(txt));
             string result = $"\n - {txt} ";
             Logger.Debug(txt);
