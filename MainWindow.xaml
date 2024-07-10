@@ -147,7 +147,6 @@
                       SelectionChanged="PortSelection_Changed">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Port" Width="*" Binding="{Binding Path=Name}" />
-                    <DataGridTextColumn Header="Status" Width="*" Binding="{Binding Path=Status}" />
                     <DataGridTemplateColumn Header="Status" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

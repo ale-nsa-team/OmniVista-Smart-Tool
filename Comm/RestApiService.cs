@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PoEWizard.Comm
 {
@@ -168,10 +169,7 @@ namespace PoEWizard.Comm
                     }
                     if (_wizardProgressReport.Type != ReportType.Error)
                     {
-                        if (enablePPoe)
-                        {
-                            EnablePerpetualFastPoe(chassisSlotPort, RestUrlId.POE_PERPETUAL_ENABLE);
-                        }
+                        if (enablePPoe) _wizardProgressReport.Message += EnablePerpetualFastPoe(chassisSlotPort, RestUrlId.POE_PERPETUAL_ENABLE);
                         SendRequest(GetRestUrlEntry(RestUrlId.WRITE_MEMORY));
                         break;
                     }
@@ -414,47 +412,72 @@ namespace PoEWizard.Comm
             PowerDevice(RestUrlId.POWER_UP_PORT, port);
         }
 
-        private void EnablePerpetualFastPoe(ChassisSlotPort chassisSlotPort, RestUrlId cmd)
+        public void RunEnableFastPerpetualPoE(string slot, RestUrlId command, int waitSec)
         {
+            ProgressReport progressReport = new ProgressReport($"Enable {((command == RestUrlId.POE_PERPETUAL_ENABLE) ? "Perpetual" : "Fast")} on slot {slot} Report:")
+            {
+                Type = ReportType.Info
+            };
             try
             {
-                ChassisModel chassis = SwitchModel.GetChassis(chassisSlotPort.ChassisNr);
-                if (chassis == null) return;
-                SlotModel slot = chassis.GetSlot(chassisSlotPort.SlotNr);
-                if (slot == null) return;
-                if ((cmd == RestUrlId.POE_PERPETUAL_ENABLE && slot.IsPPoE) || (cmd == RestUrlId.POE_FAST_ENABLE && slot.IsFPoE)) return;
-                string poeType = ((cmd == RestUrlId.POE_PERPETUAL_ENABLE) ? "Perpetual" : "Fast");
-                string txt = $"Enabling {poeType} PoE on Slot {chassisSlotPort.ChassisNr}/{chassisSlotPort.SlotNr}";
-                _progress.Report(new ProgressReport(txt));
-                _wizardProgressReport.Message += $"\n - {txt} ";
-                Logger.Debug(txt);
-                SendRequest(GetRestUrlEntry(cmd, new string[1] { $"{chassisSlotPort.ChassisNr}/{chassisSlotPort.SlotNr}" }));
-                Thread.Sleep(2000);
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassisSlotPort.ChassisNr.ToString() }));
-                List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 2);
-                chassis.LoadFromList(dictList);
-                if ((cmd == RestUrlId.POE_PERPETUAL_ENABLE && slot.IsPPoE) || (cmd == RestUrlId.POE_FAST_ENABLE && slot.IsFPoE))
-                {
-                    _wizardProgressReport.Message += "executed";
-                }
-                else
-                {
-                    _wizardProgressReport.Message += "failed to execute";
-                }
+                DateTime startTime = DateTime.Now;
+                GetLanPower();
+                ChassisSlotPort chassisSlotPort = new ChassisSlotPort($"{slot}/0");
+                string result = EnablePerpetualFastPoe(chassisSlotPort, command);
+                progressReport.Message += result;
+                if (!string.IsNullOrEmpty(result) && !result.Contains("already")) WriteMemory(); else Thread.Sleep(5000);
+                progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
+                _progress.Report(progressReport);
+                Logger.Info($"{result}, Waiting Time: {waitSec} sec\n{progressReport.Message}");
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
-                if (ex is SwitchConnectionFailure || ex is SwitchConnectionDropped || ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure)
-                {
-                    if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure) this.SwitchModel.Status = SwitchStatus.LoginFail;
-                    else this.SwitchModel.Status = SwitchStatus.Unreachable;
-                }
-                else
-                {
-                    throw ex;
-                }
+                SendSwitchConnectionFailed(ex);
             }
+        }
+
+        private void WriteMemory()
+        {
+            string txt = $"Writing memory on Switch {SwitchModel.IpAddress}";
+            _progress.Report(new ProgressReport(txt));
+            Logger.Debug(txt);
+            SendRequest(GetRestUrlEntry(RestUrlId.WRITE_MEMORY));
+            Thread.Sleep(25000);
+        }
+
+        private string EnablePerpetualFastPoe(ChassisSlotPort chassisSlotPort, RestUrlId cmd)
+        {
+            ChassisModel chassis = SwitchModel.GetChassis(chassisSlotPort.ChassisNr);
+            if (chassis == null) return "";
+            SlotModel slot = chassis.GetSlot(chassisSlotPort.SlotNr);
+            if (slot == null) return "";
+            string poeType = ((cmd == RestUrlId.POE_PERPETUAL_ENABLE) ? "Perpetual" : "Fast");
+            string txt = $"{poeType} PoE on Slot {chassisSlotPort.ChassisNr}/{chassisSlotPort.SlotNr}";
+            if ((cmd == RestUrlId.POE_PERPETUAL_ENABLE && slot.IsPPoE) || (cmd == RestUrlId.POE_FAST_ENABLE && slot.IsFPoE))
+            {
+                _progress.Report(new ProgressReport($"Enabling {txt}"));
+                txt = $"{txt} is already enabled";
+                Logger.Debug(txt);
+                return $"\n - {txt} ";
+            }
+            txt = $"Enabling {txt}";
+            _progress.Report(new ProgressReport(txt));
+            string result = $"\n - {txt} ";
+            Logger.Debug(txt);
+            SendRequest(GetRestUrlEntry(cmd, new string[1] { $"{chassisSlotPort.ChassisNr}/{chassisSlotPort.SlotNr}" }));
+            Thread.Sleep(2000);
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassisSlotPort.ChassisNr.ToString() }));
+            List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 2);
+            chassis.LoadFromList(dictList);
+            if ((cmd == RestUrlId.POE_PERPETUAL_ENABLE && slot.IsPPoE) || (cmd == RestUrlId.POE_FAST_ENABLE && slot.IsFPoE))
+            {
+                result += "executed";
+            }
+            else
+            {
+                result += "failed to execute";
+            }
+            return result;
         }
 
         private void SetPoeConfiguration(RestUrlId cmd, string port)

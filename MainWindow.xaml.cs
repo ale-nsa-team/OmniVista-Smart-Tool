@@ -39,6 +39,7 @@ namespace PoEWizard
         private SwitchModel device;
         private SlotView slotView;
         private string selectedPort;
+        private string selectedSlot;
         #endregion
         #region public variables
         public static Window Instance;
@@ -70,6 +71,7 @@ namespace PoEWizard
             progress = new Progress<ProgressReport>(report =>
             {
                 reportAck = false;
+                HideInfoBox();
                 switch (report.Type)
                 {
                     case ReportType.Status:
@@ -217,12 +219,15 @@ namespace PoEWizard
         {
             if (_slotsView.SelectedItem is SlotModel slot)
             {
+                selectedSlot = slot.Name;
                 _portList.ItemsSource = slot.Ports;
                 if (slotView.Slots.Count == 1) //do not highlight is only one row
                 {
                     _slotsView.SelectionChanged -= SlotSelection_Changed;
                     _slotsView.SelectedIndex = -1;
                     _slotsView.SelectionChanged += SlotSelection_Changed;
+                    _btnFPoE.IsEnabled = true;
+                    _btnPPoE.IsEnabled = true;
                 }
             }
 
@@ -237,14 +242,48 @@ namespace PoEWizard
             }
         }
 
-        private void FPoE_Click(object sender, RoutedEventArgs e)
+        private async void FPoE_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                if (selectedSlot == null) return;
+                ShowProgress($"Enabling Fast PoE on slot {selectedSlot}...");
+                restApiService = new RestApiService(device, progress);
+                await Task.Run(() => restApiService.RunEnableFastPerpetualPoE(selectedSlot, RestUrlId.POE_FAST_ENABLE, 15));
+                Logger.Info($"Enabling Fast PoE on slot {selectedSlot} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                await WaitAckProgress();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+            }
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
+            }
         }
 
-        private void PPoE_Click(Object sender, RoutedEventArgs e)
+        private async void PPoE_Click(Object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                if (selectedSlot == null) return;
+                ShowProgress($"Enabling Perpetual PoE on slot {selectedSlot}...");
+                restApiService = new RestApiService(device, progress);
+                await Task.Run(() => restApiService.RunEnableFastPerpetualPoE(selectedSlot, RestUrlId.POE_PERPETUAL_ENABLE, 15));
+                Logger.Info($"Enabling Perpetual PoE on slot {selectedSlot} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                await WaitAckProgress();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+            }
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
+            }
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)
@@ -303,57 +342,44 @@ namespace PoEWizard
                 bool proceed = false;
                 ShowProgress($"Running PoE Wizard on port {selectedPort}...");
                 restApiService = new RestApiService(device, progress);
-                await Task.Run(() =>
-                    proceed = restApiService.RunPoeWizard(selectedPort, new List<RestUrlId>() {
-                                    RestUrlId.POWER_2PAIR_PORT, RestUrlId.POWER_HDMI_ENABLE, RestUrlId.LLDP_POWER_MDI_ENABLE, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE
-                              }, 15)
-                );
+                proceed = await RunPoeWizard(new List<RestUrlId>() {
+                    RestUrlId.POWER_2PAIR_PORT, RestUrlId.POWER_HDMI_ENABLE, RestUrlId.LLDP_POWER_MDI_ENABLE, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE}, 15);
                 Logger.Info($"PoE Wizard 1st Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                 await WaitAckProgress();
-                if (proceed)
-                {
-                    proceed = ShowMessageBox("Enable 802.3.bt", "All devices on the same slot will restart. Do you want to proceed?",
-                                             MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
-                    if (proceed)
-                    {
-                        await Task.Run(() =>
-                            proceed = restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
-                                            RestUrlId.POWER_823BT_ENABLE
-                                      }, 15)
-                        );
-                        Logger.Info($"PoE Wizard 2nd Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                    }
-                }
+                if (!proceed) return;
+                proceed = ShowMessageBox("Enable 802.3.bt", "All devices on the same slot will restart. Do you want to proceed?",
+                                            MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                if (!proceed) return;
+                proceed = await RunPoeWizard(new List<RestUrlId>() { RestUrlId.POWER_823BT_ENABLE }, 15);
+                Logger.Info($"PoE Wizard 2nd Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                 await WaitAckProgress();
-                if (proceed)
-                {
-                    await Task.Run(() =>
-                        proceed = restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
-                                        RestUrlId.CHECK_POWER_PRIORITY
-                                  }, 15)
-                    );
-                    Logger.Info($"PoE Wizard Check Power Priority completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                    await WaitAckProgress();
-                    if (!proceed) return;
-                    proceed = ShowMessageBox("Power Priority Change", "Some other devices with lower priority may stop. Do you want to proceed?",
-                                             MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
-                    if (proceed)
-                    {
-                        await Task.Run(() =>
-                            restApiService.RunPoeWizard("1/1/28", new List<RestUrlId>() {
-                                    RestUrlId.POWER_PRIORITY_PORT
-                            }, 15)
-                        );
-                        Logger.Info($"PoE Wizard 3rd Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                    }
-                }
+                if (!proceed) return;
+                proceed = await RunPoeWizard(new List<RestUrlId>() { RestUrlId.CHECK_POWER_PRIORITY }, 15);
+                Logger.Info($"PoE Wizard Check Power Priority completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                await WaitAckProgress();
+                if (!proceed) return;
+                proceed = ShowMessageBox("Power Priority Change", "Some other devices with lower priority may stop. Do you want to proceed?",
+                                            MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                if (!proceed) return;
+                await RunPoeWizard(new List<RestUrlId>() { RestUrlId.POWER_PRIORITY_PORT }, 15);
+                Logger.Info($"PoE Wizard 3rd Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             }
             catch (Exception ex)
             {
                 Logger.Error(ex.Message + ":\n" + ex.StackTrace);
             }
-            HideProgress();
-            HideInfoBox();
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
+            }
+        }
+
+        private async Task<bool> RunPoeWizard(List<RestUrlId> cmdList, int waitSec)
+        {
+            bool proceed = false;
+            await Task.Run(() => proceed = restApiService.RunPoeWizard(selectedPort, cmdList, waitSec));
+            return proceed;
         }
 
         private async Task WaitAckProgress()
@@ -431,6 +457,8 @@ namespace PoEWizard
             device.IpAddress = oldIp;
             _switchAttributes.Text = "";
             _btnRunWiz.IsEnabled = false;
+            _btnFPoE.IsEnabled = false;
+            _btnPPoE.IsEnabled = false;
             DataContext = null;
             restApiService = null;
             _switchMenuItem.IsEnabled = true;
