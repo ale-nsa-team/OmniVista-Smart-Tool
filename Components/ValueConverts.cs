@@ -35,21 +35,22 @@ namespace PoEWizard.Components
         {
             if (value == null) return DependencyProperty.UnsetValue;
             var red = new BrushConverter().ConvertFrom("#f00736");
+            var green = MainWindow.theme == Data.Constants.ThemeType.Dark ? Brushes.Lime : Brushes.Green;
             string param = parameter.ToString();
             switch (param)
             {
                 case "ConnectionStatus":
-                    return value.ToString() == "Reachable" ? Brushes.Lime : red;
+                    return value.ToString() == "Reachable" ? green : red;
                 case "Temperature":
-                    return value.ToString() == "UnderThreshold" ? Brushes.Lime : red;
+                    return value.ToString() == "UnderThreshold" ? green : red;
                 case "Power":
                     float percent = RectangleValueConverter.GetFloat(value);
-                    return percent > 10 ? Brushes.Lime : (percent > 0 ? Brushes.Orange : red);
+                    return percent > 10 ? green : (percent > 0 ? Brushes.Orange : red);
                 case "Poe":
                     switch (value.ToString())
                     {
                         case "On":
-                            return Brushes.Lime;
+                            return green;
                         case "Fault":
                         case "Deny":
                         case "Conflict":
@@ -60,20 +61,20 @@ namespace PoEWizard.Components
                             return new BrushConverter().ConvertFrom("#aaa");
                     }
                 case "PoeStatus":
-                    return value.ToString() == "Normal" ? Brushes.Lime : value.ToString() == "NearThreshold" ? Brushes.Orange : red;
+                    return value.ToString() == "Normal" ? green : value.ToString() == "NearThreshold" ? Brushes.Orange : red;
                 case "PortStatus":
-                    return value.ToString() == "Up" ? Brushes.Lime : value.ToString() == "Down" ? red : Brushes.Gray;
+                    return value.ToString() == "Up" ? green : value.ToString() == "Down" ? red : Brushes.Gray;
                 case "CPUStatus":
-                    return value.ToString() == "UnderThreshold" ? Brushes.Lime : red;
+                    return value.ToString() == "UnderThreshold" ? green : red;
                 case "UplinkPort":
                     var brush = new SolidColorBrush(Color.FromArgb(255, (byte)163, (byte)101, (byte)209));
                     return value.ToString() == "False" ? Brushes.Transparent : brush;
                 case "MacList":
                     return (value as List<string>)?.Count == 0 ? Brushes.White : red;
                 case "PowerSupply":
-                    return value.ToString() == "Up" ? Brushes.Lime : red;
+                    return value.ToString() == "Up" ? green : red;
                 case "Boolean":
-                    return value.ToString().ToLower() == "true" ? Brushes.Lime : red;
+                    return value.ToString().ToLower() == "true" ? green : red;
                 default:
                     return red;
             }
