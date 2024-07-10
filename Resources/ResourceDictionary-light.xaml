@@ -3,7 +3,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <converters:ValueToColorConverter x:Key="ValueToColorConverter" />
-    <converters:PoeTypeToSymbolValueConverter x:Key="PoeTypeToSymbolConverter" />
+    <converters:BoolToSymbolConverter x:Key="BoolToSymbolConverter" />
+    <converters:PoeTypeToSymbolConverter x:Key="PoeTypeToSymbolConverter" />
     <converters:PoeToPriorityLevelConverter x:Key="PoeToPriorityLevelConverter" />
 
     <BitmapImage x:Key="connected" UriSource="connected.png" />

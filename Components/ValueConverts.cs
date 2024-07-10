@@ -34,16 +34,17 @@ namespace PoEWizard.Components
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null) return DependencyProperty.UnsetValue;
+            var red = new BrushConverter().ConvertFrom("#f00736");
             string param = parameter.ToString();
             switch (param)
             {
                 case "ConnectionStatus":
-                    return value.ToString() == "Reachable" ? Brushes.Lime : Brushes.IndianRed;
+                    return value.ToString() == "Reachable" ? Brushes.Lime : red;
                 case "Temperature":
-                    return value.ToString() == "UnderThreshold" ? Brushes.Lime : Brushes.IndianRed;
+                    return value.ToString() == "UnderThreshold" ? Brushes.Lime : red;
                 case "Power":
                     float percent = RectangleValueConverter.GetFloat(value);
-                    return percent > 10 ? Brushes.Lime : (percent > 0 ? Brushes.Orange : Brushes.IndianRed);
+                    return percent > 10 ? Brushes.Lime : (percent > 0 ? Brushes.Orange : red);
                 case "Poe":
                     switch (value.ToString())
                     {
@@ -52,27 +53,29 @@ namespace PoEWizard.Components
                         case "Fault":
                         case "Deny":
                         case "Conflict":
-                            return Brushes.Red;
+                            return red;
                         case "Off":
                             return Brushes.Orange;
                         default:
                             return new BrushConverter().ConvertFrom("#aaa");
                     }
                 case "PoeStatus":
-                    return value.ToString() == "Normal" ? Brushes.Lime : value.ToString() == "NearThreshold" ? Brushes.Orange : Brushes.Red;
+                    return value.ToString() == "Normal" ? Brushes.Lime : value.ToString() == "NearThreshold" ? Brushes.Orange : red;
                 case "PortStatus":
-                    return value.ToString() == "Up" ? Brushes.Lime : value.ToString() == "Down" ? Brushes.Red : Brushes.Gray;
+                    return value.ToString() == "Up" ? Brushes.Lime : value.ToString() == "Down" ? red : Brushes.Gray;
                 case "CPUStatus":
-                    return value.ToString() == "UnderThreshold" ? Brushes.Lime : Brushes.IndianRed;
+                    return value.ToString() == "UnderThreshold" ? Brushes.Lime : red;
                 case "UplinkPort":
                     var brush = new SolidColorBrush(Color.FromArgb(255, (byte)163, (byte)101, (byte)209));
                     return value.ToString() == "False" ? Brushes.Transparent : brush;
                 case "MacList":
-                    return (value as List<string>)?.Count == 0 ? Brushes.White : Brushes.IndianRed;
+                    return (value as List<string>)?.Count == 0 ? Brushes.White : red;
                 case "PowerSupply":
-                    return value.ToString() == "Up" ? Brushes.Lime : Brushes.IndianRed;
+                    return value.ToString() == "Up" ? Brushes.Lime : red;
+                case "Boolean":
+                    return value.ToString().ToLower() == "true" ? Brushes.Lime : red;
                 default:
-                    return Brushes.IndianRed;
+                    return red;
             }
         }
 
@@ -82,7 +85,21 @@ namespace PoEWizard.Components
         }
     }
 
-    public class PoeTypeToSymbolValueConverter : IValueConverter
+    public class BoolToSymbolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool val = bool.Parse(value.ToString());
+            return val ? "  ✓" : "  ✗";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class PoeTypeToSymbolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -90,13 +107,13 @@ namespace PoEWizard.Components
             switch (poeType.ToLower())
             {
                 case "on":
-                    return "✓";
+                    return "  ✓";
 
                 case "off":
-                    return "✗";
+                    return "  ✗";
 
                 default:
-                    return "-";
+                    return "  -";
             }
         }
 
@@ -113,7 +130,7 @@ namespace PoEWizard.Components
             bool hasPoe = (bool)values[0];
             string priorityLevel = values[1].ToString();
 
-            return hasPoe ? priorityLevel : "-";
+            return hasPoe ? $"  {priorityLevel}" : "  -";
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

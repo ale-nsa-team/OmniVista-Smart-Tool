@@ -108,20 +108,42 @@
                       CellStyle="{DynamicResource gridCell}"
                       SelectionChanged="SlotSelection_Changed">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Slot" Width="*" Binding="{Binding Path=Name}"/>
-                        <DataGridTextColumn Header="#Ports" Width="*" Binding="{Binding Path=NbPorts}"/>
-                        <DataGridTextColumn Header="#Poe Ports" Width="*" Binding="{Binding Path=NbPoePorts}" />
-                        <DataGridTextColumn Header="Budget (Watts)" Width="*" Binding="{Binding Path=Budget}" />
-                        <DataGridTextColumn Header="Power (Watts)" Width="*" Binding="{Binding Path=Power}"/>
-                        <DataGridTextColumn Header="Fast PoE" Width="*" Binding="{Binding Path=IsFPoE}" />
-                        <DataGridTextColumn Header="Perpetual PoE" Width="*" Binding="{Binding Path=IsPPoE}" />
+                        <DataGridTextColumn Header=" Slot" Width="*" Binding="{Binding Path=Name, StringFormat='{}  {0}'}" />
+                        <DataGridTextColumn Header="#Ports" Width="*" Binding="{Binding Path=NbPorts, StringFormat='{}  {0}'}"/>
+                        <DataGridTextColumn Header="#Poe Ports" Width="*" Binding="{Binding Path=NbPoePorts, StringFormat='{}  {0}'}" />
+                        <DataGridTextColumn Header="Budget (Watts)" Width="*" Binding="{Binding Path=Budget, StringFormat='{}  {0}'}" />
+                        <DataGridTextColumn Header="Power (Watts)" Width="*" Binding="{Binding Path=Power, StringFormat='{}  {0}'}"/>
+                        <DataGridTemplateColumn Header="Fast PoE" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=IsFPoE, 
+                                            StringFormat='{}  {0}',
+                                            Converter={StaticResource BoolToSymbolConverter}}"
+                                        Foreground="{Binding Path=IsFPoE,
+                                            Converter={StaticResource ValueToColorConverter}, 
+                                            ConverterParameter=Boolean}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Perpetual PoE" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=IsPPoE,
+                                            StringFormat='{}  {0}',
+                                            Converter={StaticResource BoolToSymbolConverter}}"
+                                        Foreground="{Binding Path=IsPPoE, 
+                                            Converter={StaticResource ValueToColorConverter}, 
+                                            ConverterParameter=Boolean}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="PoE Status" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Path=PoeStatus}" 
-                                           Foreground="{Binding Path=PoeStatus,
-                                           Converter={StaticResource ValueToColorConverter},
-                                           ConverterParameter=PoeStatus}"/>
+                                    <TextBlock Text="{Binding Path=PoeStatus, StringFormat='{}  {0}'}" 
+                                        Foreground="{Binding Path=PoeStatus,
+                                            Converter={StaticResource ValueToColorConverter},
+                                            ConverterParameter=PoeStatus}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -146,24 +168,24 @@
                       CellStyle="{DynamicResource gridCell}"
                       SelectionChanged="PortSelection_Changed">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Port" Width="*" Binding="{Binding Path=Name}" />
+                    <DataGridTextColumn Header="Port" Width="*" Binding="{Binding Path=Name, StringFormat='{} {0}'}" />
                     <DataGridTemplateColumn Header="Status" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Status}"
+                                <TextBlock Text="{Binding Path=Status, StringFormat='{}  {0}'}"
                                     Foreground="{Binding Path=Status,
-                                    Converter={StaticResource ValueToColorConverter},
-                                    ConverterParameter=PortStatus}" />
+                                        Converter={StaticResource ValueToColorConverter},
+                                        ConverterParameter=PortStatus}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="PoE Status" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Poe}"
+                                <TextBlock Text="{Binding Path=Poe, StringFormat='{}  {0}'}"
                                     Foreground="{Binding Path=Poe, 
-                                    Converter={StaticResource ValueToColorConverter}, 
-                                    ConverterParameter=Poe}" />
+                                        Converter={StaticResource ValueToColorConverter}, 
+                                        ConverterParameter=Poe}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -175,9 +197,9 @@
                             </MultiBinding>
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="Power (mW)" Width="*" Binding="{Binding Path=Power}"/>
-                    <DataGridTextColumn Header="Max Power (mW)" Width="Auto" Binding="{Binding Path=MaxPower}" />
-                    <DataGridTextColumn Header="Device Type" Width="2*" Binding="{Binding Path=EndPointDevice.DeviceType}" />
+                    <DataGridTextColumn Header="Power (mW)" Width="*" Binding="{Binding Path=Power, StringFormat='{}  {0}'}"/>
+                    <DataGridTextColumn Header="Max Power (mW)" Width="1.2*" Binding="{Binding Path=MaxPower, StringFormat='{}  {0}'}" />
+                    <DataGridTextColumn Header="Device Type" Width="2*" Binding="{Binding Path=EndPointDevice.DeviceType, StringFormat='{}  {0}'}" />
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
