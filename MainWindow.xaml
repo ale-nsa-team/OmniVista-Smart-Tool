@@ -101,18 +101,19 @@
                       Style="{DynamicResource defaultGrid}" 
                       ColumnHeaderStyle="{DynamicResource gridHeader}"
                       CellStyle="{DynamicResource gridCell}"
+                      IsReadOnly="True"
                       SelectionChanged="SlotSelection_Changed">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header=" Slot" Width="*" Binding="{Binding Path=Name, StringFormat='{}  {0}'}" />
-                    <DataGridTextColumn Header="#Ports" Width="*" Binding="{Binding Path=NbPorts, StringFormat='{}  {0}'}"/>
-                    <DataGridTextColumn Header="#Poe Ports" Width="*" Binding="{Binding Path=NbPoePorts, StringFormat='{}  {0}'}" />
-                    <DataGridTextColumn Header="Budget (Watts)" Width="*" Binding="{Binding Path=Budget, StringFormat='{}  {0}'}" />
-                    <DataGridTextColumn Header="Power (Watts)" Width="*" Binding="{Binding Path=Power, StringFormat='{}  {0}'}"/>
+                    <DataGridTextColumn Header="Slot" Width="*" Binding="{Binding Path=Name}" />
+                    <DataGridTextColumn Header="#Ports" Width="*" Binding="{Binding Path=NbPorts}"/>
+                    <DataGridTextColumn Header="#Poe Ports" Width="*" Binding="{Binding Path=NbPoePorts}" />
+                    <DataGridTextColumn Header="Budget (Watts)" Width="*" Binding="{Binding Path=Budget}" />
+                    <DataGridTextColumn Header="Power (Watts)" Width="*" Binding="{Binding Path=Power}"/>
                     <DataGridTemplateColumn Header="Fast PoE" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox Style="{DynamicResource toggleSwitch}"
-                                              Margin="8,0"
+                                              Margin="4,0"
                                               Checked="FPoE_Click"
                                               Unchecked="FPoE_Click"
                                               IsChecked="{Binding IsFPoE}" />
@@ -133,7 +134,7 @@
                     <DataGridTemplateColumn Header="PoE Status" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=PoeStatus, StringFormat='{}  {0}'}" 
+                                <TextBlock Text="{Binding Path=PoeStatus}" 
                                         Foreground="{Binding Path=PoeStatus,
                                             Converter={StaticResource ValueToColorConverter},
                                             ConverterParameter=PoeStatus}"/>
@@ -154,21 +155,21 @@
                       CellStyle="{DynamicResource gridCell}"
                       SelectionChanged="PortSelection_Changed">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Port" Width="*" Binding="{Binding Path=Name, StringFormat='{} {0}'}" />
-                    <DataGridTemplateColumn Header="Status" Width="*">
+                    <DataGridTextColumn Header=" Port" Width="*" Binding="{Binding Path=Name}" IsReadOnly="True"/>
+                    <DataGridTemplateColumn Header="Status" Width="*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Status, StringFormat='{}  {0}'}"
+                                <TextBlock Text="{Binding Path=Status}"
                                     Foreground="{Binding Path=Status,
                                         Converter={StaticResource ValueToColorConverter},
                                         ConverterParameter=PortStatus}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="PoE Status" Width="*">
+                    <DataGridTemplateColumn Header="PoE Status" Width="*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Poe, StringFormat='{}  {0}'}"
+                                <TextBlock Text="{Binding Path=Poe}"
                                     Foreground="{Binding Path=Poe, 
                                         Converter={StaticResource ValueToColorConverter}, 
                                         ConverterParameter=Poe}" />
@@ -194,9 +195,9 @@
                             </Style>
                         </DataGridComboBoxColumn.EditingElementStyle>
                     </DataGridComboBoxColumn>
-                    <DataGridTextColumn Header="Power (mW)" Width="*" Binding="{Binding Path=Power, StringFormat='{}  {0}'}"/>
-                    <DataGridTextColumn Header="Max Power (mW)" Width="1.2*" Binding="{Binding Path=MaxPower, StringFormat='{}  {0}'}" />
-                    <DataGridTextColumn Header="Device Type" Width="2*" Binding="{Binding Path=EndPointDevice.DeviceType, StringFormat='{}  {0}'}" />
+                    <DataGridTextColumn Header="Power (mW)" Width="*" Binding="{Binding Path=Power}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Max Power (mW)" Width="1.2*" Binding="{Binding Path=MaxPower}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Device Type" Width="2*" Binding="{Binding Path=EndPointDevice.DeviceType}" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

@@ -210,6 +210,10 @@ namespace PoEWizard
                 Resources.MergedDictionaries.Add(lightDict);
                 currentDict = lightDict;
             }
+            if (slotView.Slots.Count == 1) //do not highlight if only one row
+            {
+                _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
+            }
             SetTitleColor();
         }
 
@@ -229,12 +233,6 @@ namespace PoEWizard
             {
                 selectedSlot = slot.Name;
                 _portList.ItemsSource = slot.Ports;
-                if (slotView.Slots.Count == 1) //do not highlight if only one row
-                {
-                    _slotsView.SelectionChanged -= SlotSelection_Changed;
-                    _slotsView.SelectedIndex = -1;
-                    _slotsView.SelectionChanged += SlotSelection_Changed;
-                }
             }
 
         }
@@ -568,6 +566,10 @@ namespace PoEWizard
             slotView = new SlotView(device);
             _slotsView.ItemsSource = slotView.Slots;
             _slotsView.SelectedIndex = 0;
+            if (slotView.Slots.Count == 1) //do not highlight if only one row
+            {
+                _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
+            }
             _slotsView.Visibility = Visibility.Visible;
             _portList.Visibility = Visibility.Visible;
         }

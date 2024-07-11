@@ -91,7 +91,7 @@ namespace PoEWizard.Components
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             bool val = bool.Parse(value.ToString());
-            return val ? "  ✓" : "  ✗";
+            return val ? "✓" : "✗";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -108,13 +108,13 @@ namespace PoEWizard.Components
             switch (poeType.ToLower())
             {
                 case "on":
-                    return "  ✓";
+                    return "✓";
 
                 case "off":
-                    return "  ✗";
+                    return "✗";
 
                 default:
-                    return "  -";
+                    return "-";
             }
         }
 

@@ -89,6 +89,7 @@
         <Setter Property="HorizontalGridLinesBrush" Value="#666" />
         <Setter Property="VerticalGridLinesBrush" Value="#666" />
         <Setter Property="CanUserAddRows" Value="False" />
+        <Setter Property="CanUserSortColumns" Value="False" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
@@ -154,9 +155,6 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-            <Style TargetType="TextBlock">
-                <Setter Property="Margin" Value="5,0,0,0" />
-            </Style>
         </Style.Resources>
     </Style>
 
@@ -170,11 +168,34 @@
 
     <Style TargetType="DataGridCell" x:Key="gridCell">
         <Setter Property="Padding" Value="6,2,2,2" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridCell}">
+                    <Border Padding="{TemplateBinding Padding}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            Background="{TemplateBinding Background}" 
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
         <Style.Triggers>
             <Trigger Property="IsSelected" Value="True">
                 <Setter Property="Background" Value="#888" />
                 <Setter Property="Foreground" Value="Yellow" />
                 <Setter Property="BorderBrush" Value="#888" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="DataGridCell" x:Key="gridCellNoHilite" BasedOn="{StaticResource gridCell}">
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="BorderThickness" Value="0" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -727,7 +748,7 @@
     <Style TargetType="Label" x:Key="valLabel" BasedOn="{StaticResource keyLabel}">
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
     </Style>
-    
+
     <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -868,9 +889,8 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <Style x:Key="toggleSwitch" TargetType="{x:Type CheckBox}">
-        <Setter Property="Margin" Value="0,10,0,0" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
@@ -879,12 +899,12 @@
                         <SolidColorBrush x:Key="fillBrush">Lime</SolidColorBrush>
                         <SolidColorBrush x:Key="borderBrush">Gray</SolidColorBrush>
                     </ControlTemplate.Resources>
-                    <Grid  Background="Transparent" SnapsToDevicePixels="True" Height="18">
+                    <Grid Background="Transparent" SnapsToDevicePixels="True" Height="18">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="34" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Grid  x:Name="markGrid" >
+                        <Grid x:Name="markGrid" >
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
