@@ -61,6 +61,8 @@ namespace PoEWizard.Data
             SHOW_PORT_STATUS = 48,
             SHOW_PORT_POWER = 49,
             SHOW_PORT_LLDP_REMOTE = 50,
+            POE_FAST_DISABLE = 51,
+            POE_PERPETUAL_DISABLE = 52,
             // 70 - 99: Special switch commands
             WRITE_MEMORY = 70,
             SHOW_CONFIGURATION = 71,
@@ -108,6 +110,8 @@ namespace PoEWizard.Data
             [RestUrlId.SHOW_PORT_STATUS] = $"show interfaces port {DATA_0} alias",              // 48
             [RestUrlId.SHOW_PORT_POWER] = $"show lanpower slot {DATA_0}|grep {DATA_1}",         // 49
             [RestUrlId.SHOW_PORT_LLDP_REMOTE] = $"show lldp port {DATA_0} remote-system",       // 50
+            [RestUrlId.POE_FAST_DISABLE] = $"lanpower slot {DATA_0} fpoe disable",              // 51
+            [RestUrlId.POE_PERPETUAL_DISABLE] = $"lanpower slot {DATA_0} ppoe disable",         // 52
             // 70 - 99: Special switch commands
             [RestUrlId.WRITE_MEMORY] = "write memory flash-synchro",                            // 70
             [RestUrlId.SHOW_CONFIGURATION] = "show configuration snapshot"                      // 71
@@ -168,6 +172,8 @@ namespace PoEWizard.Data
                     case RestUrlId.SHOW_PORT_MAC_ADDRESS:       // 47
                     case RestUrlId.SHOW_PORT_STATUS:            // 48
                     case RestUrlId.SHOW_PORT_LLDP_REMOTE:       // 50
+                    case RestUrlId.POE_FAST_DISABLE:            // 51
+                    case RestUrlId.POE_PERPETUAL_DISABLE:       // 52
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 
