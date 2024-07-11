@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Components
@@ -11,18 +12,12 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class Login : Window
     {
-        private string _pwd;
+        private readonly ImageSource eye_open;
+        private readonly ImageSource eye_closed;
+
         public string IpAddress { get; set; }
         public string User { get; set; }
-        public string Password
-        {
-            get => _pwd;
-            set
-            {
-                _pwd = value;
-                password.Password = value;
-            } 
-        }
+        public string Password { get; set; }
 
         public Login(String user)
         {
@@ -35,6 +30,10 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+
+            eye_open = (ImageSource)Resources.MergedDictionaries[0]["eye_open"];
+            eye_closed = (ImageSource)Resources.MergedDictionaries[0]["eye_closed"];
+
             this.DataContext = this;
             User = user;
         }
@@ -42,16 +41,13 @@ namespace PoEWizard.Components
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
             if (HasErrors()) return;
-            IpAddress = ipAddress.Text;
-            User = username.Text;
-            Password = password.Password;
             this.DialogResult = true;
             this.Close();
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            ipAddress.Focus();
+            _ipAddress.Focus();
         }
 
         private void TextBox_KeyUp(object sender, KeyEventArgs e)
@@ -59,11 +55,39 @@ namespace PoEWizard.Components
             if (e.Key == Key.Enter && !HasErrors()) BtnOk_Click(sender, e);
         }
 
+        private void MaskedPwdEnter(object sender, RoutedEventArgs e)
+        {
+            PasswordBox pb = sender as PasswordBox;
+            e.Handled = true;
+            pb.Focus();
+            pb.SelectAll();
+        } 
+
+        private void ClearPwdEnter(object sender, RoutedEventArgs e)
+        {
+            TextBox tb = sender as TextBox;
+            e.Handled = true;
+            tb.Focus();
+            tb.SelectAll();
+        }
+
+        private void ShowPwd(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn?.Content is Image img)
+            {
+                bool isEnabled = img.Source == eye_closed;
+                img.Source = isEnabled ? eye_open : eye_closed;
+                _clearPwd.Visibility = isEnabled ? Visibility.Hidden : Visibility.Visible;
+                _maskedPwd.Visibility = isEnabled ? Visibility.Visible : Visibility.Hidden;
+            }
+        }
+
         private bool HasErrors()
         {
-            bool ipErr = string.IsNullOrEmpty(ipAddress.Text) || ipAddress.GetBindingExpression(TextBox.TextProperty).HasError;
-            bool nameErr = string.IsNullOrEmpty(username.Text.Trim());
-            bool pwdErr = string.IsNullOrEmpty(password.Password.Trim());
+            bool ipErr = string.IsNullOrEmpty(_ipAddress.Text) || _ipAddress.GetBindingExpression(TextBox.TextProperty).HasError;
+            bool nameErr = string.IsNullOrEmpty(_username.Text.Trim());
+            bool pwdErr = string.IsNullOrEmpty(_clearPwd.Text.Trim());
 
             return ipErr || nameErr || pwdErr;
         } 

@@ -31,7 +31,7 @@ namespace PoEWizard.Components
             }
 
             DataContext = this;
-            _header.Text = "Please, selected the type of device conntect to port " + port;
+            _header.Text = "Please, select the type of device connected to port " + port;
             Devices = Enum.GetValues(typeof(DeviceType)).OfType<DeviceType>().ToList().Select(d => GetDescription(d)).ToList();
             Device = Devices.FirstOrDefault();
         }
