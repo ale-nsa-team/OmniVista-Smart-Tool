@@ -25,9 +25,9 @@
                 TextWrapping="Wrap"
                 Style="{DynamicResource popupTitle}" />
         <ComboBox x:Name="_devType" Grid.Row="1" 
-                Width="120" Height="20"
+                Width="120" Height="25"
                 Style="{DynamicResource defaultCombo}"
-                ItemsSource="{Binding DeviceTypes}"
+                ItemsSource="{Binding Devices}"
                 SelectedItem="{Binding Device}"
                 IsSynchronizedWithCurrentItem="True"
                 SelectionChanged="DeviceSelection_Changed"/>
