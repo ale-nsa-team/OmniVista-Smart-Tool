@@ -522,7 +522,7 @@ namespace PoEWizard.Comm
             this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_MAC_ADDRESS, new string[1] { port }));
             dictList = CliParseUtils.ParseHTable(_response[RESULT], 1);
             if (dictList?.Count > 0) _wizardSwitchPort.UpdateMacList(dictList);
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_LLDP_REMOTE, new string[] { "1/1/26" }));
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_LLDP_REMOTE, new string[] { port }));
             dictList = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
             if (dictList?.Count > 0) _wizardSwitchPort.LoadLldpRemoteTable(dictList[0]);
         }
