@@ -485,6 +485,11 @@ namespace PoEWizard
             return proceed;
         }
 
+        private async void RunScanSwitch()
+        {
+            await Task.Run(() => restApiService.ScanSwitch());
+        }
+
         private async Task<bool> EnableHdmiMdi()
         {
             bool proceed = await RunPoeWizard(new List<RestUrlId>() { RestUrlId.POWER_HDMI_ENABLE, RestUrlId.LLDP_POWER_MDI_ENABLE, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE }, 15);

@@ -60,7 +60,7 @@ namespace PoEWizard.Comm
             {
                 List<Dictionary<string, string>> diclist;
                 Dictionary<string, string> dict;
-                _progress.Report(new ProgressReport($"Reading System information on Switch {SwitchModel.IpAddress} ..."));
+                _progress.Report(new ProgressReport($"Reading System information on Switch {SwitchModel.IpAddress}"));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
                 dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.System);
@@ -70,24 +70,24 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_RUNNING_DIR));
                 dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.RunningDir);
-                _progress.Report(new ProgressReport($"Reading chassis and port information on Switch {SwitchModel.IpAddress} ..."));
+                _progress.Report(new ProgressReport($"Reading chassis and port information on Switch {SwitchModel.IpAddress}"));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
                 diclist = CliParseUtils.ParseChassisTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.Chassis);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 3);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PortsList);
-                _progress.Report(new ProgressReport($"Reading power supply information on Switch {SwitchModel.IpAddress} ..."));
+                _progress.Report(new ProgressReport($"Reading power supply information on Switch {SwitchModel.IpAddress}"));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLIES));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PowerSupply);
                 GetLanPower();
                 GetSnapshot();
-                _progress.Report(new ProgressReport($"Reading lldp remote information on Switch {SwitchModel.IpAddress} ..."));
+                _progress.Report(new ProgressReport($"Reading lldp remote information on Switch {SwitchModel.IpAddress}"));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LLDP_REMOTE));
                 diclist = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.LldpRemoteList);
-                _progress.Report(new ProgressReport($"Reading MAC Address information on Switch {SwitchModel.IpAddress} ..."));
+                _progress.Report(new ProgressReport($"Reading MAC Address information on Switch {SwitchModel.IpAddress}"));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
                 SwitchModel.LoadFromList(diclist, DictionaryType.MacAddressList);
@@ -227,14 +227,12 @@ namespace PoEWizard.Comm
                                 ExecuteActionOnPort($"Re-enabling 2-Pair Power on Port {port}", port, waitSec, RestUrlId.POWER_2PAIR_PORT);
                                 if (_wizardProgressReport.Type != ReportType.Error)
                                 {
-                                    EnablePerpetualPoE(chassisSlotPort);
                                     break;
                                 }
                             }
                             RestUrlId init4Pair = _wizardSwitchPort.Is4Pair ? RestUrlId.POWER_4PAIR_PORT : RestUrlId.POWER_2PAIR_PORT;
                             _wizardCommand = _wizardSwitchPort.Is4Pair ? RestUrlId.POWER_2PAIR_PORT : RestUrlId.POWER_4PAIR_PORT;
                             ExecuteActionOnPort($"Enabling {(_wizardSwitchPort.Is4Pair ? "2-Pair" : "4-Pair")} Power on Port {port}", port, waitSec, init4Pair);
-                            if (_wizardCommand == RestUrlId.POWER_2PAIR_PORT && _wizardProgressReport.Type != ReportType.Error) EnablePerpetualPoE(chassisSlotPort);
                             break;
 
                         case RestUrlId.POWER_HDMI_ENABLE:
@@ -339,7 +337,7 @@ namespace PoEWizard.Comm
         {
             List<Dictionary<string, string>> diclist;
             Dictionary<string, string> dict;
-            _progress.Report(new ProgressReport($"Reading PoE information on Switch {SwitchModel.IpAddress} ..."));
+            _progress.Report(new ProgressReport($"Reading PoE information on Switch {SwitchModel.IpAddress}"));
             foreach (var chassis in SwitchModel.ChassisList)
             {
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
