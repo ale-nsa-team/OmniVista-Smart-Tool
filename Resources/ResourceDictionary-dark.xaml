@@ -740,7 +740,7 @@
                   CornerRadius="0"
                   Background="#FF3F3F3F"
                   BorderBrush="#FF97A0A5"
-                  BorderThickness="0" />
+                  BorderThickness="1" />
             <Border 
                   Grid.Column="0"
                   CornerRadius="0" 
@@ -771,7 +771,6 @@
         <Setter Property="MinHeight" Value="20"/>
         <Setter Property="Background" Value="#333" />
         <Setter Property="Foreground" Value="White"/>
-        <Setter Property="FontSize" Value="11" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBox}">
@@ -845,8 +844,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-        </Style.Triggers>
     </Style>
 
     <Style x:Key="{x:Type ComboBoxItem}" TargetType="{x:Type ComboBoxItem}">

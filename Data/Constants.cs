@@ -1,4 +1,6 @@
-﻿namespace PoEWizard.Data
+﻿using System.ComponentModel;
+
+namespace PoEWizard.Data
 {
     public static class Constants
     {
@@ -22,7 +24,16 @@
         public enum ChassisStatus { Unknown, Up, Down }
         public enum DictionaryType { System, Chassis, RunningDir, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList, MacAddressList }
         public enum ConfigType { Enabled, Disabled, Unavailable }
-        public enum WizardCriteria { Telephone, Camera, WirelessLan, Other }
+        public enum DeviceType {
+            [Description("Telephone")]
+            Phone = 1,
+            [Description("Camera")]
+            Camera = 2,
+            [Description("Access Point")]
+            AP = 3,
+            [Description("Other")]
+            Other = 4 
+        }
 
         #endregion
 

@@ -156,7 +156,17 @@ namespace PoEWizard
 
         private void RunWiz_Click(object sender, RoutedEventArgs e)
         {
-            LaunchPoeWizard(WizardCriteria.Other);
+            var ds = new DeviceSelection(selectedPort)
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+
+            if (ds.ShowDialog() == true)
+            {
+                string dt = ds.Device;
+                LaunchPoeWizard(DeviceType.Other);
+            }
         }
 
         private void Help_Click(object sender, RoutedEventArgs e)
@@ -346,7 +356,7 @@ namespace PoEWizard
             HideInfoBox();
         }
 
-        private async void LaunchPoeWizard(WizardCriteria wizardCriteria)
+        private async void LaunchPoeWizard(DeviceType wizardCriteria)
         {
             try
             {
@@ -355,13 +365,13 @@ namespace PoEWizard
                 restApiService = new RestApiService(device, progress);
                 switch (wizardCriteria)
                 {
-                    case WizardCriteria.Camera:
+                    case DeviceType.Camera:
                         await RunWizardCamera();
                         break;
-                    case WizardCriteria.Telephone:
+                    case DeviceType.Phone:
                         await RunWizardTelephone();
                         break;
-                    case WizardCriteria.WirelessLan:
+                    case DeviceType.AP:
                         await RunWizardWirelessLan();
                         break;
                     default:

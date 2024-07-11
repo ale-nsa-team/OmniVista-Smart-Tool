@@ -117,6 +117,9 @@
     <Compile Include="Components\CustomMsgBox.xaml.cs">
       <DependentUpon>CustomMsgBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\DeviceSelection.xaml.cs">
+      <DependentUpon>DeviceSelection.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
@@ -180,6 +183,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\CustomMsgBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\DeviceSelection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
