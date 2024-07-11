@@ -124,7 +124,7 @@ namespace PoEWizard
 
         private void ConnectBtn_Click(object sender, MouseEventArgs e)
         {
-            if (!string.IsNullOrEmpty(device?.IpAddress)) Connect();
+            Connect();
         }
 
         private void ViewActivity_Click(object sender, RoutedEventArgs e)
