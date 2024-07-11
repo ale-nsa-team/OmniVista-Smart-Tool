@@ -24,7 +24,7 @@
         <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="Enter Switch Credentials" Style="{DynamicResource popupTitle}" />
         <StackPanel Grid.Row="1" Style="{DynamicResource loginWindow}">
             <Label>IP Address</Label>
-            <TextBox x:Name="ipAddress" x:FieldModifier="private" 
+            <TextBox x:Name="_ipAddress" x:FieldModifier="private" 
                      Validation.ErrorTemplate="{DynamicResource validationTemplate}"
                      KeyUp="TextBox_KeyUp">
                 <TextBox.Text>
@@ -36,9 +36,33 @@
                 </TextBox.Text>
             </TextBox>
             <Label>Username</Label>
-            <TextBox x:Name="username" x:FieldModifier="private" Text="{Binding User}" KeyUp="TextBox_KeyUp"/>
-            <Label Margin="0,10,0,0">Password</Label>
-            <PasswordBox x:Name="password" x:FieldModifier="private" KeyUp="TextBox_KeyUp"/>
+            <TextBox x:Name="_username" x:FieldModifier="private" Text="{Binding User}" KeyUp="TextBox_KeyUp"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0">Password</Label>
+                <PasswordBox Grid.Row="1" Grid.Column="0" x:Name="_maskedPwd"
+                         local:PasswordBoxAssistant.BindPassword="True"
+                         PreviewMouseDown="MaskedPwdEnter">
+                    <local:PasswordBoxAssistant.BoundPassword>
+                        <Binding Path="Password" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" />
+                    </local:PasswordBoxAssistant.BoundPassword>
+                </PasswordBox>
+                <TextBox Grid.Row="1" Grid.Column="0" x:Name="_clearPwd" Visibility="Hidden"
+                       Text="{Binding Path=Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                       PreviewMouseDown="ClearPwdEnter" />
+                <Button Grid.Row="1" Grid.Column="1" x:Name="_bntViewPwd" 
+                    Style="{DynamicResource eyeButton}"
+                    Click="ShowPwd">
+                    <Image x:Name="_viewPwd" Source="{DynamicResource eye_open}" />
+                </Button>
+            </Grid>
         </StackPanel>
         <Border Grid.Row="2" Style="{DynamicResource propsBorder}">
             <StackPanel Orientation="Horizontal">
