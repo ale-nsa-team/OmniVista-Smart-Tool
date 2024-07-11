@@ -378,6 +378,11 @@ namespace PoEWizard
                         await RunWizardOther();
                         break;
                 }
+                RefreshPortsList();
+                wizardProgressReport.Type = reportResult.Proceed ? ReportType.Error : ReportType.Info;
+                wizardProgressReport.Message = reportResult.Message;
+                progress.Report(wizardProgressReport);
+                await WaitAckProgress();
             }
             catch (Exception ex)
             {
@@ -390,74 +395,61 @@ namespace PoEWizard
             }
         }
 
+        private void RefreshPortsList()
+        {
+            device = restApiService.SwitchModel;
+            foreach (SlotModel slot in _slotsView.Items)
+            {
+                _portList.ItemsSource = slot.Ports;
+            }
+        }
+
         private async Task RunWizardCamera()
         {
-            bool proceed = true;
             await Enable823BT();
-            await WaitAckProgress();
-            if (!proceed) return;
+            if (!reportResult.Proceed) return;
             await ResetPortPower();
-            await WaitAckProgress();
-            if (!proceed) return;
+            if (!reportResult.Proceed) return;
             await EnableHdmiMdi();
-            await WaitAckProgress();
-            if (!proceed) return;
+            if (!reportResult.Proceed) return;
             await ChangePriority();
-            await WaitAckProgress();
         }
 
         private async Task RunWizardTelephone()
         {
-            bool proceed = true;
             await Enable2PairPower();
-            await WaitAckProgress();
-            if (!proceed) return;
+            if (!reportResult.Proceed) return;
             await ChangePriority();
-            await WaitAckProgress();
-            if (!proceed) return;
+            if (!reportResult.Proceed) return;
             await ResetPortPower();
-            await WaitAckProgress();
-            if (!proceed) return;
+            if (!reportResult.Proceed) return;
             await EnableHdmiMdi();
-            await WaitAckProgress();
         }
 
         private async Task RunWizardWirelessLan()
         {
-            bool proceed = true;
             await Enable823BT();
-            await WaitAckProgress();
-            if (!proceed) return;
+            if (!reportResult.Proceed) return;
             await Enable2PairPower();
-            await WaitAckProgress();
-            if (!proceed) return;
+            if (!reportResult.Proceed) return;
             await ChangePriority();
-            await WaitAckProgress();
-            if (!proceed) return;
+            if (!reportResult.Proceed) return;
             await ResetPortPower();
-            await WaitAckProgress();
-            if (!proceed) return;
+            if (!reportResult.Proceed) return;
             await EnableHdmiMdi();
-            await WaitAckProgress();
         }
 
         private async Task RunWizardOther()
         {
-            bool proceed = true;
-            await Enable823BT();
-            await WaitAckProgress();
-            if (!proceed) return;
             await ChangePriority();
-            await WaitAckProgress();
-            if (!proceed) return;
+            if (!reportResult.Proceed) return;
+            await Enable823BT();
+            if (!reportResult.Proceed) return;
             await EnableHdmiMdi();
-            await WaitAckProgress();
-            if (!proceed) return;
+            if (!reportResult.Proceed) return;
             await ResetPortPower();
-            await WaitAckProgress();
-            if (!proceed) return;
+            if (!reportResult.Proceed) return;
             await Enable2PairPower();
-            await WaitAckProgress();
         }
 
         private async Task Enable823BT()
@@ -477,14 +469,18 @@ namespace PoEWizard
         private async Task ChangePriority()
         {
             await RunPoeWizard(new List<RestUrlId>() { RestUrlId.CHECK_POWER_PRIORITY }, 15);
-            bool proceed = true;
             Logger.Info($"PoE Wizard Check Power Priority on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             await WaitAckProgress();
-            if (!proceed) return;
-            proceed = ShowMessageBox("Power Priority Change", "Some other devices with lower priority may stop. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+            if (!reportResult.Proceed)
+            {
+                reportResult.Proceed = true;
+                return;
+            }
+            bool proceed = ShowMessageBox("Power Priority Change", "Some other devices with lower priority may stop. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
             if (!proceed) return;
             await RunPoeWizard(new List<RestUrlId>() { RestUrlId.POWER_PRIORITY_PORT }, 15);
             Logger.Info($"Change Power Priority on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            HideInfoBox();
         }
 
         private async void RunScanSwitch()
@@ -506,8 +502,7 @@ namespace PoEWizard
 
         private async Task RunPoeWizard(List<RestUrlId> cmdList, int waitSec)
         {
-            bool proceed = false;
-            await Task.Run(() => proceed = restApiService.RunPoeWizard(selectedPort, cmdList, waitSec));
+            await Task.Run(() => restApiService.RunPoeWizard(selectedPort, reportResult, cmdList, waitSec));
         }
 
         private async Task WaitAckProgress()
