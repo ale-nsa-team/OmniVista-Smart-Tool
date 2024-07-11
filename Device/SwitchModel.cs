@@ -32,6 +32,7 @@ namespace PoEWizard.Device
         public bool IsConnected { get; set; }
         public PowerSupplyState PowerSupplyState => GetPowerSupplyState();
         public string ConfigSnapshot { get; set; }
+        public bool ConfigChanged { get; set; } = false;
 
         public SwitchModel() : this("", DEFAULT_USERNAME, DEFAULT_PASSWORD, 5) { }
 

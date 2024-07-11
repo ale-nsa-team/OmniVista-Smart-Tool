@@ -22,6 +22,7 @@
         public enum ChassisStatus { Unknown, Up, Down }
         public enum DictionaryType { System, Chassis, RunningDir, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList, MacAddressList }
         public enum ConfigType { Enabled, Disabled, Unavailable }
+        public enum WizardCriteria { Telephone, Camera, WirelessLan, Other }
 
         #endregion
 
