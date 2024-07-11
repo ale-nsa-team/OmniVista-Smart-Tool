@@ -40,15 +40,27 @@ namespace PoEWizard.Comm
         {
             try
             {
-                List<Dictionary<string, string>> diclist;
-                Dictionary<string, string> dict;
                 this.IsReady = true;
                 Logger.Debug($"Connecting Rest API");
                 _progress.Report(new ProgressReport("Connecting to switch..."));
                 RestApiClient.Login();
                 if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to Switch {SwitchModel.IpAddress}!");
                 SwitchModel.IsConnected = true;
-                _progress.Report(new ProgressReport("Reading System information..."));
+                ScanSwitch();
+            }
+            catch (Exception ex)
+            {
+                SendSwitchConnectionFailed(ex);
+            }
+        }
+
+        public void ScanSwitch()
+        {
+            try
+            {
+                List<Dictionary<string, string>> diclist;
+                Dictionary<string, string> dict;
+                _progress.Report(new ProgressReport($"Reading System information on Switch {SwitchModel.IpAddress} ..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
                 dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.System);
@@ -58,22 +70,24 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_RUNNING_DIR));
                 dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.RunningDir);
-                _progress.Report(new ProgressReport("Reading chassis and port information..."));
+                _progress.Report(new ProgressReport($"Reading chassis and port information on Switch {SwitchModel.IpAddress} ..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
                 diclist = CliParseUtils.ParseChassisTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.Chassis);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 3);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PortsList);
-                _progress.Report(new ProgressReport("Reading power supply information"));
+                _progress.Report(new ProgressReport($"Reading power supply information on Switch {SwitchModel.IpAddress} ..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLIES));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PowerSupply);
                 GetLanPower();
                 GetSnapshot();
+                _progress.Report(new ProgressReport($"Reading lldp remote information on Switch {SwitchModel.IpAddress} ..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LLDP_REMOTE));
                 diclist = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.LldpRemoteList);
+                _progress.Report(new ProgressReport($"Reading MAC Address information on Switch {SwitchModel.IpAddress} ..."));
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
                 SwitchModel.LoadFromList(diclist, DictionaryType.MacAddressList);
@@ -86,19 +100,85 @@ namespace PoEWizard.Comm
 
         public void GetSnapshot()
         {
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CONFIGURATION));
-            SwitchModel.ConfigSnapshot = _response[RESULT];
+            try
+            {
+                string txt = $"Reading configuration snapshot on Switch {SwitchModel.IpAddress}";
+                _progress.Report(new ProgressReport(txt));
+                Logger.Debug(txt);
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CONFIGURATION));
+                SwitchModel.ConfigSnapshot = _response[RESULT];
+            }
+            catch (Exception ex)
+            {
+                SendSwitchConnectionFailed(ex);
+            }
         }
 
         public void WriteMemory()
         {
-            string txt = $"Writing memory on Switch {SwitchModel.IpAddress}";
-            _progress.Report(new ProgressReport(txt));
-            Logger.Debug(txt);
-            if (SwitchModel.ConfigChanged)
+            try
             {
-                SendRequest(GetRestUrlEntry(RestUrlId.WRITE_MEMORY));
-                Thread.Sleep(25000);
+                string txt = $"Writing memory on Switch {SwitchModel.IpAddress}";
+                _progress.Report(new ProgressReport(txt));
+                Logger.Debug(txt);
+                if (SwitchModel.ConfigChanged)
+                {
+                    SendRequest(GetRestUrlEntry(RestUrlId.WRITE_MEMORY));
+                    Thread.Sleep(25000);
+                }
+            }
+            catch (Exception ex)
+            {
+                SendSwitchConnectionFailed(ex);
+            }
+        }
+
+        public void SetPerpetualOrFastPoe(string slot, RestUrlId cmd)
+        {
+            bool enable = cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_FAST_ENABLE;
+            string poeType = (cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
+            ProgressReport progressReport = new ProgressReport($"{(enable ? "Enable" : "Disable")} {poeType} PoE Report:")
+            {
+                Type = ReportType.Info
+            };
+            try
+            {
+                DateTime startTime = DateTime.Now;
+                GetLanPower();
+                ChassisSlotPort chassisSlotPort = new ChassisSlotPort($"{slot}/0");
+                string result = ChangePerpetualOrFastPoe(chassisSlotPort, cmd);
+                progressReport.Message += result;
+                //if (!string.IsNullOrEmpty(result)) Thread.Sleep(5000);
+                progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
+                _progress.Report(progressReport);
+                Logger.Info($"{result}\n{progressReport.Message}");
+            }
+            catch (Exception ex)
+            {
+                SendSwitchConnectionFailed(ex);
+            }
+        }
+
+        public void ChangePowerPriority(string port, PriorityLevelType priority)
+        {
+            ProgressReport progressReport = new ProgressReport($"Change priority Report:")
+            {
+                Type = ReportType.Info
+            };
+            try
+            {
+                DateTime startTime = DateTime.Now;
+                GetLanPower();
+                ChassisSlotPort chassisSlotPort = new ChassisSlotPort(port);
+                SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
+                progressReport.Message += $"\n - Priority on port {port} set to {priority}";
+                progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
+                _progress.Report(progressReport);
+                Logger.Info($"Changed priority to {priority} on port {port}\n{progressReport.Message}");
+            }
+            catch (Exception ex)
+            {
+                SendSwitchConnectionFailed(ex);
             }
         }
 
@@ -132,7 +212,6 @@ namespace PoEWizard.Comm
                     Logger.Info($"PoE Wizard completed on port {port}\n{_wizardProgressReport.Message}");
                     return false;
                 }
-                bool enablePPoe = false;
                 ChassisSlotPort chassisSlotPort = new ChassisSlotPort(port);
                 foreach (RestUrlId command in commands)
                 {
@@ -145,34 +224,33 @@ namespace PoEWizard.Comm
                             {
                                 SendRequest(GetRestUrlEntry(RestUrlId.POWER_4PAIR_PORT, new string[1] { port }));
                                 Thread.Sleep(3000);
-                                ExecuteActionOnPort($"Re-enabling 2-Pair Power on Port {port}", port, waitSec);
-                                enablePPoe = true;
-                                if (_wizardProgressReport.Type != ReportType.Error) break;
+                                ExecuteActionOnPort($"Re-enabling 2-Pair Power on Port {port}", port, waitSec, RestUrlId.POWER_2PAIR_PORT);
+                                if (_wizardProgressReport.Type != ReportType.Error)
+                                {
+                                    EnablePerpetualPoE(chassisSlotPort);
+                                    break;
+                                }
                             }
                             RestUrlId init4Pair = _wizardSwitchPort.Is4Pair ? RestUrlId.POWER_4PAIR_PORT : RestUrlId.POWER_2PAIR_PORT;
                             _wizardCommand = _wizardSwitchPort.Is4Pair ? RestUrlId.POWER_2PAIR_PORT : RestUrlId.POWER_4PAIR_PORT;
-                            ExecuteActionOnPort($"Enabling {(_wizardSwitchPort.Is4Pair ? "2-Pair" : "4-Pair")} Power on Port {port}", port, waitSec);
-                            TryRestartPortPower(port, waitSec, init4Pair);
-                            enablePPoe = (_wizardCommand == RestUrlId.POWER_2PAIR_PORT);
+                            ExecuteActionOnPort($"Enabling {(_wizardSwitchPort.Is4Pair ? "2-Pair" : "4-Pair")} Power on Port {port}", port, waitSec, init4Pair);
+                            if (_wizardCommand == RestUrlId.POWER_2PAIR_PORT && _wizardProgressReport.Type != ReportType.Error) EnablePerpetualPoE(chassisSlotPort);
                             break;
 
                         case RestUrlId.POWER_HDMI_ENABLE:
                             if (_wizardSwitchPort.Protocol8023bt == ConfigType.Unavailable) continue;
                             if (_wizardSwitchPort.IsPowerOverHdmi) continue;
-                            ExecuteActionOnPort($"Enabling Power HDMI on Port {port}", port, waitSec);
-                            TryRestartPortPower(port, waitSec, RestUrlId.POWER_HDMI_DISABLE);
+                            ExecuteActionOnPort($"Enabling Power HDMI on Port {port}", port, waitSec, RestUrlId.POWER_HDMI_DISABLE);
                             break;
 
                         case RestUrlId.LLDP_POWER_MDI_ENABLE:
                             if (_wizardSwitchPort.IsLldpMdi) continue;
-                            ExecuteActionOnPort($"Enabling LLDP Power via MDI on Port {port}", port, waitSec);
-                            TryRestartPortPower(port, waitSec, RestUrlId.LLDP_POWER_MDI_DISABLE);
+                            ExecuteActionOnPort($"Enabling LLDP Power via MDI on Port {port}", port, waitSec, RestUrlId.LLDP_POWER_MDI_DISABLE);
                             break;
 
                         case RestUrlId.LLDP_EXT_POWER_MDI_ENABLE:
                             if (_wizardSwitchPort.IsLldpExtMdi) continue;
-                            ExecuteActionOnPort($"Enabling LLDP Ext Power via MDI on Port {port}", port, waitSec);
-                            TryRestartPortPower(port, waitSec, RestUrlId.LLDP_EXT_POWER_MDI_DISABLE);
+                            ExecuteActionOnPort($"Enabling LLDP Ext Power via MDI on Port {port}", port, waitSec, RestUrlId.LLDP_EXT_POWER_MDI_DISABLE);
                             break;
 
                         case RestUrlId.CHECK_POWER_PRIORITY:
@@ -188,11 +266,13 @@ namespace PoEWizard.Comm
                             Enable823BT($"Enabling 802.3.bt on Slot {chassisSlotPort.ChassisNr}/{chassisSlotPort.SlotNr}", chassisSlotPort, waitSec);
                             break;
 
+                        case RestUrlId.RESET_POWER_PORT:
+                            _wizardProgressReport.Message += $"\n - Resetting Power on Port {port} ";
+                            ResetPortPower(port, waitSec);
+                            break;
                     }
                     if (_wizardProgressReport.Type != ReportType.Error)
                     {
-                        string result = ChangePerpetualFastPoe(chassisSlotPort, RestUrlId.POE_PERPETUAL_ENABLE);
-                        if (enablePPoe && !string.IsNullOrEmpty(result) && !result.Contains("already")) _wizardProgressReport.Message += result;
                         SwitchModel.ConfigChanged = true;
                         break;
                     }
@@ -206,6 +286,12 @@ namespace PoEWizard.Comm
                 SendSwitchConnectionFailed(ex);
             }
             return _wizardProgressReport.Type == ReportType.Error;
+        }
+
+        private void EnablePerpetualPoE(ChassisSlotPort chassisSlotPort)
+        {
+            string result = ChangePerpetualOrFastPoe(chassisSlotPort, RestUrlId.POE_PERPETUAL_ENABLE);
+            if (!string.IsNullOrEmpty(result) && !result.Contains("already")) _wizardProgressReport.Message += result;
         }
 
         private void SendSwitchConnectionFailed(Exception ex)
@@ -232,15 +318,16 @@ namespace PoEWizard.Comm
             _progress?.Report(new ProgressReport(ReportType.Error, "Connect", error));
         }
 
-        private void TryRestartPortPower(string port, int waitSec, RestUrlId command)
+        private void ResetPortPower(string port, int waitSec)
         {
             try
             {
-                if (_wizardProgressReport.Type == ReportType.Error)
-                {
-                    RestartPortPowerWait(port, waitSec);
-                    if (_wizardProgressReport.Type == ReportType.Error) SendRequest(GetRestUrlEntry(command, new string[1] { port }));
-                }
+                _progress.Report(new ProgressReport($"Resetting Power on Port {port}\nPoE status: {_wizardSwitchPort.Poe}, Port Status: {_wizardSwitchPort.Status}"));
+                SendRequest(GetRestUrlEntry(RestUrlId.POWER_DOWN_PORT, new string[1] { port }));
+                Thread.Sleep(5000);
+                SendRequest(GetRestUrlEntry(RestUrlId.POWER_UP_PORT, new string[1] { port }));
+                WaitPortUp(port, waitSec);
+                UpdateProgressReport();
             }
             catch (Exception ex)
             {
@@ -248,21 +335,11 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void RestartPortPowerWait(string port, int waitSec)
-        {
-            SendRequest(GetRestUrlEntry(RestUrlId.POWER_DOWN_PORT, new string[1] { port }));
-            Thread.Sleep(5000);
-            SendRequest(GetRestUrlEntry(RestUrlId.POWER_UP_PORT, new string[1] { port }));
-            _progress.Report(new ProgressReport($"Restarting Power on Port {port}\nPoE status: {_wizardSwitchPort.Poe}, Port Status: {_wizardSwitchPort.Status}"));
-            WaitPortUp(port, waitSec);
-        }
-
         private void GetLanPower()
         {
             List<Dictionary<string, string>> diclist;
             Dictionary<string, string> dict;
-
-            _progress.Report(new ProgressReport("Reading PoE information"));
+            _progress.Report(new ProgressReport($"Reading PoE information on Switch {SwitchModel.IpAddress} ..."));
             foreach (var chassis in SwitchModel.ChassisList)
             {
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
@@ -290,7 +367,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void ExecuteActionOnPort(string wizardAction, string port, int waitSec)
+        private void ExecuteActionOnPort(string wizardAction, string port, int waitSec, RestUrlId restoreCmd)
         {
             try
             {
@@ -303,6 +380,10 @@ namespace PoEWizard.Comm
                 Thread.Sleep(3000);
                 WaitPortUp(port, waitSec);
                 UpdateProgressReport();
+                if (_wizardProgressReport.Type == ReportType.Error && restoreCmd != _wizardCommand)
+                {
+                    SendRequest(GetRestUrlEntry(restoreCmd, new string[1] { port }));
+                }
             }
             catch (Exception ex)
             {
@@ -358,8 +439,9 @@ namespace PoEWizard.Comm
             PortModel switchPort = this.SwitchModel.GetPort(port);
             if (switchPort == null) return false;
             double powerRemaining = slot.Budget - slot.Power;
-            txt = new StringBuilder("(Remaining Power = ").Append(powerRemaining).Append(", Max. Power = ").Append(switchPort.MaxPower);
-            if (powerRemaining < switchPort.MaxPower)
+            double maxPower = switchPort.MaxPower / 1000;
+            txt = new StringBuilder("(Remaining Power = ").Append(powerRemaining).Append(" W, Max. Power = ").Append(maxPower).Append(" W)");
+            if (powerRemaining >= maxPower)
             {
                 _wizardProgressReport.Message += $"\n - No need to change priority {txt}";
                 return false;
@@ -375,20 +457,16 @@ namespace PoEWizard.Comm
         {
             try
             {
+                DateTime startTime = DateTime.Now;
                 StringBuilder txt = new StringBuilder(wizardAction).Append("\nPoE status: ");
                 txt.Append(_wizardSwitchPort.Poe).Append(", Port Status: ").Append(_wizardSwitchPort.Status);
                 _progress.Report(new ProgressReport(txt.ToString()));
                 _wizardProgressReport.Message += $"\n - {wizardAction} ";
-                SendRequest(GetRestUrlEntry(RestUrlId.POWER_DOWN_PORT, new string[1] { port }));
                 PriorityLevelType priority = PriorityLevelType.High;
                 SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
-                SetPoePriority(port, priority);
-                Thread.Sleep(5000);
-                SendRequest(GetRestUrlEntry(RestUrlId.POWER_UP_PORT, new string[1] { port }));
-                Thread.Sleep(3000);
-                _wizardProgressReport.Message += $"to {priority} ";
-                WaitPortUp(port, waitSec);
-                UpdateProgressReport();
+                ResetPortPower(port, waitSec);
+                _wizardProgressReport.Message += $"\n - Priority on port {port} set to {priority}";
+                _wizardProgressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
             }
             catch (Exception ex)
             {
@@ -465,56 +543,7 @@ namespace PoEWizard.Comm
             PowerDevice(RestUrlId.POWER_UP_PORT, port);
         }
 
-        public void SetPerpetualFastPoe(string slot, RestUrlId cmd)
-        {
-            bool enable = cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_FAST_ENABLE;
-            string poeType = (cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
-            ProgressReport progressReport = new ProgressReport($"{(enable ? "Enable" : "Disable")} {poeType} PoE Report:")
-            {
-                Type = ReportType.Info
-            };
-            try
-            {
-                DateTime startTime = DateTime.Now;
-                GetLanPower();
-                ChassisSlotPort chassisSlotPort = new ChassisSlotPort($"{slot}/0");
-                string result = ChangePerpetualFastPoe(chassisSlotPort, cmd);
-                progressReport.Message += result;
-                //if (!string.IsNullOrEmpty(result)) Thread.Sleep(5000);
-                progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
-                _progress.Report(progressReport);
-                Logger.Info($"{result}\n{progressReport.Message}");
-            }
-            catch (Exception ex)
-            {
-                SendSwitchConnectionFailed(ex);
-            }
-        }
-
-        public void ChangePowerPriority(string port, PriorityLevelType priority)
-        {
-            ProgressReport progressReport = new ProgressReport($"Change priority Report:")
-            {
-                Type = ReportType.Info
-            };
-            try
-            {
-                DateTime startTime = DateTime.Now;
-                GetLanPower();
-                ChassisSlotPort chassisSlotPort = new ChassisSlotPort(port);
-                SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
-                progressReport.Message += $"\n - Priority on port {port} set to {priority}";
-                progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
-                _progress.Report(progressReport);
-                Logger.Info($"Change priority on port {port}\n{progressReport.Message}");
-            }
-            catch (Exception ex)
-            {
-                SendSwitchConnectionFailed(ex);
-            }
-        }
-
-        private string ChangePerpetualFastPoe(ChassisSlotPort chassisSlotPort, RestUrlId cmd)
+        private string ChangePerpetualOrFastPoe(ChassisSlotPort chassisSlotPort, RestUrlId cmd)
         {
             ChassisModel chassis = SwitchModel.GetChassis(chassisSlotPort.ChassisNr);
             if (chassis == null) return "";

@@ -67,7 +67,8 @@ namespace PoEWizard.Data
             WRITE_MEMORY = 70,
             SHOW_CONFIGURATION = 71,
             // 100 - 119: Virtual commands
-            CHECK_POWER_PRIORITY = 100
+            CHECK_POWER_PRIORITY = 100,
+            RESET_POWER_PORT = 101
         }
 
         public static Dictionary<RestUrlId, string> REST_URL_TABLE = new Dictionary<RestUrlId, string>

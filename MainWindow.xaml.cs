@@ -255,7 +255,7 @@ namespace PoEWizard
             {
                 CheckBox cb = sender as CheckBox;
                 if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
-                if (cb.IsChecked == true) await SetPerpetualFastPoe(RestUrlId.POE_FAST_ENABLE); else await SetPerpetualFastPoe(RestUrlId.POE_FAST_DISABLE);
+                if (cb.IsChecked == true) await SetPerpetualOrFastPoe(RestUrlId.POE_FAST_ENABLE); else await SetPerpetualOrFastPoe(RestUrlId.POE_FAST_DISABLE);
             }
             catch (Exception ex)
             {
@@ -274,7 +274,7 @@ namespace PoEWizard
             {
                 CheckBox cb = sender as CheckBox;
                 if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
-                if (cb.IsChecked == true) await SetPerpetualFastPoe(RestUrlId.POE_PERPETUAL_ENABLE); else await SetPerpetualFastPoe(RestUrlId.POE_PERPETUAL_DISABLE);
+                if (cb.IsChecked == true) await SetPerpetualOrFastPoe(RestUrlId.POE_PERPETUAL_ENABLE); else await SetPerpetualOrFastPoe(RestUrlId.POE_PERPETUAL_DISABLE);
             }
             catch (Exception ex)
             {
@@ -287,13 +287,13 @@ namespace PoEWizard
             }
         }
 
-        private async Task SetPerpetualFastPoe(RestUrlId cmd)
+        private async Task SetPerpetualOrFastPoe(RestUrlId cmd)
         {
             string action = cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_FAST_ENABLE ? "Enabling" : "Disabling";
             string poeType = (cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
             ShowProgress($"{action} {poeType} PoE on slot {selectedSlot}...");
             restApiService = new RestApiService(device, progress);
-            await Task.Run(() => restApiService.SetPerpetualFastPoe(selectedSlot, cmd));
+            await Task.Run(() => restApiService.SetPerpetualOrFastPoe(selectedSlot, cmd));
             Logger.Info($"{action} {poeType} PoE on slot {selectedSlot} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             await WaitAckProgress();
         }
@@ -385,6 +385,9 @@ namespace PoEWizard
             bool proceed = await Enable823BT();
             await WaitAckProgress();
             if (!proceed) return;
+            proceed = await ResetPortPower();
+            await WaitAckProgress();
+            if (!proceed) return;
             proceed = await EnableHdmiMdi();
             await WaitAckProgress();
             if (!proceed) return;
@@ -398,6 +401,9 @@ namespace PoEWizard
             await WaitAckProgress();
             if (!proceed) return;
             proceed = await ChangePriority();
+            await WaitAckProgress();
+            if (!proceed) return;
+            proceed = await ResetPortPower();
             await WaitAckProgress();
             if (!proceed) return;
             proceed = await EnableHdmiMdi();
@@ -415,6 +421,9 @@ namespace PoEWizard
             proceed = await ChangePriority();
             await WaitAckProgress();
             if (!proceed) return;
+            proceed = await ResetPortPower();
+            await WaitAckProgress();
+            if (!proceed) return;
             proceed = await EnableHdmiMdi();
             await WaitAckProgress();
         }
@@ -430,6 +439,9 @@ namespace PoEWizard
             proceed = await EnableHdmiMdi();
             await WaitAckProgress();
             if (!proceed) return;
+            proceed = await ResetPortPower();
+            await WaitAckProgress();
+            if (!proceed) return;
             proceed = await Enable2PairPower();
             await WaitAckProgress();
         }
@@ -439,34 +451,41 @@ namespace PoEWizard
             bool proceed = ShowMessageBox("Enable 802.3.bt", "All devices on the same slot will restart. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
             if (!proceed) return true;
             proceed = await RunPoeWizard(new List<RestUrlId>() { RestUrlId.POWER_823BT_ENABLE }, 15);
-            Logger.Info($"PoE Wizard 2nd Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            Logger.Info($"Enable 802.3.bt on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             return proceed;
         }
 
         private async Task<bool> Enable2PairPower()
         {
             bool proceed = await RunPoeWizard(new List<RestUrlId>() { RestUrlId.POWER_2PAIR_PORT }, 15);
-            Logger.Info($"PoE Wizard 1st Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            Logger.Info($"Enable 2-Pair Power on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             return proceed;
         }
 
         private async Task<bool> ChangePriority()
         {
             bool proceed = await RunPoeWizard(new List<RestUrlId>() { RestUrlId.CHECK_POWER_PRIORITY }, 15);
-            Logger.Info($"PoE Wizard Check Power Priority completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            Logger.Info($"PoE Wizard Check Power Priority on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             await WaitAckProgress();
             if (!proceed) return true;
             proceed = ShowMessageBox("Power Priority Change", "Some other devices with lower priority may stop. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
             if (!proceed) return false;
             proceed = await RunPoeWizard(new List<RestUrlId>() { RestUrlId.POWER_PRIORITY_PORT }, 15);
-            Logger.Info($"PoE Wizard 3rd Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            Logger.Info($"Change Power Priority on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             return proceed;
         }
 
         private async Task<bool> EnableHdmiMdi()
         {
             bool proceed = await RunPoeWizard(new List<RestUrlId>() { RestUrlId.POWER_HDMI_ENABLE, RestUrlId.LLDP_POWER_MDI_ENABLE, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE }, 15);
-            Logger.Info($"PoE Wizard 1st Step completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            Logger.Info($"Enable Power over HDMI on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            return proceed;
+        }
+
+        private async Task<bool> ResetPortPower()
+        {
+            bool proceed = await RunPoeWizard(new List<RestUrlId>() { RestUrlId.RESET_POWER_PORT }, 15);
+            Logger.Info($"Reset Power on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             return proceed;
         }
 
