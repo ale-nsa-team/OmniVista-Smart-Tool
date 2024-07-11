@@ -1,0 +1,41 @@
+﻿<Window x:Class="PoEWizard.Components.DeviceSelection"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PoEWizard.Components"
+        mc:Ignorable="d"
+        Title="Login" Height="200" Width="220" WindowStyle="None" ShowInTaskbar="False">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
+                <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Style="{DynamicResource popupWindow}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <TextBlock x:Name ="_header" Grid.Row="0" 
+                HorizontalAlignment="Center"
+                TextWrapping="Wrap"
+                Style="{DynamicResource popupTitle}" />
+        <ComboBox x:Name="_devType" Grid.Row="1" 
+                Width="120" Height="20"
+                Style="{DynamicResource defaultCombo}"
+                ItemsSource="{Binding DeviceTypes}"
+                SelectedItem="{Binding Device}"
+                IsSynchronizedWithCurrentItem="True"
+                SelectionChanged="DeviceSelection_Changed"/>
+        <Border Grid.Row="2" Style="{DynamicResource propsBorder}">
+            <StackPanel Orientation="Horizontal">
+                <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="2,0,0,0">OK</Button>
+                <Button Click="BtnCancel_Click" Style="{DynamicResource defaultButton}" Margin="20,0,0,0">Cancel</Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
