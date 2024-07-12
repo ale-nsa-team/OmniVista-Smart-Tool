@@ -116,9 +116,29 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void RebootSwitch()
+        public void RebootSwitch(int waitSec)
         {
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.REBOOT_SWITCH));
+            try
+            {
+                SendRequest(GetRestUrlEntry(RestUrlId.REBOOT_SWITCH));
+                if (waitSec <= 0) return;
+                DateTime startTime = DateTime.Now;
+                while (Utils.GetTimeDuration(startTime) <= waitSec)
+                {
+                    Thread.Sleep(5000);
+                    if (Utils.IsReachable(SwitchModel.IpAddress)) continue;
+                    try
+                    {
+                        RestApiClient.Login();
+                        if (RestApiClient.IsConnected()) break;
+                    }
+                    catch { }
+                }
+            }
+            catch (Exception ex)
+            {
+                SendSwitchConnectionFailed(ex);
+            }
         }
 
         public void WriteMemory()

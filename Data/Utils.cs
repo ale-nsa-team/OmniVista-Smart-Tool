@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -230,6 +231,19 @@ namespace PoEWizard.Data
             return inputStr.Substring(startPos, length);
         }
 
+        public static bool IsValidIP(string ipAddr)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(ipAddr))
+                {
+                    return Regex.IsMatch(ipAddr, "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+                }
+            }
+            catch { }
+            return false;
+        }
+
         public static bool IsValidMacAddress(string mac)
         {
             try
@@ -243,7 +257,31 @@ namespace PoEWizard.Data
             return false;
         }
 
-    }
+        public static bool IsReachable(string ipAddress)
+        {
+            if (!IsValidIP(ipAddress)) return false;
+            Ping pinger = null;
+            try
+            {
+                pinger = new Ping();
+                int success = 0;
+                for (int i = 0; i < 5; i++)
+                {
+                    PingReply reply = pinger.Send(ipAddress, 1000);
+                    if (reply.Status == IPStatus.Success) success++;
+                }
+                if (success >= 4) return true;
+            }
+            catch
+            {
+            }
+            finally
+            {
+                if (pinger != null) pinger.Dispose();
+            }
+            return false;
+        }
 
+    }
 }
 
