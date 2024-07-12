@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:PoEWizard"
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
+        Closing="OnWindowClosing"
         Title="PoE Wizard" Height="800" Width="800" Icon="/wiz.ico">
     <Window.Resources>
         <ResourceDictionary>

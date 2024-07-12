@@ -4,6 +4,7 @@ using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -96,6 +97,14 @@ namespace PoEWizard
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
             SetTitleColor();
+        }
+
+        private async void OnWindowClosing(object sender, CancelEventArgs e)
+        {
+            e.Cancel = true;
+            await CloseRestApiService();
+            this.Closing -= OnWindowClosing;
+            this.Close();
         }
 
         #endregion constructor and initialization
@@ -313,9 +322,8 @@ namespace PoEWizard
             await WaitAckProgress();
         }
 
-        private async void Exit_Click(object sender, RoutedEventArgs e)
+        private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            await CloseRestApiService();
             this.Close();
         }
         #endregion event handlers

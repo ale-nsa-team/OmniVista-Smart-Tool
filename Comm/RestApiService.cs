@@ -93,8 +93,6 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
                 SwitchModel.LoadFromList(diclist, DictionaryType.MacAddressList);
-
-                SwitchModel.RunningDir = CERTIFIED_DIR;
             }
             catch (Exception ex)
             {
