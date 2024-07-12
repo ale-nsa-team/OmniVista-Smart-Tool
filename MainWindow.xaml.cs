@@ -38,7 +38,7 @@ namespace PoEWizard
         private SwitchModel device;
         private SlotView slotView;
         private string selectedPort;
-        private string selectedSlot;
+        private SlotModel selectedSlot;
         private ProgressReportResult reportResult = new ProgressReportResult();
         #endregion
         #region public variables
@@ -238,7 +238,7 @@ namespace PoEWizard
         {
             if (_slotsView.SelectedItem is SlotModel slot)
             {
-                selectedSlot = slot.Name;
+                selectedSlot = slot;
                 _portList.ItemsSource = slot.Ports;
             }
 
@@ -306,10 +306,10 @@ namespace PoEWizard
         {
             string action = cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_FAST_ENABLE ? "Enabling" : "Disabling";
             string poeType = (cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
-            ShowProgress($"{action} {poeType} PoE on slot {selectedSlot}...");
+            ShowProgress($"{action} {poeType} PoE on slot {selectedSlot.Name}...");
             restApiService = new RestApiService(device, progress);
-            await Task.Run(() => restApiService.SetPerpetualOrFastPoe(selectedSlot, cmd));
-            Logger.Info($"{action} {poeType} PoE on slot {selectedSlot} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            await Task.Run(() => restApiService.SetPerpetualOrFastPoe(selectedSlot.Name, cmd));
+            Logger.Info($"{action} {poeType} PoE on slot {selectedSlot.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             await WaitAckProgress();
         }
 
@@ -346,7 +346,7 @@ namespace PoEWizard
                 if (device.IsConnected)
                 {
                     Logger.Info($"Connected to switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                    SetConnectedState();
+                    SetConnectedState(true);
                 }
                 else
                 {
@@ -408,7 +408,11 @@ namespace PoEWizard
                 wizardProgressReport.Message = reportResult.Message;
                 progress.Report(wizardProgressReport);
                 await WaitAckProgress();
-                RefreshSwitch();
+                _slotsView.ItemsSource = null;
+                _portList.ItemsSource = null;
+                selectedSlot = device.GetSlot(selectedSlot.Name);
+                _slotsView.ItemsSource = device.GetChassis(selectedSlot.Name)?.Slots ?? new List<SlotModel>();
+                _portList.ItemsSource = selectedSlot?.Ports ?? new List<PortModel>();
             }
             catch (Exception ex)
             {
@@ -427,7 +431,7 @@ namespace PoEWizard
                 if (device.IsConnected)
                 {
                     Logger.Info($"Connected to switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                    SetConnectedState();
+                    SetConnectedState(false);
                 }
                 else
                 {
@@ -589,10 +593,10 @@ namespace PoEWizard
             _infoBox.Visibility = Visibility.Collapsed;
         }
 
-        private async void SetConnectedState()
+        private void SetConnectedState(bool checkCertified)
         {
             DataContext = device;
-            if (device.RunningDir == CERTIFIED_DIR)
+            if (device.RunningDir == CERTIFIED_DIR && checkCertified)
             {
                 HideInfoBox();
                 string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be applied\n" +

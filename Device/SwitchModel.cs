@@ -158,6 +158,17 @@ namespace PoEWizard.Device
             return ChassisList.FirstOrDefault(c => c.Number == chassisNumber);
         }
 
+        public ChassisModel GetChassis(string slotName)
+        {
+            return ChassisList.FirstOrDefault(c => c.Number == ParseId(slotName, 0));
+        }
+
+        public SlotModel GetSlot(string slotName)
+        {
+            ChassisModel cm = GetChassis(slotName);
+            return cm?.Slots.FirstOrDefault(s => s.Name == slotName);
+        }
+
         private PowerSupplyState GetPowerSupplyState()
         {
             if (ChassisList != null && ChassisList.Count > 0)
