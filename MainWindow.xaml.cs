@@ -378,11 +378,11 @@ namespace PoEWizard
                         await RunWizardOther();
                         break;
                 }
-                RefreshPortsList();
                 wizardProgressReport.Type = reportResult.Proceed ? ReportType.Error : ReportType.Info;
                 wizardProgressReport.Message = reportResult.Message;
                 progress.Report(wizardProgressReport);
                 await WaitAckProgress();
+                RefreshSwitch();
             }
             catch (Exception ex)
             {
@@ -395,13 +395,47 @@ namespace PoEWizard
             }
         }
 
-        private void RefreshPortsList()
+        private async void RefreshSwitch()
         {
-            device = restApiService.SwitchModel;
-            foreach (SlotModel slot in _slotsView.Items)
+
+            try
             {
-                _portList.ItemsSource = slot.Ports;
+                restApiService = new RestApiService(device, progress);
+                await Task.Run(() => restApiService.Connect());
+                if (device.IsConnected)
+                {
+                    Logger.Info($"Connected to switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                    SetConnectedState();
+                }
+                else
+                {
+                    Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
+                    SetDisconnectedState();
+                }
             }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+            }
+            HideProgress();
+            HideInfoBox();
+        }
+
+        private void RefreshSlotView()
+        {
+            // Unbind _slotsView
+            _slotsView.Visibility = Visibility.Hidden;
+            _portList.Visibility = Visibility.Hidden;
+            // Bind _slotsView
+            slotView = new SlotView(device);
+            _slotsView.ItemsSource = slotView.Slots;
+            _slotsView.SelectedIndex = 0;
+            if (slotView.Slots.Count == 1) //do not highlight if only one row
+            {
+                _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
+            }
+            _slotsView.Visibility = Visibility.Visible;
+            _portList.Visibility = Visibility.Visible;
         }
 
         private async Task RunWizardCamera()
