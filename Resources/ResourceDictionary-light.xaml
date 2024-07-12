@@ -327,7 +327,7 @@
 
     <Style TargetType="Border" x:Key="infoBorder">
         <Setter Property="Height" Value="100"/>
-        <Setter Property="Width" Value="300"/>
+        <Setter Property="Width" Value="400"/>
         <Setter Property="BorderBrush" Value="{StaticResource borderColor}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Margin" Value="0,10,0,0" />

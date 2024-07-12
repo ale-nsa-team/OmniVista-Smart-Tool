@@ -62,6 +62,7 @@ namespace PoEWizard
             string title = assembly.GetCustomAttribute<AssemblyTitleAttribute>().Title;
             string ale = assembly.GetCustomAttribute<AssemblyCompanyAttribute>().Company;
             appVersion = title + " (V." + string.Join(".", version.Split('.').ToList().Take(2)) + ")";
+            this.Title += $" (V {string.Join(".", version.Split('.').ToList().Take(2))})";
             //datapath
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             dataPath = Path.Combine(appData, ale, title);
