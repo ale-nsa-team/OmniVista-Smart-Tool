@@ -32,7 +32,6 @@
                 <Separator/>
                 <MenuItem Header="Exit" Click="Exit_Click"/>
             </MenuItem>
-            <MenuItem Header="Refresh" x:Name="_refreshSwitch" IsEnabled="False" Click="RefreshSwitch_Click"/>
             <MenuItem Header="View">
                 <MenuItem Header="Activity" Click="ViewActivity_Click"/>
                 <MenuItem Header="Log">
@@ -205,13 +204,20 @@
         </Border>
         <Border Grid.Row="4" x:Name="_buttonArea" Style="{DynamicResource gridBorder}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button x:Name="_btnRunWiz" Style="{DynamicResource defaultButton}"
+                <Button x:Name="_btnRunWiz" Style="{DynamicResource largeButton}"
                         IsEnabled="False"
-                        Height="28" Margin="10" Width="100"
-                        Padding="0" Click="RunWiz_Click">
+                        Click="RunWiz_Click">
                     <StackPanel Orientation="Horizontal">
                         <Label Style="{DynamicResource valLabel}">Run Wizard</Label>
                         <Image Source="Resources/wand.png" Height="16" Width="16"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="_refreshSwitch" Style="{DynamicResource largeButton}" 
+                        IsEnabled="False" 
+                        Click="RefreshSwitch_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{DynamicResource valLabel}">Refresh</Label>
+                        <Image Source="{DynamicResource refresh}" Height="16" Width="16" />
                     </StackPanel>
                 </Button>
             </StackPanel>

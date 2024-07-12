@@ -254,5 +254,11 @@
   <ItemGroup>
     <Resource Include="Resources\error.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\refresh-dark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\refresh-light.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
