@@ -116,6 +116,11 @@ namespace PoEWizard.Comm
             }
         }
 
+        public void RebootSwitch()
+        {
+            this._response = SendRequest(GetRestUrlEntry(RestUrlId.REBOOT_SWITCH));
+        }
+
         public void WriteMemory()
         {
             try

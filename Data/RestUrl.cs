@@ -66,6 +66,7 @@ namespace PoEWizard.Data
             // 70 - 99: Special switch commands
             WRITE_MEMORY = 70,
             SHOW_CONFIGURATION = 71,
+            REBOOT_SWITCH = 72,
             // 100 - 119: Virtual commands
             CHECK_POWER_PRIORITY = 100,
             RESET_POWER_PORT = 101
@@ -115,7 +116,8 @@ namespace PoEWizard.Data
             [RestUrlId.POE_PERPETUAL_DISABLE] = $"lanpower slot {DATA_0} ppoe disable",         // 52
             // 70 - 99: Special switch commands
             [RestUrlId.WRITE_MEMORY] = "write memory flash-synchro",                            // 70
-            [RestUrlId.SHOW_CONFIGURATION] = "show configuration snapshot"                      // 71
+            [RestUrlId.SHOW_CONFIGURATION] = "show configuration snapshot",                     // 71
+            [RestUrlId.REBOOT_SWITCH] = "reload from working no rollback-timeout"               // 72
         };
 
         public static string ParseUrl(RestUrlEntry entry)
@@ -146,6 +148,7 @@ namespace PoEWizard.Data
                     // 70 - 99: Special switch commands
                     case RestUrlId.WRITE_MEMORY:                // 70
                     case RestUrlId.SHOW_CONFIGURATION:          // 71
+                    case RestUrlId.REBOOT_SWITCH:               // 72
                         return url;
 
                     // 0 - 19: Basic commands to gather switch data
