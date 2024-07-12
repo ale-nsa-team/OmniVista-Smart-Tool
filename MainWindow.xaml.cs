@@ -591,13 +591,11 @@ namespace PoEWizard
         private void SetConnectedState()
         {
             DataContext = device;
-            bool isReadOnly = false;
             if (device.RunningDir == CERTIFIED_DIR)
             {
                 string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be applied\n" +
                     $"Do you want to reboot the switch on {WORKING_DIR} directory?";
                 bool res = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
-                isReadOnly = !res;
                 if (res)
                 {
 
@@ -619,7 +617,6 @@ namespace PoEWizard
             }
             _slotsView.Visibility = Visibility.Visible;
             _portList.Visibility = Visibility.Visible;
-            _btnRunWiz.IsEnabled = !isReadOnly;
         }
 
         private void SetDisconnectedState()
