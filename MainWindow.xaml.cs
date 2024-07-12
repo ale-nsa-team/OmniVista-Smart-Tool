@@ -331,7 +331,7 @@ namespace PoEWizard
         #region private methods
         private void SetTitleColor()
         {
-            IntPtr handle = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+            IntPtr handle = new WindowInteropHelper(this).Handle;
             int bckgndColor = theme == ThemeType.Dark ? 0x333333 : 0xFFFFFF;
             int textColor = theme == ThemeType.Dark ? 0xFFFFFF : 0x000000;
             DwmSetWindowAttribute(handle, 35, ref bckgndColor, Marshal.SizeOf(bckgndColor));
@@ -614,6 +614,7 @@ namespace PoEWizard
                 {
                     await RebootSwitch(600);
                     SetDisconnectedState();
+                    return;
                 }
             }
             _comImg.Source = (ImageSource)currentDict["connected"];
