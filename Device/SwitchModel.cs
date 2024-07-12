@@ -58,7 +58,8 @@ namespace PoEWizard.Device
                     UpTime = dict.TryGetValue(UP_TIME, out s) ? s : "";
                     break;
                 case DictionaryType.RunningDir:
-                    RunningDir = dict.TryGetValue(RUNNING_CONFIGURATION, out s) ? s : "";
+                    string dir = dict.TryGetValue(RUNNING_CONFIGURATION, out s) ? s : "";
+                    RunningDir = Utils.FirstChToUpper(dir);
                     SyncStatus = dict.TryGetValue(SYNCHRONIZATION_STATUS, out s) ? s : "";
                     break;
                 case DictionaryType.MicroCode:

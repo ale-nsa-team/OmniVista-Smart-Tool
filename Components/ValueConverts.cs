@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -36,6 +37,7 @@ namespace PoEWizard.Components
             if (value == null) return DependencyProperty.UnsetValue;
             var red = new BrushConverter().ConvertFrom("#f00736");
             var green = MainWindow.theme == Data.Constants.ThemeType.Dark ? Brushes.Lime : Brushes.Green;
+            var def = MainWindow.theme == Data.Constants.ThemeType.Dark ? Brushes.White : Brushes.Black;
             string param = parameter.ToString();
             switch (param)
             {
@@ -73,6 +75,8 @@ namespace PoEWizard.Components
                     return (value as List<string>)?.Count == 0 ? Brushes.White : red;
                 case "PowerSupply":
                     return value.ToString() == "Up" ? green : red;
+                case "RunningDir":
+                    return value.ToString() == Data.Constants.CERTIFIED_DIR ? red : def;
                 case "Boolean":
                     return value.ToString().ToLower() == "true" ? green : red;
                 default:

@@ -45,6 +45,8 @@ namespace PoEWizard.Data
         public const string FLASH_SYNCHRO = " flash-synchro";
         public const string MODEL_NAME = "Model Name";
         public const string SERIAL_NUMBER = "Serial Number";
+        public const string WORKING_DIR = "Working";
+        public const string CERTIFIED_DIR = "Certified";
         // Used by "Utils" class
         public const string P_CHASSIS = "CHASSIS_ID";
         public const string P_SLOT = "SLOT_ID";
