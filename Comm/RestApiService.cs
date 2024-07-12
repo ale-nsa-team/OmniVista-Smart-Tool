@@ -627,6 +627,10 @@ namespace PoEWizard.Comm
 
         public void Close()
         {
+            if (SwitchModel.ConfigChanged)
+            {
+                WriteMemory();
+            }
             Logger.Debug($"Closing Rest API");
         }
 
