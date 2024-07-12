@@ -312,8 +312,9 @@ namespace PoEWizard
             await WaitAckProgress();
         }
 
-        private void Exit_Click(object sender, RoutedEventArgs e)
+        private async void Exit_Click(object sender, RoutedEventArgs e)
         {
+            await CloseRestApiService();
             this.Close();
         }
         #endregion event handlers
@@ -335,7 +336,7 @@ namespace PoEWizard
                 restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
-                    await Task.Run(() => restApiService.Close());
+                    await CloseRestApiService();
                     SetDisconnectedState();
                     return;
                 }
@@ -350,6 +351,23 @@ namespace PoEWizard
                 {
                     Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
                     SetDisconnectedState();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+            }
+            HideProgress();
+            HideInfoBox();
+        }
+
+        private async Task CloseRestApiService()
+        {
+            try
+            {
+                if (restApiService != null)
+                {
+                    await Task.Run(() => restApiService.Close());
                 }
             }
             catch (Exception ex)
@@ -395,11 +413,8 @@ namespace PoEWizard
             {
                 Logger.Error(ex.Message + ":\n" + ex.StackTrace);
             }
-            finally
-            {
-                HideProgress();
-                HideInfoBox();
-            }
+            HideProgress();
+            HideInfoBox();
         }
 
         private async void RefreshSwitch()
