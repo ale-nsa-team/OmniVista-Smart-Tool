@@ -93,8 +93,6 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
                 SwitchModel.LoadFromList(diclist, DictionaryType.MacAddressList);
-
-                SwitchModel.RunningDir = CERTIFIED_DIR;
             }
             catch (Exception ex)
             {
@@ -129,7 +127,7 @@ namespace PoEWizard.Comm
                 SendRequest(GetRestUrlEntry(RestUrlId.REBOOT_SWITCH));
                 if (waitSec <= 0) return "";
                 _progress.Report(new ProgressReport($"Waiting Switch {SwitchModel.IpAddress} reboot..."));
-                Thread.Sleep(10000);
+                Thread.Sleep(55000);
                 while (Utils.GetTimeDuration(startTime) <= waitSec)
                 {
                     Thread.Sleep(5000);
@@ -141,7 +139,6 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                 }
-                string duration = Utils.CalcStringDuration(startTime);
             }
             catch (Exception ex)
             {
