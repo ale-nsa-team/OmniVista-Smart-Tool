@@ -599,7 +599,7 @@ namespace PoEWizard
             if (device.RunningDir == CERTIFIED_DIR && checkCertified)
             {
                 HideInfoBox();
-                string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be applied\n" +
+                string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be saved.\n" +
                     $"Do you want to reboot the switch on {WORKING_DIR} directory?";
                 bool res = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                 if (res)
