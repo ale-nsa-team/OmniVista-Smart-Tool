@@ -32,6 +32,7 @@
                 <Separator/>
                 <MenuItem Header="Exit" Click="Exit_Click"/>
             </MenuItem>
+            <MenuItem Header="Refresh" x:Name="_refreshSwitch" IsEnabled="False" Click="RefreshSwitch_Click"/>
             <MenuItem Header="View">
                 <MenuItem Header="Activity" Click="ViewActivity_Click"/>
                 <MenuItem Header="Log">

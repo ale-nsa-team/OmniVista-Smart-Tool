@@ -169,6 +169,11 @@ namespace PoEWizard
             }
         }
 
+        private void RefreshSwitch_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshSwitch();
+        }
+
         private void Help_Click(object sender, RoutedEventArgs e)
         {
 
@@ -397,11 +402,10 @@ namespace PoEWizard
 
         private async void RefreshSwitch()
         {
-
             try
             {
                 restApiService = new RestApiService(device, progress);
-                await Task.Run(() => restApiService.Connect());
+                await Task.Run(() => restApiService.ScanSwitch());
                 if (device.IsConnected)
                 {
                     Logger.Info($"Connected to switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
@@ -419,23 +423,6 @@ namespace PoEWizard
             }
             HideProgress();
             HideInfoBox();
-        }
-
-        private void RefreshSlotView()
-        {
-            // Unbind _slotsView
-            _slotsView.Visibility = Visibility.Hidden;
-            _portList.Visibility = Visibility.Hidden;
-            // Bind _slotsView
-            slotView = new SlotView(device);
-            _slotsView.ItemsSource = slotView.Slots;
-            _slotsView.SelectedIndex = 0;
-            if (slotView.Slots.Count == 1) //do not highlight if only one row
-            {
-                _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
-            }
-            _slotsView.Visibility = Visibility.Visible;
-            _portList.Visibility = Visibility.Visible;
         }
 
         private async Task RunWizardCamera()
@@ -517,11 +504,6 @@ namespace PoEWizard
             HideInfoBox();
         }
 
-        private async void RunScanSwitch()
-        {
-            await Task.Run(() => restApiService.ScanSwitch());
-        }
-
         private async Task EnableHdmiMdi()
         {
             await RunPoeWizard(new List<RestUrlId>() { RestUrlId.POWER_HDMI_ENABLE, RestUrlId.LLDP_POWER_MDI_ENABLE, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE }, 15);
@@ -597,6 +579,7 @@ namespace PoEWizard
             _btnConnect.Cursor = Cursors.Hand;
             _switchMenuItem.IsEnabled = false;
             _snapshotMenuItem.IsEnabled = true;
+            _refreshSwitch.IsEnabled = true;
             _disconnectMenuItem.Visibility = Visibility.Visible;
             slotView = new SlotView(device);
             _slotsView.ItemsSource = slotView.Slots;
@@ -621,6 +604,7 @@ namespace PoEWizard
             restApiService = null;
             _switchMenuItem.IsEnabled = true;
             _snapshotMenuItem.IsEnabled = false;
+            _refreshSwitch.IsEnabled = false;
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
             _slotsView.Visibility= Visibility.Hidden;
             _portList.Visibility= Visibility.Hidden;

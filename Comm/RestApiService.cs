@@ -47,6 +47,13 @@ namespace PoEWizard.Comm
                 RestApiClient.Login();
                 if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to Switch {SwitchModel.IpAddress}!");
                 SwitchModel.IsConnected = true;
+                _progress.Report(new ProgressReport($"Reading System information on Switch {SwitchModel.IpAddress}"));
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
+                Dictionary<string, string> dict = CliParseUtils.ParseVTable(_response[RESULT]);
+                SwitchModel.LoadFromDictionary(dict, DictionaryType.System);
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MICROCODE));
+                List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response[RESULT]);
+                SwitchModel.LoadFromDictionary(diclist[0], DictionaryType.MicroCode);
                 ScanSwitch();
             }
             catch (Exception ex)
@@ -59,15 +66,9 @@ namespace PoEWizard.Comm
         {
             try
             {
+                _progress.Report(new ProgressReport($"Scanning switch {SwitchModel.IpAddress}"));
                 List<Dictionary<string, string>> diclist;
                 Dictionary<string, string> dict;
-                _progress.Report(new ProgressReport($"Reading System information on Switch {SwitchModel.IpAddress}"));
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
-                dict = CliParseUtils.ParseVTable(_response[RESULT]);
-                SwitchModel.LoadFromDictionary(dict, DictionaryType.System);
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MICROCODE));
-                diclist = CliParseUtils.ParseHTable(_response[RESULT]);
-                SwitchModel.LoadFromDictionary(diclist[0], DictionaryType.MicroCode);
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_RUNNING_DIR));
                 dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.RunningDir);
