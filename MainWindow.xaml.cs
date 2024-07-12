@@ -383,6 +383,7 @@ namespace PoEWizard
                         await RunWizardOther();
                         break;
                 }
+                wizardProgressReport.Title = "PoE Wizard Report:";
                 wizardProgressReport.Type = reportResult.Proceed ? ReportType.Error : ReportType.Info;
                 wizardProgressReport.Message = reportResult.Message;
                 progress.Report(wizardProgressReport);
