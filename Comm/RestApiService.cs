@@ -93,6 +93,8 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
                 SwitchModel.LoadFromList(diclist, DictionaryType.MacAddressList);
+
+                SwitchModel.RunningDir = CERTIFIED_DIR;
             }
             catch (Exception ex)
             {
@@ -116,17 +118,22 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void RebootSwitch(int waitSec)
+        public string RebootSwitch(int waitSec)
         {
+            DateTime startTime = DateTime.Now;
             try
             {
+                string txt = $"Rebooting Switch {SwitchModel.IpAddress}";
+                _progress.Report(new ProgressReport(txt));
+                Logger.Debug(txt);
                 SendRequest(GetRestUrlEntry(RestUrlId.REBOOT_SWITCH));
-                if (waitSec <= 0) return;
-                DateTime startTime = DateTime.Now;
+                if (waitSec <= 0) return "";
+                _progress.Report(new ProgressReport($"Waiting Switch {SwitchModel.IpAddress} reboot..."));
+                Thread.Sleep(10000);
                 while (Utils.GetTimeDuration(startTime) <= waitSec)
                 {
                     Thread.Sleep(5000);
-                    if (Utils.IsReachable(SwitchModel.IpAddress)) continue;
+                    if (!Utils.IsReachable(SwitchModel.IpAddress)) continue;
                     try
                     {
                         RestApiClient.Login();
@@ -134,11 +141,13 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                 }
+                string duration = Utils.CalcStringDuration(startTime);
             }
             catch (Exception ex)
             {
                 SendSwitchConnectionFailed(ex);
             }
+            return Utils.CalcStringDuration(startTime);
         }
 
         public void WriteMemory()

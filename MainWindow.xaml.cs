@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
@@ -588,17 +589,18 @@ namespace PoEWizard
             _infoBox.Visibility = Visibility.Collapsed;
         }
 
-        private void SetConnectedState()
+        private async void SetConnectedState()
         {
             DataContext = device;
             if (device.RunningDir == CERTIFIED_DIR)
             {
+                HideInfoBox();
                 string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be applied\n" +
                     $"Do you want to reboot the switch on {WORKING_DIR} directory?";
                 bool res = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                 if (res)
                 {
-
+                    await RebootSwitch(480);
                 }
             }
             _comImg.Source = (ImageSource)currentDict["connected"];
@@ -617,6 +619,14 @@ namespace PoEWizard
             }
             _slotsView.Visibility = Visibility.Visible;
             _portList.Visibility = Visibility.Visible;
+        }
+
+        private async Task RebootSwitch(int waitSec)
+        {
+            string duration;
+            await Task.Run(() => duration = restApiService.RebootSwitch(waitSec));
+            HideInfoBox();
+            ShowMessageBox("Connection", $"Switch {device.IpAddress} ready to connect", MsgBoxIcons.Info, MsgBoxButtons.Ok);
         }
 
         private void SetDisconnectedState()
