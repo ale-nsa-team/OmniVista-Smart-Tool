@@ -593,7 +593,7 @@ namespace PoEWizard
             _infoBox.Visibility = Visibility.Collapsed;
         }
 
-        private void SetConnectedState(bool checkCertified)
+        private async void SetConnectedState(bool checkCertified)
         {
             DataContext = device;
             if (device.RunningDir == CERTIFIED_DIR && checkCertified)
