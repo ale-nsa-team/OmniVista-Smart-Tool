@@ -612,7 +612,8 @@ namespace PoEWizard
                 bool res = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                 if (res)
                 {
-                    await RebootSwitch(480);
+                    await RebootSwitch(600);
+                    SetDisconnectedState();
                 }
             }
             _comImg.Source = (ImageSource)currentDict["connected"];
@@ -635,10 +636,12 @@ namespace PoEWizard
 
         private async Task RebootSwitch(int waitSec)
         {
-            string duration;
+            string duration = "";
             await Task.Run(() => duration = restApiService.RebootSwitch(waitSec));
             HideInfoBox();
-            ShowMessageBox("Connection", $"Switch {device.IpAddress} ready to connect", MsgBoxIcons.Info, MsgBoxButtons.Ok);
+            string txt = $"Switch {device.IpAddress} ready to connect";
+            if (!string.IsNullOrEmpty(duration)) txt += $"\nReboot duration: {duration}";
+            ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
         }
 
         private void SetDisconnectedState()

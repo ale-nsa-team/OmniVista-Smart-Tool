@@ -127,7 +127,7 @@ namespace PoEWizard.Comm
                 SendRequest(GetRestUrlEntry(RestUrlId.REBOOT_SWITCH));
                 if (waitSec <= 0) return "";
                 _progress.Report(new ProgressReport($"Waiting Switch {SwitchModel.IpAddress} reboot..."));
-                Thread.Sleep(10000);
+                Thread.Sleep(55000);
                 while (Utils.GetTimeDuration(startTime) <= waitSec)
                 {
                     Thread.Sleep(5000);
@@ -139,7 +139,6 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                 }
-                string duration = Utils.CalcStringDuration(startTime);
             }
             catch (Exception ex)
             {
