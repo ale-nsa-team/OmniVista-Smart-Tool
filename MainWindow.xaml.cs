@@ -262,7 +262,7 @@ namespace PoEWizard
             }
         }
 
-        private void Priority_Changed(object sender, SelectionChangedEventArgs e)
+        private async void Priority_Changed(object sender, SelectionChangedEventArgs e)
         {
             var cb = sender as ComboBox;
             PortModel port = _portList.CurrentItem as PortModel;
@@ -270,7 +270,20 @@ namespace PoEWizard
             {
                 ShowMessageBox("Priority", $"Selected priority: {cb.SelectedValue}");
                 port.PriorityLevel = (PriorityLevelType)Enum.Parse(typeof(PriorityLevelType), cb.SelectedValue.ToString());
+                await SetPoePriority(port);
             }
+        }
+
+        private async Task SetPoePriority(PortModel port)
+        {
+            if (port == null) return;
+            string txt = $"Changing Priority to {port.PriorityLevel} on port {port.Name}";
+            ShowProgress($"{txt}...");
+            restApiService = new RestApiService(device, progress);
+            await Task.Run(() => restApiService.ChangePowerPriority(port.Name, port.PriorityLevel));
+            Logger.Info($"{txt} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            await WaitAckProgress();
+            RefreshSlotAndPortsView();
         }
 
         private async void FPoE_Click(object sender, RoutedEventArgs e)
@@ -320,6 +333,7 @@ namespace PoEWizard
             await Task.Run(() => restApiService.SetPerpetualOrFastPoe(selectedSlot.Name, cmd));
             Logger.Info($"{action} {poeType} PoE on slot {selectedSlot.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             await WaitAckProgress();
+            //RefreshSlotAndPortsView();
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)
@@ -350,17 +364,7 @@ namespace PoEWizard
                     return;
                 }
                 await Task.Run(() => restApiService.Connect());
-
-                if (device.IsConnected)
-                {
-                    Logger.Info($"Connected to switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                    SetConnectedState(true);
-                }
-                else
-                {
-                    Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
-                    SetDisconnectedState();
-                }
+                UpdateConnectedState();
             }
             catch (Exception ex)
             {
@@ -391,7 +395,10 @@ namespace PoEWizard
         {
             try
             {
-                if (selectedPort == null) return;
+                DateTime startTime = DateTime.Now;
+                restApiService = new RestApiService(device, progress);
+                await Task.Run(() => restApiService.ScanSwitch());
+                UpdateConnectedState();
                 ProgressReport wizardProgressReport = new ProgressReport("PoE Wizard Report:");
                 reportResult = new ProgressReportResult();
                 ShowProgress($"Running PoE Wizard on port {selectedPort}...");
@@ -413,14 +420,10 @@ namespace PoEWizard
                 }
                 wizardProgressReport.Title = "PoE Wizard Report:";
                 wizardProgressReport.Type = reportResult.Proceed ? ReportType.Error : ReportType.Info;
-                wizardProgressReport.Message = reportResult.Message;
+                wizardProgressReport.Message = $"{reportResult.Message}\n\nTotal duration: {Utils.PrintTimeDurationSec(startTime)}";
                 progress.Report(wizardProgressReport);
                 await WaitAckProgress();
-                _slotsView.ItemsSource = null;
-                _portList.ItemsSource = null;
-                selectedSlot = device.GetSlot(selectedSlot.Name);
-                _slotsView.ItemsSource = device.GetChassis(selectedSlot.Name)?.Slots ?? new List<SlotModel>();
-                _portList.ItemsSource = selectedSlot?.Ports ?? new List<PortModel>();
+                RefreshSlotAndPortsView();
             }
             catch (Exception ex)
             {
@@ -430,22 +433,22 @@ namespace PoEWizard
             HideInfoBox();
         }
 
+        private void RefreshSlotAndPortsView()
+        {
+            _slotsView.ItemsSource = null;
+            _portList.ItemsSource = null;
+            selectedSlot = device.GetSlot(selectedSlot.Name);
+            _slotsView.ItemsSource = device.GetChassis(selectedSlot.Name)?.Slots ?? new List<SlotModel>();
+            _portList.ItemsSource = selectedSlot?.Ports ?? new List<PortModel>();
+        }
+
         private async void RefreshSwitch()
         {
             try
             {
                 restApiService = new RestApiService(device, progress);
                 await Task.Run(() => restApiService.ScanSwitch());
-                if (device.IsConnected)
-                {
-                    Logger.Info($"Connected to switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                    SetConnectedState(false);
-                }
-                else
-                {
-                    Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
-                    SetDisconnectedState();
-                }
+                UpdateConnectedState();
             }
             catch (Exception ex)
             {
@@ -468,6 +471,8 @@ namespace PoEWizard
 
         private async Task RunWizardTelephone()
         {
+            await ChangePerpetualFastPoE(RestUrlId.ENABLE_PERPETUAL_DISABLE_FAST_POE);
+            HideInfoBox();
             await Enable2PairPower();
             if (!reportResult.Proceed) return;
             await ChangePriority();
@@ -517,14 +522,19 @@ namespace PoEWizard
             Logger.Info($"Enable 2-Pair Power on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
+        private async Task ChangePerpetualFastPoE(RestUrlId cmd)
+        {
+            await RunPoeWizard(new List<RestUrlId>() { cmd }, 15);
+            Logger.Info($"Enable/Disable Perpetual/Fast PoE on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+        }
+
         private async Task ChangePriority()
         {
             await RunPoeWizard(new List<RestUrlId>() { RestUrlId.CHECK_POWER_PRIORITY }, 15);
             Logger.Info($"PoE Wizard Check Power Priority on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-            await WaitAckProgress();
             if (!reportResult.Proceed)
             {
-                reportResult.Proceed = true;
+                reportResult.UpdateResult(selectedPort, true);
                 return;
             }
             bool proceed = ShowMessageBox("Power Priority Change", "Some other devices with lower priority may stop. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
@@ -599,6 +609,20 @@ namespace PoEWizard
         private void HideInfoBox()
         {
             _infoBox.Visibility = Visibility.Collapsed;
+        }
+
+        private void UpdateConnectedState()
+        {
+            if (device.IsConnected)
+            {
+                Logger.Info($"Connected to switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                SetConnectedState(false);
+            }
+            else
+            {
+                Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
+                SetDisconnectedState();
+            }
         }
 
         private async void SetConnectedState(bool checkCertified)

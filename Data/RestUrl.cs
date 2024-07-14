@@ -69,7 +69,10 @@ namespace PoEWizard.Data
             REBOOT_SWITCH = 72,
             // 100 - 119: Virtual commands
             CHECK_POWER_PRIORITY = 100,
-            RESET_POWER_PORT = 101
+            RESET_POWER_PORT = 101,
+            DISABLE_PERPETUAL_FAST_POE = 102,
+            ENABLE_PERPETUAL_DISABLE_FAST_POE = 103,
+            NO_COMMAND = -1
         }
 
         public static Dictionary<RestUrlId, string> REST_URL_TABLE = new Dictionary<RestUrlId, string>
