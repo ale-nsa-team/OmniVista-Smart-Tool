@@ -288,7 +288,6 @@ namespace PoEWizard
             if (port == null) return;
             string txt = $"Changing Priority to {port.PriorityLevel} on port {port.Name}";
             ShowProgress($"{txt}...");
-            restApiService = new RestApiService(device, progress);
             bool ok = false;
             await Task.Run(() => ok = restApiService.ChangePowerPriority(port.Name, port.PriorityLevel));
             if (ok)
@@ -322,11 +321,8 @@ namespace PoEWizard
             {
                 Logger.Error(ex.Message + ":\n" + ex.StackTrace);
             }
-            finally
-            {
-                HideProgress();
-                HideInfoBox();
-            }
+            HideProgress();
+            HideInfoBox();
         }
 
         private async void PPoE_Click(Object sender, RoutedEventArgs e)
@@ -345,11 +341,8 @@ namespace PoEWizard
             {
                 Logger.Error(ex.Message + ":\n" + ex.StackTrace);
             }
-            finally
-            {
-                HideProgress();
-                HideInfoBox();
-            }
+            HideProgress();
+            HideInfoBox();
         }
 
         private async Task<bool> SetPerpetualOrFastPoe(RestUrlId cmd)
@@ -357,7 +350,6 @@ namespace PoEWizard
             string action = cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_FAST_ENABLE ? "Enabling" : "Disabling";
             string poeType = (cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
             ShowProgress($"{action} {poeType} PoE on slot {selectedSlot.Name}...");
-            restApiService = new RestApiService(device, progress);
             bool ok = false;
             await Task.Run(() => ok = restApiService.SetPerpetualOrFastPoe(selectedSlot.Name, cmd));
             Logger.Info($"{action} {poeType} PoE on slot {selectedSlot.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
@@ -436,13 +428,11 @@ namespace PoEWizard
             try
             {
                 DateTime startTime = DateTime.Now;
-                restApiService = new RestApiService(device, progress);
                 await Task.Run(() => restApiService.ScanSwitch());
                 UpdateConnectedState(false);
                 ProgressReport wizardProgressReport = new ProgressReport("PoE Wizard Report:");
                 reportResult = new ProgressReportResult();
                 ShowProgress($"Running PoE Wizard on port {selectedPort}...");
-                restApiService = new RestApiService(device, progress);
                 switch (deviceType)
                 {
                     case DeviceType.Camera:
@@ -486,7 +476,6 @@ namespace PoEWizard
         {
             try
             {
-                restApiService = new RestApiService(device, progress);
                 await Task.Run(() => restApiService.ScanSwitch());
                 UpdateConnectedState(false);
             }
