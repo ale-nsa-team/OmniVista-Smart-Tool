@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using PoEWizard.Data;
 
 namespace PoEWizard.Components
 {
@@ -38,18 +39,19 @@ namespace PoEWizard.Components
             var red = new BrushConverter().ConvertFrom("#f00736");
             var green = MainWindow.theme == Data.Constants.ThemeType.Dark ? Brushes.Lime : Brushes.Green;
             var def = MainWindow.theme == Data.Constants.ThemeType.Dark ? Brushes.White : Brushes.Black;
+            string val = value.ToString();
             string param = parameter.ToString();
             switch (param)
             {
                 case "ConnectionStatus":
-                    return value.ToString() == "Reachable" ? green : red;
+                    return val == "Reachable" ? green : red;
                 case "Temperature":
-                    return value.ToString() == "UnderThreshold" ? green : red;
+                    return val == "UnderThreshold" ? green : red;
                 case "Power":
                     float percent = RectangleValueConverter.GetFloat(value);
                     return percent > 10 ? green : (percent > 0 ? Brushes.Orange : red);
                 case "Poe":
-                    switch (value.ToString())
+                    switch (val)
                     {
                         case "On":
                             return green;
@@ -63,22 +65,36 @@ namespace PoEWizard.Components
                             return new BrushConverter().ConvertFrom("#aaa");
                     }
                 case "PoeStatus":
-                    return value.ToString() == "Normal" ? green : value.ToString() == "NearThreshold" ? Brushes.Orange : red;
+                    return val == "Normal" ? green : val == "NearThreshold" ? Brushes.Orange : red;
                 case "PortStatus":
-                    return value.ToString() == "Up" ? green : value.ToString() == "Down" ? red : Brushes.Gray;
+                    return val == "Up" ? green : val == "Down" ? red : Brushes.Gray;
                 case "CPUStatus":
-                    return value.ToString() == "UnderThreshold" ? green : red;
+                    return val == "UnderThreshold" ? green : red;
                 case "UplinkPort":
                     var brush = new SolidColorBrush(Color.FromArgb(255, (byte)163, (byte)101, (byte)209));
-                    return value.ToString() == "False" ? Brushes.Transparent : brush;
+                    return val == "False" ? Brushes.Transparent : brush;
                 case "MacList":
                     return (value as List<string>)?.Count == 0 ? Brushes.White : red;
                 case "PowerSupply":
-                    return value.ToString() == "Up" ? green : red;
+                    return val == "Up" ? green : red;
                 case "RunningDir":
-                    return value.ToString() == Data.Constants.CERTIFIED_DIR ? red : def;
+                    return val == Data.Constants.CERTIFIED_DIR ? red : def;
                 case "Boolean":
-                    return value.ToString().ToLower() == "true" ? green : red;
+                    return val.ToLower() == "true" ? green : red;
+                case "AosVersion":
+                    Match version = Regex.Match(val, Constants.MATCH_AOS_VERSION);
+                    if (version.Success)
+                    {
+                        int v1 = int.Parse(version.Groups[1].ToString());
+                        int v2 = int.Parse(version.Groups[2].ToString());
+                        int r = int.Parse(version.Groups[5].ToString());
+                        string[] minver = Constants.MIN_AOS_VERSION.Split(' ');
+                        int minv1 = int.Parse(minver[0].Split('.')[0]);
+                        int minv2 = int.Parse(minver[0].Split('.')[1]);
+                        int minr = int.Parse(minver[1].Replace("R", ""));
+                        return ((v1 < minv1) || (v2 == minv2 && r < minr)) ? Brushes.Orange : def;
+                    }
+                    return def;
                 default:
                     return red;
             }

@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
         Closing="OnWindowClosing"
-        Title="PoE Wizard" Height="800" Width="800" Icon="/wiz.ico">
+        Title="PoE Wizard" Height="800" Width="1000" Icon="/wiz.ico">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -82,7 +82,9 @@
                 <Label Grid.Row="2" Grid.Column="0" Style="{DynamicResource keyLabel}">Model:</Label>
                 <Label Grid.Row="2" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_model" Content="{Binding Model}"/>
                 <Label Grid.Row="3" Grid.Column="0" Style="{DynamicResource keyLabel}">Realease:</Label>
-                <Label Grid.Row="3" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_release" Content="{Binding Version}"/>
+                <Label Grid.Row="3" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_release" 
+                       Content="{Binding Version}"
+                       Foreground="{Binding Version, Converter={StaticResource ValueToColorConverter}, ConverterParameter=AosVersion}"/>
                 <Label Grid.Row="4" Grid.Column="0" Style="{DynamicResource keyLabel}">FPGA Version:</Label>
                 <Label Grid.Row="4" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_fpga" Content="{Binding Fpga}"/>                
                 <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}">Location:</Label>
@@ -114,6 +116,16 @@
                     <DataGridTextColumn Header="#Poe Ports" Width="*" Binding="{Binding Path=NbPoePorts}" />
                     <DataGridTextColumn Header="Budget (Watts)" Width="*" Binding="{Binding Path=Budget}" />
                     <DataGridTextColumn Header="Power (Watts)" Width="*" Binding="{Binding Path=Power}"/>
+                    <DataGridTemplateColumn Header="802.3BT Support" Width="1.1*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Is8023bt, Converter={StaticResource BoolToSymbolConverter}}"
+                                           Foreground="{Binding Path=Is8023bt,
+                                           Converter={StaticResource ValueToColorConverter},
+                                           ConverterParameter=Boolean}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Fast PoE" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
