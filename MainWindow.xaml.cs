@@ -322,11 +322,8 @@ namespace PoEWizard
             {
                 Logger.Error(ex.Message + ":\n" + ex.StackTrace);
             }
-            finally
-            {
-                HideProgress();
-                HideInfoBox();
-            }
+            HideProgress();
+            HideInfoBox();
         }
 
         private async void PPoE_Click(Object sender, RoutedEventArgs e)
@@ -345,11 +342,8 @@ namespace PoEWizard
             {
                 Logger.Error(ex.Message + ":\n" + ex.StackTrace);
             }
-            finally
-            {
-                HideProgress();
-                HideInfoBox();
-            }
+            HideProgress();
+            HideInfoBox();
         }
 
         private async Task<bool> SetPerpetualOrFastPoe(RestUrlId cmd)
