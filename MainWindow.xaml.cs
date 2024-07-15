@@ -312,8 +312,11 @@ namespace PoEWizard
             {
                 CheckBox cb = sender as CheckBox;
                 if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(cb), null);
+                Keyboard.ClearFocus();
                 RestUrlId cmd = (cb.IsChecked == true) ? RestUrlId.POE_FAST_ENABLE : RestUrlId.POE_FAST_DISABLE;
-                await SetPerpetualOrFastPoe(cmd);
+                bool res = await SetPerpetualOrFastPoe(cmd);
+                if (!res) cb.IsChecked = !cb.IsChecked;
             }
             catch (Exception ex)
             {
@@ -332,8 +335,11 @@ namespace PoEWizard
             {
                 CheckBox cb = sender as CheckBox;
                 if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
+                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(cb), null);
+                Keyboard.ClearFocus();
                 RestUrlId cmd = (cb.IsChecked == true) ? RestUrlId.POE_PERPETUAL_ENABLE : RestUrlId.POE_PERPETUAL_DISABLE;
-                await SetPerpetualOrFastPoe(cmd);
+                bool res = await SetPerpetualOrFastPoe(cmd);
+                if (!res) cb.IsChecked = !cb.IsChecked;
             }
             catch (Exception ex)
             {
@@ -346,7 +352,7 @@ namespace PoEWizard
             }
         }
 
-        private async Task SetPerpetualOrFastPoe(RestUrlId cmd)
+        private async Task<bool> SetPerpetualOrFastPoe(RestUrlId cmd)
         {
             string action = cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_FAST_ENABLE ? "Enabling" : "Disabling";
             string poeType = (cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
@@ -356,6 +362,7 @@ namespace PoEWizard
             await Task.Run(() => ok = restApiService.SetPerpetualOrFastPoe(selectedSlot.Name, cmd));
             Logger.Info($"{action} {poeType} PoE on slot {selectedSlot.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             await WaitAckProgress();
+            return ok;
             //RefreshSlotAndPortsView();
         }
 
