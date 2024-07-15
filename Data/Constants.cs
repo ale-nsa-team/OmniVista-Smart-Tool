@@ -22,7 +22,9 @@ namespace PoEWizard.Data
         public enum PriorityLevelType { Low, High, Critical }
         public enum PowerSupplyState { Up, Down, Unknown }
         public enum ChassisStatus { Unknown, Up, Down }
-        public enum DictionaryType { System, Chassis, RunningDir, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList, MacAddressList }
+        public enum DictionaryType { System, Chassis, RunningDir, Cmm, 
+            MicroCode, LanPower, LanPowerCfg, PortsList, 
+            PowerSupply, LldpRemoteList, MacAddressList }
         public enum ConfigType { Enabled, Disabled, Unavailable }
         public enum DeviceType {
             [Description("Telephone")]
@@ -90,6 +92,8 @@ namespace PoEWizard.Data
         public const string LOCATION = "Location";
         public const string CONTACT = "Contact";
         public const string UP_TIME = "Up Time";
+        // Used by "SHOW_CMM":
+        public const string FPGA = "FPGA 1";
         // Used by "SHOW_RUNNING_DIR"
         public const string RUNNING_CONFIGURATION = "Running configuration";
         public const string SYNCHRONIZATION_STATUS = "Running Configuration";

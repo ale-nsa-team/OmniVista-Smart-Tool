@@ -1,6 +1,7 @@
 ﻿using PoEWizard.Exceptions;
 using System.Collections.Generic;
 using System.Net;
+using System.Runtime.CompilerServices;
 
 namespace PoEWizard.Data
 {
@@ -39,6 +40,7 @@ namespace PoEWizard.Data
             SHOW_HEALTH = 12,
             SHOW_LAN_POWER_CONFIG = 13,
             SHOW_LLDP_REMOTE = 14,
+            SHOW_CMM = 15,
             // 30 - 69: Commands related to actions on port
             POWER_DOWN_PORT = 30,
             POWER_UP_PORT = 31,
@@ -93,6 +95,7 @@ namespace PoEWizard.Data
             [RestUrlId.SHOW_HEALTH] = $"show health all cpu",                                   // 12
             [RestUrlId.SHOW_LAN_POWER_CONFIG] = $"show lanpower slot {DATA_0} port-config",     // 13
             [RestUrlId.SHOW_LLDP_REMOTE] = "show lldp remote-system",                           // 14
+            [RestUrlId.SHOW_CMM] = "show cmm",                                                  // 15
             // 30 - 69: Commands related to actions on port
             [RestUrlId.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",        // 30
             [RestUrlId.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",           // 31
@@ -146,8 +149,9 @@ namespace PoEWizard.Data
                     case RestUrlId.SHOW_SLOT:                   //  9
                     case RestUrlId.SHOW_MAC_LEARNING:           // 10
                     case RestUrlId.SHOW_TEMPERATURE:            // 11
-                    case RestUrlId.SHOW_HEALTH:                 // 12
-                        case RestUrlId.SHOW_LLDP_REMOTE:        // 14
+                    case RestUrlId.SHOW_HEALTH:                 // 12    
+                    case RestUrlId.SHOW_LLDP_REMOTE:            // 14
+                    case RestUrlId.SHOW_CMM:                    // 15
                     // 70 - 99: Special switch commands
                     case RestUrlId.WRITE_MEMORY:                // 70
                     case RestUrlId.SHOW_CONFIGURATION:          // 71

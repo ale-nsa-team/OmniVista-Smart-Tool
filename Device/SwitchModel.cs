@@ -19,6 +19,7 @@ namespace PoEWizard.Device
         public int CnxTimeout { get; set; }
         public string Model { get; set; }
         public string Version { get; set; }
+        public string Fpga { get; set; }
         public string RunningDir { get; set; }
         public string SyncStatus { get; set; }
         public string Location { get; set; }
@@ -63,6 +64,12 @@ namespace PoEWizard.Device
                     break;
                 case DictionaryType.MicroCode:
                     Version = dict.TryGetValue(RELEASE, out s) ? s : "";
+                    break;
+                case DictionaryType.Cmm:
+                    SerialNumber = dict.TryGetValue(SERIAL_NUMBER, out s) ? s : "";
+                    Model = dict.TryGetValue(MODEL_NAME, out s) ? s : "";
+                    Fpga = dict.TryGetValue(FPGA, out s) ? s : "";
+                    MacAddress = dict.TryGetValue(SERIAL_NUMBER, out s) ? s : "";
                     break;
             }
 ;
