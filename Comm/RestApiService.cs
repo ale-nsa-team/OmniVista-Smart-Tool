@@ -124,19 +124,31 @@ namespace PoEWizard.Comm
             {
                 string txt = $"Rebooting Switch {SwitchModel.IpAddress}";
                 _progress.Report(new ProgressReport(txt));
-                Logger.Debug(txt);
                 SendRequest(GetRestUrlEntry(RestUrlId.REBOOT_SWITCH));
                 if (waitSec <= 0) return "";
                 _progress.Report(new ProgressReport($"Waiting Switch {SwitchModel.IpAddress} reboot..."));
-                Thread.Sleep(55000);
-                while (Utils.GetTimeDuration(startTime) <= waitSec)
+                int dur = 0;
+                while (dur <= 60)
                 {
-                    Thread.Sleep(5000);
+                    Thread.Sleep(1000);
+                    dur = (int)Utils.GetTimeDuration(startTime);
+                    _progress.Report(new ProgressReport($"Waiting Switch {SwitchModel.IpAddress} reboot ({Utils.CalcStringDuration(startTime, true)}) ..."));
+                }
+                Logger.Info(txt);
+                while (dur < waitSec)
+                {
+                    Thread.Sleep(1000);
+                    dur = (int)Utils.GetTimeDuration(startTime);
+                    if (dur >= waitSec) break;
+                    _progress.Report(new ProgressReport($"Waiting Switch {SwitchModel.IpAddress} reboot ({Utils.CalcStringDuration(startTime, true)}) ..."));
                     if (!Utils.IsReachable(SwitchModel.IpAddress)) continue;
                     try
                     {
-                        RestApiClient.Login();
-                        if (RestApiClient.IsConnected()) break;
+                        if (dur % 5 == 0)
+                        {
+                            RestApiClient.Login();
+                            if (RestApiClient.IsConnected()) break;
+                        }
                     }
                     catch { }
                 }
@@ -145,7 +157,7 @@ namespace PoEWizard.Comm
             {
                 SendSwitchConnectionFailed(ex);
             }
-            return Utils.CalcStringDuration(startTime);
+            return Utils.CalcStringDuration(startTime, true);
         }
 
         public void WriteMemory()
@@ -154,12 +166,12 @@ namespace PoEWizard.Comm
             {
                 string txt = $"Writing memory on Switch {SwitchModel.IpAddress}";
                 _progress.Report(new ProgressReport(txt));
-                Logger.Debug(txt);
                 if (SwitchModel.ConfigChanged)
                 {
                     SendRequest(GetRestUrlEntry(RestUrlId.WRITE_MEMORY));
                     DateTime startTime = DateTime.Now;
                     int dur = 0;
+                    Logger.Info(txt);
                     while (dur < 25)
                     {
                         Thread.Sleep(1000);
