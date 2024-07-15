@@ -122,8 +122,7 @@ namespace PoEWizard.Comm
             DateTime startTime = DateTime.Now;
             try
             {
-                string txt = $"Rebooting Switch {SwitchModel.IpAddress}";
-                _progress.Report(new ProgressReport(txt));
+                _progress.Report(new ProgressReport($"Rebooting Switch {SwitchModel.IpAddress}"));
                 SendRequest(GetRestUrlEntry(RestUrlId.REBOOT_SWITCH));
                 if (waitSec <= 0) return "";
                 _progress.Report(new ProgressReport($"Waiting Switch {SwitchModel.IpAddress} reboot..."));
@@ -134,7 +133,6 @@ namespace PoEWizard.Comm
                     dur = (int)Utils.GetTimeDuration(startTime);
                     _progress.Report(new ProgressReport($"Waiting Switch {SwitchModel.IpAddress} reboot ({Utils.CalcStringDuration(startTime, true)}) ..."));
                 }
-                Logger.Info(txt);
                 while (dur < waitSec)
                 {
                     Thread.Sleep(1000);
@@ -152,6 +150,7 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                 }
+                Logger.Info($"Rebooting Switch {SwitchModel.IpAddress} (Duration: {Utils.CalcStringDuration(startTime, true)})");
             }
             catch (Exception ex)
             {
@@ -164,20 +163,19 @@ namespace PoEWizard.Comm
         {
             try
             {
-                string txt = $"Writing memory on Switch {SwitchModel.IpAddress}";
-                _progress.Report(new ProgressReport(txt));
                 if (SwitchModel.ConfigChanged)
                 {
+                    _progress.Report(new ProgressReport($"Writing memory on Switch {SwitchModel.IpAddress}"));
                     SendRequest(GetRestUrlEntry(RestUrlId.WRITE_MEMORY));
                     DateTime startTime = DateTime.Now;
                     int dur = 0;
-                    Logger.Info(txt);
                     while (dur < 25)
                     {
                         Thread.Sleep(1000);
                         dur = (int)Utils.GetTimeDuration(startTime);
                         _progress.Report(new ProgressReport($"Writing memory on Switch {SwitchModel.IpAddress} ({dur} sec) ..."));
                     }
+                    Logger.Info($"Writing memory on Switch {SwitchModel.IpAddress} (Duration: {dur} sec)");
                 }
             }
             catch (Exception ex)
