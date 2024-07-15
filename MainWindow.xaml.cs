@@ -277,20 +277,31 @@ namespace PoEWizard
             if (cb.SelectedValue.ToString() != port.PriorityLevel.ToString())
             {
                 ShowMessageBox("Priority", $"Selected priority: {cb.SelectedValue}");
+                PriorityLevelType prevPriority = port.PriorityLevel;
                 port.PriorityLevel = (PriorityLevelType)Enum.Parse(typeof(PriorityLevelType), cb.SelectedValue.ToString());
-                await SetPoePriority(port);
+                await SetPoePriority(port, prevPriority);
             }
         }
 
-        private async Task SetPoePriority(PortModel port)
+        private async Task SetPoePriority(PortModel port, PriorityLevelType prevPriority)
         {
             if (port == null) return;
             string txt = $"Changing Priority to {port.PriorityLevel} on port {port.Name}";
             ShowProgress($"{txt}...");
             restApiService = new RestApiService(device, progress);
-            await Task.Run(() => restApiService.ChangePowerPriority(port.Name, port.PriorityLevel));
-            Logger.Info($"{txt} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-            await WaitAckProgress();
+            bool ok = false;
+            await Task.Run(() => ok = restApiService.ChangePowerPriority(port.Name, port.PriorityLevel));
+            if (ok)
+            {
+                Logger.Info($"{txt} completed on Switch {device.Name}, S/N {device.SerialNumber}, Model {device.Model}");
+                await WaitAckProgress();
+            }
+            else
+            {
+                port.PriorityLevel = prevPriority;
+                Logger.Error($"Couldn't change the Priority to {port.PriorityLevel} on Port {port.Name} of Switch {device.IpAddress}");
+                HideInfoBox();
+            }
             RefreshSlotAndPortsView();
             HideProgress();
         }
@@ -301,7 +312,8 @@ namespace PoEWizard
             {
                 CheckBox cb = sender as CheckBox;
                 if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
-                if (cb.IsChecked == true) await SetPerpetualOrFastPoe(RestUrlId.POE_FAST_ENABLE); else await SetPerpetualOrFastPoe(RestUrlId.POE_FAST_DISABLE);
+                RestUrlId cmd = (cb.IsChecked == true) ? RestUrlId.POE_FAST_ENABLE : RestUrlId.POE_FAST_DISABLE;
+                await SetPerpetualOrFastPoe(cmd);
             }
             catch (Exception ex)
             {
@@ -320,7 +332,8 @@ namespace PoEWizard
             {
                 CheckBox cb = sender as CheckBox;
                 if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
-                if (cb.IsChecked == true) await SetPerpetualOrFastPoe(RestUrlId.POE_PERPETUAL_ENABLE); else await SetPerpetualOrFastPoe(RestUrlId.POE_PERPETUAL_DISABLE);
+                RestUrlId cmd = (cb.IsChecked == true) ? RestUrlId.POE_PERPETUAL_ENABLE : RestUrlId.POE_PERPETUAL_DISABLE;
+                await SetPerpetualOrFastPoe(cmd);
             }
             catch (Exception ex)
             {
@@ -339,7 +352,8 @@ namespace PoEWizard
             string poeType = (cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
             ShowProgress($"{action} {poeType} PoE on slot {selectedSlot.Name}...");
             restApiService = new RestApiService(device, progress);
-            await Task.Run(() => restApiService.SetPerpetualOrFastPoe(selectedSlot.Name, cmd));
+            bool ok = false;
+            await Task.Run(() => ok = restApiService.SetPerpetualOrFastPoe(selectedSlot.Name, cmd));
             Logger.Info($"{action} {poeType} PoE on slot {selectedSlot.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             await WaitAckProgress();
             //RefreshSlotAndPortsView();

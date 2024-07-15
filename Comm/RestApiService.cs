@@ -122,8 +122,7 @@ namespace PoEWizard.Comm
             DateTime startTime = DateTime.Now;
             try
             {
-                string txt = $"Rebooting Switch {SwitchModel.IpAddress}";
-                _progress.Report(new ProgressReport(txt));
+                _progress.Report(new ProgressReport($"Rebooting Switch {SwitchModel.IpAddress}"));
                 SendRequest(GetRestUrlEntry(RestUrlId.REBOOT_SWITCH));
                 if (waitSec <= 0) return "";
                 _progress.Report(new ProgressReport($"Waiting Switch {SwitchModel.IpAddress} reboot..."));
@@ -134,7 +133,6 @@ namespace PoEWizard.Comm
                     dur = (int)Utils.GetTimeDuration(startTime);
                     _progress.Report(new ProgressReport($"Waiting Switch {SwitchModel.IpAddress} reboot ({Utils.CalcStringDuration(startTime, true)}) ..."));
                 }
-                Logger.Info(txt);
                 while (dur < waitSec)
                 {
                     Thread.Sleep(1000);
@@ -152,6 +150,7 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                 }
+                Logger.Info($"Rebooting Switch {SwitchModel.IpAddress} (Duration: {Utils.CalcStringDuration(startTime, true)})");
             }
             catch (Exception ex)
             {
@@ -164,20 +163,19 @@ namespace PoEWizard.Comm
         {
             try
             {
-                string txt = $"Writing memory on Switch {SwitchModel.IpAddress}";
-                _progress.Report(new ProgressReport(txt));
                 if (SwitchModel.ConfigChanged)
                 {
+                    _progress.Report(new ProgressReport($"Writing memory on Switch {SwitchModel.IpAddress}"));
                     SendRequest(GetRestUrlEntry(RestUrlId.WRITE_MEMORY));
                     DateTime startTime = DateTime.Now;
                     int dur = 0;
-                    Logger.Info(txt);
                     while (dur < 25)
                     {
                         Thread.Sleep(1000);
                         dur = (int)Utils.GetTimeDuration(startTime);
                         _progress.Report(new ProgressReport($"Writing memory on Switch {SwitchModel.IpAddress} ({dur} sec) ..."));
                     }
+                    Logger.Info($"Writing memory on Switch {SwitchModel.IpAddress} (Duration: {dur} sec)");
                 }
             }
             catch (Exception ex)
@@ -186,7 +184,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void SetPerpetualOrFastPoe(string slot, RestUrlId cmd)
+        public bool SetPerpetualOrFastPoe(string slot, RestUrlId cmd)
         {
             bool enable = cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_FAST_ENABLE;
             string poeType = (cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
@@ -208,14 +206,16 @@ namespace PoEWizard.Comm
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
                 _progress.Report(progressReport);
                 Logger.Info($"{result}\n{progressReport.Message}");
+                return true;
             }
             catch (Exception ex)
             {
                 SendSwitchConnectionFailed(ex);
             }
+            return false;
         }
 
-        public void ChangePowerPriority(string port, PriorityLevelType priority)
+        public bool ChangePowerPriority(string port, PriorityLevelType priority)
         {
             ProgressReport progressReport = new ProgressReport($"Change priority Report:")
             {
@@ -226,8 +226,8 @@ namespace PoEWizard.Comm
                 DateTime startTime = DateTime.Now;
                 GetLanPower();
                 UpdatePortData(port);
-                if (_wizardSwitchPort == null) return;
-                if (_wizardSwitchPort.PriorityLevel == priority) return;
+                if (_wizardSwitchPort == null) return false;
+                if (_wizardSwitchPort.PriorityLevel == priority) return false;
                 SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
                 progressReport.Message += $"\n - Priority on port {port} set to {priority}";
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
@@ -235,11 +235,13 @@ namespace PoEWizard.Comm
                 _progress.Report(progressReport);
                 Logger.Info($"Changed priority to {priority} on port {port}\n{progressReport.Message}");
                 SwitchModel.ConfigChanged = true;
+                return true;
             }
             catch (Exception ex)
             {
                 SendSwitchConnectionFailed(ex);
             }
+            return false;
         }
 
         public void RunPoeWizard(string port, ProgressReportResult reportResult, List<RestUrlId> commands, int waitSec)
