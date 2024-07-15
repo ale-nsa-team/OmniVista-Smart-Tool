@@ -461,59 +461,6 @@ namespace PoEWizard.Comm
             _progress?.Report(new ProgressReport(ReportType.Error, "Connect", error));
         }
 
-        private void ResetPortPower(string port, int waitSec)
-        {
-            try
-            {
-                string wizardAction = $"Resetting Power on Port {port}";
-                _wizardReportResult.CreateReportResult(port, wizardAction);
-                DateTime startTime = DateTime.Now;
-                _progress.Report(new ProgressReport($"{wizardAction}\nPoE status: {_wizardSwitchPort.Poe}, Port Status: {_wizardSwitchPort.Status}"));
-                SendRequest(GetRestUrlEntry(RestUrlId.POWER_DOWN_PORT, new string[1] { port }));
-                Thread.Sleep(5000);
-                SendRequest(GetRestUrlEntry(RestUrlId.POWER_UP_PORT, new string[1] { port }));
-                WaitPortUp(port, waitSec);
-                UpdateProgressReport();
-                _wizardReportResult.UpdateDuration(port, Utils.PrintTimeDurationSec(startTime));
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
-            }
-        }
-
-        private void GetLanPower()
-        {
-            List<Dictionary<string, string>> diclist;
-            Dictionary<string, string> dict;
-            _progress.Report(new ProgressReport($"Reading PoE information on Switch {SwitchModel.IpAddress}"));
-            foreach (var chassis in SwitchModel.ChassisList)
-            {
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
-                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
-                chassis.LoadFromList(diclist);
-                chassis.PowerBudget = 0;
-                chassis.PowerConsumed = 0;
-                foreach (var slot in chassis.Slots)
-                {
-                    if (slot.Ports.Count == 0) continue;
-                    GetSlotPower(chassis, slot);
-                    chassis.PowerBudget += slot.Budget;
-                    chassis.PowerConsumed += slot.Power;
-                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_CONFIG, new string[1] { $"{chassis.Number}/{slot.Number}" }));
-                    diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
-                    slot.LoadFromList(diclist, DictionaryType.LanPowerCfg);
-                }
-                chassis.PowerRemaining = chassis.PowerBudget - chassis.PowerConsumed;
-                foreach (var ps in chassis.PowerSupplies)
-                {
-                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLY, new string[1] { ps.Id.ToString() }));
-                    dict = CliParseUtils.ParseVTable(_response[RESULT]);
-                    ps.LoadFromDictionary(dict);
-                }
-            }
-        }
-
         private void ExecuteActionOnPort(string wizardAction, string port, int waitSec, RestUrlId restoreCmd)
         {
             try
@@ -526,7 +473,6 @@ namespace PoEWizard.Comm
                 SendRequest(GetRestUrlEntry(_wizardCommand, new string[1] { port }));
                 Thread.Sleep(3000);
                 WaitPortUp(port, waitSec);
-                UpdateProgressReport();
                 if (_wizardReportResult.Proceed && restoreCmd != _wizardCommand)
                 {
                     SendRequest(GetRestUrlEntry(restoreCmd, new string[1] { port }));
@@ -559,7 +505,6 @@ namespace PoEWizard.Comm
                     SendRequest(GetRestUrlEntry(RestUrlId.POWER_UP_SLOT, new string[1] { slotNr }));
                     Thread.Sleep(3000);
                     WaitPortUp(port, waitSec);
-                    UpdateProgressReport();
                 }
                 else
                 {
@@ -592,37 +537,35 @@ namespace PoEWizard.Comm
             double maxPower = switchPort.MaxPower / 1000;
             txt = new StringBuilder();
             bool changePriority;
-            if (powerRemaining >= maxPower)
+            if (_wizardSwitchPort.PriorityLevel < PriorityLevelType.High)
             {
-                changePriority = false;
-                txt.Append($"\n    No need to change priority on Port {port}");
+                changePriority = powerRemaining >= maxPower ? false : true;
+                txt.Append("\n    Remaining Power = ").Append(powerRemaining).Append(" W, Max. Power = ").Append(maxPower).Append(" W");
             }
             else
             {
-                changePriority = true;
-                txt.Append($"\n    Changing priority  on Port {port} may solve the problem");
+                changePriority = false;
+                txt.Append($"\n    No need to change priority on Port {port} (Priority is already {_wizardSwitchPort.PriorityLevel})");
             }
-            txt.Append(" (Remaining Power = ").Append(powerRemaining).Append(" W, Max. Power = ").Append(maxPower).Append(" W)");
             _wizardReportResult.UpdateResult(port, changePriority, txt.ToString());
             _wizardReportResult.UpdateDuration(port, Utils.PrintTimeDurationSec(startTime));
             Logger.Debug(txt.ToString());
-            //_progress.Report(new ProgressReport($"{wizardAction}\n{txt}"));
-            //Thread.Sleep(5000);
         }
 
         private void TryChangePriority(string port, int waitSec)
         {
             try
             {
-                string wizardAction = $"Setting priority to {PriorityLevelType.High} on Port {port}";
+                PriorityLevelType priority = PriorityLevelType.High;
+                string wizardAction = $"Changing power priority to {priority} on Port {port}";
                 _wizardReportResult.CreateReportResult(port, wizardAction);
                 PriorityLevelType prevPriority = _wizardSwitchPort.PriorityLevel;
                 DateTime startTime = DateTime.Now;
                 StringBuilder txt = new StringBuilder(wizardAction).Append("\nPoE status: ");
                 txt.Append(_wizardSwitchPort.Poe).Append(", Port Status: ").Append(_wizardSwitchPort.Status);
-                PriorityLevelType priority = PriorityLevelType.High;
+                _progress.Report(new ProgressReport(txt.ToString()));
                 SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
-                ResetPortPower(port, waitSec);
+                RestartDeviceOnPort(port, waitSec);
                 string result;
                 if (_wizardReportResult.Proceed)
                 {
@@ -634,12 +577,37 @@ namespace PoEWizard.Comm
                     result = "solved the problem";
                 }
                 _wizardReportResult.UpdateResult(port, _wizardReportResult.Proceed, result);
-                _wizardReportResult.UpdateDuration(port, Utils.PrintTimeDurationSec(startTime));
+                _wizardReportResult.UpdateDuration(port, Utils.CalcStringDuration(startTime, true));
             }
             catch (Exception ex)
             {
                 ParseException(port, _wizardProgressReport, ex);
             }
+        }
+
+        private void ResetPortPower(string port, int waitSec)
+        {
+            try
+            {
+                string wizardAction = $"Resetting Power on Port {port}";
+                _wizardReportResult.CreateReportResult(port, wizardAction);
+                DateTime startTime = DateTime.Now;
+                _progress.Report(new ProgressReport($"{wizardAction}\nPoE status: {_wizardSwitchPort.Poe}, Port Status: {_wizardSwitchPort.Status}"));
+                RestartDeviceOnPort(port, waitSec);
+                _wizardReportResult.UpdateDuration(port, Utils.PrintTimeDurationSec(startTime));
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+            }
+        }
+
+        private void RestartDeviceOnPort(string port, int waitSec)
+        {
+            SendRequest(GetRestUrlEntry(RestUrlId.POWER_DOWN_PORT, new string[1] { port }));
+            Thread.Sleep(5000);
+            SendRequest(GetRestUrlEntry(RestUrlId.POWER_UP_PORT, new string[1] { port }));
+            WaitPortUp(port, waitSec);
         }
 
         private void WaitPortUp(string port, int waitSec)
@@ -652,6 +620,7 @@ namespace PoEWizard.Comm
                 if (_wizardSwitchPort != null && _wizardSwitchPort.Status == PortStatus.Up && _wizardSwitchPort.Power > 500) break;
                 Thread.Sleep(5000);
             }
+            UpdateProgressReport();
             StringBuilder text = new StringBuilder("Port ").Append(port).Append(" Status: ").Append(_wizardSwitchPort.Status).Append(", PoE Status: ");
             text.Append(_wizardSwitchPort.Poe).Append(", Power: ").Append(_wizardSwitchPort.Power).Append(" (Duration: ").Append(Utils.CalcStringDuration(startTime));
             text.Append(", MAC List: ").Append(String.Join(",", _wizardSwitchPort.MacList)).Append(")");
@@ -696,6 +665,38 @@ namespace PoEWizard.Comm
             this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_LLDP_REMOTE, new string[] { port }));
             dictList = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
             if (dictList?.Count > 0) _wizardSwitchPort.LoadLldpRemoteTable(dictList[0]);
+        }
+
+        private void GetLanPower()
+        {
+            List<Dictionary<string, string>> diclist;
+            Dictionary<string, string> dict;
+            _progress.Report(new ProgressReport($"Reading PoE information on Switch {SwitchModel.IpAddress}"));
+            foreach (var chassis in SwitchModel.ChassisList)
+            {
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
+                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+                chassis.LoadFromList(diclist);
+                chassis.PowerBudget = 0;
+                chassis.PowerConsumed = 0;
+                foreach (var slot in chassis.Slots)
+                {
+                    if (slot.Ports.Count == 0) continue;
+                    GetSlotPower(chassis, slot);
+                    chassis.PowerBudget += slot.Budget;
+                    chassis.PowerConsumed += slot.Power;
+                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_CONFIG, new string[1] { $"{chassis.Number}/{slot.Number}" }));
+                    diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+                    slot.LoadFromList(diclist, DictionaryType.LanPowerCfg);
+                }
+                chassis.PowerRemaining = chassis.PowerBudget - chassis.PowerConsumed;
+                foreach (var ps in chassis.PowerSupplies)
+                {
+                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLY, new string[1] { ps.Id.ToString() }));
+                    dict = CliParseUtils.ParseVTable(_response[RESULT]);
+                    ps.LoadFromDictionary(dict);
+                }
+            }
         }
 
         private void GetSlotPower(ChassisModel chassis, SlotModel slot)
