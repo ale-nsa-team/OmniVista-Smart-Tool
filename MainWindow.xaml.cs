@@ -103,9 +103,9 @@ namespace PoEWizard
         {
             try
             {
+                e.Cancel = true;
                 if (restApiService != null) await CloseRestApiService();
-                //e.Cancel = true;
-                //this.Closing -= OnWindowClosing;
+                this.Closing -= OnWindowClosing;
                 this.Close();
             }
             catch (Exception ex)
