@@ -101,10 +101,17 @@ namespace PoEWizard
 
         private async void OnWindowClosing(object sender, CancelEventArgs e)
         {
-            e.Cancel = true;
-            await CloseRestApiService();
-            this.Closing -= OnWindowClosing;
-            this.Close();
+            try
+            {
+                e.Cancel = true;
+                await CloseRestApiService();
+                this.Closing -= OnWindowClosing;
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+            }
         }
 
         #endregion constructor and initialization
@@ -380,7 +387,15 @@ namespace PoEWizard
             {
                 if (restApiService != null)
                 {
-                    await Task.Run(() => restApiService.Close());
+                    if (device.ConfigChanged)
+                    {
+                        bool proceed = ShowMessageBox("Write Memory required", "Switch configuration has changed!\nIt will take around 30 sec to execute Write Memory Flash.\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                        if (proceed)
+                        {
+                            await Task.Run(() => restApiService.WriteMemory());
+                        }
+                    }
+                    restApiService.Close();
                 }
             }
             catch (Exception ex)

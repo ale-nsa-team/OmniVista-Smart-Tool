@@ -14,7 +14,7 @@ namespace PoEWizard.Data
     public static class Utils
     {
 
-        public static string CalcStringDuration(DateTime? startTime)
+        public static string CalcStringDuration(DateTime? startTime, bool skipMs = false)
         {
             TimeSpan dur = DateTime.Now.Subtract((DateTime)startTime);
             int hour = dur.Hours;
@@ -37,6 +37,7 @@ namespace PoEWizard.Data
                 if (duration.Length > 0) duration += " ";
                 duration += sec.ToString() + " sec";
             }
+            if (skipMs) return duration;
             if (milliSec > 0)
             {
                 if (duration.Length > 0) duration += " ";

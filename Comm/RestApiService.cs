@@ -158,7 +158,14 @@ namespace PoEWizard.Comm
                 if (SwitchModel.ConfigChanged)
                 {
                     SendRequest(GetRestUrlEntry(RestUrlId.WRITE_MEMORY));
-                    Thread.Sleep(25000);
+                    DateTime startTime = DateTime.Now;
+                    int dur = 0;
+                    while (dur < 25)
+                    {
+                        Thread.Sleep(1000);
+                        dur = (int)Utils.GetTimeDuration(startTime);
+                        _progress.Report(new ProgressReport($"Writing memory on Switch {SwitchModel.IpAddress} ({dur} sec) ..."));
+                    }
                 }
             }
             catch (Exception ex)
@@ -373,6 +380,7 @@ namespace PoEWizard.Comm
             }
             _wizardReportResult.UpdateResult(port, true);
             if (cmd1 == RestUrlId.NO_COMMAND && cmd2 == RestUrlId.NO_COMMAND) return;
+            _progress.Report(new ProgressReport($"{wizardAction}\nPoE status: {_wizardSwitchPort.Poe}, Port Status: {_wizardSwitchPort.Status}"));
             DateTime startTime = DateTime.Now;
             _wizardReportResult.CreateReportResult(port, wizardAction);
             _progress.Report(new ProgressReport(wizardAction));
@@ -772,10 +780,6 @@ namespace PoEWizard.Comm
 
         public void Close()
         {
-            if (SwitchModel.ConfigChanged)
-            {
-                WriteMemory();
-            }
             Logger.Debug($"Closing Rest API");
         }
 
