@@ -184,7 +184,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void SetPerpetualOrFastPoe(string slot, RestUrlId cmd)
+        public bool SetPerpetualOrFastPoe(string slot, RestUrlId cmd)
         {
             bool enable = cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_FAST_ENABLE;
             string poeType = (cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
@@ -206,14 +206,16 @@ namespace PoEWizard.Comm
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
                 _progress.Report(progressReport);
                 Logger.Info($"{result}\n{progressReport.Message}");
+                return true;
             }
             catch (Exception ex)
             {
                 SendSwitchConnectionFailed(ex);
             }
+            return false;
         }
 
-        public void ChangePowerPriority(string port, PriorityLevelType priority)
+        public bool ChangePowerPriority(string port, PriorityLevelType priority)
         {
             ProgressReport progressReport = new ProgressReport($"Change priority Report:")
             {
@@ -224,8 +226,8 @@ namespace PoEWizard.Comm
                 DateTime startTime = DateTime.Now;
                 GetLanPower();
                 UpdatePortData(port);
-                if (_wizardSwitchPort == null) return;
-                if (_wizardSwitchPort.PriorityLevel == priority) return;
+                if (_wizardSwitchPort == null) return false;
+                if (_wizardSwitchPort.PriorityLevel == priority) return false;
                 SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
                 progressReport.Message += $"\n - Priority on port {port} set to {priority}";
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
@@ -233,11 +235,13 @@ namespace PoEWizard.Comm
                 _progress.Report(progressReport);
                 Logger.Info($"Changed priority to {priority} on port {port}\n{progressReport.Message}");
                 SwitchModel.ConfigChanged = true;
+                return true;
             }
             catch (Exception ex)
             {
                 SendSwitchConnectionFailed(ex);
             }
+            return false;
         }
 
         public void RunPoeWizard(string port, ProgressReportResult reportResult, List<RestUrlId> commands, int waitSec)
