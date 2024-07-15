@@ -41,6 +41,7 @@ namespace PoEWizard
         private string selectedPort;
         private SlotModel selectedSlot;
         private ProgressReportResult reportResult = new ProgressReportResult();
+        private bool isClosing = false;
         #endregion
         #region public variables
         public static Window Instance;
@@ -291,6 +292,7 @@ namespace PoEWizard
             Logger.Info($"{txt} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             await WaitAckProgress();
             RefreshSlotAndPortsView();
+            HideProgress();
         }
 
         private async void FPoE_Click(object sender, RoutedEventArgs e)
@@ -385,8 +387,9 @@ namespace PoEWizard
         {
             try
             {
-                if (restApiService != null)
+                if (restApiService != null && !isClosing)
                 {
+                    isClosing = true;
                     if (device.ConfigChanged)
                     {
                         bool proceed = ShowMessageBox("Write Memory required", "Switch configuration has changed!\nIt will take around 30 sec to execute Write Memory Flash.\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
@@ -397,7 +400,7 @@ namespace PoEWizard
                     }
                     restApiService.Close();
                 }
-                await Task.Run(() => Thread.Sleep(500));
+                await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
             }
             catch (Exception ex)
             {
