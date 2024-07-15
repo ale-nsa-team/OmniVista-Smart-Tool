@@ -104,7 +104,7 @@ namespace PoEWizard
             try
             {
                 e.Cancel = true;
-                if (restApiService != null) await CloseRestApiService();
+                await CloseRestApiService();
                 this.Closing -= OnWindowClosing;
                 this.Close();
             }
@@ -371,7 +371,7 @@ namespace PoEWizard
                     return;
                 }
                 await Task.Run(() => restApiService.Connect());
-                UpdateConnectedState();
+                UpdateConnectedState(true);
             }
             catch (Exception ex)
             {
@@ -397,6 +397,7 @@ namespace PoEWizard
                     }
                     restApiService.Close();
                 }
+                await Task.Run(() => Thread.Sleep(500));
             }
             catch (Exception ex)
             {
@@ -413,7 +414,7 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 restApiService = new RestApiService(device, progress);
                 await Task.Run(() => restApiService.ScanSwitch());
-                UpdateConnectedState();
+                UpdateConnectedState(false);
                 ProgressReport wizardProgressReport = new ProgressReport("PoE Wizard Report:");
                 reportResult = new ProgressReportResult();
                 ShowProgress($"Running PoE Wizard on port {selectedPort}...");
@@ -463,7 +464,7 @@ namespace PoEWizard
             {
                 restApiService = new RestApiService(device, progress);
                 await Task.Run(() => restApiService.ScanSwitch());
-                UpdateConnectedState();
+                UpdateConnectedState(false);
             }
             catch (Exception ex)
             {
@@ -626,12 +627,12 @@ namespace PoEWizard
             _infoBox.Visibility = Visibility.Collapsed;
         }
 
-        private void UpdateConnectedState()
+        private void UpdateConnectedState(bool checkCertified)
         {
             if (device.IsConnected)
             {
                 Logger.Info($"Connected to switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                SetConnectedState(false);
+                SetConnectedState(checkCertified);
             }
             else
             {
