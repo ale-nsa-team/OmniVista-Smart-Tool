@@ -49,6 +49,7 @@ namespace PoEWizard.Data
         public const string SERIAL_NUMBER = "Serial Number";
         public const string WORKING_DIR = "Working";
         public const string CERTIFIED_DIR = "Certified";
+        public const string MIN_AOS_VERSION = "8.9 R1";
         // Used by "Utils" class
         public const string P_CHASSIS = "CHASSIS_ID";
         public const string P_SLOT = "SLOT_ID";
@@ -132,6 +133,7 @@ namespace PoEWizard.Data
         public const string MATCH_EQUALS = "([^:]+)=(.+)";
         public const string MATCH_TABLE_SEP = @"(-+\++)+";
         public const string MATCH_CHASSIS = @"([Local|Remote] Chassis ID )(\d+) \((.+)\)";
+        public const string MATCH_AOS_VERSION = @"(\d+)\.(\d+)([\.\d +]+)(\.R)(\d+)";
         #endregion
     }
 }
