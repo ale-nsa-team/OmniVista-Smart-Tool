@@ -69,6 +69,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120"/>
@@ -82,19 +83,21 @@
                 <Label Grid.Row="2" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_model" Content="{Binding Model}"/>
                 <Label Grid.Row="3" Grid.Column="0" Style="{DynamicResource keyLabel}">Realease:</Label>
                 <Label Grid.Row="3" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_release" Content="{Binding Version}"/>
-                <Label Grid.Row="4" Grid.Column="0" Style="{DynamicResource keyLabel}">Location:</Label>
-                <Label Grid.Row="4" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_location" Content="{Binding Location}" />
-                <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}">Contact:</Label>
-                <Label Grid.Row="5" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_contact" Content="{Binding Contact}" />
-                <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}">MAC Address:</Label>
-                <Label Grid.Row="6" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_mac" Content="{Binding MacAddress}"/>
-                <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}">IP Address:</Label>
-                <Label Grid.Row="7" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_ip" Content="{Binding IpAddress}"/>
-                <Label Grid.Row="8" Grid.Column="0" Style="{DynamicResource keyLabel}">Running Directory:</Label>
-                <Label Grid.Row="8" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_runningDir" Content="{Binding RunningDir}"
+                <Label Grid.Row="4" Grid.Column="0" Style="{DynamicResource keyLabel}">FPGA Version:</Label>
+                <Label Grid.Row="4" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_fpga" Content="{Binding Fpga}"/>                
+                <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}">Location:</Label>
+                <Label Grid.Row="5" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_location" Content="{Binding Location}" />
+                <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}">Contact:</Label>
+                <Label Grid.Row="6" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_contact" Content="{Binding Contact}" />
+                <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}">MAC Address:</Label>
+                <Label Grid.Row="7" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_mac" Content="{Binding MacAddress}"/>
+                <Label Grid.Row="8" Grid.Column="0" Style="{DynamicResource keyLabel}">IP Address:</Label>
+                <Label Grid.Row="8" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_ip" Content="{Binding IpAddress}"/>
+                <Label Grid.Row="9" Grid.Column="0" Style="{DynamicResource keyLabel}">Running Directory:</Label>
+                <Label Grid.Row="9" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_runningDir" Content="{Binding RunningDir}"
                        Foreground="{Binding Path=RunningDir, Converter={StaticResource ValueToColorConverter}, ConverterParameter=RunningDir}"/>
-                <Label Grid.Row="9" Grid.Column="0" Style="{DynamicResource keyLabel}">Synchronization:</Label>
-                <Label Grid.Row="9" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_syncStatus" Content="{Binding SyncStatus}"/>
+                <Label Grid.Row="10" Grid.Column="0" Style="{DynamicResource keyLabel}">Synchronization:</Label>
+                <Label Grid.Row="10" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_syncStatus" Content="{Binding SyncStatus}"/>
             </Grid>
         </StackPanel>
         <Border Grid.Row="2" x:Name="_slotInfo" Style="{DynamicResource gridBorder}">

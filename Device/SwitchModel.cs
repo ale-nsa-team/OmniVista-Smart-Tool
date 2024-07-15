@@ -85,12 +85,6 @@ namespace PoEWizard.Device
                     {
                         ChassisModel ci = new ChassisModel(dict);
                         ChassisList.Add(ci);
-                        if (ci.IsMaster)
-                        {
-                            this.Model = ci.Model;
-                            this.MacAddress = ci.MacAddress;
-                            this.SerialNumber = ci.SerialNumber;
-                        }
                     }
                     break;
                 case DictionaryType.PortsList:

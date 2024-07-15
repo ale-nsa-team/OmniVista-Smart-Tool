@@ -55,6 +55,9 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MICROCODE));
                 List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(diclist[0], DictionaryType.MicroCode);
+                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CMM));
+                dict = CliParseUtils.ParseVTable(_response[RESULT]);
+                SwitchModel.LoadFromDictionary(dict, DictionaryType.Cmm);
                 ScanSwitch();
             }
             catch (Exception ex)
