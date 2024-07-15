@@ -6,6 +6,7 @@
     <converters:BoolToSymbolConverter x:Key="BoolToSymbolConverter" />
     <converters:PoeTypeToSymbolConverter x:Key="PoeTypeToSymbolConverter" />
     <converters:PoeToPriorityLevelConverter x:Key="PoeToPriorityLevelConverter" />
+    <converters:AosVersionToVisibilityConverter x:Key="AosVersionToVisibilityConverter" />
 
     <BitmapImage x:Key="connected" UriSource="connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="disconnected-dark.png" />

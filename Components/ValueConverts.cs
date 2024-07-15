@@ -82,22 +82,41 @@ namespace PoEWizard.Components
                 case "Boolean":
                     return val.ToLower() == "true" ? green : red;
                 case "AosVersion":
-                    Match version = Regex.Match(val, Constants.MATCH_AOS_VERSION);
-                    if (version.Success)
-                    {
-                        int v1 = int.Parse(version.Groups[1].ToString());
-                        int v2 = int.Parse(version.Groups[2].ToString());
-                        int r = int.Parse(version.Groups[5].ToString());
-                        string[] minver = Constants.MIN_AOS_VERSION.Split(' ');
-                        int minv1 = int.Parse(minver[0].Split('.')[0]);
-                        int minv2 = int.Parse(minver[0].Split('.')[1]);
-                        int minr = int.Parse(minver[1].Replace("R", ""));
-                        return ((v1 < minv1) || (v2 == minv2 && r < minr)) ? Brushes.Orange : def;
-                    }
-                    return def;
+                    return IsOldVersion(val) ? Brushes.Orange : def;
                 default:
                     return red;
             }
+        }
+
+        public static bool IsOldVersion(string aos)
+        {
+            Match version = Regex.Match(aos, Constants.MATCH_AOS_VERSION);
+            if (version.Success)
+            {
+                int v1 = int.Parse(version.Groups[1].ToString());
+                int v2 = int.Parse(version.Groups[2].ToString());
+                int r = int.Parse(version.Groups[5].ToString());
+                string[] minver = Constants.MIN_AOS_VERSION.Split(' ');
+                int minv1 = int.Parse(minver[0].Split('.')[0]);
+                int minv2 = int.Parse(minver[0].Split('.')[1]);
+                int minr = int.Parse(minver[1].Replace("R", ""));
+                return (v1 < minv1) || (v1 == minv1 && v2 < minv2) || (v1 == minv1 && v2 == minv2 && r < minr);
+            }
+            return false;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class AosVersionToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return Visibility.Collapsed;
+            return ValueToColorConverter.IsOldVersion(value.ToString()) ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

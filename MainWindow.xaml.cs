@@ -717,5 +717,10 @@ namespace PoEWizard
         }
 
         #endregion private methods
+
+        private void Label_SourceUpdated(object sender, System.Windows.Data.DataTransferEventArgs e)
+        {
+
+        }
     }
 }

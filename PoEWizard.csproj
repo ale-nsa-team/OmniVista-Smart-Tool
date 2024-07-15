@@ -260,5 +260,8 @@
   <ItemGroup>
     <Resource Include="Resources\refresh-light.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\warning.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
