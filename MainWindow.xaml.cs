@@ -450,7 +450,7 @@ namespace PoEWizard
                 }
                 wizardProgressReport.Title = "PoE Wizard Report:";
                 wizardProgressReport.Type = reportResult.Proceed ? ReportType.Error : ReportType.Info;
-                wizardProgressReport.Message = $"{reportResult.Message}\n\nTotal duration: {Utils.PrintTimeDurationSec(startTime)}";
+                wizardProgressReport.Message = $"{reportResult.Message}\n\nTotal duration: {Utils.CalcStringDuration(startTime, true)}";
                 progress.Report(wizardProgressReport);
                 await WaitAckProgress();
                 RefreshSlotAndPortsView();
@@ -506,20 +506,20 @@ namespace PoEWizard
             if (!reportResult.Proceed) return;
             await ChangePriority();
             if (!reportResult.Proceed) return;
-            await ResetPortPower();
-            if (!reportResult.Proceed) return;
             await EnableHdmiMdi();
+            if (!reportResult.Proceed) return;
+            await ResetPortPower();
         }
 
         private async Task RunWizardWirelessLan()
         {
             await Enable823BT();
             if (!reportResult.Proceed) return;
+            await ResetPortPower();
+            if (!reportResult.Proceed) return;
             await Enable2PairPower();
             if (!reportResult.Proceed) return;
             await ChangePriority();
-            if (!reportResult.Proceed) return;
-            await ResetPortPower();
             if (!reportResult.Proceed) return;
             await EnableHdmiMdi();
         }
@@ -570,7 +570,6 @@ namespace PoEWizard
             if (!proceed) return;
             await RunPoeWizard(new List<RestUrlId>() { RestUrlId.POWER_PRIORITY_PORT }, 15);
             Logger.Info($"Change Power Priority on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-            HideInfoBox();
         }
 
         private async Task EnableHdmiMdi()
@@ -605,6 +604,7 @@ namespace PoEWizard
 
         private bool ShowMessageBox(string title, string message, MsgBoxIcons icon = MsgBoxIcons.Info, MsgBoxButtons buttons = MsgBoxButtons.Ok)
         {
+            _infoBox.Visibility = Visibility.Collapsed;
             CustomMsgBox msgBox = new CustomMsgBox(this)
             {
                 Header = title,
@@ -659,7 +659,6 @@ namespace PoEWizard
             DataContext = device;
             if (device.RunningDir == CERTIFIED_DIR && checkCertified)
             {
-                HideInfoBox();
                 string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be saved.\n" +
                     $"Do you want to reboot the switch on {WORKING_DIR} directory?";
                 bool res = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
@@ -692,7 +691,6 @@ namespace PoEWizard
         {
             string duration = "";
             await Task.Run(() => duration = restApiService.RebootSwitch(waitSec));
-            HideInfoBox();
             string txt = $"Switch {device.IpAddress} ready to connect";
             if (!string.IsNullOrEmpty(duration)) txt += $"\nReboot duration: {duration}";
             ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
