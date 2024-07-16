@@ -22,8 +22,9 @@ namespace PoEWizard.Data
         public const string DATA_2 = "%3_DATA_3%";
         public const string DATA_3 = "%4_DATA_4%";
 
-        public enum RestUrlId
+        public enum CommandType
         {
+            NO_COMMAND = -1,
             // 0 - 29: Basic commands to gather switch data
             SHOW_SYSTEM = 0,
             SHOW_MICROCODE = 1,
@@ -71,131 +72,117 @@ namespace PoEWizard.Data
             REBOOT_SWITCH = 72,
             // 100 - 119: Virtual commands
             CHECK_POWER_PRIORITY = 100,
-            RESET_POWER_PORT = 101,
-            DISABLE_PERPETUAL_FAST_POE = 102,
-            ENABLE_PERPETUAL_DISABLE_FAST_POE = 103,
-            NO_COMMAND = -1
+            RESET_POWER_PORT = 101
         }
 
         private readonly static Dictionary<CommandType, string> CLI_TABLE = new Dictionary<CommandType, string>
         {
             // 0 - 29: Basic commands to gather switch data
-            [RestUrlId.SHOW_SYSTEM] = "show system",                                            //  0
-            [RestUrlId.SHOW_MICROCODE] = "show microcode",                                      //  1
-            [RestUrlId.SHOW_RUNNING_DIR] = "show running-directory",                            //  2
-            [RestUrlId.SHOW_CHASSIS] = "show chassis",                                          //  3
-            [RestUrlId.SHOW_PORTS_LIST] = "show interfaces alias",                              //  4
-            [RestUrlId.SHOW_POWER_SUPPLIES] = $"show powersupply",                              //  5
-            [RestUrlId.SHOW_POWER_SUPPLY] = $"show powersupply {DATA_0}",                       //  6
-            [RestUrlId.SHOW_LAN_POWER] = $"show lanpower slot {DATA_0}",                        //  7
-            [RestUrlId.SHOW_LAN_POWER_STATUS] = $"show lanpower chassis {DATA_0} status",       //  8
-            [RestUrlId.SHOW_SLOT] = $"show slot {DATA_0}",                                      //  9
-            [RestUrlId.SHOW_MAC_LEARNING] = $"show mac-learning domain vlan",                   // 10
-            [RestUrlId.SHOW_TEMPERATURE] = $"show temperature",                                 // 11
-            [RestUrlId.SHOW_HEALTH] = $"show health all cpu",                                   // 12
-            [RestUrlId.SHOW_LAN_POWER_CONFIG] = $"show lanpower slot {DATA_0} port-config",     // 13
-            [RestUrlId.SHOW_LLDP_REMOTE] = "show lldp remote-system",                           // 14
-            [RestUrlId.SHOW_CMM] = "show cmm",                                                  // 15
+            [CommandType.SHOW_SYSTEM] = "show system",                                            //  0
+            [CommandType.SHOW_MICROCODE] = "show microcode",                                      //  1
+            [CommandType.SHOW_RUNNING_DIR] = "show running-directory",                            //  2
+            [CommandType.SHOW_CHASSIS] = "show chassis",                                          //  3
+            [CommandType.SHOW_PORTS_LIST] = "show interfaces alias",                              //  4
+            [CommandType.SHOW_POWER_SUPPLIES] = $"show powersupply",                              //  5
+            [CommandType.SHOW_POWER_SUPPLY] = $"show powersupply {DATA_0}",                       //  6
+            [CommandType.SHOW_LAN_POWER] = $"show lanpower slot {DATA_0}",                        //  7
+            [CommandType.SHOW_LAN_POWER_STATUS] = $"show lanpower chassis {DATA_0} status",       //  8
+            [CommandType.SHOW_SLOT] = $"show slot {DATA_0}",                                      //  9
+            [CommandType.SHOW_MAC_LEARNING] = $"show mac-learning domain vlan",                   // 10
+            [CommandType.SHOW_TEMPERATURE] = $"show temperature",                                 // 11
+            [CommandType.SHOW_HEALTH] = $"show health all cpu",                                   // 12
+            [CommandType.SHOW_LAN_POWER_CONFIG] = $"show lanpower slot {DATA_0} port-config",     // 13
+            [CommandType.SHOW_LLDP_REMOTE] = "show lldp remote-system",                           // 14
+            [CommandType.SHOW_CMM] = "show cmm",                                                  // 15
             // 30 - 69: Commands related to actions on port
-            [RestUrlId.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",        // 30
-            [RestUrlId.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",           // 31
-            [RestUrlId.POWER_PRIORITY_PORT] = $"lanpower port {DATA_0} priority {DATA_1}",      // 32
-            [RestUrlId.POWER_4PAIR_PORT] = $"lanpower port {DATA_0} 4pair enable",              // 33
-            [RestUrlId.POWER_2PAIR_PORT] = $"lanpower port {DATA_0} 4pair disable",             // 34
-            [RestUrlId.POWER_DOWN_SLOT] = $"lanpower slot {DATA_0} service stop",               // 35
-            [RestUrlId.POWER_UP_SLOT] = $"lanpower slot {DATA_0} service start",                // 36
-            [RestUrlId.POWER_823BT_ENABLE] = $"lanpower slot {DATA_0} 8023bt enable",           // 37
-            [RestUrlId.POWER_823BT_DISABLE] = $"lanpower slot {DATA_0} 8023bt disable",         // 38
-            [RestUrlId.POWER_HDMI_ENABLE] = $"lanpower port {DATA_0} power-over-hdmi enable",   // 39
-            [RestUrlId.POWER_HDMI_DISABLE] = $"lanpower port {DATA_0} power-over-hdmi disable", // 40
-            [RestUrlId.LLDP_POWER_MDI_ENABLE] = $"lldp nearest-bridge port {DATA_0} tlv dot3 power-via-mdi enable",          // 41
-            [RestUrlId.LLDP_POWER_MDI_DISABLE] = $"lldp nearest-bridge port {DATA_0} tlv dot3 power-via-mdi disable",        // 42
-            [RestUrlId.LLDP_EXT_POWER_MDI_ENABLE] = $"lldp nearest-bridge port {DATA_0} tlv med ext-power-via-mdi enable",   // 43
-            [RestUrlId.LLDP_EXT_POWER_MDI_DISABLE] = $"lldp nearest-bridge port {DATA_0} tlv med ext-power-via-mdi disable", // 44
-            [RestUrlId.POE_FAST_ENABLE] = $"lanpower slot {DATA_0} fpoe enable",                // 45
-            [RestUrlId.POE_PERPETUAL_ENABLE] = $"lanpower slot {DATA_0} ppoe enable",           // 46
-            [RestUrlId.SHOW_PORT_MAC_ADDRESS] = $"show mac-learning port {DATA_0}",             // 47
-            [RestUrlId.SHOW_PORT_STATUS] = $"show interfaces port {DATA_0} alias",              // 48
-            [RestUrlId.SHOW_PORT_POWER] = $"show lanpower slot {DATA_0}|grep {DATA_1}",         // 49
-            [RestUrlId.SHOW_PORT_LLDP_REMOTE] = $"show lldp port {DATA_0} remote-system",       // 50
-            [RestUrlId.POE_FAST_DISABLE] = $"lanpower slot {DATA_0} fpoe disable",              // 51
-            [RestUrlId.POE_PERPETUAL_DISABLE] = $"lanpower slot {DATA_0} ppoe disable",         // 52
+            [CommandType.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",        // 30
+            [CommandType.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",           // 31
+            [CommandType.POWER_PRIORITY_PORT] = $"lanpower port {DATA_0} priority {DATA_1}",      // 32
+            [CommandType.POWER_4PAIR_PORT] = $"lanpower port {DATA_0} 4pair enable",              // 33
+            [CommandType.POWER_2PAIR_PORT] = $"lanpower port {DATA_0} 4pair disable",             // 34
+            [CommandType.POWER_DOWN_SLOT] = $"lanpower slot {DATA_0} service stop",               // 35
+            [CommandType.POWER_UP_SLOT] = $"lanpower slot {DATA_0} service start",                // 36
+            [CommandType.POWER_823BT_ENABLE] = $"lanpower slot {DATA_0} 8023bt enable",           // 37
+            [CommandType.POWER_823BT_DISABLE] = $"lanpower slot {DATA_0} 8023bt disable",         // 38
+            [CommandType.POWER_HDMI_ENABLE] = $"lanpower port {DATA_0} power-over-hdmi enable",   // 39
+            [CommandType.POWER_HDMI_DISABLE] = $"lanpower port {DATA_0} power-over-hdmi disable", // 40
+            [CommandType.LLDP_POWER_MDI_ENABLE] = $"lldp nearest-bridge port {DATA_0} tlv dot3 power-via-mdi enable",          // 41
+            [CommandType.LLDP_POWER_MDI_DISABLE] = $"lldp nearest-bridge port {DATA_0} tlv dot3 power-via-mdi disable",        // 42
+            [CommandType.LLDP_EXT_POWER_MDI_ENABLE] = $"lldp nearest-bridge port {DATA_0} tlv med ext-power-via-mdi enable",   // 43
+            [CommandType.LLDP_EXT_POWER_MDI_DISABLE] = $"lldp nearest-bridge port {DATA_0} tlv med ext-power-via-mdi disable", // 44
+            [CommandType.POE_FAST_ENABLE] = $"lanpower slot {DATA_0} fpoe enable",                // 45
+            [CommandType.POE_PERPETUAL_ENABLE] = $"lanpower slot {DATA_0} ppoe enable",           // 46
+            [CommandType.SHOW_PORT_MAC_ADDRESS] = $"show mac-learning port {DATA_0}",             // 47
+            [CommandType.SHOW_PORT_STATUS] = $"show interfaces port {DATA_0} alias",              // 48
+            [CommandType.SHOW_PORT_POWER] = $"show lanpower slot {DATA_0}|grep {DATA_1}",         // 49
+            [CommandType.SHOW_PORT_LLDP_REMOTE] = $"show lldp port {DATA_0} remote-system",       // 50
+            [CommandType.POE_FAST_DISABLE] = $"lanpower slot {DATA_0} fpoe disable",              // 51
+            [CommandType.POE_PERPETUAL_DISABLE] = $"lanpower slot {DATA_0} ppoe disable",         // 52
             // 70 - 99: Special switch commands
-            [RestUrlId.WRITE_MEMORY] = "write memory flash-synchro",                            // 70
-            [RestUrlId.SHOW_CONFIGURATION] = "show configuration snapshot",                     // 71
-            [RestUrlId.REBOOT_SWITCH] = "reload from working no rollback-timeout"               // 72
+            [CommandType.WRITE_MEMORY] = "write memory flash-synchro",                            // 70
+            [CommandType.SHOW_CONFIGURATION] = "show configuration snapshot",                     // 71
+            [CommandType.REBOOT_SWITCH] = "reload from working no rollback-timeout"               // 72
         };
 
         public static string ParseUrl(RestUrlEntry entry)
         {
-            string url = $"cli/aos?cmd={WebUtility.UrlEncode(GetUrlFromTable(entry.RestUrl, entry.Data).Trim())}";
-            return url;
+            string cli = GetCliFromTable(entry.RestUrl, entry.Data).Trim();
+            if (string.IsNullOrEmpty(cli)) return null;
+            return $"cli/aos?cmd={WebUtility.UrlEncode(cli)}";
         }
 
-        private static string GetUrlFromTable(RestUrlId restUrlId, string[] data)
+        private static string GetCliFromTable(CommandType restUrlId, string[] data)
         {
-            if (REST_URL_TABLE.ContainsKey(restUrlId))
+            if (CLI_TABLE.ContainsKey(restUrlId))
             {
-                string url = REST_URL_TABLE[restUrlId];
+                string url = CLI_TABLE[restUrlId];
                 switch (restUrlId)
                 {
-                    // 0 - 19: Basic commands to gather switch data
-                    case RestUrlId.SHOW_SYSTEM:                 //  0
-                    case RestUrlId.SHOW_MICROCODE:              //  1
-                    case RestUrlId.SHOW_RUNNING_DIR:            //  2
-                    case RestUrlId.SHOW_CHASSIS:                //  3
-                    case RestUrlId.SHOW_PORTS_LIST:             //  4
-                    case RestUrlId.SHOW_POWER_SUPPLIES:         //  5
-                    case RestUrlId.SHOW_SLOT:                   //  9
-                    case RestUrlId.SHOW_MAC_LEARNING:           // 10
-                    case RestUrlId.SHOW_TEMPERATURE:            // 11
-                    case RestUrlId.SHOW_HEALTH:                 // 12    
-                    case RestUrlId.SHOW_LLDP_REMOTE:            // 14
-                    case RestUrlId.SHOW_CMM:                    // 15
-                    // 70 - 99: Special switch commands
-                    case RestUrlId.WRITE_MEMORY:                // 70
-                    case RestUrlId.SHOW_CONFIGURATION:          // 71
-                    case RestUrlId.REBOOT_SWITCH:               // 72
-                        return url;
 
                     // 0 - 19: Basic commands to gather switch data
-                    case RestUrlId.SHOW_POWER_SUPPLY:           //  6
-                    case RestUrlId.SHOW_LAN_POWER:              //  7
-                    case RestUrlId.SHOW_LAN_POWER_STATUS:       //  8
-                    case RestUrlId.SHOW_LAN_POWER_CONFIG:       // 13
+                    case CommandType.SHOW_POWER_SUPPLY:           //  6
+                    case CommandType.SHOW_LAN_POWER:              //  7
+                    case CommandType.SHOW_LAN_POWER_STATUS:       //  8
+                    case CommandType.SHOW_LAN_POWER_CONFIG:       // 13
                     // 30 - 69: Commands related to actions on port
-                    case RestUrlId.POWER_DOWN_PORT:             // 30
-                    case RestUrlId.POWER_UP_PORT:               // 31
-                    case RestUrlId.POWER_4PAIR_PORT:            // 33
-                    case RestUrlId.POWER_2PAIR_PORT:            // 34
-                    case RestUrlId.POWER_DOWN_SLOT:             // 35
-                    case RestUrlId.POWER_UP_SLOT:               // 36
-                    case RestUrlId.POWER_823BT_ENABLE:          // 37
-                    case RestUrlId.POWER_823BT_DISABLE:         // 38
-                    case RestUrlId.POWER_HDMI_ENABLE:           // 39
-                    case RestUrlId.POWER_HDMI_DISABLE:          // 40
-                    case RestUrlId.LLDP_POWER_MDI_ENABLE:       // 41
-                    case RestUrlId.LLDP_POWER_MDI_DISABLE:      // 42
-                    case RestUrlId.LLDP_EXT_POWER_MDI_ENABLE:   // 43
-                    case RestUrlId.LLDP_EXT_POWER_MDI_DISABLE:  // 44
-                    case RestUrlId.POE_FAST_ENABLE:             // 45
-                    case RestUrlId.POE_PERPETUAL_ENABLE:        // 46
-                    case RestUrlId.SHOW_PORT_MAC_ADDRESS:       // 47
-                    case RestUrlId.SHOW_PORT_STATUS:            // 48
-                    case RestUrlId.SHOW_PORT_LLDP_REMOTE:       // 50
-                    case RestUrlId.POE_FAST_DISABLE:            // 51
-                    case RestUrlId.POE_PERPETUAL_DISABLE:       // 52
+                    case CommandType.POWER_DOWN_PORT:             // 30
+                    case CommandType.POWER_UP_PORT:               // 31
+                    case CommandType.POWER_4PAIR_PORT:            // 33
+                    case CommandType.POWER_2PAIR_PORT:            // 34
+                    case CommandType.POWER_DOWN_SLOT:             // 35
+                    case CommandType.POWER_UP_SLOT:               // 36
+                    case CommandType.POWER_823BT_ENABLE:          // 37
+                    case CommandType.POWER_823BT_DISABLE:         // 38
+                    case CommandType.POWER_HDMI_ENABLE:           // 39
+                    case CommandType.POWER_HDMI_DISABLE:          // 40
+                    case CommandType.LLDP_POWER_MDI_ENABLE:       // 41
+                    case CommandType.LLDP_POWER_MDI_DISABLE:      // 42
+                    case CommandType.LLDP_EXT_POWER_MDI_ENABLE:   // 43
+                    case CommandType.LLDP_EXT_POWER_MDI_DISABLE:  // 44
+                    case CommandType.POE_FAST_ENABLE:             // 45
+                    case CommandType.POE_PERPETUAL_ENABLE:        // 46
+                    case CommandType.SHOW_PORT_MAC_ADDRESS:       // 47
+                    case CommandType.SHOW_PORT_STATUS:            // 48
+                    case CommandType.SHOW_PORT_LLDP_REMOTE:       // 50
+                    case CommandType.POE_FAST_DISABLE:            // 51
+                    case CommandType.POE_PERPETUAL_DISABLE:       // 52
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 
                     // 30 - 69: Commands related to actions on port
-                    case RestUrlId.POWER_PRIORITY_PORT:         // 32
-                    case RestUrlId.SHOW_PORT_POWER:             // 49
+                    case CommandType.POWER_PRIORITY_PORT:         // 32
+                    case CommandType.SHOW_PORT_POWER:             // 49
                         if (data == null || data.Length < 2) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, data[0]).Replace(DATA_1, data[1]);
 
+                    // 100 - 119: Virtual commands
+                    case CommandType.CHECK_POWER_PRIORITY:                //  100
+                    case CommandType.RESET_POWER_PORT:                    //  101
+                    case CommandType.NO_COMMAND:                          //  -1
+                        return null;
+
                     default:
-                        throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
+                        return url;
                 }
             }
             else

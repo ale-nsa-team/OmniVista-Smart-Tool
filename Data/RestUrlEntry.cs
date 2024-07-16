@@ -9,7 +9,7 @@ namespace PoEWizard.Data
     public class RestUrlEntry
     {
 
-        public RestUrlId RestUrl { get; set; }
+        public CommandType RestUrl { get; set; }
         public DateTime StartTime { get; set; }
         public string Duration { get; set; }
         public HttpMethod Method { get; set; }
@@ -17,7 +17,7 @@ namespace PoEWizard.Data
         public Dictionary<string, string> Content { get; set; }
         public string[] Data { get; set; }
 
-        public RestUrlEntry(RestUrlId url, string[] data = null)
+        public RestUrlEntry(CommandType url, string[] data = null)
         {
             this.RestUrl = url;
             this.Data = data;

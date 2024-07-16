@@ -11,8 +11,7 @@ namespace PoEWizard.Device
     {
         public string Number { get; set; }
         public string Name { get; set; }
-        public bool HasPoe { get; set; }
-        public PoeStatus Poe { get; set; }
+        public PoeStatus Poe { get; set; } = PoeStatus.NoPoe;
         public int Power { get; set; }
         public int MaxPower { get; set; }
         public PortStatus Status { get; set; }
@@ -37,7 +36,6 @@ namespace PoEWizard.Device
             Name = dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "";
             Number = GetPortId(Name);
             UpdatePortStatus(dict);
-            HasPoe = false;
             Power = 0;
             Poe = PoeStatus.NoPoe;
             MaxPower = 0;
@@ -58,7 +56,6 @@ namespace PoEWizard.Device
         {
             MaxPower = ParseNumber(dict.TryGetValue(MAXIMUM, out string s) ? s : "0");
             Power = ParseNumber(dict.TryGetValue(USED, out s) ? s : "0");
-            HasPoe = true;
             switch (dict.TryGetValue(STATUS, out s) ? s : "")
             {
                 case POWERED_ON:

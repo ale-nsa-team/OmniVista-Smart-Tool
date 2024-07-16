@@ -201,7 +201,7 @@
                     <DataGridComboBoxColumn Header="Priority" Width="*" IsReadOnly="False">
                         <DataGridComboBoxColumn.SelectedItemBinding>
                             <MultiBinding Converter="{StaticResource PoeToPriorityLevelConverter}">
-                                <Binding Path="HasPoe" />
+                                <Binding Path="Poe" />
                                 <Binding Path="PriorityLevel" />
                             </MultiBinding>
                         </DataGridComboBoxColumn.SelectedItemBinding>

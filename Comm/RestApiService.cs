@@ -19,7 +19,7 @@ namespace PoEWizard.Comm
         private DateTime _wizardStartTime;
         private PortModel _wizardSwitchPort;
         private ProgressReport _wizardProgressReport;
-        private RestUrlId _wizardCommand = RestUrlId.SHOW_SYSTEM;
+        private CommandType _wizardCommand = CommandType.SHOW_SYSTEM;
         private ProgressReportResult _wizardReportResult;
 
         public bool IsReady { get; set; } = false;
@@ -48,13 +48,13 @@ namespace PoEWizard.Comm
                 if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to Switch {SwitchModel.IpAddress}!");
                 SwitchModel.IsConnected = true;
                 _progress.Report(new ProgressReport($"Reading System information on Switch {SwitchModel.IpAddress}"));
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_SYSTEM));
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_SYSTEM));
                 Dictionary<string, string> dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.System);
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MICROCODE));
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_MICROCODE));
                 List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(diclist[0], DictionaryType.MicroCode);
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CMM));
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CMM));
                 dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.Cmm);
                 ScanSwitch();
@@ -72,28 +72,28 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport($"Scanning switch {SwitchModel.IpAddress}"));
                 List<Dictionary<string, string>> diclist;
                 Dictionary<string, string> dict;
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_RUNNING_DIR));
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_RUNNING_DIR));
                 dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.RunningDir);
                 _progress.Report(new ProgressReport($"Reading chassis and port information on Switch {SwitchModel.IpAddress}"));
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CHASSIS));
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CHASSIS));
                 diclist = CliParseUtils.ParseChassisTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.Chassis);
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORTS_LIST));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 3);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PortsList);
                 _progress.Report(new ProgressReport($"Reading power supply information on Switch {SwitchModel.IpAddress}"));
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLIES));
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_POWER_SUPPLIES));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PowerSupply);
                 GetLanPower();
                 GetSnapshot();
                 _progress.Report(new ProgressReport($"Reading lldp remote information on Switch {SwitchModel.IpAddress}"));
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LLDP_REMOTE));
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LLDP_REMOTE));
                 diclist = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.LldpRemoteList);
                 _progress.Report(new ProgressReport($"Reading MAC Address information on Switch {SwitchModel.IpAddress}"));
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_MAC_LEARNING));
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_MAC_LEARNING));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
                 SwitchModel.LoadFromList(diclist, DictionaryType.MacAddressList);
             }
@@ -110,7 +110,7 @@ namespace PoEWizard.Comm
                 string txt = $"Reading configuration snapshot on Switch {SwitchModel.IpAddress}";
                 _progress.Report(new ProgressReport(txt));
                 Logger.Debug(txt);
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_CONFIGURATION));
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CONFIGURATION));
                 SwitchModel.ConfigSnapshot = _response[RESULT];
             }
             catch (Exception ex)
@@ -125,7 +125,7 @@ namespace PoEWizard.Comm
             try
             {
                 _progress.Report(new ProgressReport($"Rebooting Switch {SwitchModel.IpAddress}"));
-                SendRequest(GetRestUrlEntry(RestUrlId.REBOOT_SWITCH));
+                SendRequest(GetRestUrlEntry(CommandType.REBOOT_SWITCH));
                 if (waitSec <= 0) return "";
                 _progress.Report(new ProgressReport($"Waiting Switch {SwitchModel.IpAddress} reboot..."));
                 int dur = 0;
@@ -168,7 +168,7 @@ namespace PoEWizard.Comm
                 if (SwitchModel.ConfigChanged)
                 {
                     _progress.Report(new ProgressReport($"Writing memory on Switch {SwitchModel.IpAddress}"));
-                    SendRequest(GetRestUrlEntry(RestUrlId.WRITE_MEMORY));
+                    SendRequest(GetRestUrlEntry(CommandType.WRITE_MEMORY));
                     DateTime startTime = DateTime.Now;
                     int dur = 0;
                     while (dur < 25)
@@ -186,10 +186,10 @@ namespace PoEWizard.Comm
             }
         }
 
-        public bool SetPerpetualOrFastPoe(string slot, RestUrlId cmd)
+        public bool SetPerpetualOrFastPoe(string slot, CommandType cmd)
         {
-            bool enable = cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_FAST_ENABLE;
-            string poeType = (cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
+            bool enable = cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_FAST_ENABLE;
+            string poeType = (cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
             ProgressReport progressReport = new ProgressReport($"{(enable ? "Enable" : "Disable")} {poeType} PoE Report:")
             {
                 Type = ReportType.Info
@@ -198,7 +198,7 @@ namespace PoEWizard.Comm
             {
                 DateTime startTime = DateTime.Now;
                 GetLanPower();
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORTS_LIST));
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORTS_LIST));
                 List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 3);
                 SwitchModel.LoadFromList(dictList, DictionaryType.PortsList);
                 ChassisSlotPort chassisSlotPort = new ChassisSlotPort($"{slot}/0");
@@ -230,7 +230,7 @@ namespace PoEWizard.Comm
                 UpdatePortData(port);
                 if (_wizardSwitchPort == null) return false;
                 if (_wizardSwitchPort.PriorityLevel == priority) return false;
-                SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
+                SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
                 progressReport.Message += $"\n - Priority on port {port} set to {priority}";
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
                 UpdatePortData(port);
@@ -246,7 +246,7 @@ namespace PoEWizard.Comm
             return false;
         }
 
-        public void RunPoeWizard(string port, ProgressReportResult reportResult, List<RestUrlId> commands, int waitSec)
+        public void RunPoeWizard(string port, ProgressReportResult reportResult, List<CommandType> commands, int waitSec)
         {
             if (string.IsNullOrEmpty(port)) return;
             _wizardProgressReport = new ProgressReport("PoE Wizard Report:");
@@ -280,54 +280,46 @@ namespace PoEWizard.Comm
                 }
                 ChassisSlotPort chassisSlotPort = new ChassisSlotPort(port);
                 string slot = $"{chassisSlotPort.ChassisNr}/{chassisSlotPort.SlotNr}";
-                foreach (RestUrlId command in commands)
+                foreach (CommandType command in commands)
                 {
                     _wizardCommand = command;
                     switch (_wizardCommand)
                     {
 
-                        case RestUrlId.POWER_2PAIR_PORT:
+                        case CommandType.POWER_2PAIR_PORT:
                             TryEnable2PairPower(port, waitSec);
                             break;
 
-                        case RestUrlId.POWER_HDMI_ENABLE:
+                        case CommandType.POWER_HDMI_ENABLE:
                             if (_wizardSwitchPort.Protocol8023bt == ConfigType.Unavailable) continue;
                             if (_wizardSwitchPort.IsPowerOverHdmi) continue;
-                            ExecuteActionOnPort($"Enabling Power HDMI on Port {port}", port, waitSec, RestUrlId.POWER_HDMI_DISABLE);
+                            ExecuteActionOnPort($"Enabling Power HDMI on Port {port}", port, waitSec, CommandType.POWER_HDMI_DISABLE);
                             break;
 
-                        case RestUrlId.LLDP_POWER_MDI_ENABLE:
+                        case CommandType.LLDP_POWER_MDI_ENABLE:
                             if (_wizardSwitchPort.IsLldpMdi) continue;
-                            ExecuteActionOnPort($"Enabling LLDP Power via MDI on Port {port}", port, waitSec, RestUrlId.LLDP_POWER_MDI_DISABLE);
+                            ExecuteActionOnPort($"Enabling LLDP Power via MDI on Port {port}", port, waitSec, CommandType.LLDP_POWER_MDI_DISABLE);
                             break;
 
-                        case RestUrlId.LLDP_EXT_POWER_MDI_ENABLE:
+                        case CommandType.LLDP_EXT_POWER_MDI_ENABLE:
                             if (_wizardSwitchPort.IsLldpExtMdi) continue;
-                            ExecuteActionOnPort($"Enabling LLDP Extended Power via MDI on Port {port}", port, waitSec, RestUrlId.LLDP_EXT_POWER_MDI_DISABLE);
+                            ExecuteActionOnPort($"Enabling LLDP Extended Power via MDI on Port {port}", port, waitSec, CommandType.LLDP_EXT_POWER_MDI_DISABLE);
                             break;
 
-                        case RestUrlId.CHECK_POWER_PRIORITY:
+                        case CommandType.CHECK_POWER_PRIORITY:
                             CheckPriority(port, chassisSlotPort);
                             return;
 
-                        case RestUrlId.POWER_PRIORITY_PORT:
+                        case CommandType.POWER_PRIORITY_PORT:
                             TryChangePriority(port, waitSec);
                             break;
 
-                        case RestUrlId.POWER_823BT_ENABLE:
+                        case CommandType.POWER_823BT_ENABLE:
                             Enable823BT(chassisSlotPort, waitSec);
                             break;
 
-                        case RestUrlId.RESET_POWER_PORT:
+                        case CommandType.RESET_POWER_PORT:
                             ResetPortPower(port, waitSec);
-                            break;
-
-                        case RestUrlId.DISABLE_PERPETUAL_FAST_POE:
-                            SetPerpetualOrFastPoE(port, slot, RestUrlId.POE_PERPETUAL_DISABLE, RestUrlId.POE_FAST_DISABLE);
-                            break;
-
-                        case RestUrlId.ENABLE_PERPETUAL_DISABLE_FAST_POE:
-                            SetPerpetualOrFastPoE(port, slot, RestUrlId.POE_PERPETUAL_ENABLE, RestUrlId.POE_FAST_DISABLE);
                             break;
 
                     }
@@ -345,67 +337,6 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void SetPerpetualOrFastPoE(string port, string slotNr, RestUrlId command1, RestUrlId command2)
-        {
-            SlotModel slot = SwitchModel.GetSlot(slotNr);
-            if (slot == null) return;
-            string wizardAction = "";
-            RestUrlId cmd1 = RestUrlId.NO_COMMAND;
-            RestUrlId cmd2 = RestUrlId.NO_COMMAND;
-            if (command1 == RestUrlId.POE_PERPETUAL_DISABLE && command2 == RestUrlId.POE_FAST_DISABLE)
-            {
-                if (slot.IsPPoE && slot.IsFPoE)
-                {
-                    wizardAction = $"Disabling Perpetual and Fast PoE on Slot {slotNr}";
-                    cmd1 = command1;
-                    cmd2 = command2;
-                }
-                else if (slot.IsPPoE && !slot.IsFPoE)
-                {
-                    wizardAction = $"Disabling Perpetual PoE on Slot {slotNr}";
-                    cmd1 = command1;
-                    cmd2 = RestUrlId.NO_COMMAND;
-                }
-                else if (!slot.IsPPoE && slot.IsFPoE)
-                {
-                    wizardAction = $"Disabling Fast PoE on Slot {slotNr}";
-                    cmd1 = RestUrlId.NO_COMMAND;
-                    cmd2 = command2;
-                }
-            }
-            else if (command1 == RestUrlId.POE_PERPETUAL_ENABLE && command2 == RestUrlId.POE_FAST_DISABLE)
-            {
-                if (!slot.IsPPoE && slot.IsFPoE)
-                {
-                    wizardAction = $"Enabling Perpetual and Disabling Fast PoE on Slot {slotNr}";
-                    cmd1 = command1;
-                    cmd2 = command2;
-                }
-                if (slot.IsPPoE && slot.IsFPoE)
-                {
-                    wizardAction = $"Disabling Fast PoE on Slot {slotNr}";
-                    cmd1 = RestUrlId.NO_COMMAND;
-                    cmd2 = command2;
-                }
-                else if (!slot.IsPPoE && !slot.IsFPoE)
-                {
-                    wizardAction += $"Enabling Perpetual PoE on Slot {slotNr}";
-                    cmd1 = command1;
-                    cmd2 = RestUrlId.NO_COMMAND;
-                }
-            }
-            _wizardReportResult.UpdateResult(port, true);
-            if (cmd1 == RestUrlId.NO_COMMAND && cmd2 == RestUrlId.NO_COMMAND) return;
-            _progress.Report(new ProgressReport($"{wizardAction}\nPoE status: {_wizardSwitchPort.Poe}, Port Status: {_wizardSwitchPort.Status}"));
-            DateTime startTime = DateTime.Now;
-            _wizardReportResult.CreateReportResult(port, wizardAction);
-            _progress.Report(new ProgressReport(wizardAction));
-            if (cmd1 != RestUrlId.NO_COMMAND) SendRequest(GetRestUrlEntry(command1, new string[1] { slotNr }));
-            if (cmd2 != RestUrlId.NO_COMMAND) SendRequest(GetRestUrlEntry(command2, new string[1] { slotNr }));
-            GetLanPower();
-            _wizardReportResult.UpdateDuration(port, Utils.PrintTimeDurationSec(startTime));
-        }
-
         private void TryEnable2PairPower(string port, int waitSec)
         {
             ChassisSlotPort chassisSlotPort = new ChassisSlotPort(port);
@@ -414,25 +345,22 @@ namespace PoEWizard.Comm
             SlotModel slot = chassis.GetSlot(chassisSlotPort.SlotNr);
             if (slot == null) return;
             DateTime startTime = DateTime.Now;
-            if (slot.IsFPoE)
-            {
-                _wizardReportResult.CreateReportResult(port, $"Enabling {(_wizardSwitchPort.Is4Pair ? "2-Pair" : "4-Pair")} Power on Port {port}");
-                _wizardReportResult.UpdateResult(port, true, " didn't solve the problem");
-                _wizardReportResult.UpdateError(port, $"Cannot enable 2-pair Power on Port {port} because Fast PoE is enabled!");
-                return;
-            }
+            bool fastPoe = slot.IsFPoE;
+            if (fastPoe) SendRequest(GetRestUrlEntry(CommandType.POE_FAST_DISABLE, new string[1] { slot.Name }));
             if (!_wizardSwitchPort.Is4Pair)
             {
-                SendRequest(GetRestUrlEntry(RestUrlId.POWER_4PAIR_PORT, new string[1] { port }));
+                SendRequest(GetRestUrlEntry(CommandType.POWER_4PAIR_PORT, new string[1] { port }));
                 Thread.Sleep(3000);
-                ExecuteActionOnPort($"Re-enabling 2-Pair Power on Port {port}", port, waitSec, RestUrlId.POWER_2PAIR_PORT);
+                ExecuteActionOnPort($"Re-enabling 2-Pair Power on Port {port}", port, waitSec, CommandType.POWER_2PAIR_PORT);
             }
             else
             {
-                RestUrlId init4Pair = _wizardSwitchPort.Is4Pair ? RestUrlId.POWER_4PAIR_PORT : RestUrlId.POWER_2PAIR_PORT;
-                _wizardCommand = _wizardSwitchPort.Is4Pair ? RestUrlId.POWER_2PAIR_PORT : RestUrlId.POWER_4PAIR_PORT;
+                CommandType init4Pair = _wizardSwitchPort.Is4Pair ? CommandType.POWER_4PAIR_PORT : CommandType.POWER_2PAIR_PORT;
+                _wizardCommand = _wizardSwitchPort.Is4Pair ? CommandType.POWER_2PAIR_PORT : CommandType.POWER_4PAIR_PORT;
                 ExecuteActionOnPort($"Enabling {(_wizardSwitchPort.Is4Pair ? "2-Pair" : "4-Pair")} Power on Port {port}", port, waitSec, init4Pair);
             }
+            if (!_wizardReportResult.Proceed) SendRequest(GetRestUrlEntry(CommandType.POE_PERPETUAL_ENABLE, new string[1] { slot.Name }));
+            else if (fastPoe) SendRequest(GetRestUrlEntry(CommandType.POE_FAST_ENABLE, new string[1] { slot.Name }));
             _wizardReportResult.UpdateDuration(port, Utils.PrintTimeDurationSec(startTime));
         }
 
@@ -460,7 +388,7 @@ namespace PoEWizard.Comm
             _progress?.Report(new ProgressReport(ReportType.Error, "Connect", error));
         }
 
-        private void ExecuteActionOnPort(string wizardAction, string port, int waitSec, RestUrlId restoreCmd)
+        private void ExecuteActionOnPort(string wizardAction, string port, int waitSec, CommandType restoreCmd)
         {
             try
             {
@@ -498,10 +426,10 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport(txt.ToString()));
                 if (_wizardSwitchPort.Protocol8023bt != ConfigType.Unavailable)
                 {
-                    SendRequest(GetRestUrlEntry(RestUrlId.POWER_DOWN_SLOT, new string[1] { slotNr }));
-                    SendRequest(GetRestUrlEntry(RestUrlId.POWER_823BT_ENABLE, new string[1] { slotNr }));
+                    SendRequest(GetRestUrlEntry(CommandType.POWER_DOWN_SLOT, new string[1] { slotNr }));
+                    SendRequest(GetRestUrlEntry(CommandType.POWER_823BT_ENABLE, new string[1] { slotNr }));
                     Thread.Sleep(5000);
-                    SendRequest(GetRestUrlEntry(RestUrlId.POWER_UP_SLOT, new string[1] { slotNr }));
+                    SendRequest(GetRestUrlEntry(CommandType.POWER_UP_SLOT, new string[1] { slotNr }));
                     Thread.Sleep(3000);
                     WaitPortUp(port, waitSec);
                 }
@@ -515,7 +443,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendRequest(GetRestUrlEntry(RestUrlId.POWER_UP_SLOT, new string[1] { slotNr }));
+                SendRequest(GetRestUrlEntry(CommandType.POWER_UP_SLOT, new string[1] { slotNr }));
                 ParseException(port, _wizardProgressReport, ex);
             }
         }
@@ -563,12 +491,12 @@ namespace PoEWizard.Comm
                 StringBuilder txt = new StringBuilder(wizardAction).Append("\nPoE status: ");
                 txt.Append(_wizardSwitchPort.Poe).Append(", Port Status: ").Append(_wizardSwitchPort.Status);
                 _progress.Report(new ProgressReport(txt.ToString()));
-                SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
+                SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
                 RestartDeviceOnPort(port, waitSec);
                 string result;
                 if (_wizardReportResult.Proceed)
                 {
-                    SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, prevPriority.ToString() }));
+                    SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { port, prevPriority.ToString() }));
                     result = "didn't solve the problem";
                 }
                 else
@@ -603,9 +531,9 @@ namespace PoEWizard.Comm
 
         private void RestartDeviceOnPort(string port, int waitSec)
         {
-            SendRequest(GetRestUrlEntry(RestUrlId.POWER_DOWN_PORT, new string[1] { port }));
+            SendRequest(GetRestUrlEntry(CommandType.POWER_DOWN_PORT, new string[1] { port }));
             Thread.Sleep(5000);
-            SendRequest(GetRestUrlEntry(RestUrlId.POWER_UP_PORT, new string[1] { port }));
+            SendRequest(GetRestUrlEntry(CommandType.POWER_UP_PORT, new string[1] { port }));
             WaitPortUp(port, waitSec);
         }
 
@@ -655,13 +583,13 @@ namespace PoEWizard.Comm
             SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
             GetSlotPower(chassis, slot);
             _wizardSwitchPort = this.SwitchModel.GetPort(port) ?? throw new Exception($"Port {port} not found!");
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_STATUS, new string[1] { port }));
+            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORT_STATUS, new string[1] { port }));
             List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 3);
             if (dictList?.Count > 0) _wizardSwitchPort.UpdatePortStatus(dictList[0]);
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_MAC_ADDRESS, new string[1] { port }));
+            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORT_MAC_ADDRESS, new string[1] { port }));
             dictList = CliParseUtils.ParseHTable(_response[RESULT], 1);
             if (dictList?.Count > 0) _wizardSwitchPort.UpdateMacList(dictList);
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_PORT_LLDP_REMOTE, new string[] { port }));
+            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORT_LLDP_REMOTE, new string[] { port }));
             dictList = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
             if (dictList?.Count > 0) _wizardSwitchPort.LoadLldpRemoteTable(dictList[0]);
         }
@@ -673,7 +601,7 @@ namespace PoEWizard.Comm
             _progress.Report(new ProgressReport($"Reading PoE information on Switch {SwitchModel.IpAddress}"));
             foreach (var chassis in SwitchModel.ChassisList)
             {
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 chassis.LoadFromList(diclist);
                 chassis.PowerBudget = 0;
@@ -684,14 +612,14 @@ namespace PoEWizard.Comm
                     GetSlotPower(chassis, slot);
                     chassis.PowerBudget += slot.Budget;
                     chassis.PowerConsumed += slot.Power;
-                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_CONFIG, new string[1] { $"{chassis.Number}/{slot.Number}" }));
+                    this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER_CONFIG, new string[1] { $"{chassis.Number}/{slot.Number}" }));
                     diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                     slot.LoadFromList(diclist, DictionaryType.LanPowerCfg);
                 }
                 chassis.PowerRemaining = chassis.PowerBudget - chassis.PowerConsumed;
                 foreach (var ps in chassis.PowerSupplies)
                 {
-                    this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_POWER_SUPPLY, new string[1] { ps.Id.ToString() }));
+                    this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_POWER_SUPPLY, new string[1] { ps.Id.ToString() }));
                     dict = CliParseUtils.ParseVTable(_response[RESULT]);
                     ps.LoadFromDictionary(dict);
                 }
@@ -701,7 +629,7 @@ namespace PoEWizard.Comm
         private void GetSlotPower(ChassisModel chassis, SlotModel slot)
         {
             List<Dictionary<string, string>> diclist;
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
+            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
             diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
             slot.LoadFromList(diclist, DictionaryType.LanPower);
         }
@@ -711,20 +639,20 @@ namespace PoEWizard.Comm
             Logger.Error(ex.Message + ":\n" + ex.StackTrace);
             progressReport.Type = ReportType.Error;
             progressReport.Message += $"didn't solve the problem{WebUtility.UrlDecode($"\n{ex.Message}")}";
-            PowerDevice(RestUrlId.POWER_UP_PORT, port);
+            PowerDevice(CommandType.POWER_UP_PORT, port);
         }
 
-        private string ChangePerpetualOrFastPoe(ChassisSlotPort chassisSlotPort, RestUrlId cmd)
+        private string ChangePerpetualOrFastPoe(ChassisSlotPort chassisSlotPort, CommandType cmd)
         {
             ChassisModel chassis = SwitchModel.GetChassis(chassisSlotPort.ChassisNr);
             if (chassis == null) return "";
             SlotModel slot = chassis.GetSlot(chassisSlotPort.SlotNr);
             if (slot == null) return "";
-            bool enable = cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_FAST_ENABLE;
-            string poeType = (cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
+            bool enable = cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_FAST_ENABLE;
+            string poeType = (cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
             string txt = $"{poeType} PoE on Slot {chassisSlotPort.ChassisNr}/{chassisSlotPort.SlotNr}";
-            if (cmd == RestUrlId.POE_PERPETUAL_ENABLE && slot.IsPPoE || cmd == RestUrlId.POE_FAST_ENABLE && slot.IsFPoE ||
-                cmd == RestUrlId.POE_PERPETUAL_DISABLE && !slot.IsPPoE || cmd == RestUrlId.POE_FAST_DISABLE && !slot.IsFPoE)
+            if (cmd == CommandType.POE_PERPETUAL_ENABLE && slot.IsPPoE || cmd == CommandType.POE_FAST_ENABLE && slot.IsFPoE ||
+                cmd == CommandType.POE_PERPETUAL_DISABLE && !slot.IsPPoE || cmd == CommandType.POE_FAST_DISABLE && !slot.IsFPoE)
             {
                 _progress.Report(new ProgressReport($"{(enable ? "Enabling" : "Disabling")} {txt}"));
                 txt = $"{txt} is already {(enable ? "enabled" : "disabled")}";
@@ -737,11 +665,11 @@ namespace PoEWizard.Comm
             Logger.Debug(txt);
             SendRequest(GetRestUrlEntry(cmd, new string[1] { $"{chassisSlotPort.ChassisNr}/{chassisSlotPort.SlotNr}" }));
             Thread.Sleep(2000);
-            this._response = SendRequest(GetRestUrlEntry(RestUrlId.SHOW_LAN_POWER_STATUS, new string[] { chassisSlotPort.ChassisNr.ToString() }));
+            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER_STATUS, new string[] { chassisSlotPort.ChassisNr.ToString() }));
             List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 2);
             chassis.LoadFromList(dictList);
-            if (cmd == RestUrlId.POE_PERPETUAL_ENABLE && slot.IsPPoE || cmd == RestUrlId.POE_FAST_ENABLE && slot.IsFPoE ||
-                cmd == RestUrlId.POE_PERPETUAL_DISABLE && !slot.IsPPoE || cmd == RestUrlId.POE_FAST_DISABLE && !slot.IsFPoE)
+            if (cmd == CommandType.POE_PERPETUAL_ENABLE && slot.IsPPoE || cmd == CommandType.POE_FAST_ENABLE && slot.IsFPoE ||
+                cmd == CommandType.POE_PERPETUAL_DISABLE && !slot.IsPPoE || cmd == CommandType.POE_FAST_DISABLE && !slot.IsFPoE)
             {
                 SwitchModel.ConfigChanged = true;
                 result += "executed";
@@ -753,7 +681,7 @@ namespace PoEWizard.Comm
             return result;
         }
 
-        private void PowerDevice(RestUrlId cmd, string slotPort)
+        private void PowerDevice(CommandType cmd, string slotPort)
         {
             try
             {
@@ -778,7 +706,7 @@ namespace PoEWizard.Comm
         {
             try
             {
-                this._response = SendRequest(GetRestUrlEntry(RestUrlId.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
+                this._response = SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
             }
             catch (Exception ex)
             {
@@ -800,12 +728,12 @@ namespace PoEWizard.Comm
             Logger.Debug($"Closing Rest API");
         }
 
-        private RestUrlEntry GetRestUrlEntry(RestUrlId url)
+        private RestUrlEntry GetRestUrlEntry(CommandType url)
         {
             return GetRestUrlEntry(url, new string[1] { null });
         }
 
-        private RestUrlEntry GetRestUrlEntry(RestUrlId url, string[] data)
+        private RestUrlEntry GetRestUrlEntry(CommandType url, string[] data)
         {
             RestUrlEntry entry = new RestUrlEntry(url, data) { Method = HttpMethod.Get };
             return entry;

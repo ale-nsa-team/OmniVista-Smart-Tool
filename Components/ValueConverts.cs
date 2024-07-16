@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using PoEWizard.Data;
+using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Components
 {
@@ -167,10 +168,10 @@ namespace PoEWizard.Components
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            bool hasPoe = bool.TryParse(values[0].ToString(), out bool b) && b;
+            string val = values[0].ToString();
+            PoeStatus poeType = string.IsNullOrEmpty(val) || val.Contains("UnsetValue") ? PoeStatus.NoPoe : (PoeStatus)Enum.Parse(typeof(Constants.PoeStatus), val);
             string priorityLevel = values[1].ToString();
-
-            return hasPoe ? Enum.Parse(typeof(Data.Constants.PriorityLevelType), priorityLevel) : null;
+            return poeType != PoeStatus.NoPoe ? Enum.Parse(typeof(Constants.PriorityLevelType), priorityLevel) : null;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

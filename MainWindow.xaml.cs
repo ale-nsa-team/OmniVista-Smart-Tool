@@ -313,7 +313,7 @@ namespace PoEWizard
                 if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
                 FocusManager.SetFocusedElement(FocusManager.GetFocusScope(cb), null);
                 Keyboard.ClearFocus();
-                RestUrlId cmd = (cb.IsChecked == true) ? RestUrlId.POE_FAST_ENABLE : RestUrlId.POE_FAST_DISABLE;
+                CommandType cmd = (cb.IsChecked == true) ? CommandType.POE_FAST_ENABLE : CommandType.POE_FAST_DISABLE;
                 bool res = await SetPerpetualOrFastPoe(cmd);
                 if (!res) cb.IsChecked = !cb.IsChecked;
             }
@@ -333,7 +333,7 @@ namespace PoEWizard
                 if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
                 FocusManager.SetFocusedElement(FocusManager.GetFocusScope(cb), null);
                 Keyboard.ClearFocus();
-                RestUrlId cmd = (cb.IsChecked == true) ? RestUrlId.POE_PERPETUAL_ENABLE : RestUrlId.POE_PERPETUAL_DISABLE;
+                CommandType cmd = (cb.IsChecked == true) ? CommandType.POE_PERPETUAL_ENABLE : CommandType.POE_PERPETUAL_DISABLE;
                 bool res = await SetPerpetualOrFastPoe(cmd);
                 if (!res) cb.IsChecked = !cb.IsChecked;
             }
@@ -345,10 +345,10 @@ namespace PoEWizard
             HideInfoBox();
         }
 
-        private async Task<bool> SetPerpetualOrFastPoe(RestUrlId cmd)
+        private async Task<bool> SetPerpetualOrFastPoe(CommandType cmd)
         {
-            string action = cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_FAST_ENABLE ? "Enabling" : "Disabling";
-            string poeType = (cmd == RestUrlId.POE_PERPETUAL_ENABLE || cmd == RestUrlId.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
+            string action = cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_FAST_ENABLE ? "Enabling" : "Disabling";
+            string poeType = (cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
             ShowProgress($"{action} {poeType} PoE on slot {selectedSlot.Name}...");
             bool ok = false;
             await Task.Run(() => ok = restApiService.SetPerpetualOrFastPoe(selectedSlot.Name, cmd));
@@ -500,8 +500,6 @@ namespace PoEWizard
 
         private async Task RunWizardTelephone()
         {
-            await ChangePerpetualFastPoE(RestUrlId.ENABLE_PERPETUAL_DISABLE_FAST_POE);
-            HideInfoBox();
             await Enable2PairPower();
             if (!reportResult.Proceed) return;
             await ChangePriority();
@@ -541,25 +539,19 @@ namespace PoEWizard
         {
             bool proceed = ShowMessageBox("Enable 802.3.bt", "To enable 802.3.bt all devices on the same slot will restart. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
             if (!proceed) return;
-            await RunPoeWizard(new List<RestUrlId>() { RestUrlId.POWER_823BT_ENABLE }, 15);
+            await RunPoeWizard(new List<CommandType>() { CommandType.POWER_823BT_ENABLE }, 15);
             Logger.Info($"Enable 802.3.bt on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task Enable2PairPower()
         {
-            await RunPoeWizard(new List<RestUrlId>() { RestUrlId.POWER_2PAIR_PORT }, 15);
+            await RunPoeWizard(new List<CommandType>() { CommandType.POWER_2PAIR_PORT }, 15);
             Logger.Info($"Enable 2-Pair Power on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-        }
-
-        private async Task ChangePerpetualFastPoE(RestUrlId cmd)
-        {
-            await RunPoeWizard(new List<RestUrlId>() { cmd }, 15);
-            Logger.Info($"Enable/Disable Perpetual/Fast PoE on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task ChangePriority()
         {
-            await RunPoeWizard(new List<RestUrlId>() { RestUrlId.CHECK_POWER_PRIORITY }, 15);
+            await RunPoeWizard(new List<CommandType>() { CommandType.CHECK_POWER_PRIORITY }, 15);
             Logger.Info($"PoE Wizard Check Power Priority on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             if (!reportResult.Proceed)
             {
@@ -568,23 +560,23 @@ namespace PoEWizard
             }
             bool proceed = ShowMessageBox("Power Priority Change", "Some other devices with lower priority may stop. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
             if (!proceed) return;
-            await RunPoeWizard(new List<RestUrlId>() { RestUrlId.POWER_PRIORITY_PORT }, 15);
+            await RunPoeWizard(new List<CommandType>() { CommandType.POWER_PRIORITY_PORT }, 15);
             Logger.Info($"Change Power Priority on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task EnableHdmiMdi()
         {
-            await RunPoeWizard(new List<RestUrlId>() { RestUrlId.POWER_HDMI_ENABLE, RestUrlId.LLDP_POWER_MDI_ENABLE, RestUrlId.LLDP_EXT_POWER_MDI_ENABLE }, 15);
+            await RunPoeWizard(new List<CommandType>() { CommandType.POWER_HDMI_ENABLE, CommandType.LLDP_POWER_MDI_ENABLE, CommandType.LLDP_EXT_POWER_MDI_ENABLE }, 15);
             Logger.Info($"Enable Power over HDMI on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task ResetPortPower()
         {
-            await RunPoeWizard(new List<RestUrlId>() { RestUrlId.RESET_POWER_PORT }, 15);
+            await RunPoeWizard(new List<CommandType>() { CommandType.RESET_POWER_PORT }, 15);
             Logger.Info($"Reset Power on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
-        private async Task RunPoeWizard(List<RestUrlId> cmdList, int waitSec)
+        private async Task RunPoeWizard(List<CommandType> cmdList, int waitSec)
         {
             await Task.Run(() => restApiService.RunPoeWizard(selectedPort, reportResult, cmdList, waitSec));
         }
