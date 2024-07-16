@@ -208,6 +208,7 @@ namespace PoEWizard.Comm
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
                 _progress.Report(progressReport);
                 Logger.Info($"{result}\n{progressReport.Message}");
+                SwitchModel.ConfigChanged = true;
                 return true;
             }
             catch (Exception ex)
