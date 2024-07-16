@@ -360,8 +360,7 @@ namespace PoEWizard.Comm
                 _wizardCommand = _wizardSwitchPort.Is4Pair ? CommandType.POWER_2PAIR_PORT : CommandType.POWER_4PAIR_PORT;
                 ExecuteActionOnPort($"Enabling {(_wizardSwitchPort.Is4Pair ? "2-Pair" : "4-Pair")} Power on Port {port}", port, waitSec, init4Pair);
             }
-            if (!_wizardReportResult.Proceed) SendRequest(GetRestUrlEntry(CommandType.POE_PERPETUAL_ENABLE, new string[1] { slot.Name }));
-            else if (fastPoe) SendRequest(GetRestUrlEntry(CommandType.POE_FAST_ENABLE, new string[1] { slot.Name }));
+            if (fastPoe) SendRequest(GetRestUrlEntry(CommandType.POE_FAST_ENABLE, new string[1] { slot.Name }));
             _wizardReportResult.UpdateDuration(port, Utils.PrintTimeDurationSec(startTime));
         }
 
