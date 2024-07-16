@@ -28,12 +28,12 @@ namespace PoEWizard.Data
             PowerSupply, LldpRemoteList, MacAddressList }
         public enum ConfigType { Enabled, Disabled, Unavailable }
         public enum DeviceType {
-            [Description("Telephone")]
-            Phone = 1,
             [Description("Camera")]
-            Camera = 2,
+            Camera = 1,
             [Description("Access Point")]
-            AP = 3,
+            AP = 2,
+            [Description("Telephone")]
+            Phone = 3,
             [Description("Other")]
             Other = 4
         }
