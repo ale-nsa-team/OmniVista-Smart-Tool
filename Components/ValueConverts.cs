@@ -140,6 +140,23 @@ namespace PoEWizard.Components
         }
     }
 
+    public class BoolToPoEModeConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            string val = values[0].ToString();
+            PoeStatus poeType = string.IsNullOrEmpty(val) || val.Contains("UnsetValue") ? PoeStatus.NoPoe : (PoeStatus)Enum.Parse(typeof(Constants.PoeStatus), val);
+            bool is4pair = bool.TryParse(values[1].ToString(), out bool b) ? b : true;
+            return poeType != PoeStatus.NoPoe ? (is4pair ? "4-pair" : "2-pair") : "";
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            string[] splitValues = (value.ToString()).Split(' ');
+            return splitValues;
+        }
+    }
+
     public class PoeTypeToSymbolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

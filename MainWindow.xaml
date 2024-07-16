@@ -218,6 +218,15 @@
                     </DataGridComboBoxColumn>
                     <DataGridTextColumn Header="Power (mW)" Width="*" Binding="{Binding Path=Power}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Max Power (mW)" Width="1.2*" Binding="{Binding Path=MaxPower}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="PoE Class" Width="*" Binding="{Binding Path=Class}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="PoE Mode" Width="*" IsReadOnly="True">
+                        <DataGridTextColumn.Binding>
+                            <MultiBinding Converter="{StaticResource BoolToPoEModeConverter}">
+                                <Binding Path="Poe" />
+                                <Binding Path="Is4Pair" />
+                            </MultiBinding>
+                        </DataGridTextColumn.Binding>
+                    </DataGridTextColumn>
                     <DataGridTextColumn Header="Device Type" Width="2*" Binding="{Binding Path=EndPointDevice.DeviceType}" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
