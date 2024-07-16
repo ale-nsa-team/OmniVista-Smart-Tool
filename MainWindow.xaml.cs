@@ -161,6 +161,7 @@ namespace PoEWizard
         {
             ShowProgress("Reading configuration snapshot...");
             await Task.Run(() => restApiService.GetSnapshot());
+            HideInfoBox();
             HideProgress();
             TextViewer tv = new TextViewer("Configuration Snapshot", device.ConfigSnapshot)
             {
