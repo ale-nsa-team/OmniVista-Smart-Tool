@@ -69,7 +69,7 @@ namespace PoEWizard.Device
                     SerialNumber = dict.TryGetValue(SERIAL_NUMBER, out s) ? s : "";
                     Model = dict.TryGetValue(MODEL_NAME, out s) ? s : "";
                     Fpga = dict.TryGetValue(FPGA, out s) ? s : "";
-                    MacAddress = dict.TryGetValue(SERIAL_NUMBER, out s) ? s : "";
+                    MacAddress = dict.TryGetValue(CHASSIS_MAC_ADDRESS, out s) ? s : "";
                     break;
             }
 ;

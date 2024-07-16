@@ -581,7 +581,7 @@ namespace PoEWizard.Comm
             ChassisSlotPort slotPort = new ChassisSlotPort(port);
             ChassisModel chassis = SwitchModel.GetChassis(slotPort.ChassisNr);
             SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
-            GetSlotPower(chassis, slot);
+            GetSlotPower(slot);
             _wizardSwitchPort = this.SwitchModel.GetPort(port) ?? throw new Exception($"Port {port} not found!");
             this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORT_STATUS, new string[1] { port }));
             List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 3);
@@ -609,12 +609,10 @@ namespace PoEWizard.Comm
                 foreach (var slot in chassis.Slots)
                 {
                     if (slot.Ports.Count == 0) continue;
-                    GetSlotPower(chassis, slot);
+                    if (!slot.IsClassDetection) SendRequest(GetRestUrlEntry(CommandType.POWER_CLASS_DETECTION_ENABLE, new string[1] { $"{slot.Name}" }));
+                    GetSlotPower(slot);
                     chassis.PowerBudget += slot.Budget;
                     chassis.PowerConsumed += slot.Power;
-                    this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER_CONFIG, new string[1] { $"{chassis.Number}/{slot.Number}" }));
-                    diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
-                    slot.LoadFromList(diclist, DictionaryType.LanPowerCfg);
                 }
                 chassis.PowerRemaining = chassis.PowerBudget - chassis.PowerConsumed;
                 foreach (var ps in chassis.PowerSupplies)
@@ -626,12 +624,15 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void GetSlotPower(ChassisModel chassis, SlotModel slot)
+        private void GetSlotPower(SlotModel slot)
         {
             List<Dictionary<string, string>> diclist;
-            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER, new string[1] { $"{chassis.Number}/{slot.Number}" }));
+            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER, new string[1] { $"{slot.Name}" }));
             diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
             slot.LoadFromList(diclist, DictionaryType.LanPower);
+            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER_CONFIG, new string[1] { $"{slot.Name}" }));
+            diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+            slot.LoadFromList(diclist, DictionaryType.LanPowerCfg);
         }
 
         private void ParseException(string port, ProgressReport progressReport, Exception ex)

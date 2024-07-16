@@ -42,6 +42,7 @@ namespace PoEWizard.Data
             SHOW_LAN_POWER_CONFIG = 13,
             SHOW_LLDP_REMOTE = 14,
             SHOW_CMM = 15,
+            POWER_CLASS_DETECTION_ENABLE = 16,
             // 30 - 69: Commands related to actions on port
             POWER_DOWN_PORT = 30,
             POWER_UP_PORT = 31,
@@ -94,6 +95,7 @@ namespace PoEWizard.Data
             [CommandType.SHOW_LAN_POWER_CONFIG] = $"show lanpower slot {DATA_0} port-config",     // 13
             [CommandType.SHOW_LLDP_REMOTE] = "show lldp remote-system",                           // 14
             [CommandType.SHOW_CMM] = "show cmm",                                                  // 15
+            [CommandType.POWER_CLASS_DETECTION_ENABLE] = $"lanpower slot {DATA_0} class-detection enable", // 16
             // 30 - 69: Commands related to actions on port
             [CommandType.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",        // 30
             [CommandType.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",           // 31
@@ -139,11 +141,12 @@ namespace PoEWizard.Data
                 switch (restUrlId)
                 {
 
-                    // 0 - 19: Basic commands to gather switch data
+                    // 0 - 29: Basic commands to gather switch data
                     case CommandType.SHOW_POWER_SUPPLY:           //  6
                     case CommandType.SHOW_LAN_POWER:              //  7
                     case CommandType.SHOW_LAN_POWER_STATUS:       //  8
                     case CommandType.SHOW_LAN_POWER_CONFIG:       // 13
+                    case CommandType.POWER_CLASS_DETECTION_ENABLE: // 16
                     // 30 - 69: Commands related to actions on port
                     case CommandType.POWER_DOWN_PORT:             // 30
                     case CommandType.POWER_UP_PORT:               // 31
