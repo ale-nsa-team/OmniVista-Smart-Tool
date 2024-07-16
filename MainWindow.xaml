@@ -227,6 +227,7 @@
                             </MultiBinding>
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
+                    <DataGridTextColumn Header="Device MAC" Width="1.5*" Binding="{Binding Path=EndPointDevice.MacAddress}" IsReadOnly="True" />
                     <DataGridTextColumn Header="Device Type" Width="2*" Binding="{Binding Path=EndPointDevice.DeviceType}" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
