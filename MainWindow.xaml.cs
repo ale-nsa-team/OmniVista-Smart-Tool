@@ -98,6 +98,7 @@ namespace PoEWizard
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
             SetTitleColor();
+            _btnConnect.IsEnabled = false;
         }
 
         private async void OnWindowClosing(object sender, CancelEventArgs e)
@@ -144,11 +145,6 @@ namespace PoEWizard
         private void ConnectBtn_Click(object sender, MouseEventArgs e)
         {
             Connect();
-        }
-
-        private void ViewActivity_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private void ViewLog_Click(object sender, RoutedEventArgs e)
@@ -677,6 +673,8 @@ namespace PoEWizard
             }
             _slotsView.Visibility = Visibility.Visible;
             _portList.Visibility = Visibility.Visible;
+            _btnConnect.IsEnabled = true;
+            _comImg.ToolTip = "Click to disconnect";
         }
 
         private async Task RebootSwitch(int waitSec)
@@ -701,16 +699,13 @@ namespace PoEWizard
             _switchMenuItem.IsEnabled = true;
             _snapshotMenuItem.IsEnabled = false;
             _refreshSwitch.IsEnabled = false;
+            _comImg.ToolTip = "Click to reconnect";
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
             _slotsView.Visibility= Visibility.Hidden;
             _portList.Visibility= Visibility.Hidden;
+            _aosWarn.Visibility = Visibility.Hidden;
         }
 
         #endregion private methods
-
-        private void Label_SourceUpdated(object sender, System.Windows.Data.DataTransferEventArgs e)
-        {
-
-        }
     }
 }

@@ -34,7 +34,6 @@
                 <MenuItem Header="Exit" Click="Exit_Click"/>
             </MenuItem>
             <MenuItem Header="View">
-                <MenuItem Header="Activity" Click="ViewActivity_Click"/>
                 <MenuItem Header="Log">
                     <MenuItem Header="Display Log" Click="ViewLog_Click" />
                     <MenuItem Header="Log Level" x:Name="_logLevels">
@@ -86,7 +85,7 @@
                     <Label Style="{DynamicResource valLabel}" x:Name="_release" 
                        Content="{Binding Version}"
                        Foreground="{Binding Path=Version, Converter={StaticResource ValueToColorConverter}, ConverterParameter=AosVersion}"/>
-                    <Image Source="Resources/warning.png" Margin="5,0" Width="16" Height="16"
+                    <Image x:Name="_aosWarn" Source="Resources/warning.png" Margin="5,0" Width="16" Height="16"
                            ToolTip="Switch AOS version is too old. Please buy a support contract and upgrade your switch"
                            Visibility="{Binding Path=Version, Converter={StaticResource AosVersionToVisibilityConverter}}" />
                 </StackPanel>
