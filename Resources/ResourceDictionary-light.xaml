@@ -4,7 +4,6 @@
 
     <converters:ValueToColorConverter x:Key="ValueToColorConverter" />
     <converters:BoolToSymbolConverter x:Key="BoolToSymbolConverter" />
-    <converters:PoeTypeToSymbolConverter x:Key="PoeTypeToSymbolConverter" />
     <converters:PoeToPriorityLevelConverter x:Key="PoeToPriorityLevelConverter" />
     <converters:AosVersionToVisibilityConverter x:Key="AosVersionToVisibilityConverter" />
     <converters:BoolToPoEModeConverter x:Key="BoolToPoEModeConverter" />

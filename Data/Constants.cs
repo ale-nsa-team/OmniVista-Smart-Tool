@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace PoEWizard.Data
 {
@@ -22,8 +23,8 @@ namespace PoEWizard.Data
         public enum PriorityLevelType { Low, High, Critical }
         public enum PowerSupplyState { Up, Down, Unknown }
         public enum ChassisStatus { Unknown, Up, Down }
-        public enum DictionaryType { System, Chassis, RunningDir, Cmm, 
-            MicroCode, LanPower, LanPowerCfg, PortsList, 
+        public enum DictionaryType { System, Chassis, RunningDir, Cmm,
+            MicroCode, LanPower, LanPowerCfg, PortsList,
             PowerSupply, LldpRemoteList, MacAddressList }
         public enum ConfigType { Enabled, Disabled, Unavailable }
         public enum DeviceType {
@@ -34,9 +35,21 @@ namespace PoEWizard.Data
             [Description("Access Point")]
             AP = 3,
             [Description("Other")]
-            Other = 4 
+            Other = 4
         }
+        #endregion
 
+        #region dictionaries
+        public static readonly Dictionary<string, string> fpga = new Dictionary<string, string>()
+        {
+            {"OS6360-P10", "0.11"}, {"OS6360-P10A", "0.1"}, {"OS6360-P24", "0.15"}, {"OS6360-P24X", "0.12"}, 
+            {"OS6360-PH24", "0.12"}, {"OS6360-P48", "0.15"},{"OS6360-P48X", "0.12"}, {"OS6360-PH48", "0.12"},
+            {"OS6465-P6", "0.10" }, {"OS6465-P12", "0.10" }, {"OS6465-P28", "0.5" }, {"OS6465T-P12", "0.4" },
+            {"OS6560-P24Z24", "0.6" }, {"OS6560-P24Z8", "0.6"}, {"OS6560-P24X4", "0.4"}, 
+            {"OS6560-P48Z16", "0.6"}, {"OS6560-P48X4", "0.4" },
+            {"OS6860", "0.9"}, {"OS6860E-P24Z8", "0.5"},
+            {"OS6865-U28X", "0.14" }, {"OS6865-P16X", "0.25"}, {"OS6865-U12X", "0.25"}
+        };
         #endregion
 
         #region strings
@@ -135,5 +148,5 @@ namespace PoEWizard.Data
         public const string MATCH_CHASSIS = @"([Local|Remote] Chassis ID )(\d+) \((.+)\)";
         public const string MATCH_AOS_VERSION = @"(\d+)\.(\d+)([\.\d +]+)(\.R)(\d+)";
         #endregion
-    }
+    } 
 }

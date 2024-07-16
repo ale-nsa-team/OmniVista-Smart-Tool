@@ -157,30 +157,6 @@ namespace PoEWizard.Components
         }
     }
 
-    public class PoeTypeToSymbolConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            string poeType = (string)value.ToString();
-            switch (poeType.ToLower())
-            {
-                case "on":
-                    return "✓";
-
-                case "off":
-                    return "✗";
-
-                default:
-                    return "-";
-            }
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return DependencyProperty.UnsetValue;
-        }
-    }
-
     public class PoeToPriorityLevelConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
