@@ -156,6 +156,7 @@ namespace PoEWizard.Data
                     if (match.Success)
                     {
                         string key = match.Groups[1].Value.Trim();
+                        if (key.StartsWith(FPGA)) key = FPGA;
                         string value = match.Groups[2].Value.Trim();
                         value = value.EndsWith(",") ? value.Substring(0, value.Length - 1) : value;
                         if (!table.ContainsKey(key))
