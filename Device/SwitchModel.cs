@@ -97,14 +97,21 @@ namespace PoEWizard.Device
                         int nslots = chasList.GroupBy(c => GetSlotId(c)).Count();
                         for (int j = 1; j <= nslots; j++)
                         {
-                            var slot = new SlotModel(chasList[j][CHAS_SLOT_PORT]);
+                            ChassisSlotPort chassisSlot = new ChassisSlotPort(chasList[j][CHAS_SLOT_PORT]);
+                            SlotModel slot = chas.GetSlot(chassisSlot.SlotNr);
+                            if (slot == null)
+                            {
+                                slot = new SlotModel(chasList[j][CHAS_SLOT_PORT]);
+                                chas.Slots.Add(slot);
+                            }
                             List<Dictionary<string, string>> slotList = chasList.Where(c => GetSlotId(c) == j).ToList();
                             slot.NbPorts = slotList.Count;
                             foreach (var dict in slotList)
                             {
-                                slot.Ports.Add(new PortModel(dict));
+                                chassisSlot = new ChassisSlotPort(dict[CHAS_SLOT_PORT]);
+                                PortModel port = slot.GetPort(chassisSlot.PortNr);
+                                if (port == null) slot.Ports.Add(new PortModel(dict)); else port.UpdatePortStatus(dict);
                             }
-                            chas.Slots.Add(slot);
                         }
                     }
                     break;

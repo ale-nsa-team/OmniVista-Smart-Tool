@@ -354,8 +354,8 @@ namespace PoEWizard
             await Task.Run(() => ok = restApiService.SetPerpetualOrFastPoe(selectedSlot.Name, cmd));
             Logger.Info($"{action} {poeType} PoE on slot {selectedSlot.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             await WaitAckProgress();
+            RefreshSlotAndPortsView();
             return ok;
-            //RefreshSlotAndPortsView();
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)
