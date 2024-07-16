@@ -77,7 +77,7 @@ namespace PoEWizard.Data
             NO_COMMAND = -1
         }
 
-        public static Dictionary<RestUrlId, string> REST_URL_TABLE = new Dictionary<RestUrlId, string>
+        private readonly static Dictionary<CommandType, string> CLI_TABLE = new Dictionary<CommandType, string>
         {
             // 0 - 29: Basic commands to gather switch data
             [RestUrlId.SHOW_SYSTEM] = "show system",                                            //  0
