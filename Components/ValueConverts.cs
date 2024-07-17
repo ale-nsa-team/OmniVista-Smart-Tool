@@ -38,8 +38,8 @@ namespace PoEWizard.Components
         {
             if (value == null) return DependencyProperty.UnsetValue;
             var red = new BrushConverter().ConvertFrom("#f00736");
-            var green = MainWindow.theme == Data.Constants.ThemeType.Dark ? Brushes.Lime : Brushes.Green;
-            var def = MainWindow.theme == Data.Constants.ThemeType.Dark ? Brushes.White : Brushes.Black;
+            var green = MainWindow.theme == Constants.ThemeType.Dark ? Brushes.Lime : Brushes.Green;
+            var def = MainWindow.theme == Constants.ThemeType.Dark ? Brushes.White : Brushes.Black;
             string val = value.ToString();
             string param = parameter.ToString();
             switch (param)
@@ -79,17 +79,19 @@ namespace PoEWizard.Components
                 case "PowerSupply":
                     return val == "Up" ? green : red;
                 case "RunningDir":
-                    return val == Data.Constants.CERTIFIED_DIR ? red : def;
+                    return val == Constants.CERTIFIED_DIR ? red : def;
                 case "Boolean":
                     return val.ToLower() == "true" ? green : red;
                 case "AosVersion":
-                    return IsOldVersion(val) ? Brushes.Orange : def;
+                    return IsOldAosVersion(val) ? Brushes.Orange : def;
+                case "FpgaVersion":
+                    return IsOldFpgaVersion(val) ? Brushes.Orange: def;
                 default:
                     return red;
             }
         }
 
-        public static bool IsOldVersion(string aos)
+        public static bool IsOldAosVersion(string aos)
         {
             Match version = Regex.Match(aos, Constants.MATCH_AOS_VERSION);
             if (version.Success)
@@ -106,6 +108,11 @@ namespace PoEWizard.Components
             return false;
         }
 
+        public static bool IsOldFpgaVersion(string fpga)
+        {
+            return true;
+        }
+
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return DependencyProperty.UnsetValue;
@@ -119,7 +126,7 @@ namespace PoEWizard.Components
             string val = value.ToString();
             string par = parameter.ToString();
             ConfigType ct = Enum.TryParse(val, true, out ConfigType c) ? c : ConfigType.Unavailable;
-            return par == "Enable" ? ct == ConfigType.Enable : ct != ConfigType.Unavailable;
+            return par == "Available" ? ct != ConfigType.Unavailable : ct == ConfigType.Enable;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -128,12 +135,46 @@ namespace PoEWizard.Components
         }
     }
 
+    public class ConfigTypeToSimbolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string val = value.ToString();
+            ConfigType ct = Enum.TryParse(val, true, out ConfigType c) ? c : ConfigType.Unavailable;
+            switch (ct)
+            {
+                case ConfigType.Enable: return "✓";
+                case ConfigType.Disable: return "✗";
+                default: return string.Empty;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class AosVersionToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null) return Visibility.Collapsed;
-            return ValueToColorConverter.IsOldVersion(value.ToString()) ? Visibility.Visible : Visibility.Collapsed;
+            return ValueToColorConverter.IsOldAosVersion(value.ToString()) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class FpgaVersionToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return Visibility.Collapsed;
+            return ValueToColorConverter.IsOldFpgaVersion(value.ToString()) ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -699,9 +699,9 @@ namespace PoEWizard
         private void SetDisconnectedState()
         {
             _comImg.Source = (ImageSource)currentDict["disconnected"];
-            string oldIp = device.IpAddress;
+            string previousIp = device.IpAddress;
             device = new SwitchModel();
-            device.IpAddress = oldIp;
+            device.IpAddress = previousIp;
             _switchAttributes.Text = "";
             _btnRunWiz.IsEnabled = false;
             DataContext = null;
@@ -714,6 +714,7 @@ namespace PoEWizard
             _slotsView.Visibility= Visibility.Hidden;
             _portList.Visibility= Visibility.Hidden;
             _aosWarn.Visibility = Visibility.Hidden;
+            _fpgaWarn.Visibility = Visibility.Hidden;
         }
 
         #endregion private methods

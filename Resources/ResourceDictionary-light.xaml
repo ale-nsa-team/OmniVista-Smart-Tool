@@ -6,8 +6,10 @@
     <converters:BoolToSymbolConverter x:Key="BoolToSymbolConverter" />
     <converters:PoeToPriorityLevelConverter x:Key="PoeToPriorityLevelConverter" />
     <converters:AosVersionToVisibilityConverter x:Key="AosVersionToVisibilityConverter" />
+    <converters:FpgaVersionToVisibilityConverter x:Key="FpgaVersionToVisibilityConverter" />
     <converters:BoolToPoEModeConverter x:Key="BoolToPoEModeConverter" />
     <converters:ConfigTypeToBoolConverter x:Key="ConfigTypeToBoolConverter" />
+    <converters:ConfigTypeToSimbolConverter x:Key="ConfigTypeToSimbolConverter" />
 
     <BitmapImage x:Key="connected" UriSource="connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="disconnected-light.png" />
