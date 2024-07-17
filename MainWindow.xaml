@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
         Closing="OnWindowClosing"
-        Title="PoE Wizard" Height="800" Width="1000" Icon="/wiz.ico">
+        Title="PoE Wizard" Height="800" Width="1100" Icon="/wiz.ico">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -90,7 +90,14 @@
                            Visibility="{Binding Path=Version, Converter={StaticResource AosVersionToVisibilityConverter}}" />
                 </StackPanel>
                 <Label Grid.Row="4" Grid.Column="0" Style="{DynamicResource keyLabel}">FPGA Version:</Label>
-                <Label Grid.Row="4" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_fpga" Content="{Binding Fpga}"/>                
+                <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
+                    <Label Style="{DynamicResource valLabel}" x:Name="_fpga" 
+                       Content="{Binding Fpga}"
+                       Foreground="{Binding Path=Fpga, Converter={StaticResource ValueToColorConverter}, ConverterParameter=FpgaVersion}"/>
+                    <Image x:Name="_fpgaWarn" Source="Resources/warning.png" Margin="5,0" Width="16" Height="16"
+                           ToolTip="Switch FPGA version is too old. Please buy a support contract and upgrade your switch"
+                           Visibility="{Binding Path=Fpga, Converter={StaticResource FpgaVersionToVisibilityConverter}}" />
+                </StackPanel>
                 <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}">Location:</Label>
                 <Label Grid.Row="5" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_location" Content="{Binding Location}" />
                 <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}">Contact:</Label>
@@ -229,6 +236,7 @@
                             </MultiBinding>
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
+                    <DataGridTextColumn Header="802.3BT" Width="*" Binding="{Binding Path=Protocol8023bt, Converter={StaticResource ConfigTypeToSimbolConverter}}" />
                     <DataGridTextColumn Header="Device MAC" Width="1.5*" Binding="{Binding Path=EndPointDevice.MacAddress}" IsReadOnly="True" />
                     <DataGridTextColumn Header="Device Type" Width="2*" Binding="{Binding Path=EndPointDevice.DeviceType}" IsReadOnly="True"/>
                 </DataGrid.Columns>
