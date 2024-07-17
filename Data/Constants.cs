@@ -101,6 +101,7 @@ namespace PoEWizard.Data
         public const string PART_NUMBER = "Part Number";
         public const string HARDWARE_REVISION = "Hardware Revision";
         public const string CHASSIS_MAC_ADDRESS = "MAC Address";
+        public const string INIT_STATUS = "Init Status";
         // Used by "SHOW_SYSTEM"
         public const string NAME = "Name";
         public const string DESCRIPTION = "Description";
