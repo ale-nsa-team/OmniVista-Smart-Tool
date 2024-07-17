@@ -24,6 +24,7 @@ namespace PoEWizard.Device
         public bool IsPPoE { get; set; }
         public ConfigType PowerClassDetection { get; set; }
         public bool IsHiResDetection { get; set; }
+        public bool IsInitialized { get; set; }
 
         public SlotModel() { }
 
@@ -37,6 +38,7 @@ namespace PoEWizard.Device
         public void LoadFromDictionary(Dictionary<string, string> dict)
         {
             this.Budget = ParseDouble(dict.TryGetValue(MAX_POWER, out string s) ? s: "0");
+            this.IsInitialized = (dict.TryGetValue(INIT_STATUS, out s) ? s : "").ToLower() == "initialized";
             this.Is8023bt = (dict.TryGetValue(BT_SUPPORT, out s) ? s : "") == "Yes";
             PowerClassDetection = Enum.TryParse(dict.TryGetValue(CLASS_DETECTION, out s) ? s : "", true, out ConfigType res) ? res : ConfigType.Unavailable;
             this.IsHiResDetection = (dict.TryGetValue(HI_RES_DETECTION, out s) ? s : "") == "enable";

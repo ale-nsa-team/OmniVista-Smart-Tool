@@ -348,7 +348,7 @@ namespace PoEWizard
             string poeType = (cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
             ShowProgress($"{action} {poeType} PoE on slot {selectedSlot.Name}...");
             bool ok = false;
-            await Task.Run(() => ok = restApiService.SetPerpetualOrFastPoe(selectedSlot.Name, cmd));
+            await Task.Run(() => ok = restApiService.SetPerpetualOrFastPoe(selectedSlot, cmd));
             Logger.Info($"{action} {poeType} PoE on slot {selectedSlot.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             await WaitAckProgress();
             RefreshSlotAndPortsView();
@@ -494,30 +494,34 @@ namespace PoEWizard
             await EnableHdmiMdi();
             if (!reportResult.Proceed) return;
             await ChangePriority();
+            if (!reportResult.Proceed) return;
+            await Enable2PairPower();
         }
 
         private async Task RunWizardTelephone()
         {
             await Enable2PairPower();
             if (!reportResult.Proceed) return;
+            await ResetPortPower();
+            if (!reportResult.Proceed) return;
             await ChangePriority();
             if (!reportResult.Proceed) return;
             await EnableHdmiMdi();
             if (!reportResult.Proceed) return;
-            await ResetPortPower();
+            await Enable823BT();
         }
 
         private async Task RunWizardWirelessLan()
         {
-            await Enable823BT();
-            if (!reportResult.Proceed) return;
             await ResetPortPower();
+            if (!reportResult.Proceed) return;
+            await Enable823BT();
             if (!reportResult.Proceed) return;
             await Enable2PairPower();
             if (!reportResult.Proceed) return;
-            await ChangePriority();
-            if (!reportResult.Proceed) return;
             await EnableHdmiMdi();
+            if (!reportResult.Proceed) return;
+            await ChangePriority();
         }
 
         private async Task RunWizardOther()
