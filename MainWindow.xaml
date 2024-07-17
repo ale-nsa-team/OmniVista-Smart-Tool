@@ -91,12 +91,23 @@
                 </StackPanel>
                 <Label Grid.Row="4" Grid.Column="0" Style="{DynamicResource keyLabel}">FPGA Version:</Label>
                 <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
-                    <Label Style="{DynamicResource valLabel}" x:Name="_fpga" 
-                       Content="{Binding Fpga}"
-                       Foreground="{Binding Path=Fpga, Converter={StaticResource ValueToColorConverter}, ConverterParameter=FpgaVersion}"/>
+                    <Label Style="{DynamicResource valLabel}" x:Name="_fpga" Content="{Binding Fpga}">
+                        <Label.Foreground>
+                            <MultiBinding Converter="{StaticResource FpgaToColorConveter}">
+                                <Binding Path="Model" />
+                                <Binding Path="Fpga" />
+                            </MultiBinding>
+                        </Label.Foreground>
+                    </Label>
                     <Image x:Name="_fpgaWarn" Source="Resources/warning.png" Margin="5,0" Width="16" Height="16"
-                           ToolTip="Switch FPGA version is too old. Please buy a support contract and upgrade your switch"
-                           Visibility="{Binding Path=Fpga, Converter={StaticResource FpgaVersionToVisibilityConverter}}" />
+                           ToolTip="Switch FPGA version is too old. Please buy a support contract and upgrade your switch">
+                        <Image.Visibility>
+                            <MultiBinding Converter="{StaticResource FpgaToVisibilityConverter}">
+                                <Binding Path="Model" />
+                                <Binding Path="Fpga" />
+                            </MultiBinding>
+                        </Image.Visibility>
+                    </Image>
                 </StackPanel>
                 <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}">Location:</Label>
                 <Label Grid.Row="5" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_location" Content="{Binding Location}" />

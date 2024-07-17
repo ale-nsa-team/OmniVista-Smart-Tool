@@ -6,7 +6,8 @@
     <converters:BoolToSymbolConverter x:Key="BoolToSymbolConverter" />
     <converters:PoeToPriorityLevelConverter x:Key="PoeToPriorityLevelConverter" />
     <converters:AosVersionToVisibilityConverter x:Key="AosVersionToVisibilityConverter" />
-    <converters:FpgaVersionToVisibilityConverter x:Key="FpgaVersionToVisibilityConverter" />
+    <converters:FpgaToVisibilityConverter x:Key="FpgaToVisibilityConverter" />
+    <converters:FpgaToColorConverter x:Key="FpgaToColorConveter" />
     <converters:BoolToPoEModeConverter x:Key="BoolToPoEModeConverter" />
     <converters:ConfigTypeToBoolConverter x:Key="ConfigTypeToBoolConverter" />
     <converters:ConfigTypeToSimbolConverter x:Key="ConfigTypeToSimbolConverter" />

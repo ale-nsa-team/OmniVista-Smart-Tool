@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -11,6 +10,16 @@ using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Components
 {
+    internal static class Colors
+    {
+        internal static SolidColorBrush Red = (SolidColorBrush)new BrushConverter().ConvertFrom("#f00736");
+        internal static SolidColorBrush Green = MainWindow.theme == Constants.ThemeType.Dark ? Brushes.Lime : Brushes.Green;
+        internal static SolidColorBrush Orange = Brushes.Orange;
+        internal static SolidColorBrush Gray = Brushes.Gray;
+        internal static SolidColorBrush LightGray = (SolidColorBrush)new BrushConverter().ConvertFrom("#aaa");
+        internal static SolidColorBrush Def = MainWindow.theme == Constants.ThemeType.Dark ? Brushes.White : Brushes.Black;
+    }
+
     public class RectangleValueConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -37,57 +46,45 @@ namespace PoEWizard.Components
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null) return DependencyProperty.UnsetValue;
-            var red = new BrushConverter().ConvertFrom("#f00736");
-            var green = MainWindow.theme == Constants.ThemeType.Dark ? Brushes.Lime : Brushes.Green;
-            var def = MainWindow.theme == Constants.ThemeType.Dark ? Brushes.White : Brushes.Black;
             string val = value.ToString();
             string param = parameter.ToString();
             switch (param)
             {
                 case "ConnectionStatus":
-                    return val == "Reachable" ? green : red;
+                    return val == "Reachable" ? Colors.Green : Colors.Red;
                 case "Temperature":
-                    return val == "UnderThreshold" ? green : red;
+                    return val == "UnderThreshold" ? Colors.Green : Colors.Red;
                 case "Power":
                     float percent = RectangleValueConverter.GetFloat(value);
-                    return percent > 10 ? green : (percent > 0 ? Brushes.Orange : red);
+                    return percent > 10 ? Colors.Green : (percent > 0 ? Colors.Orange : Colors.Red);
                 case "Poe":
                     switch (val)
                     {
                         case "On":
-                            return green;
+                            return Colors.Green;
                         case "Fault":
                         case "Deny":
                         case "Conflict":
-                            return red;
+                            return Colors.Red;
                         case "Off":
-                            return Brushes.Orange;
+                            return Colors.Orange;
                         default:
-                            return new BrushConverter().ConvertFrom("#aaa");
+                            return Colors.LightGray;
                     }
                 case "PoeStatus":
-                    return val == "Normal" ? green : val == "NearThreshold" ? Brushes.Orange : red;
+                    return val == "Normal" ? Colors.Green : val == "NearThreshold" ? Colors.Orange : Colors.Red;
                 case "PortStatus":
-                    return val == "Up" ? green : val == "Down" ? red : Brushes.Gray;
-                case "CPUStatus":
-                    return val == "UnderThreshold" ? green : red;
-                case "UplinkPort":
-                    var brush = new SolidColorBrush(Color.FromArgb(255, (byte)163, (byte)101, (byte)209));
-                    return val == "False" ? Brushes.Transparent : brush;
-                case "MacList":
-                    return (value as List<string>)?.Count == 0 ? Brushes.White : red;
+                    return val == "Up" ? Colors.Green : val == "Down" ? Colors.Red : Colors.Gray;
                 case "PowerSupply":
-                    return val == "Up" ? green : red;
+                    return val == "Up" ? Colors.Green : Colors.Red;
                 case "RunningDir":
-                    return val == Constants.CERTIFIED_DIR ? red : def;
+                    return val == Constants.CERTIFIED_DIR ? Colors.Red : Colors.Def;
                 case "Boolean":
-                    return val.ToLower() == "true" ? green : red;
+                    return val.ToLower() == "true" ? Colors.Green : Colors.Red;
                 case "AosVersion":
-                    return IsOldAosVersion(val) ? Brushes.Orange : def;
-                case "FpgaVersion":
-                    return IsOldFpgaVersion(val) ? Brushes.Orange: def;
+                    return IsOldAosVersion(val) ? Colors.Orange : Colors.Def;
                 default:
-                    return red;
+                    return Colors.Red;
             }
         }
 
@@ -108,14 +105,43 @@ namespace PoEWizard.Components
             return false;
         }
 
-        public static bool IsOldFpgaVersion(string fpga)
-        {
-            return true;
-        }
-
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class FpgaToColorConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values == null || values[0] == null) return DependencyProperty.UnsetValue;
+            string model = values[0].ToString();
+            string fpga = values[1].ToString();
+            int[] minfpga = GetMinFpga(model);
+            if (minfpga == null) return Colors.Def;
+            string[] s = fpga.Split('.');
+            int[] fpgas = Array.ConvertAll(s, int.Parse);
+            return ((fpgas[0] < minfpga[0]) || (fpgas[0] == minfpga[0] && fpgas[1] < minfpga[1])) ? Colors.Orange : Colors.Def;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+
+        private int[] GetMinFpga(string model)
+        {
+            string m = model;
+            while (m.Length > 2) {
+                if (Constants.fpga.TryGetValue(m, out string val))
+                {
+                    string[] vals = val.Split('.');
+                    return Array.ConvertAll(vals, int.Parse);
+                }
+                m = m.Substring(0, m.Length - 1);
+            }
+            return null;
         }
     }
 
@@ -151,7 +177,7 @@ namespace PoEWizard.Components
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return DependencyProperty.UnsetValue;
         }
     }
 
@@ -169,17 +195,17 @@ namespace PoEWizard.Components
         }
     }
 
-    public class FpgaVersionToVisibilityConverter : IValueConverter
+    public class FpgaToVisibilityConverter : IMultiValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null) return Visibility.Collapsed;
-            return ValueToColorConverter.IsOldFpgaVersion(value.ToString()) ? Visibility.Visible : Visibility.Collapsed;
+            SolidColorBrush val = new FpgaToColorConverter().Convert(values, targetType, parameter, culture) as SolidColorBrush;
+            return val == Colors.Orange ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            return DependencyProperty.UnsetValue;
+            return null;
         }
     }
 
