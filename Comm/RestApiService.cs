@@ -72,10 +72,7 @@ namespace PoEWizard.Comm
             {
                 _progress.Report(new ProgressReport($"Scanning switch {SwitchModel.IpAddress}"));
                 List<Dictionary<string, string>> diclist;
-                Dictionary<string, string> dict;
-                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_RUNNING_DIR));
-                dict = CliParseUtils.ParseVTable(_response[RESULT]);
-                SwitchModel.LoadFromDictionary(dict, DictionaryType.RunningDir);
+                GetRunningDir();
                 _progress.Report(new ProgressReport($"Reading chassis and port information on Switch {SwitchModel.IpAddress}"));
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CHASSIS));
                 diclist = CliParseUtils.ParseChassisTable(_response[RESULT]);
@@ -102,6 +99,12 @@ namespace PoEWizard.Comm
             {
                 SendSwitchConnectionFailed(ex);
             }
+        }
+
+        private void GetRunningDir()
+        {
+            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_RUNNING_DIR));
+            SwitchModel.LoadFromDictionary(CliParseUtils.ParseVTable(_response[RESULT]), DictionaryType.RunningDir);
         }
 
         public void GetSnapshot()
@@ -162,21 +165,33 @@ namespace PoEWizard.Comm
             return Utils.CalcStringDuration(startTime, true);
         }
 
-        public void WriteMemory()
+        public void WriteMemory(int waitSec = 25)
         {
             try
             {
                 if (SwitchModel.ConfigChanged)
                 {
+                    SwitchModel.ConfigChanged = false;
                     _progress.Report(new ProgressReport($"Writing memory on Switch {SwitchModel.IpAddress}"));
                     SendRequest(GetRestUrlEntry(CommandType.WRITE_MEMORY));
                     DateTime startTime = DateTime.Now;
                     int dur = 0;
-                    while (dur < 25)
+                    while (dur < waitSec)
                     {
                         Thread.Sleep(1000);
                         dur = (int)Utils.GetTimeDuration(startTime);
+                        if (dur >= waitSec) break;
                         _progress.Report(new ProgressReport($"Writing memory on Switch {SwitchModel.IpAddress} ({dur} sec) ..."));
+                        try
+                        {
+                            if (dur % 5 == 0)
+                            {
+                                bool done = false;
+                                GetRunningDir();
+                                done = SwitchModel.SyncStatus == "Synchronized";
+                            }
+                        }
+                        catch { }
                     }
                     Logger.Info($"Writing memory on Switch {SwitchModel.IpAddress} (Duration: {dur} sec)");
                 }
