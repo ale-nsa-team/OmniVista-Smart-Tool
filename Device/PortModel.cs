@@ -93,11 +93,11 @@ namespace PoEWizard.Device
                     break;
 
                 case "enabled":
-                    Protocol8023bt = ConfigType.Enabled;
+                    Protocol8023bt = ConfigType.Enable;
                     break;
 
                 case "disabled":
-                    Protocol8023bt = ConfigType.Disabled;
+                    Protocol8023bt = ConfigType.Disable;
                     break;
             }
         }

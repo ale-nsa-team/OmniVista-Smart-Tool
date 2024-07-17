@@ -26,7 +26,7 @@ namespace PoEWizard.Data
         public enum DictionaryType { System, Chassis, RunningDir, Cmm,
             MicroCode, LanPower, LanPowerCfg, PortsList,
             PowerSupply, LldpRemoteList, MacAddressList }
-        public enum ConfigType { Enabled, Disabled, Unavailable }
+        public enum ConfigType { Enable, Disable, Unavailable }
         public enum DeviceType {
             [Description("Camera")]
             Camera = 1,
@@ -37,7 +37,6 @@ namespace PoEWizard.Data
             [Description("Other")]
             Other = 4
         }
-        public enum PowerClassType { Enable, Disable, Unavailable }
         #endregion
 
         #region dictionaries

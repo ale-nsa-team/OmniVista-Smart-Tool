@@ -609,7 +609,7 @@ namespace PoEWizard.Comm
                 foreach (var slot in chassis.Slots)
                 {
                     if (slot.Ports.Count == 0) continue;
-                    if (slot.PowerClassDetection == PowerClassType.Disable)
+                    if (slot.PowerClassDetection == ConfigType.Disable)
                     {
                         SwitchModel.ConfigChanged = true;
                         SendRequest(GetRestUrlEntry(CommandType.POWER_CLASS_DETECTION_ENABLE, new string[1] { $"{slot.Name}" }));
