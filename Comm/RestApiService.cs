@@ -451,7 +451,7 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport(txt.ToString()));
                 if (_wizardSwitchPort.Protocol8023bt != ConfigType.Unavailable)
                 {
-                    //CheckFPOEand823BT(CommandType.POWER_823BT_ENABLE);
+                    CheckFPOEand823BT(CommandType.POWER_823BT_ENABLE);
                     Change823BT(CommandType.POWER_823BT_ENABLE);
                     WaitPortUp(waitSec);
                 }
@@ -615,7 +615,7 @@ namespace PoEWizard.Comm
             _progress.Report(new ProgressReport($"Reading PoE information on Switch {SwitchModel.IpAddress}"));
             foreach (var chassis in SwitchModel.ChassisList)
             {
-                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CHASSIS_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 chassis.LoadFromList(diclist);
                 chassis.PowerBudget = 0;
@@ -664,12 +664,9 @@ namespace PoEWizard.Comm
         private string ChangePerpetualOrFastPoe(CommandType cmd)
         {
             if (_wizardSwitchSlot == null) return "";
-            ChassisSlotPort chassisSlotPort = new ChassisSlotPort($"{_wizardSwitchSlot.Name}/0");
-            ChassisModel chassis = SwitchModel.GetChassis(chassisSlotPort.ChassisNr);
-            if (chassis == null) return "";
             bool enable = cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_FAST_ENABLE;
             string poeType = (cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
-            string txt = $"{poeType} PoE on Slot {chassisSlotPort.ChassisNr}/{chassisSlotPort.SlotNr}";
+            string txt = $"{poeType} PoE on Slot {_wizardSwitchSlot.Name}";
             bool ppoe = _wizardSwitchSlot.PPoE == ConfigType.Enable;
             bool fpoe = _wizardSwitchSlot.FPoE == ConfigType.Enable;
             if (cmd == CommandType.POE_PERPETUAL_ENABLE && ppoe || cmd == CommandType.POE_FAST_ENABLE && fpoe ||
@@ -684,12 +681,10 @@ namespace PoEWizard.Comm
             _progress.Report(new ProgressReport(txt));
             string result = $"\n - {txt} ";
             Logger.Debug(txt);
-            //CheckFPOEand823BT(cmd);
+            CheckFPOEand823BT(cmd);
             SendRequest(GetRestUrlEntry(cmd, new string[1] { $"{_wizardSwitchSlot.Name}" }));
             Thread.Sleep(2000);
-            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
-            List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 2);
-            chassis.LoadFromList(dictList);
+            GetSlotPowerStatus();
             if (cmd == CommandType.POE_PERPETUAL_ENABLE && ppoe || cmd == CommandType.POE_FAST_ENABLE && fpoe ||
                 cmd == CommandType.POE_PERPETUAL_DISABLE && !ppoe || cmd == CommandType.POE_FAST_DISABLE && !fpoe)
             {
@@ -708,36 +703,62 @@ namespace PoEWizard.Comm
             if (!_wizardSwitchSlot.IsInitialized) PowerUpSlot();
             if (cmd == CommandType.POE_FAST_ENABLE)
             {
-                if (_wizardSwitchSlot.Is8023bt)
-                {
-                    WriteMemory();
-                    Change823BT(CommandType.POWER_823BT_DISABLE);
-                }
+                if (_wizardSwitchSlot.Is8023bt) Change823BT(CommandType.POWER_823BT_DISABLE);
             }
             else if (cmd == CommandType.POWER_823BT_ENABLE)
             {
-                if (_wizardSwitchSlot.FPoE == ConfigType.Enable) 
-                    SendRequest(GetRestUrlEntry(CommandType.POE_FAST_DISABLE, new string[1] { _wizardSwitchSlot.Name }));
+                if (_wizardSwitchSlot.FPoE == ConfigType.Enable) SendRequest(GetRestUrlEntry(CommandType.POE_FAST_DISABLE, new string[1] { _wizardSwitchSlot.Name }));
             }
         }
 
         private void Change823BT(CommandType cmd)
         {
-            PowerDownSlot();
+            try
+            {
+                SendRequest(GetRestUrlEntry(CommandType.POWER_DOWN_SLOT, new string[1] { _wizardSwitchSlot.Name }));
+            }
+            catch
+            {
+                SwitchModel.ConfigChanged = true;
+                WriteMemory();
+            }
+            SendRequest(GetRestUrlEntry(CommandType.POWER_DOWN_SLOT, new string[1] { _wizardSwitchSlot.Name }));
+            WaitSlotPower(false);
             SendRequest(GetRestUrlEntry(cmd, new string[1] { _wizardSwitchSlot.Name }));
             PowerUpSlot();
-        }
-
-        private void PowerDownSlot()
-        {
-            SendRequest(GetRestUrlEntry(CommandType.POWER_DOWN_SLOT, new string[1] { _wizardSwitchSlot.Name }));
-            Thread.Sleep(5000);
         }
 
         private void PowerUpSlot()
         {
             SendRequest(GetRestUrlEntry(CommandType.POWER_UP_SLOT, new string[1] { _wizardSwitchSlot.Name }));
-            Thread.Sleep(3000);
+            WaitSlotPower(true);
+        }
+
+        private void WaitSlotPower(bool waitInit)
+        {
+            DateTime startTime = DateTime.Now;
+            int dur = 0;
+            while (dur < 30)
+            {
+                Thread.Sleep(1000);
+                dur = (int)Utils.GetTimeDuration(startTime);
+                if (dur >= 30) break;
+                if (dur % 5 == 0)
+                {
+                    GetSlotPowerStatus();
+                    if (waitInit && _wizardSwitchSlot.IsInitialized || !waitInit && !_wizardSwitchSlot.IsInitialized)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void GetSlotPowerStatus()
+        {
+            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_SLOT_LAN_POWER_STATUS, new string[] { _wizardSwitchSlot.Name }));
+            List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 2);
+            _wizardSwitchSlot.LoadFromDictionary(dictList[0]);
         }
 
         private void PowerDevice(CommandType cmd)
@@ -757,27 +778,6 @@ namespace PoEWizard.Comm
                 else
                 {
                     Logger.Error(ex.Message + ":\n" + ex.StackTrace);
-                }
-            }
-        }
-
-        private void SetPoePriority(string port, PriorityLevelType priority)
-        {
-            try
-            {
-                this._response = SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
-                if (ex is SwitchConnectionFailure || ex is SwitchConnectionDropped || ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure)
-                {
-                    if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure) this.SwitchModel.Status = SwitchStatus.LoginFail;
-                    else this.SwitchModel.Status = SwitchStatus.Unreachable;
-                }
-                else
-                {
-                    throw ex;
                 }
             }
         }
