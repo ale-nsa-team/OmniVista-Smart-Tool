@@ -20,8 +20,8 @@ namespace PoEWizard.Device
         public double Threshold { get; set; }
         public bool Is8023bt {get;set;}
         public bool IsPriorityDisconnect { get; set; }
-        public bool IsFPoE { get; set; }
-        public bool IsPPoE { get; set; }
+        public ConfigType FPoE { get; set; }
+        public ConfigType PPoE { get; set; }
         public ConfigType PowerClassDetection { get; set; }
         public bool IsHiResDetection { get; set; }
         public bool IsInitialized { get; set; }
@@ -42,8 +42,8 @@ namespace PoEWizard.Device
             this.Is8023bt = (dict.TryGetValue(BT_SUPPORT, out s) ? s : "") == "Yes";
             PowerClassDetection = Enum.TryParse(dict.TryGetValue(CLASS_DETECTION, out s) ? s : "", true, out ConfigType res) ? res : ConfigType.Unavailable;
             this.IsHiResDetection = (dict.TryGetValue(HI_RES_DETECTION, out s) ? s : "") == "enable";
-            this.IsPPoE = (dict.TryGetValue(PPOE, out s) ? s : "") == "enable";
-            this.IsFPoE = (dict.TryGetValue(FPOE, out s) ? s : "") == "enable";
+            this.PPoE = Enum.TryParse(dict.TryGetValue(PPOE, out s) ? s : "", true, out res) ? res : ConfigType.Unavailable;
+            this.FPoE = Enum.TryParse(dict.TryGetValue(FPOE, out s) ? s : "", true, out res) ? res : ConfigType.Unavailable;
             this.Threshold = ParseDouble(dict.TryGetValue(USAGE_THRESHOLD, out s) ? s : "0");
         }
 

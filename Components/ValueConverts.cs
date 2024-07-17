@@ -112,6 +112,22 @@ namespace PoEWizard.Components
         }
     }
 
+    public class ConfigTypeToBoolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string val = value.ToString();
+            string par = parameter.ToString();
+            ConfigType ct = Enum.TryParse(val, true, out ConfigType c) ? c : ConfigType.Unavailable;
+            return par == "Enable" ? ct == ConfigType.Enable : ct != ConfigType.Unavailable;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
     public class AosVersionToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

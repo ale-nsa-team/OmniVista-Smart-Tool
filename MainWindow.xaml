@@ -137,7 +137,8 @@
                                               Margin="4,0"
                                               Checked="FPoE_Click"
                                               Unchecked="FPoE_Click"
-                                              IsChecked="{Binding IsFPoE}" />
+                                              IsEnabled="{Binding Path=FPoE, Converter={StaticResource ConfigTypeToBoolConverter}, ConverterParameter=Available}"
+                                              IsChecked="{Binding Path=FPoE, Converter={StaticResource ConfigTypeToBoolConverter}, ConverterParameter=Enable}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -148,7 +149,8 @@
                                               Margin="15,0"
                                               Checked="PPoE_Click"
                                               Unchecked="PPoE_Click"
-                                              IsChecked="{Binding IsPPoE}" />
+                                              IsEnabled="{Binding Path=PPoE, Converter={StaticResource ConfigTypeToBoolConverter}, ConverterParameter=Available}"
+                                              IsChecked="{Binding Path=PPoE, Converter={StaticResource ConfigTypeToBoolConverter}, ConverterParameter=Enable}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

@@ -7,6 +7,7 @@
     <converters:PoeToPriorityLevelConverter x:Key="PoeToPriorityLevelConverter" />
     <converters:AosVersionToVisibilityConverter x:Key="AosVersionToVisibilityConverter" />
     <converters:BoolToPoEModeConverter x:Key="BoolToPoEModeConverter" />
+    <converters:ConfigTypeToBoolConverter x:Key="ConfigTypeToBoolConverter" />
 
     <BitmapImage x:Key="connected" UriSource="connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="disconnected-light.png" />

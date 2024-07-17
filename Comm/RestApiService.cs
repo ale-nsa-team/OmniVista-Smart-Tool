@@ -358,7 +358,7 @@ namespace PoEWizard.Comm
         private void TryEnable2PairPower(int waitSec)
         {
             DateTime startTime = DateTime.Now;
-            bool fastPoe = _wizardSwitchSlot.IsFPoE;
+            bool fastPoe = _wizardSwitchSlot.FPoE == ConfigType.Enable;
             if (fastPoe) SendRequest(GetRestUrlEntry(CommandType.POE_FAST_DISABLE, new string[1] { _wizardSwitchSlot.Name }));
             if (!_wizardSwitchPort.Is4Pair)
             {
@@ -655,8 +655,10 @@ namespace PoEWizard.Comm
             bool enable = cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_FAST_ENABLE;
             string poeType = (cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
             string txt = $"{poeType} PoE on Slot {chassisSlotPort.ChassisNr}/{chassisSlotPort.SlotNr}";
-            if (cmd == CommandType.POE_PERPETUAL_ENABLE && _wizardSwitchSlot.IsPPoE || cmd == CommandType.POE_FAST_ENABLE && _wizardSwitchSlot.IsFPoE ||
-                cmd == CommandType.POE_PERPETUAL_DISABLE && !_wizardSwitchSlot.IsPPoE || cmd == CommandType.POE_FAST_DISABLE && !_wizardSwitchSlot.IsFPoE)
+            bool ppoe = _wizardSwitchSlot.PPoE == ConfigType.Enable;
+            bool fpoe = _wizardSwitchSlot.FPoE == ConfigType.Enable;
+            if (cmd == CommandType.POE_PERPETUAL_ENABLE && ppoe || cmd == CommandType.POE_FAST_ENABLE && fpoe ||
+                cmd == CommandType.POE_PERPETUAL_DISABLE && !ppoe || cmd == CommandType.POE_FAST_DISABLE && !fpoe)
             {
                 _progress.Report(new ProgressReport($"{(enable ? "Enabling" : "Disabling")} {txt}"));
                 txt = $"{txt} is already {(enable ? "enabled" : "disabled")}";
@@ -673,8 +675,8 @@ namespace PoEWizard.Comm
             this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
             List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 2);
             chassis.LoadFromList(dictList);
-            if (cmd == CommandType.POE_PERPETUAL_ENABLE && _wizardSwitchSlot.IsPPoE || cmd == CommandType.POE_FAST_ENABLE && _wizardSwitchSlot.IsFPoE ||
-                cmd == CommandType.POE_PERPETUAL_DISABLE && !_wizardSwitchSlot.IsPPoE || cmd == CommandType.POE_FAST_DISABLE && !_wizardSwitchSlot.IsFPoE)
+            if (cmd == CommandType.POE_PERPETUAL_ENABLE && ppoe || cmd == CommandType.POE_FAST_ENABLE && fpoe ||
+                cmd == CommandType.POE_PERPETUAL_DISABLE && !ppoe || cmd == CommandType.POE_FAST_DISABLE && !fpoe)
             {
                 SwitchModel.ConfigChanged = true;
                 result += "executed";
@@ -699,7 +701,8 @@ namespace PoEWizard.Comm
             }
             else if (cmd == CommandType.POWER_823BT_ENABLE)
             {
-                if (_wizardSwitchSlot.IsFPoE) SendRequest(GetRestUrlEntry(CommandType.POE_FAST_DISABLE, new string[1] { _wizardSwitchSlot.Name }));
+                if (_wizardSwitchSlot.FPoE == ConfigType.Enable) 
+                    SendRequest(GetRestUrlEntry(CommandType.POE_FAST_DISABLE, new string[1] { _wizardSwitchSlot.Name }));
             }
         }
 
