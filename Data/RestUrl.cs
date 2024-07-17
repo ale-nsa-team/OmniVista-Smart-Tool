@@ -34,7 +34,7 @@ namespace PoEWizard.Data
             SHOW_POWER_SUPPLIES = 5,
             SHOW_POWER_SUPPLY = 6,
             SHOW_LAN_POWER = 7,
-            SHOW_LAN_POWER_STATUS = 8,
+            SHOW_CHASSIS_LAN_POWER_STATUS = 8,
             SHOW_SLOT = 9,
             SHOW_MAC_LEARNING = 10,
             SHOW_TEMPERATURE = 11,
@@ -43,6 +43,7 @@ namespace PoEWizard.Data
             SHOW_LLDP_REMOTE = 14,
             SHOW_CMM = 15,
             POWER_CLASS_DETECTION_ENABLE = 16,
+            SHOW_SLOT_LAN_POWER_STATUS = 17,
             // 30 - 69: Commands related to actions on port
             POWER_DOWN_PORT = 30,
             POWER_UP_PORT = 31,
@@ -87,7 +88,7 @@ namespace PoEWizard.Data
             [CommandType.SHOW_POWER_SUPPLIES] = $"show powersupply",                              //  5
             [CommandType.SHOW_POWER_SUPPLY] = $"show powersupply {DATA_0}",                       //  6
             [CommandType.SHOW_LAN_POWER] = $"show lanpower slot {DATA_0}",                        //  7
-            [CommandType.SHOW_LAN_POWER_STATUS] = $"show lanpower chassis {DATA_0} status",       //  8
+            [CommandType.SHOW_CHASSIS_LAN_POWER_STATUS] = $"show lanpower chassis {DATA_0} status", //  8
             [CommandType.SHOW_SLOT] = $"show slot {DATA_0}",                                      //  9
             [CommandType.SHOW_MAC_LEARNING] = $"show mac-learning domain vlan",                   // 10
             [CommandType.SHOW_TEMPERATURE] = $"show temperature",                                 // 11
@@ -96,6 +97,7 @@ namespace PoEWizard.Data
             [CommandType.SHOW_LLDP_REMOTE] = "show lldp remote-system",                           // 14
             [CommandType.SHOW_CMM] = "show cmm",                                                  // 15
             [CommandType.POWER_CLASS_DETECTION_ENABLE] = $"lanpower slot {DATA_0} class-detection enable", // 16
+            [CommandType.SHOW_SLOT_LAN_POWER_STATUS] = $"show lanpower slot {DATA_0} status",     //  17
             // 30 - 69: Commands related to actions on port
             [CommandType.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",        // 30
             [CommandType.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",           // 31
@@ -144,9 +146,10 @@ namespace PoEWizard.Data
                     // 0 - 29: Basic commands to gather switch data
                     case CommandType.SHOW_POWER_SUPPLY:           //  6
                     case CommandType.SHOW_LAN_POWER:              //  7
-                    case CommandType.SHOW_LAN_POWER_STATUS:       //  8
+                    case CommandType.SHOW_CHASSIS_LAN_POWER_STATUS: //  8
                     case CommandType.SHOW_LAN_POWER_CONFIG:       // 13
                     case CommandType.POWER_CLASS_DETECTION_ENABLE: // 16
+                    case CommandType.SHOW_SLOT_LAN_POWER_STATUS:  //17
                     // 30 - 69: Commands related to actions on port
                     case CommandType.POWER_DOWN_PORT:             // 30
                     case CommandType.POWER_UP_PORT:               // 31
