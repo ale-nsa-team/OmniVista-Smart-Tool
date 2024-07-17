@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PoEWizard.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static PoEWizard.Data.Constants;
@@ -21,7 +22,7 @@ namespace PoEWizard.Device
         public bool IsPriorityDisconnect { get; set; }
         public bool IsFPoE { get; set; }
         public bool IsPPoE { get; set; }
-        public bool IsClassDetection { get; set; }
+        public PowerClassType PowerClassDetection { get; set; }
         public bool IsHiResDetection { get; set; }
 
         public SlotModel() { }
@@ -37,7 +38,7 @@ namespace PoEWizard.Device
         {
             this.Budget = ParseDouble(dict.TryGetValue(MAX_POWER, out string s) ? s: "0");
             this.Is8023bt = (dict.TryGetValue(BT_SUPPORT, out s) ? s : "") == "Yes";
-            this.IsClassDetection = (dict.TryGetValue(CLASS_DETECTION, out s) ? s : "") == "enable";
+            PowerClassDetection = Enum.TryParse(dict.TryGetValue(CLASS_DETECTION, out s) ? s : "", true, out PowerClassType res) ? res : PowerClassType.Unavailable;
             this.IsHiResDetection = (dict.TryGetValue(HI_RES_DETECTION, out s) ? s : "") == "enable";
             this.IsPPoE = (dict.TryGetValue(PPOE, out s) ? s : "") == "enable";
             this.IsFPoE = (dict.TryGetValue(FPOE, out s) ? s : "") == "enable";

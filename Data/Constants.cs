@@ -37,6 +37,7 @@ namespace PoEWizard.Data
             [Description("Other")]
             Other = 4
         }
+        public enum PowerClassType { Enable, Disable, Unavailable }
         #endregion
 
         #region dictionaries

@@ -158,7 +158,7 @@ namespace PoEWizard.Comm
             }
             catch
             {
-                throw new SwitchRejectConnection($"Switch {this._ip_address} doesn't support Rest Api!");
+                throw new SwitchRejectConnection($"Switch {this._ip_address} doesn't support Rest Api");
             }
         }
 

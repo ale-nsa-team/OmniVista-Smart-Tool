@@ -76,7 +76,7 @@ namespace PoEWizard.Device
                     break;
             }
             PriorityLevel = Enum.TryParse<PriorityLevelType>(dict.TryGetValue(PRIORITY, out s) ? s : "", true, out PriorityLevelType res) ? res : PriorityLevelType.Low;
-            Class = dict.TryGetValue(CLASS, out s) ? s : "";
+            Class = (dict.TryGetValue(CLASS, out s) ? s : "").Replace("- ,-", "NA");
             Type = dict.TryGetValue(TYPE, out s) ? s : "";
         }
 

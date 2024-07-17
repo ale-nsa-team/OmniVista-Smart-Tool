@@ -371,19 +371,19 @@ namespace PoEWizard.Comm
             {
                 if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure)
                 {
-                    error = $"Switch {SwitchModel.IpAddress} login failed (username: {SwitchModel.Login})!";
+                    error = $"Switch {SwitchModel.IpAddress} login failed (username: {SwitchModel.Login})";
                     this.SwitchModel.Status = SwitchStatus.LoginFail;
                 }
                 else
                 {
-                    error = $"Switch {SwitchModel.IpAddress} unreachable!";
+                    error = $"Switch {SwitchModel.IpAddress} unreachable";
                     this.SwitchModel.Status = SwitchStatus.Unreachable;
                 }
             }
             else
             {
                 Logger.Error(ex.Message + ":\n" + ex.StackTrace);
-                error = $"Switch {SwitchModel.IpAddress} connection error:\n - {WebUtility.UrlDecode(ex.Message)}!";
+                error = $"Switch {SwitchModel.IpAddress} connection error:\n - {WebUtility.UrlDecode(ex.Message)}";
             }
             _progress?.Report(new ProgressReport(ReportType.Error, "Connect", error));
         }
@@ -609,7 +609,11 @@ namespace PoEWizard.Comm
                 foreach (var slot in chassis.Slots)
                 {
                     if (slot.Ports.Count == 0) continue;
-                    if (!slot.IsClassDetection) SendRequest(GetRestUrlEntry(CommandType.POWER_CLASS_DETECTION_ENABLE, new string[1] { $"{slot.Name}" }));
+                    if (slot.PowerClassDetection == PowerClassType.Disable)
+                    {
+                        SwitchModel.ConfigChanged = true;
+                        SendRequest(GetRestUrlEntry(CommandType.POWER_CLASS_DETECTION_ENABLE, new string[1] { $"{slot.Name}" }));
+                    }
                     GetSlotPower(slot);
                     chassis.PowerBudget += slot.Budget;
                     chassis.PowerConsumed += slot.Power;

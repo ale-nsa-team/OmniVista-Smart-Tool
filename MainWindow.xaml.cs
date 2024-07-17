@@ -382,6 +382,7 @@ namespace PoEWizard
                     SetDisconnectedState();
                     return;
                 }
+                isClosing = false;
                 await Task.Run(() => restApiService.Connect());
                 UpdateConnectedState(true);
             }
