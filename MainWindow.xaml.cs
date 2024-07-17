@@ -406,7 +406,11 @@ namespace PoEWizard
                         bool proceed = ShowMessageBox("Write Memory required", "Switch configuration has changed!\nIt will take around 30 sec to execute Write Memory Flash.\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                         if (proceed)
                         {
+                            _btnRunWiz.IsEnabled = false;
+                            _refreshSwitch.IsEnabled = false;
+                            _comImg.Visibility = Visibility.Collapsed;
                             await Task.Run(() => restApiService.WriteMemory());
+                            _comImg.Visibility = Visibility.Visible;
                         }
                     }
                     restApiService.Close();
