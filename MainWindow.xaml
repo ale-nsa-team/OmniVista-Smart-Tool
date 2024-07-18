@@ -45,6 +45,7 @@
                         <MenuItem Header="Trace" Click="LogLevelItem_Click" />
                     </MenuItem>
                 </MenuItem>
+                <MenuItem Header="vcboot.cfg" x:Name="_vcbootMenuItem" IsEnabled="False" Click="ViewVcBoot_Click" />
                 <MenuItem Header="Snapshot" x:Name="_snapshotMenuItem" IsEnabled="False" Click="ViewSnapshot_Click"/>
                 <Separator/>
                 <MenuItem Header="Theme">
