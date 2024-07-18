@@ -36,6 +36,7 @@ namespace PoEWizard
         private readonly IProgress<ProgressReport> progress;
         private bool reportAck;
         private RestApiService restApiService;
+        private SftpService sftpService;
         private SwitchModel device;
         private SlotView slotView;
         private string selectedPort;
@@ -106,6 +107,7 @@ namespace PoEWizard
             try
             {
                 e.Cancel = true;
+                sftpService?.Disconnect();
                 await CloseRestApiService();
                 this.Closing -= OnWindowClosing;
                 this.Close();
@@ -153,6 +155,29 @@ namespace PoEWizard
             {
                 Owner = this,
                 Filename = Logger.LogPath,
+            };
+            tv.Show();
+        }
+
+        private async void ViewVcBoot_Click(object sender, RoutedEventArgs e)
+        {
+            ShowProgress("Loading vcboot.cfg file...");
+            string res = string.Empty;
+            await Task.Run(() => 
+            {
+                if (sftpService == null)
+                {
+                    sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
+                }
+                sftpService.Connect();
+                res = sftpService.DownloadToMemory(VCBOOT_PATH);
+                string fname = sftpService.DownloadFile(VCBOOT_PATH);
+            });
+            HideProgress();
+            TextViewer tv = new TextViewer("VCBoot config file", res)
+            {
+                Owner = this,
+                SaveFilename = device.Name + "-vcboot.cfg"
             };
             tv.Show();
         }
@@ -676,6 +701,7 @@ namespace PoEWizard
             _btnConnect.Cursor = Cursors.Hand;
             _switchMenuItem.IsEnabled = false;
             _snapshotMenuItem.IsEnabled = true;
+            _vcbootMenuItem.IsEnabled = true;
             _refreshSwitch.IsEnabled = true;
             _disconnectMenuItem.Visibility = Visibility.Visible;
             slotView = new SlotView(device);
@@ -691,15 +717,6 @@ namespace PoEWizard
             _comImg.ToolTip = "Click to disconnect";
         }
 
-        private async Task RebootSwitch(int waitSec)
-        {
-            string duration = "";
-            await Task.Run(() => duration = restApiService.RebootSwitch(waitSec));
-            string txt = $"Switch {device.IpAddress} ready to connect";
-            if (!string.IsNullOrEmpty(duration)) txt += $"\nReboot duration: {duration}";
-            ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
-        }
-
         private void SetDisconnectedState()
         {
             _comImg.Source = (ImageSource)currentDict["disconnected"];
@@ -712,6 +729,7 @@ namespace PoEWizard
             restApiService = null;
             _switchMenuItem.IsEnabled = true;
             _snapshotMenuItem.IsEnabled = false;
+            _vcbootMenuItem.IsEnabled = false;
             _refreshSwitch.IsEnabled = false;
             _comImg.ToolTip = "Click to reconnect";
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
@@ -719,6 +737,15 @@ namespace PoEWizard
             _portList.Visibility= Visibility.Hidden;
             _aosWarn.Visibility = Visibility.Hidden;
             _fpgaWarn.Visibility = Visibility.Hidden;
+        }
+
+        private async Task RebootSwitch(int waitSec)
+        {
+            string duration = "";
+            await Task.Run(() => duration = restApiService.RebootSwitch(waitSec));
+            string txt = $"Switch {device.IpAddress} ready to connect";
+            if (!string.IsNullOrEmpty(duration)) txt += $"\nReboot duration: {duration}";
+            ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
         }
 
         #endregion private methods

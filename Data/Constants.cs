@@ -62,6 +62,7 @@ namespace PoEWizard.Data
         public const string WORKING_DIR = "Working";
         public const string CERTIFIED_DIR = "Certified";
         public const string MIN_AOS_VERSION = "8.9 R1";
+        public const string VCBOOT_PATH = "/flash/working/vcboot.cfg";
         // Used by "Utils" class
         public const string P_CHASSIS = "CHASSIS_ID";
         public const string P_SLOT = "SLOT_ID";

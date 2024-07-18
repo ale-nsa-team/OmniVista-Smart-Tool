@@ -15,6 +15,8 @@ namespace PoEWizard.Comm
 
         private SftpClient _sftpClient;
 
+        public SftpService(string host, string user, string password) : this(host, 22, user, password) { }
+
         public SftpService(string host, int port, string user, string password)
         {
             Host = host;
@@ -28,7 +30,7 @@ namespace PoEWizard.Comm
         {
             try
             {
-                _sftpClient.Connect();
+                if (!_sftpClient.IsConnected) _sftpClient.Connect();
             }
             catch (Exception ex) 
             {
@@ -51,22 +53,38 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void DownloadFile(string remotePath)
+        public string DownloadFile(string remotePath)
         {
             try
             {
-                using (var fs = new FileStream(Path.GetFileName(remotePath), FileMode.OpenOrCreate))
+                string localPath = Path.Combine(MainWindow.dataPath, Path.GetFileName(remotePath));
+                using (var fs = new FileStream(localPath, FileMode.Create))
                 {
                     _sftpClient.DownloadFile(remotePath, fs);
                 }
+                return localPath;
             }
             catch (IOException ex)
             {
                 Logger.Error("Error downloading file.", ex);
             }
+            return null;
         }
 
-        public void Disconntect()
+        public string DownloadToMemory(string remotePath)
+        {
+            try
+            {
+                return _sftpClient.ReadAllText(remotePath);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.Message, ex);
+            }
+            return string.Empty;
+        }
+
+        public void Disconnect()
         {
             _sftpClient?.Disconnect();
         }
