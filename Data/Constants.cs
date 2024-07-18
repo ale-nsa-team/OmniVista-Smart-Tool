@@ -23,7 +23,8 @@ namespace PoEWizard.Data
         public enum PriorityLevelType { Low, High, Critical }
         public enum PowerSupplyState { Up, Down, Unknown }
         public enum ChassisStatus { Unknown, Up, Down }
-        public enum DictionaryType { System, Chassis, RunningDir, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList, MacAddressList, TemperatureList }
+        public enum DictionaryType { System, Chassis, RunningDir, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList, MacAddressList,
+                                     TemperatureList, CpuTrafficList }
         public enum ConfigType { Enable, Disable, Unavailable }
         public enum DeviceType {
             [Description("Camera")]
@@ -144,6 +145,9 @@ namespace PoEWizard.Data
         public const string RANGE = "Range";
         public const string DANGER = "Danger";
         public const string THRESHOLD = "Thresh";
+        // Used by "SHOW_HEALTH"
+        public const string CPU_THRESHOLD = "CPU Threshold";
+        public const string CPU = "CPU";
         #endregion
 
         #region regex patterns

@@ -34,8 +34,9 @@ namespace PoEWizard.Device
         public PowerSupplyState PowerSupplyState => GetPowerSupplyState();
         public string ConfigSnapshot { get; set; }
         public bool ConfigChanged { get; set; } = false;
-        public int Temperature { get; set; }
         public ThresholdType TemperatureStatus { get; set; }
+        public int Cpu { get; set; }
+        public int CpuThreshold { get; set; }
 
         public SwitchModel() : this("", DEFAULT_USERNAME, DEFAULT_PASSWORD, 5) { }
 
@@ -173,7 +174,24 @@ namespace PoEWizard.Device
                     }
                     TemperatureStatus = temperature.Status;
                     break;
+                case DictionaryType.CpuTrafficList:
+                    int cpu = 0;
+                    foreach (var dic in list)
+                    {
+                        string slotNr = (dic.TryGetValue(CPU, out string s) ? s : "").ToLower().Replace("slot", "").Trim();
+                        SlotModel slot = GetSlot(slotNr);
+                        if (slot == null) continue;
+                        slot.Cpu = Utils.StringToInt(dic.TryGetValue(CPU, out s) ? s : "");
+                        if (slot.Cpu > cpu) cpu = slot.Cpu;
+                    }
+                    Cpu = cpu;
+                    break;
             }
+        }
+
+        public void UpdateCpuThreshold(Dictionary<string, string> dict)
+        {
+            CpuThreshold = Utils.StringToInt((dict.TryGetValue(CPU_THRESHOLD, out string s) ? s : "").Trim());
         }
 
         public ChassisModel GetChassis(int chassisNumber)

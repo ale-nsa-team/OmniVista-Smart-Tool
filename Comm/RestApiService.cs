@@ -59,6 +59,7 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CMM));
                 dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.Cmm);
+                SendRequest(GetRestUrlEntry(CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE));
                 ScanSwitch();
             }
             catch (Exception ex)
@@ -81,10 +82,8 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_TEMPERATURE));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
                 SwitchModel.LoadFromList(diclist, DictionaryType.TemperatureList);
-                
-                //this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_HEALTH));
-                //diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
-
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_HEALTH_CONFIG));
+                SwitchModel.UpdateCpuThreshold(CliParseUtils.ParseETable(_response[RESULT]));
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORTS_LIST));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 3);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PortsList);
@@ -92,6 +91,9 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_POWER_SUPPLIES));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PowerSupply);
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_HEALTH));
+                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+                SwitchModel.LoadFromList(diclist, DictionaryType.CpuTrafficList);
                 GetLanPower();
                 GetSnapshot();
                 _progress.Report(new ProgressReport($"Reading lldp remote information on Switch {SwitchModel.IpAddress}"));
