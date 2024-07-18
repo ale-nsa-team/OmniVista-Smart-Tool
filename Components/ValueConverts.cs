@@ -215,7 +215,7 @@ namespace PoEWizard.Components
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null) return Visibility.Collapsed;
-            return value.ToString() == "OvererThreshold" || value.ToString() == "Danger"? Visibility.Visible : Visibility.Collapsed;
+            return value.ToString() == "OverThreshold" || value.ToString() == "Danger"? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
