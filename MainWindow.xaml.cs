@@ -171,6 +171,7 @@ namespace PoEWizard
                 }
                 sftpService.Connect();
                 res = sftpService.DownloadToMemory(VCBOOT_PATH);
+                string fname = sftpService.DownloadFile(VCBOOT_PATH);
             });
             HideProgress();
             TextViewer tv = new TextViewer("VCBoot config file", res)

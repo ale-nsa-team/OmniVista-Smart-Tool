@@ -53,19 +53,22 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void DownloadFile(string remotePath)
+        public string DownloadFile(string remotePath)
         {
             try
             {
-                using (var fs = new FileStream(Path.GetFileName(remotePath), FileMode.OpenOrCreate))
+                string localPath = Path.Combine(MainWindow.dataPath, Path.GetFileName(remotePath));
+                using (var fs = new FileStream(localPath, FileMode.Create))
                 {
                     _sftpClient.DownloadFile(remotePath, fs);
                 }
+                return localPath;
             }
             catch (IOException ex)
             {
                 Logger.Error("Error downloading file.", ex);
             }
+            return null;
         }
 
         public string DownloadToMemory(string remotePath)
