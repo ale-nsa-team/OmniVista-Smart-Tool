@@ -23,9 +23,7 @@ namespace PoEWizard.Data
         public enum PriorityLevelType { Low, High, Critical }
         public enum PowerSupplyState { Up, Down, Unknown }
         public enum ChassisStatus { Unknown, Up, Down }
-        public enum DictionaryType { System, Chassis, RunningDir, Cmm,
-            MicroCode, LanPower, LanPowerCfg, PortsList,
-            PowerSupply, LldpRemoteList, MacAddressList }
+        public enum DictionaryType { System, Chassis, RunningDir, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList, MacAddressList, TemperatureList }
         public enum ConfigType { Enable, Disable, Unavailable }
         public enum DeviceType {
             [Description("Camera")]
@@ -37,6 +35,7 @@ namespace PoEWizard.Data
             [Description("Other")]
             Other = 4
         }
+        public enum ThresholdType { UnderThreshold, OverThreshold, Danger, Unknown }
         #endregion
 
         #region dictionaries
@@ -138,6 +137,8 @@ namespace PoEWizard.Data
         public const string MED_POWER_PRIORITY = "MED Power Priority";
         public const string MED_POWER_VALUE = "MED Power Value";
         public const string MED_IP_ADDRESS = "Management IP Address";
+        // Used by "SHOW_CHASSIS"
+        public const string CHAS_DEVICE = "Chassis/Device";
         #endregion
 
         #region regex patterns

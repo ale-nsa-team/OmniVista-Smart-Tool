@@ -44,6 +44,7 @@ namespace PoEWizard.Data
             SHOW_CMM = 15,
             POWER_CLASS_DETECTION_ENABLE = 16,
             SHOW_SLOT_LAN_POWER_STATUS = 17,
+            LLDP_SYSTEM_DESCRIPTION_ENABLE = 18,
             // 30 - 69: Commands related to actions on port
             POWER_DOWN_PORT = 30,
             POWER_UP_PORT = 31,
@@ -68,6 +69,7 @@ namespace PoEWizard.Data
             SHOW_PORT_LLDP_REMOTE = 50,
             POE_FAST_DISABLE = 51,
             POE_PERPETUAL_DISABLE = 52,
+            SET_MAX_POWER_PORT = 53,
             // 70 - 99: Special switch commands
             WRITE_MEMORY = 70,
             SHOW_CONFIGURATION = 71,
@@ -99,6 +101,7 @@ namespace PoEWizard.Data
             [CommandType.SHOW_CMM] = "show cmm",                                                  // 15
             [CommandType.POWER_CLASS_DETECTION_ENABLE] = $"lanpower slot {DATA_0} class-detection enable", // 16
             [CommandType.SHOW_SLOT_LAN_POWER_STATUS] = $"show lanpower slot {DATA_0} status",     //  17
+            [CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE] = "lldp nearest-bridge chassis tlv management port-description enable system-name enable system-description enable", // 18
             // 30 - 69: Commands related to actions on port
             [CommandType.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",        // 30
             [CommandType.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",           // 31
@@ -123,6 +126,7 @@ namespace PoEWizard.Data
             [CommandType.SHOW_PORT_LLDP_REMOTE] = $"show lldp port {DATA_0} remote-system",       // 50
             [CommandType.POE_FAST_DISABLE] = $"lanpower slot {DATA_0} fpoe disable",              // 51
             [CommandType.POE_PERPETUAL_DISABLE] = $"lanpower slot {DATA_0} ppoe disable",         // 52
+            [CommandType.SET_MAX_POWER_PORT] = $"lanpower port {DATA_0} power {DATA_1}",          // 53
             // 70 - 99: Special switch commands
             [CommandType.WRITE_MEMORY] = "write memory flash-synchro",                            // 70
             [CommandType.SHOW_CONFIGURATION] = "show configuration snapshot",                     // 71

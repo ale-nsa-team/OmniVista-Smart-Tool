@@ -1,6 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO.Packaging;
 using System.Text;
+using System.Xml.Linq;
 
 namespace PoEWizard.Data
 {
@@ -37,6 +39,7 @@ namespace PoEWizard.Data
         public bool Proceed => this.IsProceed();
         public ConcurrentDictionary<string, List<ReportResult>> ReportResult { get; set; } = new ConcurrentDictionary<string, List<ReportResult>>();
         public string Message => this.ToString();
+        public string Error => this.GetErrorMessage();
 
         public ProgressReportResult() {  }
 
@@ -131,6 +134,25 @@ namespace PoEWizard.Data
                 if (this.ReportResult.TryGetValue(port, out List<ReportResult> reportList)) return reportList;
             }
             return new List<ReportResult>();
+        }
+
+        private string GetErrorMessage()
+        {
+            lock (_lock_report_result)
+            {
+                StringBuilder txt = new StringBuilder();
+                foreach (var reports in this.ReportResult)
+                {
+                    List<ReportResult> reportsList = reports.Value as List<ReportResult>;
+                    foreach (var report in reportsList)
+                    {
+                        if (string.IsNullOrEmpty(report.Error)) continue;
+                        if (txt.Length > 0) txt.Append("\n");
+                        txt.Append(report.Error);
+                    }
+                }
+                return txt.ToString();
+            }
         }
 
         public override string ToString()

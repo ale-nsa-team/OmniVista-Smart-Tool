@@ -23,6 +23,7 @@ namespace PoEWizard.Device
         public string PartNumber { get; set; }
         public string HardwareRevision { get; set; }
         public string MacAddress { get; set; }
+        public SwitchTemperature Temperature { get; set; }
 
         public ChassisModel(Dictionary<string, string> dict)
         {
@@ -40,6 +41,7 @@ namespace PoEWizard.Device
             MacAddress = dict.TryGetValue(CHASSIS_MAC_ADDRESS, out s) ? s : "";
             Slots = new List<SlotModel>();
             PowerSupplies = new List<PowerSupplyModel>();
+            Temperature = null;
         }
 
         public ChassisModel(string sn, string mac, string model)
@@ -58,6 +60,11 @@ namespace PoEWizard.Device
                 if (slot == null) return;
                 slot.LoadFromDictionary(dict);
             }
+        }
+
+        public void LoadTemperature(Dictionary<string, string> dict)
+        {
+            Temperature = new SwitchTemperature(dict);
         }
 
         public SlotModel GetSlot(int slotNumber)

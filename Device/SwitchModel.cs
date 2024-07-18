@@ -34,6 +34,8 @@ namespace PoEWizard.Device
         public PowerSupplyState PowerSupplyState => GetPowerSupplyState();
         public string ConfigSnapshot { get; set; }
         public bool ConfigChanged { get; set; } = false;
+        public int Temperature { get; set; }
+        public ThresholdType TemperatureThreshold { get; set; }
 
         public SwitchModel() : this("", DEFAULT_USERNAME, DEFAULT_PASSWORD, 5) { }
 
@@ -123,8 +125,6 @@ namespace PoEWizard.Device
                         chas.PowerSupplies.Add(new PowerSupplyModel(GetPsId(dic[CHAS_PS]), dic[LOCATION]));
                     }
                     break;
-                case DictionaryType.LanPower:
-                    break;
                 case DictionaryType.LldpRemoteList:
                     foreach (Dictionary<string, string> dict in list)
                     {
@@ -156,6 +156,15 @@ namespace PoEWizard.Device
                             prevPort = currPort;
                         }
                         if (port.AddMacToList(dict) >= 10) break;
+                    }
+                    break;
+                case DictionaryType.TemperatureList:
+                    foreach (var dic in list)
+                    {
+                        string[] split = dic[CHAS_DEVICE].Split('/');
+                        var chas = GetChassis(Utils.StringToInt(split[0]));
+                        if (chas == null) continue;
+                        chas.LoadTemperature(dic);
                     }
                     break;
             }
