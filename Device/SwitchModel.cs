@@ -35,7 +35,7 @@ namespace PoEWizard.Device
         public string ConfigSnapshot { get; set; }
         public bool ConfigChanged { get; set; } = false;
         public int Temperature { get; set; }
-        public ThresholdType TemperatureThreshold { get; set; }
+        public ThresholdType TemperatureStatus { get; set; }
 
         public SwitchModel() : this("", DEFAULT_USERNAME, DEFAULT_PASSWORD, 5) { }
 
@@ -159,14 +159,19 @@ namespace PoEWizard.Device
                     }
                     break;
                 case DictionaryType.TemperatureList:
+                    SwitchTemperature temperature = new SwitchTemperature();
                     foreach (var dic in list)
                     {
                         string[] split = (dic.TryGetValue(CHAS_DEVICE, out string s) ? s : "").Trim().Split('/');
-                        if (split.Length == 0) continue;
                         var chas = GetChassis(Utils.StringToInt(split[0]));
                         if (chas == null) continue;
                         chas.LoadTemperature(dic);
+                        if (temperature.Status < chas.Temperature.Status)
+                        {
+                            temperature = chas.Temperature;
+                        }
                     }
+                    TemperatureStatus = temperature.Status;
                     break;
             }
         }

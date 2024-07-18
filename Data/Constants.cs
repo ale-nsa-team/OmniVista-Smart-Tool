@@ -35,7 +35,7 @@ namespace PoEWizard.Data
             [Description("Other")]
             Other = 4
         }
-        public enum ThresholdType { UnderThreshold, OverThreshold, Danger, Unknown }
+        public enum ThresholdType { Unknown, UnderThreshold, OverThreshold, Danger }
         #endregion
 
         #region dictionaries
