@@ -704,6 +704,7 @@ namespace PoEWizard
             _vcbootMenuItem.IsEnabled = true;
             _refreshSwitch.IsEnabled = true;
             _disconnectMenuItem.Visibility = Visibility.Visible;
+            _tempStatus.Visibility = Visibility.Visible;
             slotView = new SlotView(device);
             _slotsView.ItemsSource = slotView.Slots;
             _slotsView.SelectedIndex = 0;
@@ -733,6 +734,7 @@ namespace PoEWizard
             _refreshSwitch.IsEnabled = false;
             _comImg.ToolTip = "Click to reconnect";
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
+            _tempStatus.Visibility = Visibility.Hidden;
             _slotsView.Visibility= Visibility.Hidden;
             _portList.Visibility= Visibility.Hidden;
             _aosWarn.Visibility = Visibility.Hidden;

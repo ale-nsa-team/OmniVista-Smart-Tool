@@ -11,6 +11,7 @@
     <converters:BoolToPoEModeConverter x:Key="BoolToPoEModeConverter" />
     <converters:ConfigTypeToBoolConverter x:Key="ConfigTypeToBoolConverter" />
     <converters:ConfigTypeToSimbolConverter x:Key="ConfigTypeToSimbolConverter" />
+    <converters:TempStatusToVisibilityConverter x:Key="TempStatusToVisibilityConveter" />
 
     <BitmapImage x:Key="connected" UriSource="connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="disconnected-light.png" />
@@ -359,6 +360,13 @@
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
     </Style>
 
+    <Style TargetType="Image" x:Key="warnImg">
+        <Setter Property="Source" Value="warning.png" />
+        <Setter Property="Margin" Value="5,0" />
+        <Setter Property="Width" Value="16" />
+        <Setter Property="Height" Value="16" />
+    </Style>
+    
     <ControlTemplate x:Key="comboBoxTextBox" TargetType="{x:Type TextBox}">
         <Border x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}" />
     </ControlTemplate>
