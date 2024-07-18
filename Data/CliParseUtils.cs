@@ -182,8 +182,9 @@ namespace PoEWizard.Data
             int idx = 0;
             List<string> vals = new List<string>();
             string[] split = sep.Split('+');
-            foreach (string s in split)
+            for (int i = 0; i < split.Length - 1; i++)
             {
+                string s = split[i];
                 int len = idx + s.Length < line.Length ? s.Length + 1 : line.Length - idx;
                 if (len > 0)
                 {
@@ -195,6 +196,8 @@ namespace PoEWizard.Data
                     vals.Add("");
                 }
             }
+            if (idx < line.Length) vals.Add(line.Substring(idx).Trim());
+            else vals.Add("");
 
             return vals.ToArray();
         }
