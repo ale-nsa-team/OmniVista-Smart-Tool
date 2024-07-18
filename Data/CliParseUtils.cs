@@ -61,7 +61,7 @@ namespace PoEWizard.Data
                     string[] values = GetValues(lines[line], lines[i]);
                     for (int j = 0; j < header.Length; j++)
                     {
-                        dict.Add(header[j].Trim(), values?.Skip(j).FirstOrDefault());
+                        dict.Add(header[j].Replace("|", "").Trim(), values?.Skip(j).FirstOrDefault());
                     }
                     table.Add(dict);
                 }
@@ -188,7 +188,7 @@ namespace PoEWizard.Data
                 int len = idx + s.Length < line.Length ? s.Length + 1 : line.Length - idx;
                 if (len > 0)
                 {
-                    vals.Add(line.Substring(idx, len).Trim(new char[] { ' ', '|' }));
+                    vals.Add(line.Substring(idx, len));
                     idx = sep.IndexOf('+', idx + 1);
                 }
                 else
