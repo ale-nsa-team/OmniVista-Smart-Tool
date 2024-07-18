@@ -137,6 +137,7 @@
     <Compile Include="Data\ProgressReport.cs" />
     <Compile Include="Data\RestUrl.cs" />
     <Compile Include="Data\RestUrlEntry.cs" />
+    <Compile Include="Data\SwitchTemperature.cs" />
     <Compile Include="Data\Utils.cs" />
     <Compile Include="Device\ChassisModel.cs" />
     <Compile Include="Components\ValueConverts.cs" />

@@ -78,6 +78,15 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CHASSIS));
                 diclist = CliParseUtils.ParseChassisTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.Chassis);
+
+
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_TEMPERATURE));
+                diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
+                SwitchModel.LoadFromList(diclist, DictionaryType.TemperatureList);
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_HEALTH));
+                diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
+
+
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORTS_LIST));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 3);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PortsList);
@@ -307,10 +316,7 @@ namespace PoEWizard.Comm
                 if (_wizardSwitchPort.EndPointDevice != null && !string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.MacAddress))
                 {
                     txt.Append(", Device MAC: ").Append(_wizardSwitchPort.EndPointDevice.MacAddress);
-                    if (!string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.IpAddress))
-                    {
-                        txt.Append(", IP: ").Append(_wizardSwitchPort.EndPointDevice.IpAddress);
-                    }
+                    if (!string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.IpAddress)) txt.Append(", IP: ").Append(_wizardSwitchPort.EndPointDevice.IpAddress);
                 }
                 else if (_wizardSwitchPort.MacList?.Count > 0 && !string.IsNullOrEmpty(_wizardSwitchPort.MacList[0]))
                 {
@@ -318,11 +324,12 @@ namespace PoEWizard.Comm
                 }
                 if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny)
                 {
+                    commands.Clear();
+                    commands.Add(CommandType.RESET_POWER_PORT);
                     string wizardAction = $"Nothing to do on port {_wizardSwitchPort.Name}.{txt}";
                     _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
                     _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, false);
                     Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
-                    return;
                 }
                 foreach (CommandType command in commands)
                 {
@@ -481,20 +488,24 @@ namespace PoEWizard.Comm
             StringBuilder txt = new StringBuilder(wizardAction).Append("\nPoE status: ");
             txt.Append(_wizardSwitchPort.Poe).Append(", Port Status: ").Append(_wizardSwitchPort.Status);
             txt = new StringBuilder();
-            bool change8023bt = false;
             switch (_wizardSwitchPort.Protocol8023bt)
             {
                 case ConfigType.Disable:
-                    change8023bt = true;
+                    if (_wizardSwitchSlot.FPoE == ConfigType.Enable)
+                    {
+                        _wizardReportResult.UpdateError(_wizardSwitchPort.Name, $"Fast PoE is enabled on Slot {_wizardSwitchSlot.Name}");
+                    }
+                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, true, txt.ToString());
                     break;
                 case ConfigType.Unavailable:
                     txt.Append($"\n    Switch {SwitchModel.IpAddress} doesn't support 802.3.bt");
+                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, false, txt.ToString());
                     break;
                 case ConfigType.Enable:
                     txt.Append($"\n    802.3.bt already enabled on Port {_wizardSwitchPort.Name}");
+                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, false, txt.ToString());
                     break;
             }
-            _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, change8023bt, txt.ToString());
             _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
             Logger.Debug(txt.ToString());
         }

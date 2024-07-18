@@ -521,8 +521,6 @@ namespace PoEWizard
         {
             await Enable823BT();
             if (!reportResult.Proceed) return;
-            await ResetPortPower();
-            if (!reportResult.Proceed) return;
             await EnableHdmiMdi();
             if (!reportResult.Proceed) return;
             await ChangePriority();
@@ -534,8 +532,6 @@ namespace PoEWizard
         {
             await Enable2PairPower();
             if (!reportResult.Proceed) return;
-            await ResetPortPower();
-            if (!reportResult.Proceed) return;
             await ChangePriority();
             if (!reportResult.Proceed) return;
             await EnableHdmiMdi();
@@ -545,8 +541,6 @@ namespace PoEWizard
 
         private async Task RunWizardWirelessLan()
         {
-            await ResetPortPower();
-            if (!reportResult.Proceed) return;
             await Enable823BT();
             if (!reportResult.Proceed) return;
             await Enable2PairPower();
@@ -564,8 +558,6 @@ namespace PoEWizard
             if (!reportResult.Proceed) return;
             await EnableHdmiMdi();
             if (!reportResult.Proceed) return;
-            await ResetPortPower();
-            if (!reportResult.Proceed) return;
             await Enable2PairPower();
         }
 
@@ -578,7 +570,9 @@ namespace PoEWizard
                 reportResult.UpdateResult(selectedPort, true);
                 return;
             }
-            bool proceed = ShowMessageBox("Enable 802.3.bt", "To enable 802.3.bt all devices on the same slot will restart. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+            string error = reportResult.Error;
+            string msg = !string.IsNullOrEmpty(error) ? error : "To enable 802.3.bt all devices on the same slot will restart";
+            bool proceed = ShowMessageBox("Enable 802.3.bt", $"{msg}. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
             if (!proceed) return;
             await RunPoeWizard(new List<CommandType>() { CommandType.POWER_823BT_ENABLE }, 15);
             Logger.Info($"Enable 802.3.bt on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
