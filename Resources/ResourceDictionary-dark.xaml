@@ -11,6 +11,7 @@
     <converters:BoolToPoEModeConverter x:Key="BoolToPoEModeConverter" />
     <converters:ConfigTypeToBoolConverter x:Key="ConfigTypeToBoolConverter" />
     <converters:ConfigTypeToSimbolConverter x:Key="ConfigTypeToSimbolConverter" />
+    <converters:TempStatusToVisibilityConverter x:Key="TempStatusToVisibilityConveter" />
 
     <BitmapImage x:Key="connected" UriSource="connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="disconnected-dark.png" />
@@ -463,7 +464,8 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
-
+    <!-- end menu style-->
+    
     <ControlTemplate x:Key="validationTemplate">
         <Grid>
             <Ellipse Fill="Red" Opacity="0.8" Width="12" Height="12"
@@ -754,6 +756,14 @@
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
     </Style>
 
+    <Style TargetType="Image" x:Key="warnImg">
+        <Setter Property="Source" Value="warning.png" />
+        <Setter Property="Margin" Value="5,0" />
+        <Setter Property="Width" Value="16" />
+        <Setter Property="Height" Value="16" />
+    </Style>
+
+    <!-- combobox style -->
     <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -894,6 +904,7 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <!--end combobox style -->
 
     <Style x:Key="toggleSwitch" TargetType="{x:Type CheckBox}">
         <Setter Property="Cursor" Value="Hand" />

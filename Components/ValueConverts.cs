@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -53,7 +54,7 @@ namespace PoEWizard.Components
                 case "ConnectionStatus":
                     return val == "Reachable" ? Colors.Green : Colors.Red;
                 case "Temperature":
-                    return val == "UnderThreshold" ? Colors.Green : Colors.Red;
+                    return val == "UnderThreshold" ? Colors.Green : val == "OverThreshold" ? Colors.Orange : Colors.Red;
                 case "Power":
                     float percent = RectangleValueConverter.GetFloat(value);
                     return percent > 10 ? Colors.Green : (percent > 0 ? Colors.Orange : Colors.Red);
@@ -206,6 +207,20 @@ namespace PoEWizard.Components
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             return null;
+        }
+    }
+
+    public class TempStatusToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return Visibility.Collapsed;
+            return value.ToString() == "OvererThreshold" || value.ToString() == "Danger"? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 
