@@ -296,10 +296,10 @@ namespace PoEWizard
             {
                 port.PriorityLevel = prevPriority;
                 Logger.Error($"Couldn't change the Priority to {port.PriorityLevel} on Port {port.Name} of Switch {device.IpAddress}");
-                HideInfoBox();
             }
-            RefreshSlotAndPortsView();
+            HideInfoBox();
             HideProgress();
+            RefreshSlotAndPortsView();
         }
 
         private async void FPoE_Click(object sender, RoutedEventArgs e)
@@ -320,6 +320,7 @@ namespace PoEWizard
             }
             HideProgress();
             HideInfoBox();
+            RefreshSlotAndPortsView();
         }
 
         private async void PPoE_Click(Object sender, RoutedEventArgs e)
@@ -340,6 +341,7 @@ namespace PoEWizard
             }
             HideProgress();
             HideInfoBox();
+            RefreshSlotAndPortsView();
         }
 
         private async Task<bool> SetPerpetualOrFastPoe(CommandType cmd)
@@ -450,6 +452,7 @@ namespace PoEWizard
                         await RunWizardOther();
                         break;
                 }
+                await Task.Run(() => restApiService.RefreshSwitchPorts());
                 wizardProgressReport.Title = "PoE Wizard Report:";
                 wizardProgressReport.Type = reportResult.Proceed ? ReportType.Error : ReportType.Info;
                 wizardProgressReport.Message = $"{reportResult.Message}\n\nTotal duration: {Utils.CalcStringDuration(startTime, true)}";
