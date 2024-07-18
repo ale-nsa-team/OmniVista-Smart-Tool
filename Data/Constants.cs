@@ -140,6 +140,10 @@ namespace PoEWizard.Data
         public const string MED_IP_ADDRESS = "Management IP Address";
         // Used by "SHOW_CHASSIS"
         public const string CHAS_DEVICE = "Chassis/Device";
+        public const string CURRENT = "Current";
+        public const string RANGE = "Range";
+        public const string DANGER = "Danger";
+        public const string THRESHOLD = "Thresh";
         #endregion
 
         #region regex patterns

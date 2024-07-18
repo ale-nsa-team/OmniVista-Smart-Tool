@@ -80,11 +80,11 @@ namespace PoEWizard.Comm
                 SwitchModel.LoadFromList(diclist, DictionaryType.Chassis);
 
 
-                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_TEMPERATURE));
-                diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
-                SwitchModel.LoadFromList(diclist, DictionaryType.TemperatureList);
-                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_HEALTH));
-                diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
+                //this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_TEMPERATURE));
+                //diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
+                //SwitchModel.LoadFromList(diclist, DictionaryType.TemperatureList);
+                //this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_HEALTH));
+                //diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
 
 
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORTS_LIST));

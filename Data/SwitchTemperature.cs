@@ -27,6 +27,14 @@ namespace PoEWizard.Data
 
         public SwitchTemperature(Dictionary<string, string> dict)
         {
+            
+            string[] split = (dict.TryGetValue(CHAS_DEVICE, out string s) ? s : "").Trim().Split('/');
+            if (split.Length > 1) Device = split[1].Trim();
+            Current = (dict.TryGetValue(CURRENT, out s) ? s : "").Trim();
+            Range = dict[RANGE].Trim();
+            Threshold = dict[THRESHOLD].Trim();
+            Danger = dict[DANGER].Trim();
+            Current = dict[CURRENT].Trim();
         }
     }
 }

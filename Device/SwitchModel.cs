@@ -161,7 +161,8 @@ namespace PoEWizard.Device
                 case DictionaryType.TemperatureList:
                     foreach (var dic in list)
                     {
-                        string[] split = dic[CHAS_DEVICE].Split('/');
+                        string[] split = (dic.TryGetValue(CHAS_DEVICE, out string s) ? s : "").Trim().Split('/');
+                        if (split.Length == 0) continue;
                         var chas = GetChassis(Utils.StringToInt(split[0]));
                         if (chas == null) continue;
                         chas.LoadTemperature(dic);
