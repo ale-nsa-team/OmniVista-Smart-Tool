@@ -25,6 +25,7 @@ namespace PoEWizard.Device
         public ConfigType PowerClassDetection { get; set; }
         public bool IsHiResDetection { get; set; }
         public bool IsInitialized { get; set; }
+        public int Cpu {  get; set; }
 
         public SlotModel() { }
 
