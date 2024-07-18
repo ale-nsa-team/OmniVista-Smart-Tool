@@ -74,7 +74,8 @@ namespace PoEWizard.Data
             REBOOT_SWITCH = 72,
             // 100 - 119: Virtual commands
             CHECK_POWER_PRIORITY = 100,
-            RESET_POWER_PORT = 101
+            RESET_POWER_PORT = 101,
+            CHECK_823BT = 102
         }
 
         private readonly static Dictionary<CommandType, string> CLI_TABLE = new Dictionary<CommandType, string>

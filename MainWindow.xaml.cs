@@ -546,6 +546,13 @@ namespace PoEWizard
 
         private async Task Enable823BT()
         {
+            await RunPoeWizard(new List<CommandType>() { CommandType.CHECK_823BT }, 15);
+            Logger.Info($"PoE Wizard Check Enable 802.3.bt on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            if (!reportResult.Proceed)
+            {
+                reportResult.UpdateResult(selectedPort, true);
+                return;
+            }
             bool proceed = ShowMessageBox("Enable 802.3.bt", "To enable 802.3.bt all devices on the same slot will restart. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
             if (!proceed) return;
             await RunPoeWizard(new List<CommandType>() { CommandType.POWER_823BT_ENABLE }, 15);
