@@ -33,7 +33,9 @@ namespace PoEWizard.Data
             Range = (dict.TryGetValue(RANGE, out s) ? s : "").Trim();
             Threshold = Utils.StringToInt((dict.TryGetValue(THRESHOLD, out s) ? s : "").Trim());
             Danger = Utils.StringToInt((dict.TryGetValue(DANGER, out s) ? s : "").Trim());
-            Status = Enum.TryParse(Utils.ToPascalCase(dict.TryGetValue(STATUS, out s) ? s : "").Replace(" ", "").Trim(), true, out ThresholdType t) ? t : ThresholdType.Unknown;
+            if (Current <= Threshold) Status = ThresholdType.UnderThreshold;
+            else if (Current >= Danger) Status = ThresholdType.Danger;
+            else Status = ThresholdType.OverThreshold;
         }
     }
 }
