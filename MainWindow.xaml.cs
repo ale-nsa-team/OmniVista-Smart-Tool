@@ -261,6 +261,9 @@ namespace PoEWizard
                 _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
             }
             SetTitleColor();
+            //force color converters to run
+            DataContext = null;
+            DataContext = device;
         }
 
         private void About_Click(object sender, RoutedEventArgs e)
@@ -405,10 +408,12 @@ namespace PoEWizard
                 restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
+                    ShowProgress($"Disconnecting from switch {device.IpAddress}...");
                     await CloseRestApiService();
                     SetDisconnectedState();
                     return;
                 }
+                ShowProgress($"Connecting to switch {device.IpAddress}...");
                 isClosing = false;
                 await Task.Run(() => restApiService.Connect());
                 UpdateConnectedState(true);
@@ -709,6 +714,7 @@ namespace PoEWizard
             _refreshSwitch.IsEnabled = true;
             _disconnectMenuItem.Visibility = Visibility.Visible;
             _tempStatus.Visibility = Visibility.Visible;
+            _cpu.Visibility = Visibility.Visible;
             slotView = new SlotView(device);
             _slotsView.ItemsSource = slotView.Slots;
             _slotsView.SelectedIndex = 0;
@@ -730,8 +736,6 @@ namespace PoEWizard
             device.IpAddress = previousIp;
             _switchAttributes.Text = "";
             _btnRunWiz.IsEnabled = false;
-            DataContext = null;
-            restApiService = null;
             _switchMenuItem.IsEnabled = true;
             _snapshotMenuItem.IsEnabled = false;
             _vcbootMenuItem.IsEnabled = false;
@@ -739,10 +743,13 @@ namespace PoEWizard
             _comImg.ToolTip = "Click to reconnect";
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
             _tempStatus.Visibility = Visibility.Hidden;
+            _cpu.Visibility = Visibility.Hidden;
             _slotsView.Visibility= Visibility.Hidden;
             _portList.Visibility= Visibility.Hidden;
             _aosWarn.Visibility = Visibility.Hidden;
             _fpgaWarn.Visibility = Visibility.Hidden;
+            DataContext = null;
+            restApiService = null;
         }
 
         private async Task RebootSwitch(int waitSec)

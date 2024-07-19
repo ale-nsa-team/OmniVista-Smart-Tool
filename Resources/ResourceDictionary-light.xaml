@@ -12,6 +12,9 @@
     <converters:ConfigTypeToBoolConverter x:Key="ConfigTypeToBoolConverter" />
     <converters:ConfigTypeToSimbolConverter x:Key="ConfigTypeToSimbolConverter" />
     <converters:TempStatusToVisibilityConverter x:Key="TempStatusToVisibilityConveter" />
+    <converters:CpuUsageToColorConverter x:Key="CpuUsageToColorConverter" />
+    <converters:CpuUsageToToolTipConverter x:Key="CpuUsageToToolTipConverter" />
+    <converters:CpuUsageToVisibilityConverter x:Key="CpuUsageToVisibilityConverter" />
 
     <BitmapImage x:Key="connected" UriSource="connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="disconnected-light.png" />

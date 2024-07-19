@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlTypes;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
@@ -13,12 +14,12 @@ namespace PoEWizard.Components
 {
     internal static class Colors
     {
-        internal static SolidColorBrush Red = (SolidColorBrush)new BrushConverter().ConvertFrom("#f00736");
-        internal static SolidColorBrush Green = MainWindow.theme == Constants.ThemeType.Dark ? Brushes.Lime : Brushes.Green;
-        internal static SolidColorBrush Orange = Brushes.Orange;
-        internal static SolidColorBrush Gray = Brushes.Gray;
-        internal static SolidColorBrush LightGray = (SolidColorBrush)new BrushConverter().ConvertFrom("#aaa");
-        internal static SolidColorBrush Def = MainWindow.theme == Constants.ThemeType.Dark ? Brushes.White : Brushes.Black;
+        internal static SolidColorBrush Red => (SolidColorBrush)new BrushConverter().ConvertFrom("#f00736");
+        internal static SolidColorBrush Green => MainWindow.theme == Constants.ThemeType.Dark ? Brushes.Lime : Brushes.Green;
+        internal static SolidColorBrush Orange => Brushes.Orange;
+        internal static SolidColorBrush Gray => Brushes.Gray;
+        internal static SolidColorBrush LightGray => (SolidColorBrush)new BrushConverter().ConvertFrom("#aaa");
+        internal static SolidColorBrush Def => MainWindow.theme == Constants.ThemeType.Dark ? Brushes.White : Brushes.Black;
     }
 
     public class RectangleValueConverter : IValueConverter
@@ -134,8 +135,9 @@ namespace PoEWizard.Components
         private int[] GetMinFpga(string model)
         {
             string m = model;
-            while (m.Length > 2) {
-                if (fpga.TryGetValue(m, out string val))
+            while (m.Length > 2)
+            {
+                if (Constants.fpga.TryGetValue(m, out string val))
                 {
                     string[] vals = val.Split('.');
                     return Array.ConvertAll(vals, int.Parse);
@@ -215,7 +217,7 @@ namespace PoEWizard.Components
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null) return Visibility.Collapsed;
-            return value.ToString() == "OverThreshold" || value.ToString() == "Danger"? Visibility.Visible : Visibility.Collapsed;
+            return value.ToString() == "OverThreshold" || value.ToString() == "Danger" ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -263,6 +265,63 @@ namespace PoEWizard.Components
             PoeStatus poeType = string.IsNullOrEmpty(val) || val.Contains("UnsetValue") ? PoeStatus.NoPoe : (PoeStatus)Enum.Parse(typeof(Constants.PoeStatus), val);
             string priorityLevel = values[1].ToString();
             return poeType != PoeStatus.NoPoe ? Enum.Parse(typeof(Constants.PriorityLevelType), priorityLevel) : null;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            string[] splitValues = (value.ToString()).Split(' ');
+            return splitValues;
+        }
+    }
+
+    public class CpuUsageToColorConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values == null || values[0] == null || values[0] == DependencyProperty.UnsetValue) return Colors.Def;
+            int cpu = int.Parse(values[0].ToString());
+            int thrshld = int.Parse(values[1].ToString());
+            if (thrshld == 0) return Colors.Def;
+            double pct = 1 - cpu / thrshld;
+            return pct > 0.1 ? Colors.Green : pct < 0 ? Colors.Red : Colors.Orange;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            string[] splitValues = (value.ToString()).Split(' ');
+            return splitValues;
+        }
+    }
+
+    public class CpuUsageToToolTipConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values == null || values[0] == null || values[0] == DependencyProperty.UnsetValue) return string.Empty;
+            int cpu = int.Parse(values[0].ToString());
+            int thrshld = int.Parse(values[1].ToString());
+            if (thrshld == 0) return string.Empty;
+            double pct = 1 - cpu / thrshld;
+            return pct > 0.1 ? string.Empty : pct < 0 ? $"CPU usage over threshold {thrshld}%)" : $"CPU usage near threshold {thrshld}%)";
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            string[] splitValues = (value.ToString()).Split(' ');
+            return splitValues;
+        }
+    }
+
+    public class CpuUsageToVisibilityConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values == null || values[0] == null || values[0] == DependencyProperty.UnsetValue) return Visibility.Collapsed;
+            int cpu = int.Parse(values[0].ToString());
+            int thrshld = int.Parse(values[1].ToString());
+            if (thrshld == 0) return Visibility.Collapsed;
+            double pct = 1 - cpu / thrshld;
+            return pct > 0.1 ? Visibility.Collapsed : Visibility.Visible;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

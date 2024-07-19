@@ -19,6 +19,7 @@ namespace PoEWizard.Device
         public string LocalPort { get; set; } = string.Empty;
         public string MacAddress { get; set; } = string.Empty;
         public string DeviceType { get; set; } = string.Empty;
+        public string DeviceName { get; set; } = string.Empty;
         public string IpAddress { get; set; } = string.Empty;
         public string EthernetType { get; set; } = string.Empty;
         public string RemotePort { get; set; } = string.Empty;
