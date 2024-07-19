@@ -27,18 +27,18 @@ namespace PoEWizard.Device
 
         public ChassisModel(Dictionary<string, string> dict)
         {
-            string nb = dict.TryGetValue(ID, out string s) ? s : "";
+            string nb = Utils.GetDictValue(dict, ID);
             Number = int.TryParse(nb, out int n) ? n : 1;
-            Model =  dict.TryGetValue(MODEL_NAME, out s) ? s : "";
-            Type = dict.TryGetValue(MODULE_TYPE, out s) ? s : "";
-            string role = dict.TryGetValue(ROLE, out s) ? s : "";
+            Model =  Utils.GetDictValue(dict, MODEL_NAME);
+            Type = Utils.GetDictValue(dict, MODULE_TYPE);
+            string role = Utils.GetDictValue(dict, ROLE);
             IsMaster = role == "Master";
-            AdminStatus = dict.TryGetValue(ADMIN_STATUS, out s) ? s : "";
-            OperationalStatus = dict.TryGetValue(OPERATIONAL_STATUS, out s) ? s : string.Empty;
-            SerialNumber = dict.TryGetValue(SERIAL_NUMBER, out s) ? s : "";
-            PartNumber = dict.TryGetValue(PART_NUMBER, out s) ? s : "";
-            HardwareRevision = dict.TryGetValue(HARDWARE_REVISION, out s) ? s : "";
-            MacAddress = dict.TryGetValue(CHASSIS_MAC_ADDRESS, out s) ? s : "";
+            AdminStatus = Utils.GetDictValue(dict, ADMIN_STATUS);
+            OperationalStatus = Utils.GetDictValue(dict, OPERATIONAL_STATUS);
+            SerialNumber = Utils.GetDictValue(dict, SERIAL_NUMBER);
+            PartNumber = Utils.GetDictValue(dict, PART_NUMBER);
+            HardwareRevision = Utils.GetDictValue(dict, HARDWARE_REVISION);
+            MacAddress = Utils.GetDictValue(dict, CHASSIS_MAC_ADDRESS);
             Slots = new List<SlotModel>();
             PowerSupplies = new List<PowerSupplyModel>();
             Temperature = null;

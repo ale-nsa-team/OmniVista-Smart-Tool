@@ -126,6 +126,7 @@ namespace PoEWizard.Device
                         chas.PowerSupplies.Add(new PowerSupplyModel(GetPsId(dic[CHAS_PS]), dic[LOCATION]));
                     }
                     break;
+                case DictionaryType.LldpInventoryList:
                 case DictionaryType.LldpRemoteList:
                     foreach (Dictionary<string, string> dict in list)
                     {
@@ -136,7 +137,7 @@ namespace PoEWizard.Device
                         if (slot == null) continue;
                         PortModel port = slot.GetPort(slotPort.PortNr);
                         if (port == null) continue;
-                        port.LoadLldpRemoteTable(dict);
+                        if (dt == DictionaryType.LldpRemoteList) port.LoadLldpRemoteTable(dict); else port.LoadLldpInventoryTable(dict);
                     }
                     break;
                 case DictionaryType.MacAddressList:

@@ -100,6 +100,9 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LLDP_REMOTE));
                 diclist = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.LldpRemoteList);
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LLDP_INVENTORY));
+                diclist = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
+                SwitchModel.LoadFromList(diclist, DictionaryType.LldpInventoryList);
                 _progress.Report(new ProgressReport($"Reading MAC Address information on Switch {SwitchModel.IpAddress}"));
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_MAC_LEARNING));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);

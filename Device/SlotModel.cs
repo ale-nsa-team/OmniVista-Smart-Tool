@@ -38,14 +38,14 @@ namespace PoEWizard.Device
 
         public void LoadFromDictionary(Dictionary<string, string> dict)
         {
-            this.Budget = ParseDouble(dict.TryGetValue(MAX_POWER, out string s) ? s: "0");
-            this.IsInitialized = (dict.TryGetValue(INIT_STATUS, out s) ? s : "").ToLower() == "initialized";
-            this.Is8023bt = (dict.TryGetValue(BT_SUPPORT, out s) ? s : "") == "Yes";
-            PowerClassDetection = Enum.TryParse(dict.TryGetValue(CLASS_DETECTION, out s) ? s : "", true, out ConfigType res) ? res : ConfigType.Unavailable;
-            this.IsHiResDetection = (dict.TryGetValue(HI_RES_DETECTION, out s) ? s : "") == "enable";
-            this.PPoE = Enum.TryParse(dict.TryGetValue(PPOE, out s) ? s : "", true, out res) ? res : ConfigType.Unavailable;
-            this.FPoE = Enum.TryParse(dict.TryGetValue(FPOE, out s) ? s : "", true, out res) ? res : ConfigType.Unavailable;
-            this.Threshold = ParseDouble(dict.TryGetValue(USAGE_THRESHOLD, out s) ? s : "0");
+            this.Budget = ParseDouble(Utils.GetDictValue(dict, MAX_POWER));
+            this.IsInitialized = (Utils.GetDictValue(dict, INIT_STATUS)).ToLower() == "initialized";
+            this.Is8023bt = (Utils.GetDictValue(dict, BT_SUPPORT)) == "Yes";
+            PowerClassDetection = Enum.TryParse(Utils.GetDictValue(dict, CLASS_DETECTION), true, out ConfigType res) ? res : ConfigType.Unavailable;
+            this.IsHiResDetection = (Utils.GetDictValue(dict, HI_RES_DETECTION)) == "enable";
+            this.PPoE = Enum.TryParse(Utils.GetDictValue(dict, PPOE), true, out res) ? res : ConfigType.Unavailable;
+            this.FPoE = Enum.TryParse(Utils.GetDictValue(dict, FPOE), true, out res) ? res : ConfigType.Unavailable;
+            this.Threshold = ParseDouble(Utils.GetDictValue(dict, USAGE_THRESHOLD)  );
         }
 
         public void LoadFromList(List<Dictionary<string, string>> list, DictionaryType dt)

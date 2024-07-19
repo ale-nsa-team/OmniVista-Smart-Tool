@@ -24,7 +24,7 @@ namespace PoEWizard.Data
         public enum PowerSupplyState { Up, Down, Unknown }
         public enum ChassisStatus { Unknown, Up, Down }
         public enum DictionaryType { System, Chassis, RunningDir, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList, MacAddressList,
-                                     TemperatureList, CpuTrafficList }
+                                     TemperatureList, CpuTrafficList, LldpInventoryList }
         public enum ConfigType { Enable, Disable, Unavailable }
         public enum DeviceType {
             [Description("Camera")]
@@ -128,10 +128,12 @@ namespace PoEWizard.Data
         public const string POWER_CAPACITOR_DETECTION = "Capacitor Detection";
         public const string POWER_823BT = "802.3bt";
         // Used by "SHOW_LLDP_REMOTE"
+        public const string REMOTE_ID = "Remote ID";
         public const string LOCAL_PORT = "Local Port";
         public const string REMOTE_PORT = "Remote Port";
         public const string CAPABILITIES_ENABLED = "Capabilities Enabled";
-        public const string MED_DEVICE_TYPE = "MED Device Type";
+        public const string SYSTEM_NAME = "System Name";
+        public const string SYSTEM_DESCRIPTION = "System Description";
         public const string MED_CAPABILITIES = "MED Capabilities";
         public const string MAU_TYPE = "Mau Type";
         public const string MED_POWER_TYPE = "MED Power Type";
@@ -139,6 +141,12 @@ namespace PoEWizard.Data
         public const string MED_POWER_PRIORITY = "MED Power Priority";
         public const string MED_POWER_VALUE = "MED Power Value";
         public const string MED_IP_ADDRESS = "Management IP Address";
+        // Used by "SHOW_LLDP_INVENTORY"
+        public const string MED_MANUFACTURER = "Manufacturer Name";
+        public const string MED_MODEL = "Model Name";
+        public const string MED_HARDWARE_REVISION = "Hardware Revision";
+        public const string MED_SOFTWARE_REVISION = "Software Revision";
+        public const string MED_SERIAL_NUMBER = "Serial Number";
         // Used by "SHOW_CHASSIS"
         public const string CHAS_DEVICE = "Chassis/Device";
         public const string CURRENT = "Current";

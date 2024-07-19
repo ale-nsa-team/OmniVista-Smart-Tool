@@ -283,6 +283,11 @@ namespace PoEWizard.Data
             return false;
         }
 
+        public static string GetDictValue(Dictionary<string, string> dict, string param)
+        {
+            return (dict.TryGetValue(param, out string val) ? val.Trim() : string.Empty);
+        }
+
     }
 }
 
