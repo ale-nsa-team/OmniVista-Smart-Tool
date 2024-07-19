@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
         Closing="OnWindowClosing"
-        Title="PoE Wizard" Height="800" Width="1100" Icon="/wiz.ico">
+        Title="PoE Wizard" Height="800" Width="1290" Icon="/wiz.ico">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

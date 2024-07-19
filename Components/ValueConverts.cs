@@ -135,7 +135,7 @@ namespace PoEWizard.Components
         {
             string m = model;
             while (m.Length > 2) {
-                if (Constants.fpga.TryGetValue(m, out string val))
+                if (fpga.TryGetValue(m, out string val))
                 {
                     string[] vals = val.Split('.');
                     return Array.ConvertAll(vals, int.Parse);
