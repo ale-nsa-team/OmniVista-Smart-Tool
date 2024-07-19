@@ -526,6 +526,7 @@ namespace PoEWizard
             await ChangePriority();
             if (!reportResult.Proceed) return;
             await Enable2PairPower();
+            await CheckDefaultPortMaxPower();
         }
 
         private async Task RunWizardTelephone()
@@ -537,6 +538,7 @@ namespace PoEWizard
             await EnableHdmiMdi();
             if (!reportResult.Proceed) return;
             await Enable823BT();
+            await CheckDefaultPortMaxPower();
         }
 
         private async Task RunWizardWirelessLan()
@@ -548,6 +550,7 @@ namespace PoEWizard
             await EnableHdmiMdi();
             if (!reportResult.Proceed) return;
             await ChangePriority();
+            await CheckDefaultPortMaxPower();
         }
 
         private async Task RunWizardOther()
@@ -559,6 +562,7 @@ namespace PoEWizard
             await EnableHdmiMdi();
             if (!reportResult.Proceed) return;
             await Enable2PairPower();
+            await CheckDefaultPortMaxPower();
         }
 
         private async Task Enable823BT()
@@ -605,10 +609,10 @@ namespace PoEWizard
             Logger.Info($"Enable Power over HDMI on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
-        private async Task ResetPortPower()
+        private async Task CheckDefaultPortMaxPower()
         {
-            await RunPoeWizard(new List<CommandType>() { CommandType.RESET_POWER_PORT }, 15);
-            Logger.Info($"Reset Power on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            await RunPoeWizard(new List<CommandType>() { CommandType.CHECK_MAX_POWER }, 15);
+            Logger.Info($"Check default Max. Power on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task RunPoeWizard(List<CommandType> cmdList, int waitSec)

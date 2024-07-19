@@ -79,7 +79,8 @@ namespace PoEWizard.Data
             // 100 - 119: Virtual commands
             CHECK_POWER_PRIORITY = 100,
             RESET_POWER_PORT = 101,
-            CHECK_823BT = 102
+            CHECK_823BT = 102,
+            CHECK_MAX_POWER = 103
         }
 
         private readonly static Dictionary<CommandType, string> CLI_TABLE = new Dictionary<CommandType, string>
@@ -187,6 +188,7 @@ namespace PoEWizard.Data
                     // 30 - 69: Commands related to actions on port
                     case CommandType.POWER_PRIORITY_PORT:         // 32
                     case CommandType.SHOW_PORT_POWER:             // 49
+                    case CommandType.SET_MAX_POWER_PORT:          // 53
                         if (data == null || data.Length < 2) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, data[0]).Replace(DATA_1, data[1]);
 
