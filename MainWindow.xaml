@@ -247,8 +247,8 @@
                             </Style>
                         </DataGridComboBoxColumn.EditingElementStyle>
                     </DataGridComboBoxColumn>
-                    <DataGridTextColumn Header="Power (W)" Width="*" Binding="{Binding Path=Power}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Max Power (W)" Width="1.2*" Binding="{Binding Path=MaxPower}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Power (Watts)" Width="*" Binding="{Binding Path=Power}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Max Power (Watts)" Width="1.2*" Binding="{Binding Path=MaxPower}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="PoE Class" Width="*" Binding="{Binding Path=Class}" IsReadOnly="True" />
                     <DataGridTextColumn Header="PoE Mode" Width="*" IsReadOnly="True">
                         <DataGridTextColumn.Binding>
