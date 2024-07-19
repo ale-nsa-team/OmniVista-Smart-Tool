@@ -9,6 +9,7 @@ namespace PoEWizard.Device
         public string LocalPort { get; set; } = string.Empty;
         public string MacAddress { get; set; } = string.Empty;
         public string DeviceType { get; set; } = string.Empty;
+        public string DeviceName { get; set; } = string.Empty;
         public string IpAddress { get; set; } = string.Empty;
         public string EthernetType { get; set; } = string.Empty;
         public string RemotePort { get; set; } = string.Empty;
@@ -26,6 +27,8 @@ namespace PoEWizard.Device
             LocalPort = (dict.TryGetValue(LOCAL_PORT, out string s) ? s : "").Trim();
             MacAddress = (dict.TryGetValue(CHASSIS_MAC_ADDRESS, out s) ? s : "").Trim();
             DeviceType = (dict.TryGetValue(CAPABILITIES_ENABLED, out s) ? s : "").Trim();
+            DeviceName = (dict.TryGetValue(SYSTEM_NAME, out s) ? s : "").Trim();
+            if (DeviceName == "(null)" || DeviceName == "") DeviceName = DeviceType;
             IpAddress = (dict.TryGetValue(MED_IP_ADDRESS, out s) ? s : "").Trim();
             EthernetType = (dict.TryGetValue(MAU_TYPE, out s) ? s : "").Trim();
             RemotePort = (dict.TryGetValue(REMOTE_PORT, out s) ? s : "").Trim();

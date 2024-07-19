@@ -71,6 +71,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="130"/>
@@ -120,19 +121,44 @@
                            ToolTip="Switch may reduce PoE output because temperature is too high" 
                            Visibility="{Binding Path=TemperatureStatus, Converter={StaticResource TempStatusToVisibilityConveter}}"/>
                 </StackPanel>
-                <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}">Location:</Label>
-                <Label Grid.Row="6" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_location" Content="{Binding Location}" />
-                <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}">Contact:</Label>
-                <Label Grid.Row="7" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_contact" Content="{Binding Contact}" />
-                <Label Grid.Row="8" Grid.Column="0" Style="{DynamicResource keyLabel}">MAC Address:</Label>
-                <Label Grid.Row="8" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_mac" Content="{Binding MacAddress}"/>
-                <Label Grid.Row="9" Grid.Column="0" Style="{DynamicResource keyLabel}">IP Address:</Label>
-                <Label Grid.Row="9" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_ip" Content="{Binding IpAddress}"/>
-                <Label Grid.Row="10" Grid.Column="0" Style="{DynamicResource keyLabel}">Running Directory:</Label>
-                <Label Grid.Row="10" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_runningDir" Content="{Binding RunningDir}"
+                <StackPanel x:Name="_cpu" Grid.Row="6" Grid.Column="1" Orientation="Horizontal" Visibility="Hidden">
+                    <Label Style="{DynamicResource valLabel}" Content="{Binding Cpu}">
+                        <Label.Foreground>
+                            <MultiBinding Converter="{StaticResource CpuUsageToColorConverter}">
+                                <Binding Path="Cpu" />
+                                <Binding Path="CpuThreshold" />
+                            </MultiBinding>
+                        </Label.Foreground>
+                    </Label>
+                    <Image x:Name="_cpuWarn" Style="{DynamicResource warnImg}">
+                        <Image.Visibility>
+                            <MultiBinding Converter="{StaticResource CpuUsageToVisibilityConverter}">
+                                <Binding Path="Cpu" />
+                                <Binding Path="CpuThreshold" />
+                            </MultiBinding>
+                        </Image.Visibility>
+                        <Image.ToolTip>
+                            <MultiBinding Converter="{StaticResource CpuUsageToToolTipConverter}">
+                                <Binding Path="Cpu" />
+                                <Binding Path="CpuThreshold" />
+                            </MultiBinding>
+                        </Image.ToolTip>                        
+                    </Image>
+                </StackPanel>
+                <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}">CPU Usage (%):</Label>
+                <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}">Location:</Label>
+                <Label Grid.Row="7" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_location" Content="{Binding Location}" />
+                <Label Grid.Row="8" Grid.Column="0" Style="{DynamicResource keyLabel}">Contact:</Label>
+                <Label Grid.Row="8" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_contact" Content="{Binding Contact}" />
+                <Label Grid.Row="9" Grid.Column="0" Style="{DynamicResource keyLabel}">MAC Address:</Label>
+                <Label Grid.Row="9" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_mac" Content="{Binding MacAddress}"/>
+                <Label Grid.Row="10" Grid.Column="0" Style="{DynamicResource keyLabel}">IP Address:</Label>
+                <Label Grid.Row="10" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_ip" Content="{Binding IpAddress}"/>
+                <Label Grid.Row="11" Grid.Column="0" Style="{DynamicResource keyLabel}">Running Directory:</Label>
+                <Label Grid.Row="11" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_runningDir" Content="{Binding RunningDir}"
                        Foreground="{Binding Path=RunningDir, Converter={StaticResource ValueToColorConverter}, ConverterParameter=RunningDir}"/>
-                <Label Grid.Row="11" Grid.Column="0" Style="{DynamicResource keyLabel}">Synchronization:</Label>
-                <Label Grid.Row="11" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_syncStatus" Content="{Binding SyncStatus}"/>
+                <Label Grid.Row="12" Grid.Column="0" Style="{DynamicResource keyLabel}">Synchronization:</Label>
+                <Label Grid.Row="12" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_syncStatus" Content="{Binding SyncStatus}"/>
             </Grid>
         </StackPanel>
         <Border Grid.Row="2" x:Name="_slotInfo" Style="{DynamicResource gridBorder}">
@@ -260,7 +286,7 @@
                     </DataGridTextColumn>
                     <DataGridTextColumn Header="802.3BT" Width="*" Binding="{Binding Path=Protocol8023bt, Converter={StaticResource ConfigTypeToSimbolConverter}}" />
                     <DataGridTextColumn Header="Device MAC" Width="1.5*" Binding="{Binding Path=EndPointDevice.MacAddress}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Device Type" Width="2*" Binding="{Binding Path=EndPointDevice.DeviceType}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Device Type" Width="2*" Binding="{Binding Path=EndPointDevice.DeviceName}" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

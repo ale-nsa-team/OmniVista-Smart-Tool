@@ -181,7 +181,7 @@ namespace PoEWizard.Device
                         string slotNr = (dic.TryGetValue(CPU, out string s) ? s : "").ToLower().Replace("slot", "").Trim();
                         SlotModel slot = GetSlot(slotNr);
                         if (slot == null) continue;
-                        slot.Cpu = Utils.StringToInt(dic.TryGetValue(CPU, out s) ? s : "");
+                        slot.Cpu = Utils.StringToInt(dic.TryGetValue(CURRENT, out s) ? s : "");
                         if (slot.Cpu > cpu) cpu = slot.Cpu;
                     }
                     Cpu = cpu;

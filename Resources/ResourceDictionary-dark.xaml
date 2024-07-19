@@ -12,6 +12,9 @@
     <converters:ConfigTypeToBoolConverter x:Key="ConfigTypeToBoolConverter" />
     <converters:ConfigTypeToSimbolConverter x:Key="ConfigTypeToSimbolConverter" />
     <converters:TempStatusToVisibilityConverter x:Key="TempStatusToVisibilityConveter" />
+    <converters:CpuUsageToColorConverter x:Key="CpuUsageToColorConverter" />
+    <converters:CpuUsageToToolTipConverter x:Key="CpuUsageToToolTipConverter" />
+    <converters:CpuUsageToVisibilityConverter x:Key="CpuUsageToVisibilityConverter" />
 
     <BitmapImage x:Key="connected" UriSource="connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="disconnected-dark.png" />
@@ -25,7 +28,7 @@
     <BitmapImage x:Key="refresh" UriSource="../Resources/refresh-dark.png" />
 
     <SolidColorBrush x:Key="fontColor" Color="White" />
-    <SolidColorBrush x:Key="linkColor" Color="MediumAquamarine" />
+    <SolidColorBrush x:Key="linkColor" Color="#92caf4" />
     <SolidColorBrush x:Key="mainWindowBackgroundColor" Color="#333" />
     <SolidColorBrush x:Key="popupBackgroundColor" Color="#444" />
     <SolidColorBrush x:Key="infoBackgroundColor" Color="#484848" />

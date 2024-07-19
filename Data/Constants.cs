@@ -131,6 +131,7 @@ namespace PoEWizard.Data
         public const string LOCAL_PORT = "Local Port";
         public const string REMOTE_PORT = "Remote Port";
         public const string CAPABILITIES_ENABLED = "Capabilities Enabled";
+        public const string SYSTEM_NAME = "System Name";
         public const string MED_DEVICE_TYPE = "MED Device Type";
         public const string MED_CAPABILITIES = "MED Capabilities";
         public const string MAU_TYPE = "Mau Type";
