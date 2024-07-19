@@ -1,13 +1,11 @@
-﻿using System;
-using System.Data.SqlTypes;
-using System.Diagnostics.Contracts;
+﻿using PoEWizard.Data;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using PoEWizard.Data;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Components
