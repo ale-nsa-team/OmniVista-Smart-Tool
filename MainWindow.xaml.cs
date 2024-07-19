@@ -402,14 +402,15 @@ namespace PoEWizard
         {
             try
             {
-                ShowProgress($"Connecting to switch {device.IpAddress}...");
                 restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
+                    ShowProgress($"Disconnecting from switch {device.IpAddress}...");
                     await CloseRestApiService();
                     SetDisconnectedState();
                     return;
                 }
+                ShowProgress($"Connecting to switch {device.IpAddress}...");
                 isClosing = false;
                 await Task.Run(() => restApiService.Connect());
                 UpdateConnectedState(true);
