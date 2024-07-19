@@ -314,84 +314,145 @@ namespace PoEWizard.Comm
                 if (!_wizardSwitchSlot.IsInitialized) PowerUpSlot();
                 _wizardReportResult = reportResult;
                 _wizardStartTime = DateTime.Now;
-                StringBuilder txt = new StringBuilder("\n    PoE status: ").Append(_wizardSwitchPort.Poe).Append(", Power: ").Append(_wizardSwitchPort.Power);
-                txt.Append(" mW, Port Status: ").Append(_wizardSwitchPort.Status);
-                if (_wizardSwitchPort.EndPointDevice != null && !string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.MacAddress))
-                {
-                    txt.Append(", Device MAC: ").Append(_wizardSwitchPort.EndPointDevice.MacAddress);
-                    if (!string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.IpAddress)) txt.Append(", IP: ").Append(_wizardSwitchPort.EndPointDevice.IpAddress);
-                }
-                else if (_wizardSwitchPort.MacList?.Count > 0 && !string.IsNullOrEmpty(_wizardSwitchPort.MacList[0]))
-                {
-                    txt.Append(", Device MAC: ").Append(_wizardSwitchPort.MacList[0]);
-                }
                 if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny)
                 {
-                    commands.Clear();
-                    commands.Add(CommandType.RESET_POWER_PORT);
-                    string wizardAction = $"Nothing to do on port {_wizardSwitchPort.Name}.{txt}";
-                    _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
                     _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, false);
-                    Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
+                    //ExecuteWizardCommands(new List<CommandType>() { CommandType.CHECK_MAX_POWER, CommandType.RESET_POWER_PORT }, waitSec);
+                    return;
                 }
-                foreach (CommandType command in commands)
-                {
-                    _wizardCommand = command;
-                    switch (_wizardCommand)
-                    {
-
-                        case CommandType.POWER_2PAIR_PORT:
-                            TryEnable2PairPower(waitSec);
-                            break;
-
-                        case CommandType.POWER_HDMI_ENABLE:
-                            if (_wizardSwitchPort.Protocol8023bt == ConfigType.Unavailable) continue;
-                            if (_wizardSwitchPort.IsPowerOverHdmi) continue;
-                            ExecuteActionOnPort($"Enabling Power HDMI on Port {_wizardSwitchPort.Name}", waitSec, CommandType.POWER_HDMI_DISABLE);
-                            break;
-
-                        case CommandType.LLDP_POWER_MDI_ENABLE:
-                            if (_wizardSwitchPort.IsLldpMdi) continue;
-                            ExecuteActionOnPort($"Enabling LLDP Power via MDI on Port {port}", waitSec, CommandType.LLDP_POWER_MDI_DISABLE);
-                            break;
-
-                        case CommandType.LLDP_EXT_POWER_MDI_ENABLE:
-                            if (_wizardSwitchPort.IsLldpExtMdi) continue;
-                            ExecuteActionOnPort($"Enabling LLDP Extended Power via MDI on Port {port}", waitSec, CommandType.LLDP_EXT_POWER_MDI_DISABLE);
-                            break;
-
-                        case CommandType.CHECK_POWER_PRIORITY:
-                            CheckPriority();
-                            return;
-
-                        case CommandType.CHECK_823BT:
-                            Check823BT();
-                            break;
-
-                        case CommandType.POWER_PRIORITY_PORT:
-                            TryChangePriority(port, waitSec);
-                            if (!_wizardReportResult.Proceed) SwitchModel.ConfigChanged = true;
-                            break;
-
-                        case CommandType.POWER_823BT_ENABLE:
-                            Enable823BT(waitSec);
-                            if (!_wizardReportResult.Proceed) SwitchModel.ConfigChanged = true;
-                            break;
-
-                        case CommandType.RESET_POWER_PORT:
-                            ResetPortPower(port, waitSec);
-                            if (!_wizardReportResult.Proceed) SwitchModel.ConfigChanged = true;
-                            break;
-
-                    }
-                    if (!_wizardReportResult.Proceed) return;
-                }
-                Logger.Info($"PoE Wizard completed on port {port}, Waiting Time: {waitSec} sec\n{_wizardProgressReport.Message}");
+                ExecuteWizardCommands(commands, waitSec);
             }
             catch (Exception ex)
             {
                 SendSwitchConnectionFailed(ex);
             }
+        }
+
+        public void RunCheckPortPower(string port, int waitSec)
+        {
+            GetSwitchSlotPort(port);
+            ExecuteWizardCommands(new List<CommandType>() { CommandType.CHECK_MAX_POWER, CommandType.RESET_POWER_PORT }, waitSec);
+        }
+
+        private void ExecuteWizardCommands(List<CommandType> commands, int waitSec)
+        {
+            foreach (CommandType command in commands)
+            {
+                _wizardCommand = command;
+                switch (_wizardCommand)
+                {
+
+                    case CommandType.POWER_2PAIR_PORT:
+                        TryEnable2PairPower(waitSec);
+                        break;
+
+                    case CommandType.POWER_HDMI_ENABLE:
+                        if (_wizardSwitchPort.Protocol8023bt == ConfigType.Unavailable) continue;
+                        if (_wizardSwitchPort.IsPowerOverHdmi) continue;
+                        ExecuteActionOnPort($"Enabling Power HDMI on Port {_wizardSwitchPort.Name}", waitSec, CommandType.POWER_HDMI_DISABLE);
+                        break;
+
+                    case CommandType.LLDP_POWER_MDI_ENABLE:
+                        if (_wizardSwitchPort.IsLldpMdi) continue;
+                        ExecuteActionOnPort($"Enabling LLDP Power via MDI on Port {_wizardSwitchPort.Name}", waitSec, CommandType.LLDP_POWER_MDI_DISABLE);
+                        break;
+
+                    case CommandType.LLDP_EXT_POWER_MDI_ENABLE:
+                        if (_wizardSwitchPort.IsLldpExtMdi) continue;
+                        ExecuteActionOnPort($"Enabling LLDP Extended Power via MDI on Port {_wizardSwitchPort.Name}", waitSec, CommandType.LLDP_EXT_POWER_MDI_DISABLE);
+                        break;
+
+                    case CommandType.CHECK_POWER_PRIORITY:
+                        CheckPriority();
+                        return;
+
+                    case CommandType.CHECK_823BT:
+                        Check823BT();
+                        break;
+
+                    case CommandType.POWER_PRIORITY_PORT:
+                        TryChangePriority(waitSec);
+                        if (!_wizardReportResult.Proceed) SwitchModel.ConfigChanged = true;
+                        break;
+
+                    case CommandType.POWER_823BT_ENABLE:
+                        Enable823BT(waitSec);
+                        if (!_wizardReportResult.Proceed) SwitchModel.ConfigChanged = true;
+                        break;
+
+                    case CommandType.RESET_POWER_PORT:
+                        ResetPortPower(_wizardSwitchPort.Name, waitSec);
+                        if (!_wizardReportResult.Proceed) SwitchModel.ConfigChanged = true;
+                        break;
+
+                    case CommandType.CHECK_MAX_POWER:
+                        CheckMaxPower();
+                        break;
+
+                }
+                if (!_wizardReportResult.Proceed) return;
+            }
+            Logger.Info($"PoE Wizard completed on port {_wizardSwitchPort.Name}, Waiting Time: {waitSec} sec\n{_wizardProgressReport.Message}");
+        }
+
+        private void CheckMaxPower()
+        {
+            StringBuilder txt = new StringBuilder("\n    PoE status: ").Append(_wizardSwitchPort.Poe).Append(", Power: ").Append(_wizardSwitchPort.Power);
+            txt.Append(" mW, Port Status: ").Append(_wizardSwitchPort.Status);
+            if (_wizardSwitchPort.EndPointDevice != null && !string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.MacAddress))
+            {
+                txt.Append(", Device MAC: ").Append(_wizardSwitchPort.EndPointDevice.MacAddress);
+                if (!string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.IpAddress)) txt.Append(", IP: ").Append(_wizardSwitchPort.EndPointDevice.IpAddress);
+            }
+            else if (_wizardSwitchPort.MacList?.Count > 0 && !string.IsNullOrEmpty(_wizardSwitchPort.MacList[0]))
+            {
+                txt.Append(", Device MAC: ").Append(_wizardSwitchPort.MacList[0]);
+            }
+            string wizardAction;
+            if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
+            {
+                wizardAction = $"Nothing to do on port {_wizardSwitchPort.Name} because it doesn't have PoE.{txt}";
+                _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
+                _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, false);
+                Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
+                return;
+            }
+            wizardAction = $"Checking Max. Power on port {_wizardSwitchPort.Name}.{txt}";
+            _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
+            _progress.Report(new ProgressReport(wizardAction));
+            double maxDefaultPower = GetMaxDefaultPower();
+            if (_wizardSwitchPort.MaxPower < maxDefaultPower)
+            {
+                SwitchModel.ConfigChanged = true;
+                try
+                {
+                    SendRequest(GetRestUrlEntry(CommandType.SET_MAX_POWER_PORT, new string[2] { _wizardSwitchPort.Name, $"{maxDefaultPower * 1000}" }));
+                    wizardAction = $"Restoring Max. Power on port {_wizardSwitchPort.Name} from {_wizardSwitchPort.MaxPower} Watts to default {maxDefaultPower} Watts";
+                    _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
+                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, false);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warn(ex.Message);
+                }
+            }
+            Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
+        }
+
+        private double GetMaxDefaultPower()
+        {
+            string error = null;
+            try
+            {
+                SendRequest(GetRestUrlEntry(CommandType.SET_MAX_POWER_PORT, new string[2] { _wizardSwitchPort.Name, "0" }));
+            }
+            catch (Exception ex)
+            {
+                string[] split = ex.Message.Split('\n');
+                if (split.Length < 2) throw ex;
+                error = split[2];
+            }
+            return !string.IsNullOrEmpty(error) ? Utils.StringToDouble(Utils.ExtractSubString(error, "to ", "mW").Trim())/1000 : _wizardSwitchPort.MaxPower;
         }
 
         private void RefreshPoEData()
@@ -562,36 +623,36 @@ namespace PoEWizard.Comm
             Logger.Debug(txt.ToString());
         }
 
-        private void TryChangePriority(string port, int waitSec)
+        private void TryChangePriority(int waitSec)
         {
             try
             {
                 PriorityLevelType priority = PriorityLevelType.High;
-                string wizardAction = $"Changing power priority to {priority} on Port {port}";
-                _wizardReportResult.CreateReportResult(port, wizardAction);
+                string wizardAction = $"Changing power priority to {priority} on Port {_wizardSwitchPort.Name}";
+                _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
                 PriorityLevelType prevPriority = _wizardSwitchPort.PriorityLevel;
                 DateTime startTime = DateTime.Now;
                 StringBuilder txt = new StringBuilder(wizardAction).Append("\nPoE status: ");
                 txt.Append(_wizardSwitchPort.Poe).Append(", Port Status: ").Append(_wizardSwitchPort.Status);
                 _progress.Report(new ProgressReport(txt.ToString()));
-                SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { port, priority.ToString() }));
-                RestartDeviceOnPort(port, waitSec, txt.ToString());
+                SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, priority.ToString() }));
+                RestartDeviceOnPort(_wizardSwitchPort.Name, waitSec, txt.ToString());
                 string result;
                 if (_wizardReportResult.Proceed)
                 {
-                    SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { port, prevPriority.ToString() }));
+                    SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, prevPriority.ToString() }));
                     result = "didn't solve the problem";
                 }
                 else
                 {
                     result = "solved the problem";
                 }
-                _wizardReportResult.UpdateResult(port, _wizardReportResult.Proceed, result);
-                _wizardReportResult.UpdateDuration(port, Utils.CalcStringDuration(startTime, true));
+                _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, _wizardReportResult.Proceed, result);
+                _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.CalcStringDuration(startTime, true));
             }
             catch (Exception ex)
             {
-                ParseException(port, _wizardProgressReport, ex);
+                ParseException(_wizardSwitchPort.Name, _wizardProgressReport, ex);
             }
         }
 

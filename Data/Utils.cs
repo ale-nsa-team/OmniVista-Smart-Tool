@@ -223,11 +223,11 @@ namespace PoEWizard.Data
             return result;
         }
 
-        public static string ExtractSubString(string inputStr, string startStr, string endStr)
+        public static string ExtractSubString(string inputStr, string startStr, string endStr = null)
         {
-            if (string.IsNullOrEmpty(inputStr) || string.IsNullOrEmpty(startStr) || string.IsNullOrEmpty(endStr)) return string.Empty;
-            int startPos = inputStr.LastIndexOf(startStr) + startStr.Length;
-            int length = inputStr.IndexOf(endStr) - startPos;
+            if (string.IsNullOrEmpty(inputStr) || string.IsNullOrEmpty(startStr)) return string.Empty;
+            int startPos = inputStr.IndexOf(startStr) + startStr.Length;
+            int length = !string.IsNullOrEmpty(endStr) ? inputStr.IndexOf(endStr, inputStr.IndexOf(startStr) + 1) - startPos : inputStr.Length - startPos;
             if (length < 1 || length > inputStr.Length) return string.Empty;
             return inputStr.Substring(startPos, length);
         }
