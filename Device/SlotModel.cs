@@ -59,7 +59,7 @@ namespace PoEWizard.Device
                 if (dt == DictionaryType.LanPower) GetPort(port).LoadPoEData(dict); else GetPort(port).LoadPoEConfig(dict);
             }
             this.NbPoePorts = list.Count;
-            this.Power = Ports.Sum(p => p.Power) / 1000;
+            this.Power = Ports.Sum(p => p.Power);
             double powerConsumedMetric = 100 * this.Power / this.Budget;
             double nearThreshold = 0.9 * this.Threshold;
             if (powerConsumedMetric < nearThreshold)

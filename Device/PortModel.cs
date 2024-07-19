@@ -12,8 +12,8 @@ namespace PoEWizard.Device
         public string Number { get; set; }
         public string Name { get; set; }
         public PoeStatus Poe { get; set; } = PoeStatus.NoPoe;
-        public int Power { get; set; }
-        public int MaxPower { get; set; }
+        public double Power { get; set; }
+        public double MaxPower { get; set; }
         public PortStatus Status { get; set; }
         public PriorityLevelType PriorityLevel { get; set; }
         public bool IsUplink { get; set; } = false;
@@ -54,8 +54,8 @@ namespace PoEWizard.Device
 
         public void LoadPoEData(Dictionary<string, string> dict)
         {
-            MaxPower = ParseNumber(Utils.GetDictValue(dict, MAXIMUM));
-            Power = ParseNumber(Utils.GetDictValue(dict, USED));
+            MaxPower = ParseNumber(Utils.GetDictValue(dict, MAXIMUM))/1000;
+            Power = ParseNumber(Utils.GetDictValue(dict, USED))/1000;
             switch (Utils.GetDictValue(dict, STATUS))
             {
                 case POWERED_ON:
@@ -146,9 +146,9 @@ namespace PoEWizard.Device
             return split[split.Length - 1];
         }
 
-        public int ParseNumber(string val)
+        public double ParseNumber(string val)
         {
-            return int.TryParse(val.Replace("*", ""), out int n) ? n : 0;
+            return double.TryParse(val.Replace("*", ""), out double n) ? n : 0;
         }
 
     }
