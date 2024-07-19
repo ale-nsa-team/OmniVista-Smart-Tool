@@ -12,8 +12,8 @@ namespace PoEWizard.Device
         public string Number { get; set; }
         public string Name { get; set; }
         public PoeStatus Poe { get; set; } = PoeStatus.NoPoe;
-        public int Power { get; set; }
-        public int MaxPower { get; set; }
+        public double Power { get; set; }
+        public double MaxPower { get; set; }
         public PortStatus Status { get; set; }
         public PriorityLevelType PriorityLevel { get; set; }
         public bool IsUplink { get; set; } = false;
@@ -33,7 +33,7 @@ namespace PoEWizard.Device
 
         public PortModel(Dictionary<string, string> dict)
         {
-            Name = dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "";
+            Name = Utils.GetDictValue(dict, CHAS_SLOT_PORT);
             Number = GetPortId(Name);
             UpdatePortStatus(dict);
             Power = 0;
@@ -54,9 +54,9 @@ namespace PoEWizard.Device
 
         public void LoadPoEData(Dictionary<string, string> dict)
         {
-            MaxPower = ParseNumber(dict.TryGetValue(MAXIMUM, out string s) ? s : "0");
-            Power = ParseNumber(dict.TryGetValue(USED, out s) ? s : "0");
-            switch (dict.TryGetValue(STATUS, out s) ? s : "")
+            MaxPower = ParseNumber(Utils.GetDictValue(dict, MAXIMUM))/1000;
+            Power = ParseNumber(Utils.GetDictValue(dict, USED))/1000;
+            switch (Utils.GetDictValue(dict, STATUS))
             {
                 case POWERED_ON:
                 case SEARCHING:
@@ -75,18 +75,18 @@ namespace PoEWizard.Device
                     Poe = PoeStatus.Deny;
                     break;
             }
-            PriorityLevel = Enum.TryParse<PriorityLevelType>(dict.TryGetValue(PRIORITY, out s) ? s : "", true, out PriorityLevelType res) ? res : PriorityLevelType.Low;
-            Class = (dict.TryGetValue(CLASS, out s) ? s : "").Replace("- ,-", "NA");
-            Type = dict.TryGetValue(TYPE, out s) ? s : "";
+            PriorityLevel = Enum.TryParse(Utils.GetDictValue(dict, PRIORITY), true, out PriorityLevelType res) ? res : PriorityLevelType.Low;
+            Class = Utils.GetDictValue(dict, CLASS);
+            if (!Utils.IsNumber(Class)) Class = "NA";
+            Type = Utils.GetDictValue(dict, TYPE);
         }
 
         public void LoadPoEConfig(Dictionary<string, string> dict) 
         {
-            Is4Pair = (dict.TryGetValue(POWER_4PAIR, out string s) ? s : "") == "enabled";
-            IsPowerOverHdmi = (dict.TryGetValue(POWER_OVER_HDMI, out s) ? s : "") == "enabled";
-            IsCapacitorDetection = (dict.TryGetValue(POWER_CAPACITOR_DETECTION, out s) ? s : "") == "enabled";
-            dict.TryGetValue(POWER_823BT, out s);
-            switch (s)
+            Is4Pair = (Utils.GetDictValue(dict, POWER_4PAIR)) == "enabled";
+            IsPowerOverHdmi = (Utils.GetDictValue(dict, POWER_OVER_HDMI)) == "enabled";
+            IsCapacitorDetection = (Utils.GetDictValue(dict, POWER_CAPACITOR_DETECTION)) == "enabled";
+            switch (Utils.GetDictValue(dict, POWER_823BT))
             {
                 case "NA":
                     Protocol8023bt = ConfigType.Unavailable;
@@ -101,15 +101,21 @@ namespace PoEWizard.Device
                     break;
             }
         }
+
         public void LoadLldpRemoteTable(Dictionary<string, string> dict)
         {
             EndPointDevice.LoadLldpRemoteTable(dict);
         }
 
+        public void LoadLldpInventoryTable(Dictionary<string, string> dict)
+        {
+            EndPointDevice.LoadLldpInventoryTable(dict);
+        }
+
         public void UpdatePortStatus(Dictionary<string, string> dict)
         {
-            IsEnabled = (dict.TryGetValue(ADMIN_STATUS, out string s) ? s : "") == "enable";
-            string sValStatus = Utils.FirstChToUpper(dict.TryGetValue(LINK_STATUS, out s) ? s : "");
+            IsEnabled = (Utils.GetDictValue(dict, ADMIN_STATUS)) == "enable";
+            string sValStatus = Utils.FirstChToUpper(Utils.GetDictValue(dict, LINK_STATUS));
             if (!string.IsNullOrEmpty(sValStatus) && Enum.TryParse(sValStatus, out PortStatus portStatus)) Status = portStatus; else Status = PortStatus.Unknown;
         }
 
@@ -127,7 +133,7 @@ namespace PoEWizard.Device
         {
             if (MacList.Count < 10)
             {
-                MacList.Add(dict.TryGetValue(PORT_MAC_LIST, out string s) ? s : "");
+                MacList.Add(Utils.GetDictValue(dict, PORT_MAC_LIST) );
             }
             IsUplink = (MacList.Count > 2);
             return MacList.Count;
@@ -140,9 +146,9 @@ namespace PoEWizard.Device
             return split[split.Length - 1];
         }
 
-        public int ParseNumber(string val)
+        public double ParseNumber(string val)
         {
-            return int.TryParse(val.Replace("*", ""), out int n) ? n : 0;
+            return double.TryParse(val.Replace("*", ""), out double n) ? n : 0;
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PoEWizard.Data;
+using System;
 using System.Collections.Generic;
 using static PoEWizard.Data.Constants;
 
@@ -28,13 +29,13 @@ namespace PoEWizard.Device
 
         public void LoadFromDictionary(Dictionary<string, string> dict)
         {
-            this.Model = dict.TryGetValue(MODEL_NAME, out string s) ? s : "";
-            this.Type = dict.TryGetValue(MODULE_TYPE, out s) ? s : "";
-            this.Description = dict.TryGetValue(DESCRIPTION, out s) ? s : "";
-            this.PowerProvision = dict.TryGetValue(POWER, out s) ? s : "";
-            this.PartNumber = dict.TryGetValue(PART_NUMBER, out s) ? s : "";
-            this.SerialNumber = dict.TryGetValue(SERIAL_NUMBER, out s) ? s : "";
-            this.HardwareRevision = dict.TryGetValue(HARDWARE_REVISION, out s) ? s : "";
+            this.Model = Utils.GetDictValue(dict, MODEL_NAME);
+            this.Type = Utils.GetDictValue(dict, MODULE_TYPE);
+            this.Description = Utils.GetDictValue(dict, DESCRIPTION);
+            this.PowerProvision = Utils.GetDictValue(dict, POWER);
+            this.PartNumber = Utils.GetDictValue(dict, PART_NUMBER);
+            this.SerialNumber = Utils.GetDictValue(dict, SERIAL_NUMBER);
+            this.HardwareRevision = Utils.GetDictValue(dict, HARDWARE_REVISION) ;
         }
     }
 }

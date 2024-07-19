@@ -46,6 +46,7 @@ namespace PoEWizard.Data
             SHOW_SLOT_LAN_POWER_STATUS = 17,
             LLDP_SYSTEM_DESCRIPTION_ENABLE = 18,
             SHOW_HEALTH_CONFIG = 19,
+            SHOW_LLDP_INVENTORY = 20,
             // 30 - 69: Commands related to actions on port
             POWER_DOWN_PORT = 30,
             POWER_UP_PORT = 31,
@@ -104,6 +105,7 @@ namespace PoEWizard.Data
             [CommandType.SHOW_SLOT_LAN_POWER_STATUS] = $"show lanpower slot {DATA_0} status",     //  17
             [CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE] = "lldp nearest-bridge chassis tlv management port-description enable system-name enable system-description enable", // 18
             [CommandType.SHOW_HEALTH_CONFIG] = "show health configuration",                       // 19
+            [CommandType.SHOW_LLDP_INVENTORY] = "show lldp remote-system med inventory",          // 20
             // 30 - 69: Commands related to actions on port
             [CommandType.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",        // 30
             [CommandType.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",           // 31

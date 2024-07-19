@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
         Closing="OnWindowClosing"
-        Title="PoE Wizard" Height="800" Width="1100" Icon="/wiz.ico">
+        Title="PoE Wizard" Height="800" Width="1290" Icon="/wiz.ico">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -273,8 +273,8 @@
                             </Style>
                         </DataGridComboBoxColumn.EditingElementStyle>
                     </DataGridComboBoxColumn>
-                    <DataGridTextColumn Header="Power (mW)" Width="*" Binding="{Binding Path=Power}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Max Power (mW)" Width="1.2*" Binding="{Binding Path=MaxPower}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Power (Watts)" Width="*" Binding="{Binding Path=Power}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Max Power (Watts)" Width="1.2*" Binding="{Binding Path=MaxPower}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="PoE Class" Width="*" Binding="{Binding Path=Class}" IsReadOnly="True" />
                     <DataGridTextColumn Header="PoE Mode" Width="*" IsReadOnly="True">
                         <DataGridTextColumn.Binding>
@@ -285,8 +285,9 @@
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
                     <DataGridTextColumn Header="802.3BT" Width="*" Binding="{Binding Path=Protocol8023bt, Converter={StaticResource ConfigTypeToSimbolConverter}}" />
+                    <DataGridTextColumn Header="Device Model" Width="1.5*" Binding="{Binding Path=EndPointDevice.Model}" IsReadOnly="True" />
                     <DataGridTextColumn Header="Device MAC" Width="1.5*" Binding="{Binding Path=EndPointDevice.MacAddress}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Device Type" Width="2*" Binding="{Binding Path=EndPointDevice.DeviceName}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Device" Width="2*" Binding="{Binding Path=EndPointDevice.Name}" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
