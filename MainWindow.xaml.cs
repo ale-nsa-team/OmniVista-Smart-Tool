@@ -402,6 +402,7 @@ namespace PoEWizard
         {
             try
             {
+                ShowProgress($"Connecting to switch {device.IpAddress}...");
                 restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
