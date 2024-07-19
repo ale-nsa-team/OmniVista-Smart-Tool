@@ -1,8 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO.Packaging;
 using System.Text;
-using System.Xml.Linq;
 
 namespace PoEWizard.Data
 {
@@ -36,7 +34,8 @@ namespace PoEWizard.Data
 
         private readonly object _lock_report_result = new object();
 
-        public bool Proceed => this.IsProceed();
+        public bool Stop { get; set; } = false;
+        public bool Proceed => this.IsProceed() && !Stop;
         public ConcurrentDictionary<string, List<ReportResult>> ReportResult { get; set; } = new ConcurrentDictionary<string, List<ReportResult>>();
         public string Message => this.ToString();
         public string Error => this.GetErrorMessage();

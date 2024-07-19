@@ -482,6 +482,7 @@ namespace PoEWizard
                         await RunWizardOther();
                         break;
                 }
+                await CheckDefaultPortMaxPower();
                 await Task.Run(() => restApiService.RefreshSwitchPorts());
                 wizardProgressReport.Title = "PoE Wizard Report:";
                 wizardProgressReport.Type = reportResult.Proceed ? ReportType.Error : ReportType.Info;
@@ -531,7 +532,6 @@ namespace PoEWizard
             await ChangePriority();
             if (!reportResult.Proceed) return;
             await Enable2PairPower();
-            await CheckDefaultPortMaxPower();
         }
 
         private async Task RunWizardTelephone()
@@ -543,7 +543,6 @@ namespace PoEWizard
             await EnableHdmiMdi();
             if (!reportResult.Proceed) return;
             await Enable823BT();
-            await CheckDefaultPortMaxPower();
         }
 
         private async Task RunWizardWirelessLan()
@@ -555,7 +554,6 @@ namespace PoEWizard
             await EnableHdmiMdi();
             if (!reportResult.Proceed) return;
             await ChangePriority();
-            await CheckDefaultPortMaxPower();
         }
 
         private async Task RunWizardOther()
@@ -567,7 +565,6 @@ namespace PoEWizard
             await EnableHdmiMdi();
             if (!reportResult.Proceed) return;
             await Enable2PairPower();
-            await CheckDefaultPortMaxPower();
         }
 
         private async Task Enable823BT()
@@ -616,7 +613,7 @@ namespace PoEWizard
 
         private async Task CheckDefaultPortMaxPower()
         {
-            await RunPoeWizard(new List<CommandType>() { CommandType.CHECK_MAX_POWER }, 15);
+            await Task.Run(() => restApiService.RunCheckPortPower(selectedPort, reportResult, 15));
             Logger.Info($"Check default Max. Power on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
