@@ -170,7 +170,7 @@
 
     <Style TargetType="DataGridColumnHeader" x:Key="gridHeader">
         <Setter Property="Background" Value="#222" />
-        <Setter Property="Foreground" Value="white" />
+        <Setter Property="Foreground" Value="{StaticResource linkColor}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="Padding" Value="6,2,2,2" />

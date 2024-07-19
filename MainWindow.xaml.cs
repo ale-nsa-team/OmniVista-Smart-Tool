@@ -261,6 +261,9 @@ namespace PoEWizard
                 _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
             }
             SetTitleColor();
+            //force color converters to run
+            DataContext = null;
+            DataContext = device;
         }
 
         private void About_Click(object sender, RoutedEventArgs e)
