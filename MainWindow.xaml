@@ -142,7 +142,7 @@
                                 <Binding Path="Cpu" />
                                 <Binding Path="CpuThreshold" />
                             </MultiBinding>
-                        </Image.ToolTip>                        
+                        </Image.ToolTip>
                     </Image>
                 </StackPanel>
                 <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}">CPU Usage (%):</Label>
@@ -161,7 +161,7 @@
                 <Label Grid.Row="12" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_syncStatus" Content="{Binding SyncStatus}"/>
             </Grid>
         </StackPanel>
-        <Border Grid.Row="2" x:Name="_slotInfo" Style="{DynamicResource gridBorder}">
+        <Border Grid.Row="2" x:Name="_slotInfo" Style="{DynamicResource gridBorder}" Margin="5">
             <DataGrid x:Name="_slotsView"
                       Visibility="Hidden"
                       Style="{DynamicResource defaultGrid}" 
@@ -225,7 +225,7 @@
         <Border Grid.Row="2" x:Name="_infoBox" Style="{DynamicResource infoBorder}" Visibility="Collapsed">
             <TextBlock x:Name="_infoBlock" />
         </Border>
-        <Border Grid.Row="3" x:Name="_portInfo" Style="{DynamicResource gridBorder}">
+        <Border Grid.Row="3" x:Name="_portInfo" Style="{DynamicResource gridBorder}" Margin="5">
             <DataGrid x:Name="_portList"
                       Style="{DynamicResource defaultGrid}"
                       Visibility="Hidden"
@@ -291,7 +291,7 @@
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
-        <Border Grid.Row="4" x:Name="_buttonArea" Style="{DynamicResource gridBorder}">
+        <Border Grid.Row="4" x:Name="_buttonArea" Style="{DynamicResource gridBorder}" Margin="5">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button x:Name="_btnRunWiz" Style="{DynamicResource largeButton}"
                         IsEnabled="False"
@@ -312,7 +312,7 @@
             </StackPanel>
         </Border>
 
-        <StatusBar Grid.Row="5" x:Name="_statusBar" Style="{DynamicResource statusBar}">
+        <StatusBar Grid.Row="5" x:Name="_statusBar" Style="{DynamicResource statusBar}" Margin="0,5,0,0">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid>
