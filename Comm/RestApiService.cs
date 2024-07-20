@@ -301,7 +301,7 @@ namespace PoEWizard.Comm
 
         public void RunPoeWizard(string port, WizardReport reportResult, List<CommandType> commands, int waitSec)
         {
-            if (string.IsNullOrEmpty(port)) return;
+            if (string.IsNullOrEmpty(port) || reportResult.Result == WizardResult.NothingToDo || reportResult.Result == WizardResult.Ok) return;
             _wizardProgressReport = new ProgressReport("PoE Wizard Report:");
             try
             {
