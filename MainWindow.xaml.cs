@@ -41,7 +41,7 @@ namespace PoEWizard
         private SlotView slotView;
         private string selectedPort;
         private SlotModel selectedSlot;
-        private ProgressReportResult reportResult = new ProgressReportResult();
+        private WizardReport reportResult = new WizardReport();
         private bool isClosing = false;
         #endregion
         #region public variables
@@ -465,7 +465,7 @@ namespace PoEWizard
                 await Task.Run(() => restApiService.ScanSwitch());
                 UpdateConnectedState(false);
                 ProgressReport wizardProgressReport = new ProgressReport("PoE Wizard Report:");
-                reportResult = new ProgressReportResult();
+                reportResult = new WizardReport();
                 ShowProgress($"Running PoE Wizard on port {selectedPort}...");
                 switch (deviceType)
                 {
@@ -485,7 +485,7 @@ namespace PoEWizard
                 await CheckDefaultPortMaxPower();
                 await Task.Run(() => restApiService.RefreshSwitchPorts());
                 wizardProgressReport.Title = "PoE Wizard Report:";
-                wizardProgressReport.Type = reportResult.Proceed ? ReportType.Error : ReportType.Info;
+                wizardProgressReport.Type = reportResult.Result == WizardResult.Fail ? ReportType.Error : ReportType.Info;
                 wizardProgressReport.Message = $"{reportResult.Message}\n\nTotal duration: {Utils.CalcStringDuration(startTime, true)}";
                 progress.Report(wizardProgressReport);
                 await WaitAckProgress();
@@ -526,44 +526,44 @@ namespace PoEWizard
         private async Task RunWizardCamera()
         {
             await Enable823BT();
-            if (!reportResult.Proceed) return;
+            if (IsWizardStopped()) return;
             await EnableHdmiMdi();
-            if (!reportResult.Proceed) return;
+            if (IsWizardStopped()) return;
             await ChangePriority();
-            if (!reportResult.Proceed) return;
+            if (IsWizardStopped()) return;
             await Enable2PairPower();
         }
 
         private async Task RunWizardTelephone()
         {
             await Enable2PairPower();
-            if (!reportResult.Proceed) return;
+            if (IsWizardStopped()) return;
             await ChangePriority();
-            if (!reportResult.Proceed) return;
+            if (IsWizardStopped()) return;
             await EnableHdmiMdi();
-            if (!reportResult.Proceed) return;
+            if (IsWizardStopped()) return;
             await Enable823BT();
         }
 
         private async Task RunWizardWirelessLan()
         {
             await Enable823BT();
-            if (!reportResult.Proceed) return;
+            if (IsWizardStopped()) return;
             await Enable2PairPower();
-            if (!reportResult.Proceed) return;
+            if (IsWizardStopped()) return;
             await EnableHdmiMdi();
-            if (!reportResult.Proceed) return;
+            if (IsWizardStopped()) return;
             await ChangePriority();
         }
 
         private async Task RunWizardOther()
         {
             await ChangePriority();
-            if (!reportResult.Proceed) return;
+            if (IsWizardStopped()) return;
             await Enable823BT();
-            if (!reportResult.Proceed) return;
+            if (IsWizardStopped()) return;
             await EnableHdmiMdi();
-            if (!reportResult.Proceed) return;
+            if (IsWizardStopped()) return;
             await Enable2PairPower();
         }
 
@@ -571,15 +571,14 @@ namespace PoEWizard
         {
             await RunPoeWizard(new List<CommandType>() { CommandType.CHECK_823BT }, 15);
             Logger.Info($"PoE Wizard Check Enable 802.3.bt on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-            if (!reportResult.Proceed)
+            if (reportResult.Result == WizardResult.Skip) return;
+            if (reportResult.Result == WizardResult.Warning)
             {
-                reportResult.UpdateResult(selectedPort, true);
-                return;
+                string error = reportResult.Error;
+                string msg = !string.IsNullOrEmpty(error) ? error : "To enable 802.3.bt all devices on the same slot will restart";
+                if (!ShowMessageBox("Enable 802.3.bt", $"{msg}. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
+                    return;
             }
-            string error = reportResult.Error;
-            string msg = !string.IsNullOrEmpty(error) ? error : "To enable 802.3.bt all devices on the same slot will restart";
-            bool proceed = ShowMessageBox("Enable 802.3.bt", $"{msg}. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
-            if (!proceed) return;
             await RunPoeWizard(new List<CommandType>() { CommandType.POWER_823BT_ENABLE }, 15);
             Logger.Info($"Enable 802.3.bt on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
@@ -594,13 +593,12 @@ namespace PoEWizard
         {
             await RunPoeWizard(new List<CommandType>() { CommandType.CHECK_POWER_PRIORITY }, 15);
             Logger.Info($"PoE Wizard Check Power Priority on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-            if (!reportResult.Proceed)
+            if (reportResult.Result == WizardResult.Skip) return;
+            if (reportResult.Result == WizardResult.Warning)
             {
-                reportResult.UpdateResult(selectedPort, true);
-                return;
+                if (!ShowMessageBox("Power Priority Change", "Some other devices with lower priority may stop. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
+                    return;
             }
-            bool proceed = ShowMessageBox("Power Priority Change", "Some other devices with lower priority may stop. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
-            if (!proceed) return;
             await RunPoeWizard(new List<CommandType>() { CommandType.POWER_PRIORITY_PORT }, 15);
             Logger.Info($"Change Power Priority on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
@@ -620,6 +618,11 @@ namespace PoEWizard
         private async Task RunPoeWizard(List<CommandType> cmdList, int waitSec)
         {
             await Task.Run(() => restApiService.RunPoeWizard(selectedPort, reportResult, cmdList, waitSec));
+        }
+
+        private bool IsWizardStopped()
+        {
+            return reportResult.Result == WizardResult.Ok || reportResult.Result == WizardResult.Stop ? true : false;
         }
 
         private async Task WaitAckProgress()

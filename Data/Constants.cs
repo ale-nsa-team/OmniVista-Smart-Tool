@@ -37,6 +37,7 @@ namespace PoEWizard.Data
             Other = 4
         }
         public enum ThresholdType { Unknown, UnderThreshold, OverThreshold, Danger }
+        public enum WizardResult { Starting, Ok, Warning, Fail, Stop, Proceed, Skip };
         #endregion
 
         #region dictionaries

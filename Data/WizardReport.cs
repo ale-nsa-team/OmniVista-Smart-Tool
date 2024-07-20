@@ -1,16 +1,17 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
+using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Data
 {
 
     public class ReportResult
     {
-        public bool Proceed { get; set; } = false;
+        public WizardResult Result { get; set; } = WizardResult.Starting;
         public string Port { get; set; }
         public string WizardAction { get; set; } = string.Empty;
-        public string Result { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public string PortStatus { get; set; } = string.Empty;
         public string Error {  get; set; } = string.Empty;
         public string Duration {  get; set; } = string.Empty;
@@ -24,23 +25,22 @@ namespace PoEWizard.Data
         public override string ToString()
         {
             StringBuilder txt = new StringBuilder("\n - ").Append(WizardAction);
-            if (!string.IsNullOrEmpty(Result)) txt.Append(" ").Append(Result);
+            if (!string.IsNullOrEmpty(Description)) txt.Append(" ").Append(Description);
             if (!string.IsNullOrEmpty(Error)) txt.Append("\n    ").Append(Error);
             return txt.ToString();
         }
     }
-    public class ProgressReportResult
+    public class WizardReport
     {
 
         private readonly object _lock_report_result = new object();
 
-        public bool Stop { get; set; } = false;
-        public bool Proceed => this.IsProceed() && !Stop;
+        public WizardResult Result => this.GetReportResult();
         public ConcurrentDictionary<string, List<ReportResult>> ReportResult { get; set; } = new ConcurrentDictionary<string, List<ReportResult>>();
         public string Message => this.ToString();
         public string Error => this.GetErrorMessage();
 
-        public ProgressReportResult() {  }
+        public WizardReport() {  }
 
         public void CreateReportResult(string port, string wizardAction)
         {
@@ -52,15 +52,15 @@ namespace PoEWizard.Data
             }
         }
 
-        public void UpdateResult(string port, bool proceed, string result = null)
+        public void UpdateResult(string port, WizardResult result, string description = null)
         {
             lock (_lock_report_result)
             {
                 List<ReportResult> reportList = GetReportList(port);
                 ReportResult report = GetLastReport(reportList);
                 if (report == null) return;
-                report.Proceed = proceed;
-                if (!string.IsNullOrEmpty(result)) report.Result = result;
+                report.Result = result;
+                if (!string.IsNullOrEmpty(description)) report.Description = description;
                 reportList[reportList.Count - 1] = report;
                 this.ReportResult[port] = reportList;
             }
@@ -105,19 +105,19 @@ namespace PoEWizard.Data
             }
         }
 
-        private bool IsProceed()
+        private WizardResult GetReportResult()
         {
             lock (_lock_report_result)
             {
-                if (this.ReportResult.Count < 0) return true;
+                if (this.ReportResult.Count < 0) return WizardResult.Proceed;
                 foreach (var result in ReportResult)
                 {
                     List<ReportResult> reportList = result.Value as List<ReportResult>;
                     ReportResult report = GetLastReport(reportList);
                     if (report == null) continue;
-                    if (report.Proceed) return true;
+                    return report.Result;
                 }
-                return false;
+                return WizardResult.Proceed;
             }
         }
 
