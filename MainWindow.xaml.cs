@@ -482,7 +482,7 @@ namespace PoEWizard
                         await RunWizardOther();
                         break;
                 }
-                await CheckDefaultPortMaxPower();
+                if (reportResult.Result == WizardResult.NothingToDo) await CheckDefaultPortMaxPower();
                 await Task.Run(() => restApiService.RefreshSwitchPorts());
                 wizardProgressReport.Title = "PoE Wizard Report:";
                 wizardProgressReport.Type = reportResult.Result == WizardResult.Fail ? ReportType.Error : ReportType.Info;
@@ -622,7 +622,7 @@ namespace PoEWizard
 
         private bool IsWizardStopped()
         {
-            return reportResult.Result == WizardResult.Ok || reportResult.Result == WizardResult.Stop ? true : false;
+            return reportResult.Result == WizardResult.Ok || reportResult.Result == WizardResult.NothingToDo ? true : false;
         }
 
         private async Task WaitAckProgress()

@@ -329,7 +329,7 @@ namespace PoEWizard.Comm
                     }
                     string wizardAction = $"Nothing to do on port {_wizardSwitchPort.Name}.{txt}";
                     _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
-                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Stop);
+                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.NothingToDo);
                     Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
                 }
                 else
@@ -409,7 +409,7 @@ namespace PoEWizard.Comm
                         SwitchModel.ConfigChanged = true;
                         return;
                     case WizardResult.Warning:
-                    case WizardResult.Stop:
+                    case WizardResult.NothingToDo:
                         return;
                     default:
                         break;
@@ -422,7 +422,7 @@ namespace PoEWizard.Comm
         {
             if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
             {
-                _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Stop);
+                _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.NothingToDo);
                 return;
             }
             string wizardAction = $"Checking Max. Power on port {_wizardSwitchPort.Name}";
@@ -539,12 +539,10 @@ namespace PoEWizard.Comm
                 WaitPortUp(waitSec, txt.ToString());
                 if (_wizardReportResult.Result == WizardResult.Ok)
                 {
-                    if (restoreCmd != _wizardCommand) SendRequest(GetRestUrlEntry(restoreCmd, new string[1] { _wizardSwitchPort.Name }));
-                }
-                else
-                {
                     SwitchModel.ConfigChanged = true;
+                    return;
                 }
+                if (restoreCmd != _wizardCommand) SendRequest(GetRestUrlEntry(restoreCmd, new string[1] { _wizardSwitchPort.Name }));
             }
             catch (Exception ex)
             {
@@ -613,7 +611,7 @@ namespace PoEWizard.Comm
             StringBuilder txt = new StringBuilder(wizardAction).Append("\nPoE status: ");
             txt.Append(_wizardSwitchPort.Poe).Append(", Port Status: ").Append(_wizardSwitchPort.Status);
             double powerRemaining = _wizardSwitchSlot.Budget - _wizardSwitchSlot.Power;
-            double maxPower = _wizardSwitchPort.MaxPower / 1000;
+            double maxPower = _wizardSwitchPort.MaxPower;
             txt = new StringBuilder();
             WizardResult changePriority;
             if (_wizardSwitchPort.PriorityLevel < PriorityLevelType.High)
@@ -670,7 +668,7 @@ namespace PoEWizard.Comm
             {
                 if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
                 {
-                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Stop);
+                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.NothingToDo);
                     return;
                 }
                 string wizardAction = $"Resetting Power on Port {port}";
