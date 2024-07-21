@@ -73,11 +73,12 @@ namespace PoEWizard.Data
                 if (reportList?.Count > 0)
                 {
                     reportList.RemoveAt(reportList.Count - 1);
+                    this.ReportResult[port] = reportList;
                 }
             }
         }
 
-        public void ResetWizardReport(string port, WizardResult result, string wizardAction)
+        public void UpdateWizardReport(string port, WizardResult result, string wizardAction)
         {
             lock (_lock_report_result)
             {
