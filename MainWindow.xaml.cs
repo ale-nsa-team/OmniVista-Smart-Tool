@@ -483,12 +483,12 @@ namespace PoEWizard
                         break;
                 }
                 if (reportResult.Result == WizardResult.NothingToDo) await CheckDefaultPortMaxPower();
-                await Task.Run(() => restApiService.RefreshSwitchPorts());
                 wizardProgressReport.Title = "PoE Wizard Report:";
                 wizardProgressReport.Type = reportResult.Result == WizardResult.Fail ? ReportType.Error : ReportType.Info;
                 wizardProgressReport.Message = $"{reportResult.Message}\n\nTotal duration: {Utils.CalcStringDuration(startTime, true)}";
                 progress.Report(wizardProgressReport);
                 await WaitAckProgress();
+                await Task.Run(() => restApiService.RefreshSwitchPorts());
                 RefreshSlotAndPortsView();
             }
             catch (Exception ex)
