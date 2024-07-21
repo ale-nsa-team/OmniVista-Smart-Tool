@@ -347,6 +347,13 @@ namespace PoEWizard.Comm
             _wizardReportResult = reportResult;
             _wizardReportResult.RemoveLastWizardReport(_wizardSwitchPort.Name);
             GetSwitchSlotPort(port);
+            if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
+            {
+                string wizardAction = $"Port {_wizardSwitchPort.Name} doesn't have PoE";
+                _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
+                _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.NothingToDo);
+                return;
+            }
             ExecuteWizardCommands(new List<CommandType>() { CommandType.CHECK_MAX_POWER, CommandType.RESET_POWER_PORT }, waitSec);
         }
 
