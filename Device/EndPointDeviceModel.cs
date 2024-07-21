@@ -1,4 +1,5 @@
 ﻿using PoEWizard.Data;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using static PoEWizard.Data.Constants;
@@ -14,9 +15,9 @@ namespace PoEWizard.Device
         public string HardwareVersion { get; set; } = string.Empty;
         public string SerialNumber { get; set; } = string.Empty;
 
-
         public string PowerClass {  get; set; } = string.Empty;
         public string LocalPort { get; set; } = string.Empty;
+        public PortSubType PortSubType { get; set; } = PortSubType.Unknown;
         public string MacAddress { get; set; } = string.Empty;
         public string DeviceType { get; set; } = string.Empty;
         public string DeviceName { get; set; } = string.Empty;
@@ -38,7 +39,10 @@ namespace PoEWizard.Device
             ID = Utils.GetDictValue(dict, REMOTE_ID);
             LocalPort = Utils.GetDictValue(dict, LOCAL_PORT);
             MacAddress = Utils.GetDictValue(dict, CHASSIS_MAC_ADDRESS);
+            string[] portSplit = Utils.GetDictValue(dict, PORT_SUBTYPE).Split(' ');
+            if (portSplit.Length > 1) PortSubType = (PortSubType)Enum.ToObject(typeof(PortSubType), Utils.StringToInt(portSplit[0]));
             DeviceType = Utils.GetDictValue(dict, CAPABILITIES_ENABLED);
+            if (PortSubType == PortSubType.LocallyAssigned) DeviceType = "Switch";
             IpAddress = Utils.GetDictValue(dict, MED_IP_ADDRESS);
             EthernetType = Utils.GetDictValue(dict, MAU_TYPE);
             RemotePort = Utils.GetDictValue(dict, LOCAL_PORT);

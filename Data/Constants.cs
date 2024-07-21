@@ -38,6 +38,7 @@ namespace PoEWizard.Data
         }
         public enum ThresholdType { Unknown, UnderThreshold, OverThreshold, Danger }
         public enum WizardResult { Starting, Ok, Warning, Fail, NothingToDo, Proceed, Skip };
+        public enum PortSubType { Unknown = 0, InterfaceAlias = 1, PortComponent = 2, MacAddress = 3, NetworkAddress = 4, InterfaceName = 5, AgentCircuitId = 6, LocallyAssigned = 7 }
         #endregion
 
         #region dictionaries
@@ -132,6 +133,7 @@ namespace PoEWizard.Data
         public const string REMOTE_ID = "Remote ID";
         public const string LOCAL_PORT = "Local Port";
         public const string REMOTE_PORT = "Remote Port";
+        public const string PORT_SUBTYPE = "Port Subtype";
         public const string CAPABILITIES_ENABLED = "Capabilities Enabled";
         public const string SYSTEM_NAME = "System Name";
         public const string SYSTEM_DESCRIPTION = "System Description";

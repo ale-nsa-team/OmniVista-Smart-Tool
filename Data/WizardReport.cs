@@ -56,13 +56,37 @@ namespace PoEWizard.Data
         {
             lock (_lock_report_result)
             {
+                ReportResult report = GetCurrentReport(port);
+                if (report != null)
+                {
+                    report.Result = result;
+                    if (!string.IsNullOrEmpty(description)) report.Description = description;
+                }
+            }
+        }
+
+        public void RemoveLastWizardReport(string port)
+        {
+            lock (_lock_report_result)
+            {
                 List<ReportResult> reportList = GetReportList(port);
-                ReportResult report = GetLastReport(reportList);
-                if (report == null) return;
-                report.Result = result;
-                if (!string.IsNullOrEmpty(description)) report.Description = description;
-                reportList[reportList.Count - 1] = report;
-                this.ReportResult[port] = reportList;
+                if (reportList?.Count > 0)
+                {
+                    reportList.RemoveAt(reportList.Count - 1);
+                }
+            }
+        }
+
+        public void ResetWizardReport(string port, WizardResult result, string wizardAction)
+        {
+            lock (_lock_report_result)
+            {
+                ReportResult report = GetCurrentReport(port);
+                if (report != null)
+                {
+                    report.Result = result;
+                    report.WizardAction = wizardAction;
+                }
             }
         }
 
@@ -70,12 +94,8 @@ namespace PoEWizard.Data
         {
             lock (_lock_report_result)
             {
-                List<ReportResult> reportList = GetReportList(port);
-                ReportResult report = GetLastReport(reportList);
-                if (report == null) return;
-                report.PortStatus = status;
-                reportList[reportList.Count - 1] = report;
-                this.ReportResult[port] = reportList;
+                ReportResult report = GetCurrentReport(port);
+                if (report != null) report.PortStatus = status;
             }
         }
 
@@ -83,12 +103,8 @@ namespace PoEWizard.Data
         {
             lock (_lock_report_result)
             {
-                List<ReportResult> reportList = GetReportList(port);
-                ReportResult report = GetLastReport(reportList);
-                if (report == null) return;
-                report.Error = error;
-                reportList[reportList.Count - 1] = report;
-                this.ReportResult[port] = reportList;
+                ReportResult report = GetCurrentReport(port);
+                if (report != null) report.Error = error;
             }
         }
 
@@ -96,12 +112,8 @@ namespace PoEWizard.Data
         {
             lock (_lock_report_result)
             {
-                List<ReportResult> reportList = GetReportList(port);
-                ReportResult report = GetLastReport(reportList);
-                if (report == null) return;
-                report.Duration = duration;
-                reportList[reportList.Count - 1] = report;
-                this.ReportResult[port] = reportList;
+                ReportResult report = GetCurrentReport(port);
+                if (report != null) report.Duration = duration;
             }
         }
 
@@ -119,6 +131,12 @@ namespace PoEWizard.Data
                 }
                 return WizardResult.Proceed;
             }
+        }
+
+        private ReportResult GetCurrentReport(string port)
+        {
+            List<ReportResult> reportList = GetReportList(port);
+            return GetLastReport(reportList);
         }
 
         private ReportResult GetLastReport(List<ReportResult> reportList)
