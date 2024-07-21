@@ -651,16 +651,16 @@ namespace PoEWizard.Comm
             if (_wizardSwitchPort.PriorityLevel < PriorityLevelType.High && powerRemaining < maxPower)
             {
                 changePriority = WizardResult.Warning;
-                txt.Append($"\n    Changing priority on Port ").Append(_wizardSwitchPort.Name).Append(" may solve the problem.");
+                txt.Append($"\n    Changing power priority on Port ").Append(_wizardSwitchPort.Name).Append(" may solve the problem.");
                 txt.Append("\n    Remaining Power = ").Append(powerRemaining).Append(" Watts, Max. Power = ").Append(maxPower).Append(" Watts");
             }
             else
             {
                 changePriority = WizardResult.Skip;
-                txt.Append($"\n    No need to change priority on Port ").Append(_wizardSwitchPort.Name).Append(" (");
+                txt.Append($"\n    No need to change power priority on Port ").Append(_wizardSwitchPort.Name).Append(" (");
                 if (_wizardSwitchPort.PriorityLevel >= PriorityLevelType.High)
                 {
-                    txt.Append("Priority is already ").Append(_wizardSwitchPort.PriorityLevel);
+                    txt.Append("priority is already ").Append(_wizardSwitchPort.PriorityLevel);
                 }
                 else
                 {
