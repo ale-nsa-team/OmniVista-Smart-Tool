@@ -567,7 +567,7 @@ namespace PoEWizard.Comm
         {
             try
             {
-                StringBuilder txt = new StringBuilder(wizardAction).Append(PrintPortStatus());
+                StringBuilder txt = new StringBuilder(wizardAction);
                 //txt.Append("\n").Append(_wizardSwitchPort.EndPointDevice);
                 _progress.Report(new ProgressReport(txt.ToString()));
                 _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
@@ -623,7 +623,7 @@ namespace PoEWizard.Comm
                 string wizardAction = $"Enabling 802.3.bt on Slot {_wizardSwitchSlot.Name}";
                 _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
                 DateTime startTime = DateTime.Now;
-                StringBuilder txt = new StringBuilder(wizardAction).Append(PrintPortStatus());
+                StringBuilder txt = new StringBuilder(wizardAction);
                 //txt.Append("\n").Append(_wizardSwitchPort.EndPointDevice);
                 _progress.Report(new ProgressReport(txt.ToString()));
                 CheckFPOEand823BT(CommandType.POWER_823BT_ENABLE);
@@ -648,9 +648,9 @@ namespace PoEWizard.Comm
             double maxPower = _wizardSwitchPort.MaxPower;
             txt = new StringBuilder();
             WizardResult changePriority;
-            if (_wizardSwitchPort.PriorityLevel < PriorityLevelType.High)
+            if (_wizardSwitchPort.PriorityLevel < PriorityLevelType.High && powerRemaining < maxPower)
             {
-                changePriority = powerRemaining >= maxPower ? WizardResult.Warning : WizardResult.Skip;
+                changePriority = WizardResult.Warning;
                 txt.Append("\n    Remaining Power = ").Append(powerRemaining).Append(" W, Max. Power = ").Append(maxPower).Append(" W");
             }
             else
@@ -672,12 +672,12 @@ namespace PoEWizard.Comm
                 _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
                 PriorityLevelType prevPriority = _wizardSwitchPort.PriorityLevel;
                 DateTime startTime = DateTime.Now;
-                StringBuilder txt = new StringBuilder(wizardAction).Append(PrintPortStatus());
+                StringBuilder txt = new StringBuilder(wizardAction);
                 _progress.Report(new ProgressReport(txt.ToString()));
                 SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, priority.ToString() }));
                 RestartDeviceOnPort(_wizardSwitchPort.Name, waitSec, txt.ToString());
                 string result;
-                if (_wizardReportResult.Result == WizardResult.Ok)
+                if (_wizardReportResult.Result == WizardResult.Fail)
                 {
                     SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, prevPriority.ToString() }));
                     result = "didn't solve the problem";
