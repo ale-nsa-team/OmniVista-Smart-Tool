@@ -651,12 +651,22 @@ namespace PoEWizard.Comm
             if (_wizardSwitchPort.PriorityLevel < PriorityLevelType.High && powerRemaining < maxPower)
             {
                 changePriority = WizardResult.Warning;
-                txt.Append("\n    Remaining Power = ").Append(powerRemaining).Append(" W, Max. Power = ").Append(maxPower).Append(" W");
+                txt.Append($"\n    Changing priority on Port ").Append(_wizardSwitchPort.Name).Append(" may solve the problem.");
+                txt.Append("\n    Remaining Power = ").Append(powerRemaining).Append(" Watts, Max. Power = ").Append(maxPower).Append(" Watts");
             }
             else
             {
                 changePriority = WizardResult.Skip;
-                txt.Append($"\n    No need to change priority on Port {_wizardSwitchPort.Name} (Priority is already {_wizardSwitchPort.PriorityLevel})");
+                txt.Append($"\n    No need to change priority on Port ").Append(_wizardSwitchPort.Name).Append(" (");
+                if (_wizardSwitchPort.PriorityLevel >= PriorityLevelType.High)
+                {
+                    txt.Append("Priority is already ").Append(_wizardSwitchPort.PriorityLevel);
+                }
+                else
+                {
+                    txt.Append("Remaining Power = ").Append(powerRemaining).Append(" Watts, Max. Power = ").Append(maxPower).Append(" Watts");
+                }
+                txt.Append(")");
             }
             _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, changePriority, txt.ToString());
             _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
@@ -748,7 +758,7 @@ namespace PoEWizard.Comm
 
         private string PrintPortStatus()
         {
-            return $"\nPoE status: {_wizardSwitchPort.Poe}, Port Status: {_wizardSwitchPort.Status}, Power: {_wizardSwitchPort.Power} mw";
+            return $"\nPoE status: {_wizardSwitchPort.Poe}, Port Status: {_wizardSwitchPort.Status}, Power: {_wizardSwitchPort.Power} Watts";
         }
 
         private void UpdateProgressReport()
