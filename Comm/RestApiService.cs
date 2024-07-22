@@ -312,6 +312,11 @@ namespace PoEWizard.Comm
                 }
                 if (!_wizardSwitchSlot.IsInitialized) PowerUpSlot();
                 _wizardReportResult = reportResult;
+                if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
+                {
+                    CreateReportPortNoPoe();
+                    return;
+                }
                 if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny)
                 {
                     StringBuilder txt = new StringBuilder(PrintPortStatus());
@@ -347,12 +352,17 @@ namespace PoEWizard.Comm
             GetSwitchSlotPort(port);
             if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
             {
-                string wizardAction = $"Port {_wizardSwitchPort.Name} doesn't have PoE";
-                _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
-                _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.NothingToDo);
+                CreateReportPortNoPoe();
                 return;
             }
             ExecuteWizardCommands(new List<CommandType>() { CommandType.CHECK_MAX_POWER, CommandType.RESET_POWER_PORT }, waitSec);
+        }
+
+        private void CreateReportPortNoPoe()
+        {
+            string wizardAction = $"Nothing to do\n    Port {_wizardSwitchPort.Name} doesn't have PoE";
+            _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
+            _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.NothingToDo);
         }
 
         private void ExecuteWizardCommands(List<CommandType> commands, int waitSec)
@@ -362,7 +372,6 @@ namespace PoEWizard.Comm
                 _wizardCommand = command;
                 switch (_wizardCommand)
                 {
-
                     case CommandType.POWER_2PAIR_PORT:
                         TryEnable2PairPower(waitSec);
                         break;
@@ -405,7 +414,6 @@ namespace PoEWizard.Comm
                     case CommandType.CHECK_MAX_POWER:
                         CheckMaxPower();
                         break;
-
                 }
                 switch (_wizardReportResult.Result)
                 {
@@ -424,11 +432,6 @@ namespace PoEWizard.Comm
 
         private void CheckMaxPower()
         {
-            if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
-            {
-                _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.NothingToDo);
-                return;
-            }
             double maxDefaultPower = GetMaxDefaultPower();
             if (_wizardSwitchPort.MaxPower < maxDefaultPower)
             {
@@ -719,11 +722,6 @@ namespace PoEWizard.Comm
         {
             try
             {
-                if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
-                {
-                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.NothingToDo);
-                    return;
-                }
                 string wizardAction = $"Resetting Power on Port {port}";
                 _wizardReportResult.CreateReportResult(port, wizardAction);
                 DateTime startTime = DateTime.Now;

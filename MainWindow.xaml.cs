@@ -291,7 +291,7 @@ namespace PoEWizard
             if (_portList.SelectedItem is PortModel port)
             {
                 selectedPort = port.Name;
-                _btnRunWiz.IsEnabled = true;
+                _btnRunWiz.IsEnabled = port.Poe != PoeStatus.NoPoe;
             }
         }
 
