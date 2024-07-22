@@ -123,7 +123,8 @@ namespace PoEWizard.Device
                     {
                         var chas = GetChassis(ParseId(dic[CHAS_PS], 0));
                         if (chas == null) continue;
-                        chas.PowerSupplies.Add(new PowerSupplyModel(GetPsId(dic[CHAS_PS]), dic[LOCATION]));
+                        int psId = GetPsId(dic[CHAS_PS]);
+                        chas.PowerSupplies.Add(new PowerSupplyModel(psId, dic[LOCATION]) { Name = $"{chas.Number}/{psId}" });
                     }
                     break;
                 case DictionaryType.LldpInventoryList:

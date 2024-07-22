@@ -47,6 +47,7 @@
                 </MenuItem>
                 <MenuItem Header="vcboot.cfg" x:Name="_vcbootMenuItem" IsEnabled="False" Click="ViewVcBoot_Click" />
                 <MenuItem Header="Snapshot" x:Name="_snapshotMenuItem" IsEnabled="False" Click="ViewSnapshot_Click"/>
+                <MenuItem Header="Power Supplies" x:Name="_psMenuItem" IsEnabled="False" Click="ViewPS_Click" />
                 <Separator/>
                 <MenuItem Header="Theme">
                     <MenuItem Header="Dark" x:Name="_darkMenuItem" IsChecked="True" Click="ThemeItem_Click"/>
