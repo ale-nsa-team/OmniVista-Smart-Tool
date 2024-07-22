@@ -43,6 +43,7 @@ namespace PoEWizard
         private SlotModel selectedSlot;
         private WizardReport reportResult = new WizardReport();
         private bool isClosing = false;
+        private DeviceType selectedDeviceType;
         #endregion
         #region public variables
         public static Window Instance;
@@ -206,6 +207,7 @@ namespace PoEWizard
 
             if (ds.ShowDialog() == true)
             {
+                selectedDeviceType = ds.DeviceType;
                 LaunchPoeWizard(ds.DeviceType);
             }
         }
