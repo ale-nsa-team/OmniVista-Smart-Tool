@@ -50,8 +50,6 @@
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
-        <Border Grid.Row="1" Style="{DynamicResource propsBorder}">
-            <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="2,0,0,0">Close</Button>
-        </Border>
+        <Button Grid.Row="1" Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="5">Close</Button>
     </Grid>
 </Window>
