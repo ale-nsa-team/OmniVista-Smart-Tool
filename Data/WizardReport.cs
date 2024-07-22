@@ -11,7 +11,7 @@ namespace PoEWizard.Data
         public WizardResult Result { get; set; } = WizardResult.Starting;
         public string Port { get; set; }
         public string WizardAction { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        public string ActionResult { get; set; } = string.Empty;
         public string PortStatus { get; set; } = string.Empty;
         public string Error {  get; set; } = string.Empty;
         public string Duration {  get; set; } = string.Empty;
@@ -25,7 +25,7 @@ namespace PoEWizard.Data
         public override string ToString()
         {
             StringBuilder txt = new StringBuilder("\n - ").Append(WizardAction);
-            if (!string.IsNullOrEmpty(Description)) txt.Append(" ").Append(Description);
+            if (!string.IsNullOrEmpty(ActionResult)) txt.Append(" ").Append(ActionResult);
             if (!string.IsNullOrEmpty(Error)) txt.Append("\n    ").Append(Error);
             return txt.ToString();
         }
@@ -52,7 +52,7 @@ namespace PoEWizard.Data
             }
         }
 
-        public void UpdateResult(string port, WizardResult result, string description = null)
+        public void UpdateResult(string port, WizardResult result, string actionResult = null)
         {
             lock (_lock_report_result)
             {
@@ -60,7 +60,7 @@ namespace PoEWizard.Data
                 if (report != null)
                 {
                     report.Result = result;
-                    if (!string.IsNullOrEmpty(description)) report.Description = description;
+                    if (!string.IsNullOrEmpty(actionResult)) report.ActionResult = actionResult;
                 }
             }
         }
@@ -87,6 +87,7 @@ namespace PoEWizard.Data
                 {
                     report.Result = result;
                     report.WizardAction = wizardAction;
+                    report.ActionResult = string.Empty;
                 }
             }
         }

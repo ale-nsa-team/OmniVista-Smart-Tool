@@ -606,8 +606,7 @@ namespace PoEWizard.Comm
             string wizardAction = $"Checking 802.3.bt on Port {_wizardSwitchPort.Name}";
             _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
             DateTime startTime = DateTime.Now;
-            StringBuilder txt = new StringBuilder(wizardAction).Append(PrintPortStatus());
-            txt = new StringBuilder();
+            StringBuilder txt = new StringBuilder();
             switch (_wizardSwitchPort.Protocol8023bt)
             {
                 case ConfigType.Disable:
@@ -615,7 +614,7 @@ namespace PoEWizard.Comm
                     {
                         _wizardReportResult.UpdateError(_wizardSwitchPort.Name, $"Fast PoE is enabled on Slot {_wizardSwitchSlot.Name}");
                     }
-                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Warning, txt.ToString());
+                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Warning);
                     break;
                 case ConfigType.Unavailable:
                     txt.Append($"\n    Switch {SwitchModel.IpAddress} doesn't support 802.3.bt");
@@ -627,7 +626,7 @@ namespace PoEWizard.Comm
                     break;
             }
             _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
-            Logger.Debug(txt.ToString());
+            Logger.Debug(wizardAction + txt.ToString());
         }
 
         private void Enable823BT(int waitSec)
@@ -699,17 +698,17 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport(txt.ToString()));
                 SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, priority.ToString() }));
                 RestartDeviceOnPort(_wizardSwitchPort.Name, waitSec, txt.ToString());
-                string result;
+                string actionResult;
                 if (_wizardReportResult.Result == WizardResult.Fail)
                 {
                     SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, prevPriority.ToString() }));
-                    result = "didn't solve the problem";
+                    actionResult = "didn't solve the problem";
                 }
                 else
                 {
-                    result = "solved the problem";
+                    actionResult = "solved the problem";
                 }
-                _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, _wizardReportResult.Result, result);
+                _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, _wizardReportResult.Result, actionResult);
                 _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.CalcStringDuration(startTime, true));
             }
             catch (Exception ex)
@@ -728,6 +727,7 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport(wizardAction));
                 RestartDeviceOnPort(port, waitSec + 15, wizardAction);
                 _wizardReportResult.UpdateDuration(port, Utils.PrintTimeDurationSec(startTime));
+                _wizardReportResult.UpdateWizardReport(_wizardSwitchPort.Name, WizardResult.Proceed, $"Resetting Power on Port {port} completed");
             }
             catch (Exception ex)
             {
