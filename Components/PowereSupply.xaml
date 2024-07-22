@@ -25,6 +25,7 @@
                   ItemsSource="{Binding PSList}"
                   ColumnHeaderStyle="{DynamicResource gridHeader}"
                   CellStyle="{DynamicResource gridCell}"
+                  IsHitTestVisible="False"
                   IsReadOnly="True">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Chassis/PS" Width="*" Binding="{Binding Path=Name}" />
