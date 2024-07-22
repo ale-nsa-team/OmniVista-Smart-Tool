@@ -463,12 +463,12 @@ namespace PoEWizard
         {
             try
             {
+                ProgressReport wizardProgressReport = new ProgressReport("PoE Wizard Report:");
+                reportResult = new WizardReport();
+                ShowProgress($"Running PoE Wizard on port {selectedPort.Name}...");
                 DateTime startTime = DateTime.Now;
                 await Task.Run(() => restApiService.ScanSwitch());
                 UpdateConnectedState(false);
-                ProgressReport wizardProgressReport = new ProgressReport("PoE Wizard Report:");
-                reportResult = new WizardReport();
-                ShowProgress($"Running PoE Wizard on port {selectedPort}...");
                 switch (deviceType)
                 {
                     case DeviceType.Camera:
@@ -484,9 +484,9 @@ namespace PoEWizard
                         await RunWizardOther();
                         break;
                 }
-                string duration = Utils.CalcStringDuration(startTime, true);
                 await Task.Run(() => restApiService.RefreshSwitchPorts());
                 if (reportResult.Result == WizardResult.NothingToDo) await CheckDefaultPortMaxPower();
+                string duration = Utils.CalcStringDuration(startTime, true);
                 if (!string.IsNullOrEmpty(reportResult.Message))
                 {
                     wizardProgressReport.Title = "PoE Wizard Report:";
@@ -634,7 +634,7 @@ namespace PoEWizard
 
         private bool IsWizardStopped()
         {
-            return reportResult.Result == WizardResult.Ok || reportResult.Result == WizardResult.NothingToDo ? true : false;
+            return reportResult.Result == WizardResult.Ok || reportResult.Result == WizardResult.NothingToDo;
         }
 
         private async Task WaitAckProgress()

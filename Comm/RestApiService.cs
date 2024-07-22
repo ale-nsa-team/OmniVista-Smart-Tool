@@ -726,7 +726,7 @@ namespace PoEWizard.Comm
                 _wizardReportResult.CreateReportResult(port, wizardAction);
                 DateTime startTime = DateTime.Now;
                 _progress.Report(new ProgressReport(wizardAction));
-                RestartDeviceOnPort(port, waitSec, wizardAction);
+                RestartDeviceOnPort(port, waitSec + 15, wizardAction);
                 _wizardReportResult.UpdateDuration(port, Utils.PrintTimeDurationSec(startTime));
             }
             catch (Exception ex)
@@ -740,6 +740,7 @@ namespace PoEWizard.Comm
             SendRequest(GetRestUrlEntry(CommandType.POWER_DOWN_PORT, new string[1] { port }));
             Thread.Sleep(5000);
             SendRequest(GetRestUrlEntry(CommandType.POWER_UP_PORT, new string[1] { port }));
+            Thread.Sleep(5000);
             WaitPortUp(waitSec, progressMessage);
         }
 
@@ -754,8 +755,8 @@ namespace PoEWizard.Comm
             {
                 _progress.Report(new ProgressReport($"{msg} ({Utils.CalcStringDuration(startTime, true)}) ...{PrintPortStatus()}"));
                 if (_wizardSwitchPort != null && _wizardSwitchPort.Status == PortStatus.Up && _wizardSwitchPort.Power >= 0.5) break;
-                UpdatePortData();
                 Thread.Sleep(5000);
+                UpdatePortData();
             }
             UpdateProgressReport();
             StringBuilder text = new StringBuilder("Port ").Append(_wizardSwitchPort.Name).Append(" Status: ").Append(_wizardSwitchPort.Status).Append(", PoE Status: ");
