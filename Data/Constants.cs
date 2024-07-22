@@ -28,13 +28,13 @@ namespace PoEWizard.Data
         public enum ConfigType { Enable, Disable, Unavailable }
         public enum DeviceType {
             [Description("Camera")]
-            Camera = 1,
+            Camera = 0,
             [Description("Access Point")]
-            AP = 2,
+            AP = 1,
             [Description("Telephone")]
-            Phone = 3,
+            Phone = 2,
             [Description("Other")]
-            Other = 4
+            Other = 3
         }
         public enum ThresholdType { Unknown, UnderThreshold, OverThreshold, Danger }
         public enum WizardResult { Starting, Ok, Warning, Fail, NothingToDo, Proceed, Skip };

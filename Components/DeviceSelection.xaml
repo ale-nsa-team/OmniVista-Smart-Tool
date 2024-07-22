@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
+        Loaded="OnWindowLoaded"
         Title="Login" Height="200" Width="220" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
@@ -29,8 +30,7 @@
                 Style="{DynamicResource defaultCombo}"
                 ItemsSource="{Binding Devices}"
                 SelectedItem="{Binding Device}"
-                IsSynchronizedWithCurrentItem="True"
-                SelectionChanged="DeviceSelection_Changed"/>
+                IsSynchronizedWithCurrentItem="True" />
         <Border Grid.Row="2" Style="{DynamicResource propsBorder}">
             <StackPanel Orientation="Horizontal">
                 <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="2,0,0,0">OK</Button>
