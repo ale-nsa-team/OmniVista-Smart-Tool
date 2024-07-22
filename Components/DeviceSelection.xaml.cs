@@ -30,15 +30,14 @@ namespace PoEWizard.Components
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
 
-            DataContext = this;
             _header.Text = "Please, select the type of device connected to port " + port;
             Devices = Enum.GetValues(typeof(DeviceType)).OfType<DeviceType>().ToList().Select(d => GetDescription(d)).ToList();
-            Device = Devices.FirstOrDefault();
         }
 
-        public void DeviceSelection_Changed(object sender, RoutedEventArgs e)
+        public void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-
+            Device = GetDescription(DeviceType);
+            DataContext = this;
         }
 
         public void BtnOk_Click(object sender, RoutedEventArgs e)

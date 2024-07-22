@@ -202,7 +202,8 @@ namespace PoEWizard
             var ds = new DeviceSelection(selectedPort.Name)
             {
                 Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                DeviceType = selectedDeviceType
             };
 
             if (ds.ShowDialog() == true)
