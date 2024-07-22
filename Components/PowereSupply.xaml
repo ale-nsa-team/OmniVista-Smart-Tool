@@ -33,10 +33,19 @@
                     <DataGridTextColumn Header="Location" Width="*" Binding="{Binding Path=Location}" />
                     <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Path=Description}" />
                     <DataGridTextColumn Header="Power Provision" Width="1.2*" Binding="{Binding Path=PowerProvision}" />
-                    <DataGridTextColumn Header="Status" Width="0.7*" Binding="{Binding Path=Status}" />
+                    <DataGridTemplateColumn Header="Status" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Status}"
+                                       Foreground="{Binding Path=Status, 
+                                       Converter={StaticResource ValueToColorConverter}, 
+                                       ConverterParameter=PowerSupply}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Part Number" Width="*" Binding="{Binding Path=PartNumber}" />
                     <DataGridTextColumn Header="Hardware Revision" Width="1.25*" Binding="{Binding Path=HardwareRevision}" />
-                    <DataGridTextColumn Header="Serial Number" Width="*" Binding="{Binding Path=SerialNumber}" />
+                    <DataGridTextColumn Header="Serial Number" Width="1.2*" Binding="{Binding Path=SerialNumber}" />
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
