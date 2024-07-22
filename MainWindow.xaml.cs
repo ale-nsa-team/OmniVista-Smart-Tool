@@ -314,7 +314,7 @@ namespace PoEWizard
             string txt = $"Changing Priority to {port.PriorityLevel} on port {port.Name}";
             ShowProgress($"{txt}...");
             bool ok = false;
-            await Task.Run(() => ok = restApiService.ChangePowerPriority(port, port.PriorityLevel));
+            await Task.Run(() => ok = restApiService.ChangePowerPriority(port.Name, port.PriorityLevel));
             if (ok)
             {
                 Logger.Info($"{txt} completed on Switch {device.Name}, S/N {device.SerialNumber}, Model {device.Model}");
@@ -589,7 +589,7 @@ namespace PoEWizard
 
         private async Task Enable2PairPower()
         {
-            await RunPoeWizard(new List<CommandType>() { CommandType.POWER_2PAIR_PORT }, 15);
+            await RunPoeWizard(new List<CommandType>() { CommandType.POWER_2PAIR_PORT }, 30);
             Logger.Info($"Enable 2-Pair Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
@@ -621,13 +621,13 @@ namespace PoEWizard
                 string msg = $"The PoE on Port {selectedPort.Name} is turned Off, it will be turned On";
                 if (!ShowMessageBox("Check default Max. Power", $"{msg}! Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel)) return;
             }
-            await Task.Run(() => restApiService.RunCheckNothingToDo(selectedPort, reportResult, commands, 15));
+            await Task.Run(() => restApiService.RunCheckNothingToDo(selectedPort.Name, reportResult, commands, 15));
             Logger.Info($"Check default Max. Power on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task RunPoeWizard(List<CommandType> cmdList, int waitSec)
         {
-            await Task.Run(() => restApiService.RunPoeWizard(selectedPort, reportResult, cmdList, waitSec));
+            await Task.Run(() => restApiService.RunPoeWizard(selectedPort.Name, reportResult, cmdList, waitSec));
         }
 
         private bool IsWizardStopped()

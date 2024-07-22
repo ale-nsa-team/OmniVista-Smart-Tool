@@ -47,7 +47,6 @@ namespace PoEWizard.Device
             EthernetType = Utils.GetDictValue(dict, MAU_TYPE);
             RemotePort = Utils.GetDictValue(dict, LOCAL_PORT);
             Name = Utils.GetDictValue(dict, SYSTEM_NAME).Replace("(null)", string.Empty);
-            if (string.IsNullOrEmpty(Name)) Name = DeviceType;
             Description = Utils.GetDictValue(dict, SYSTEM_DESCRIPTION).Replace("(null)", string.Empty);
             string[] capList = Utils.GetDictValue(dict, MED_CAPABILITIES).Split('|');
             if (capList.Length > 1)
