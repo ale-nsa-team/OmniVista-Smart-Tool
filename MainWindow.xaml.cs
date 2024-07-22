@@ -269,7 +269,7 @@ namespace PoEWizard
                 Resources.MergedDictionaries.Add(lightDict);
                 currentDict = lightDict;
             }
-            if (slotView.Slots.Count == 1) //do not highlight if only one row
+            if (slotView?.Slots.Count == 1) //do not highlight if only one row
             {
                 _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
             }
