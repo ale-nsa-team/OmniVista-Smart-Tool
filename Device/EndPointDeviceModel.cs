@@ -19,8 +19,7 @@ namespace PoEWizard.Device
         public string LocalPort { get; set; } = string.Empty;
         public PortSubType PortSubType { get; set; } = PortSubType.Unknown;
         public string MacAddress { get; set; } = string.Empty;
-        public string DeviceType { get; set; } = string.Empty;
-        public string DeviceName { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
         public string IpAddress { get; set; } = string.Empty;
         public string EthernetType { get; set; } = string.Empty;
         public string RemotePort { get; set; } = string.Empty;
@@ -41,8 +40,8 @@ namespace PoEWizard.Device
             MacAddress = Utils.GetDictValue(dict, CHASSIS_MAC_ADDRESS);
             string[] portSplit = Utils.GetDictValue(dict, PORT_SUBTYPE).Split(' ');
             if (portSplit.Length > 1) PortSubType = (PortSubType)Enum.ToObject(typeof(PortSubType), Utils.StringToInt(portSplit[0]));
-            DeviceType = Utils.GetDictValue(dict, CAPABILITIES_ENABLED);
-            if (PortSubType == PortSubType.LocallyAssigned) DeviceType = "Switch";
+            Type = Utils.GetDictValue(dict, CAPABILITIES_ENABLED);
+            if (PortSubType == PortSubType.LocallyAssigned) Type = string.Empty;
             IpAddress = Utils.GetDictValue(dict, MED_IP_ADDRESS);
             EthernetType = Utils.GetDictValue(dict, MAU_TYPE);
             RemotePort = Utils.GetDictValue(dict, LOCAL_PORT);
@@ -77,9 +76,9 @@ namespace PoEWizard.Device
         public override string ToString()
         {
             StringBuilder txt = new StringBuilder("Device Type: ");
-            txt.Append(string.IsNullOrEmpty(DeviceType) ? "Unknown" : DeviceType);
+            txt.Append(string.IsNullOrEmpty(Type) ? "Unknown" : Type);
             if (!string.IsNullOrEmpty(MacAddress)) txt.Append(", MAC: ").Append(MacAddress);
-            if (DeviceType.Contains("none")) txt.Append(", Remote Port: ").Append(RemotePort);
+            if (Type.Contains("none")) txt.Append(", Remote Port: ").Append(RemotePort);
             if (!string.IsNullOrEmpty(IpAddress)) txt.Append(", IP: ").Append(IpAddress);
             if (Capabilities?.Count > 0) txt.Append(", Capabilities: [").Append(string.Join(",", Capabilities)).Append("]");
             if (!string.IsNullOrEmpty(Name)) txt.Append(", Class: ").Append(Name);
