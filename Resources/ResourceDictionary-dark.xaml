@@ -509,7 +509,7 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <DockPanel HorizontalAlignment="Stretch" />
+                    <DockPanel HorizontalAlignment="Left" />
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
