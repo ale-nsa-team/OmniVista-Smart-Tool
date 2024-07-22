@@ -252,7 +252,7 @@ namespace PoEWizard.Comm
             return false;
         }
 
-        public bool ChangePowerPriority(string port, PriorityLevelType priority)
+        public bool ChangePowerPriority(PortModel port, PriorityLevelType priority)
         {
             ProgressReport progressReport = new ProgressReport($"Change priority Report:")
             {
@@ -268,7 +268,7 @@ namespace PoEWizard.Comm
                 if (_wizardSwitchPort == null) return false;
                 if (_wizardSwitchPort.PriorityLevel == priority) return false;
                 _wizardSwitchPort.PriorityLevel = priority;
-                SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { port, _wizardSwitchPort.PriorityLevel.ToString() }));
+                SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { port.Name, _wizardSwitchPort.PriorityLevel.ToString() }));
                 RefreshPortsInformation();
                 progressReport.Message += $"\n - Priority on port {port} set to {priority}";
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
@@ -298,9 +298,9 @@ namespace PoEWizard.Comm
             SwitchModel.LoadFromList(dictList, DictionaryType.PortsList);
         }
 
-        public void RunPoeWizard(string port, WizardReport reportResult, List<CommandType> commands, int waitSec)
+        public void RunPoeWizard(PortModel port, WizardReport reportResult, List<CommandType> commands, int waitSec)
         {
-            if (string.IsNullOrEmpty(port) || reportResult.Result == WizardResult.NothingToDo || reportResult.Result == WizardResult.Ok) return;
+            if (port == null || string.IsNullOrEmpty(port.Name) || reportResult.Result == WizardResult.NothingToDo || reportResult.Result == WizardResult.Ok) return;
             _wizardProgressReport = new ProgressReport("PoE Wizard Report:");
             try
             {
@@ -345,7 +345,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void RunCheckPortPower(string port, WizardReport reportResult, int waitSec)
+        public void RunCheckNothingToDo(PortModel port, WizardReport reportResult, List<CommandType> commands, int waitSec)
         {
             _wizardReportResult = reportResult;
             _wizardReportResult.RemoveLastWizardReport(_wizardSwitchPort.Name);
@@ -355,7 +355,7 @@ namespace PoEWizard.Comm
                 CreateReportPortNoPoe();
                 return;
             }
-            ExecuteWizardCommands(new List<CommandType>() { CommandType.CHECK_MAX_POWER, CommandType.RESET_POWER_PORT }, waitSec);
+            ExecuteWizardCommands(commands, waitSec);
         }
 
         private void CreateReportPortNoPoe()
@@ -522,14 +522,14 @@ namespace PoEWizard.Comm
             GetSlotPower(_wizardSwitchSlot);
         }
 
-        private void GetSwitchSlotPort(string port)
+        private void GetSwitchSlotPort(PortModel port)
         {
-            ChassisSlotPort chassisSlotPort = new ChassisSlotPort(port);
+            _wizardSwitchPort = port;
+            ChassisSlotPort chassisSlotPort = new ChassisSlotPort(port.Name);
             ChassisModel chassis = SwitchModel.GetChassis(chassisSlotPort.ChassisNr);
             if (chassis == null) return;
             _wizardSwitchSlot = chassis.GetSlot(chassisSlotPort.SlotNr);
             if (_wizardSwitchSlot == null) return;
-            _wizardSwitchPort = _wizardSwitchSlot.Ports?.FirstOrDefault(p => p.Name == port);
         }
 
         private void TryEnable2PairPower(int waitSec)
