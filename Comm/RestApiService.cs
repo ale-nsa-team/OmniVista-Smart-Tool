@@ -17,7 +17,6 @@ namespace PoEWizard.Comm
     {
         private Dictionary<string, string> _response = new Dictionary<string, string>();
         private readonly IProgress<ProgressReport> _progress;
-        private DateTime _wizardStartTime;
         private PortModel _wizardSwitchPort;
         private SlotModel _wizardSwitchSlot;
         private ProgressReport _wizardProgressReport;
@@ -313,7 +312,6 @@ namespace PoEWizard.Comm
                 }
                 if (!_wizardSwitchSlot.IsInitialized) PowerUpSlot();
                 _wizardReportResult = reportResult;
-                _wizardStartTime = DateTime.Now;
                 if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny)
                 {
                     StringBuilder txt = new StringBuilder(PrintPortStatus());
