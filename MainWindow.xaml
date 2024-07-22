@@ -286,8 +286,9 @@
                     </DataGridTextColumn>
                     <DataGridTextColumn Header="802.3BT" Width="0.8*" Binding="{Binding Path=Protocol8023bt, Converter={StaticResource ConfigTypeToSimbolConverter}}" />
                     <DataGridTextColumn Header="Device Model" Width="1.5*" Binding="{Binding Path=EndPointDevice.Model}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Device MAC" Width="*" Binding="{Binding Path=EndPointDevice.MacAddress}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Device Name" Width="1.5*" Binding="{Binding Path=EndPointDevice.Name}" IsReadOnly="True"/>
+                    <!--<DataGridTextColumn Header="Device MAC" Width="*" Binding="{Binding Path=EndPointDevice.MacAddress}" IsReadOnly="True" />-->
+                    <DataGridTextColumn Header="Device Type" Width="*" Binding="{Binding Path=EndPointDevice.Type}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Device Name" Width="1.5*" Binding="{Binding Path=EndPointDevice.Name}" IsReadOnly="True" />
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
