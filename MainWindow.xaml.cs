@@ -483,6 +483,7 @@ namespace PoEWizard
                         break;
                 }
                 string duration = Utils.CalcStringDuration(startTime, true);
+                await Task.Run(() => restApiService.RefreshSwitchPorts());
                 if (reportResult.Result == WizardResult.NothingToDo) await CheckDefaultPortMaxPower();
                 if (!string.IsNullOrEmpty(reportResult.Message))
                 {
@@ -492,7 +493,6 @@ namespace PoEWizard
                     progress.Report(wizardProgressReport);
                     await WaitAckProgress();
                 }
-                await Task.Run(() => restApiService.RefreshSwitchPorts());
                 RefreshSlotAndPortsView();
             }
             catch (Exception ex)
