@@ -561,6 +561,8 @@ namespace PoEWizard
             await ChangePriority();
             if (IsWizardStopped()) return;
             await Enable2PairPower();
+            if (IsWizardStopped()) return;
+            await EnableCapacitorDetection();
         }
 
         private async Task RunWizardTelephone()
@@ -572,6 +574,8 @@ namespace PoEWizard
             await EnableHdmiMdi();
             if (IsWizardStopped()) return;
             await Enable823BT();
+            if (IsWizardStopped()) return;
+            await EnableCapacitorDetection();
         }
 
         private async Task RunWizardWirelessLan()
@@ -594,6 +598,8 @@ namespace PoEWizard
             await EnableHdmiMdi();
             if (IsWizardStopped()) return;
             await Enable2PairPower();
+            if (IsWizardStopped()) return;
+            await EnableCapacitorDetection();
         }
 
         private async Task Enable823BT()
@@ -615,6 +621,12 @@ namespace PoEWizard
         {
             await RunPoeWizard(new List<CommandType>() { CommandType.POWER_2PAIR_PORT }, 30);
             Logger.Debug($"Enable 2-Pair Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+        }
+
+        private async Task EnableCapacitorDetection()
+        {
+            await RunPoeWizard(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE }, 15);
+            Logger.Debug($"Enable Capacitor Detection on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task ChangePriority()

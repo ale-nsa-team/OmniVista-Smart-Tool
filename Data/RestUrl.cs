@@ -1,7 +1,6 @@
 ﻿using PoEWizard.Exceptions;
 using System.Collections.Generic;
 using System.Net;
-using System.Runtime.CompilerServices;
 
 namespace PoEWizard.Data
 {
@@ -72,6 +71,8 @@ namespace PoEWizard.Data
             POE_FAST_DISABLE = 51,
             POE_PERPETUAL_DISABLE = 52,
             SET_MAX_POWER_PORT = 53,
+            CAPACITOR_DETECTION_ENABLE = 54,
+            CAPACITOR_DETECTION_DISABLE = 55,
             // 70 - 99: Special switch commands
             WRITE_MEMORY = 70,
             SHOW_CONFIGURATION = 71,
@@ -133,6 +134,8 @@ namespace PoEWizard.Data
             [CommandType.POE_FAST_DISABLE] = $"lanpower slot {DATA_0} fpoe disable",              // 51
             [CommandType.POE_PERPETUAL_DISABLE] = $"lanpower slot {DATA_0} ppoe disable",         // 52
             [CommandType.SET_MAX_POWER_PORT] = $"lanpower port {DATA_0} power {DATA_1}",          // 53
+            [CommandType.CAPACITOR_DETECTION_ENABLE] = $"lanpower port {DATA_0} capacitor-detection enable",   // 54
+            [CommandType.CAPACITOR_DETECTION_DISABLE] = $"lanpower port {DATA_0} capacitor-detection disable", // 55
             // 70 - 99: Special switch commands
             [CommandType.WRITE_MEMORY] = "write memory flash-synchro",                            // 70
             [CommandType.SHOW_CONFIGURATION] = "show configuration snapshot",                     // 71
@@ -183,6 +186,8 @@ namespace PoEWizard.Data
                     case CommandType.SHOW_PORT_LLDP_REMOTE:       // 50
                     case CommandType.POE_FAST_DISABLE:            // 51
                     case CommandType.POE_PERPETUAL_DISABLE:       // 52
+                    case CommandType.CAPACITOR_DETECTION_ENABLE:  // 54
+                    case CommandType.CAPACITOR_DETECTION_DISABLE: // 55
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 

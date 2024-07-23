@@ -76,8 +76,9 @@ namespace PoEWizard.Device
                     break;
             }
             PriorityLevel = Enum.TryParse(Utils.GetDictValue(dict, PRIORITY), true, out PriorityLevelType res) ? res : PriorityLevelType.Low;
-            Class = Utils.GetDictValue(dict, CLASS);
-            if (Poe == PoeStatus.NoPoe || !Utils.IsNumber(Class)) Class = string.Empty;
+            string[] split = Utils.GetDictValue(dict, CLASS)?.Split(',');
+            string powerClass = split.Length > 0 ? split[0].Trim() : string.Empty;
+            Class = Poe != PoeStatus.NoPoe && Utils.IsNumber(powerClass) ? powerClass : string.Empty;
             Type = Utils.GetDictValue(dict, TYPE);
         }
 

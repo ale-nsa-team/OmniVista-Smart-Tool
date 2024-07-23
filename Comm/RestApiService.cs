@@ -386,22 +386,38 @@ namespace PoEWizard.Comm
                 _wizardCommand = command;
                 switch (_wizardCommand)
                 {
+                    case CommandType.POWER_823BT_ENABLE:
+                        Enable823BT(waitSec);
+                        break;
+
                     case CommandType.POWER_2PAIR_PORT:
                         TryEnable2PairPower(waitSec);
                         break;
 
                     case CommandType.POWER_HDMI_ENABLE:
-                        if (_wizardSwitchPort.IsPowerOverHdmi  || _wizardSwitchPort.Protocol8023bt == ConfigType.Unavailable) continue;
+                        if (_wizardSwitchPort.IsPowerOverHdmi)
+                        {
+                            _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed);
+                            continue;
+                        }
                         ExecuteActionOnPort($"Enabling Power HDMI on Port {_wizardSwitchPort.Name}", waitSec, CommandType.POWER_HDMI_DISABLE);
                         break;
 
                     case CommandType.LLDP_POWER_MDI_ENABLE:
-                        if (_wizardSwitchPort.IsLldpMdi) continue;
+                        if (_wizardSwitchPort.IsLldpMdi)
+                        {
+                            _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed);
+                            continue;
+                        }
                         ExecuteActionOnPort($"Enabling LLDP Power via MDI on Port {_wizardSwitchPort.Name}", waitSec, CommandType.LLDP_POWER_MDI_DISABLE);
                         break;
 
                     case CommandType.LLDP_EXT_POWER_MDI_ENABLE:
-                        if (_wizardSwitchPort.IsLldpExtMdi) continue;
+                        if (_wizardSwitchPort.IsLldpExtMdi)
+                        {
+                            _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed);
+                            continue;
+                        }
                         ExecuteActionOnPort($"Enabling LLDP Extended Power via MDI on Port {_wizardSwitchPort.Name}", waitSec, CommandType.LLDP_EXT_POWER_MDI_DISABLE);
                         break;
 
@@ -417,8 +433,13 @@ namespace PoEWizard.Comm
                         TryChangePriority(waitSec);
                         break;
 
-                    case CommandType.POWER_823BT_ENABLE:
-                        Enable823BT(waitSec);
+                    case CommandType.CAPACITOR_DETECTION_ENABLE:
+                        if (_wizardSwitchPort.IsCapacitorDetection)
+                        {
+                            _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed);
+                            continue;
+                        }
+                        ExecuteActionOnPort($"Enabling Capacitor Detection on Port {_wizardSwitchPort.Name}", waitSec, CommandType.CAPACITOR_DETECTION_DISABLE);
                         break;
 
                     case CommandType.RESET_POWER_PORT:
@@ -635,7 +656,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                ParseException(_wizardSwitchPort.Name, _wizardProgressReport, ex);
+                ParseException(_wizardProgressReport, ex);
             }
         }
 
@@ -682,7 +703,7 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 SendRequest(GetRestUrlEntry(CommandType.POWER_UP_SLOT, new string[1] { _wizardSwitchSlot.Name }));
-                ParseException(_wizardSwitchPort.Name, _wizardProgressReport, ex);
+                ParseException(_wizardProgressReport, ex);
             }
         }
 
@@ -751,7 +772,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                ParseException(_wizardSwitchPort.Name, _wizardProgressReport, ex);
+                ParseException(_wizardProgressReport, ex);
             }
         }
 
@@ -891,8 +912,13 @@ namespace PoEWizard.Comm
             slot.LoadFromList(diclist, DictionaryType.LanPowerCfg);
         }
 
-        private void ParseException(string port, ProgressReport progressReport, Exception ex)
+        private void ParseException(ProgressReport progressReport, Exception ex)
         {
+            if (ex.Message.ToLower().Contains("command not supported"))
+            {
+                _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed, $"\n    Command not supported by the switch {SwitchModel.IpAddress}");
+                return;
+            }
             Logger.Error(ex);
             progressReport.Type = ReportType.Error;
             progressReport.Message += $"didn't solve the problem{WebUtility.UrlDecode($"\n{ex.Message}")}";
