@@ -1,6 +1,7 @@
 ﻿using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
+using System.Security.Policy;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Device
@@ -9,6 +10,7 @@ namespace PoEWizard.Device
     public class PowerSupplyModel
     {
         public int Id { get; set; }
+        public string Name { get; set; }
         public string Model { get; set; }
         public string Type { get; set; }
         public string Location { get; set; }

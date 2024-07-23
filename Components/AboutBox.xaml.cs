@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Components
@@ -40,7 +29,7 @@ namespace PoEWizard.Components
             _company.Text = assembly.GetCustomAttribute<AssemblyCompanyAttribute>().Company;
             _copyWright.Text = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright; ;
             _aboutDescr.Text = "This application allows you to troubleshoot PoE issues on an Alcatel-Lucent Enterprise OmniSwitch®, equipped with AOS 8 version.\n" +
-                "The application communicates with the switch via REST API, to gether information on the power supplies and PoE ports," +
+                "The application communicates with the switch via REST API, to gather information on the power supplies and PoE ports," +
                 " and allows the user to perform some configuration changes to mitigate common PoE issues.\n" +
                 "In case the wizard is unable to fix the problem, it allows the user to collect relevant information to be sent to TAC.";
         }

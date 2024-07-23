@@ -197,6 +197,16 @@ namespace PoEWizard
             tv.Show();
         }
 
+        private void ViewPS_Click(object sender, RoutedEventArgs e)
+        {
+            var ps = new PowerSupply(device)
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            ps.Show();
+        }
+
         private void RunWiz_Click(object sender, RoutedEventArgs e)
         {
             var ds = new DeviceSelection(selectedPort.Name)
@@ -259,7 +269,7 @@ namespace PoEWizard
                 Resources.MergedDictionaries.Add(lightDict);
                 currentDict = lightDict;
             }
-            if (slotView.Slots.Count == 1) //do not highlight if only one row
+            if (slotView?.Slots.Count == 1) //do not highlight if only one row
             {
                 _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
             }
@@ -735,6 +745,7 @@ namespace PoEWizard
             _snapshotMenuItem.IsEnabled = true;
             _vcbootMenuItem.IsEnabled = true;
             _refreshSwitch.IsEnabled = true;
+            _psMenuItem.IsEnabled = true;
             _disconnectMenuItem.Visibility = Visibility.Visible;
             _tempStatus.Visibility = Visibility.Visible;
             _cpu.Visibility = Visibility.Visible;
@@ -763,6 +774,7 @@ namespace PoEWizard
             _snapshotMenuItem.IsEnabled = false;
             _vcbootMenuItem.IsEnabled = false;
             _refreshSwitch.IsEnabled = false;
+            _psMenuItem.IsEnabled = false;
             _comImg.ToolTip = "Click to reconnect";
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
             _tempStatus.Visibility = Visibility.Hidden;
