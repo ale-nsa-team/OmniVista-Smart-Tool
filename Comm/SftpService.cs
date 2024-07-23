@@ -79,7 +79,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message, ex);
+                Logger.Error(ex);
             }
             return string.Empty;
         }

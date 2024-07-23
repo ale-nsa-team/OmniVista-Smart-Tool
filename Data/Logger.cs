@@ -67,6 +67,12 @@ namespace PoEWizard.Data
             Log(message, LogLevel.Error);
         }
 
+        public static void Error(Exception ex)
+        {
+            string logmsg = $"{ex.Message}:\n{ex.StackTrace}";
+            Log(logmsg, LogLevel.Error);
+        }
+
         public static void Error(string message, Exception ex)
         {
             string logmsg = $"{message}: {ex.Message}";

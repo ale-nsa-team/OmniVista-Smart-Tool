@@ -609,7 +609,7 @@ namespace PoEWizard.Comm
             }
             else
             {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+                Logger.Error(ex);
                 error = $"Switch {SwitchModel.IpAddress} connection error:\n - {WebUtility.UrlDecode(ex.Message)}";
             }
             _progress?.Report(new ProgressReport(ReportType.Error, "Connect", error));
@@ -769,7 +769,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+                Logger.Error(ex);
             }
         }
 
@@ -893,7 +893,7 @@ namespace PoEWizard.Comm
 
         private void ParseException(string port, ProgressReport progressReport, Exception ex)
         {
-            Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+            Logger.Error(ex);
             progressReport.Type = ReportType.Error;
             progressReport.Message += $"didn't solve the problem{WebUtility.UrlDecode($"\n{ex.Message}")}";
             PowerDevice(CommandType.POWER_UP_PORT);
@@ -1019,7 +1019,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+                Logger.Error(ex);
                 if (ex is SwitchConnectionFailure || ex is SwitchConnectionDropped || ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure)
                 {
                     if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure) this.SwitchModel.Status = SwitchStatus.LoginFail;
@@ -1027,7 +1027,7 @@ namespace PoEWizard.Comm
                 }
                 else
                 {
-                    Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+                    Logger.Error(ex);
                 }
             }
         }

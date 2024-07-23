@@ -115,7 +115,7 @@ namespace PoEWizard
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+                Logger.Error(ex);
             }
         }
 
@@ -359,7 +359,7 @@ namespace PoEWizard
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+                Logger.Error(ex);
             }
             HideProgress();
             HideInfoBox();
@@ -380,7 +380,7 @@ namespace PoEWizard
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+                Logger.Error(ex);
             }
             HideProgress();
             HideInfoBox();
@@ -435,7 +435,7 @@ namespace PoEWizard
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+                Logger.Error(ex);
             }
             HideProgress();
             HideInfoBox();
@@ -466,7 +466,7 @@ namespace PoEWizard
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+                Logger.Error(ex);
             }
             HideProgress();
             HideInfoBox();
@@ -512,7 +512,7 @@ namespace PoEWizard
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+                Logger.Error(ex);
             }
             HideProgress();
             HideInfoBox();
@@ -536,7 +536,7 @@ namespace PoEWizard
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message + ":\n" + ex.StackTrace);
+                Logger.Error(ex);
             }
             HideProgress();
             HideInfoBox();

@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -286,6 +287,51 @@ namespace PoEWizard.Data
         public static string GetDictValue(Dictionary<string, string> dict, string param)
         {
             return (dict.TryGetValue(param, out string val) ? val.Trim() : string.Empty);
+        }
+
+        public static bool IsInvalid(object[] values)
+        {
+            return (values == null || values.Length < 2 
+                || values[0] == null || values[0] == DependencyProperty.UnsetValue)
+                || values[1] == null || values[1] == DependencyProperty.UnsetValue;
+        }
+
+        public static bool IsInvalid(object value)
+        {
+            return (value == null || value == DependencyProperty.UnsetValue);
+        }
+
+        public static bool IsOldAosVersion(object aos)
+        {
+            if (aos == null) return false;
+            Match version = Regex.Match(aos.ToString(), Constants.MATCH_AOS_VERSION);
+            if (version.Success)
+            {
+                int v1 = int.Parse(version.Groups[1].ToString());
+                int v2 = int.Parse(version.Groups[2].ToString());
+                int r = int.Parse(version.Groups[5].ToString());
+                string[] minver = Constants.MIN_AOS_VERSION.Split(' ');
+                int minv1 = int.Parse(minver[0].Split('.')[0]);
+                int minv2 = int.Parse(minver[0].Split('.')[1]);
+                int minr = int.Parse(minver[1].Replace("R", ""));
+                return (v1 < minv1) || (v1 == minv1 && v2 < minv2) || (v1 == minv1 && v2 == minv2 && r < minr);
+            }
+            return false;
+        }
+
+        public static int[] GetMinFpga(string model)
+        {
+            string m = model;
+            while (m.Length > 2)
+            {
+                if (Constants.fpga.TryGetValue(m, out string val))
+                {
+                    string[] vals = val.Split('.');
+                    return Array.ConvertAll(vals, int.Parse);
+                }
+                m = m.Substring(0, m.Length - 1);
+            }
+            return null;
         }
 
     }
