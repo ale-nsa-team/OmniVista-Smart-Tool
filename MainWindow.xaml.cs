@@ -486,7 +486,7 @@ namespace PoEWizard
                         break;
                 }
                 await Task.Run(() => restApiService.RefreshSwitchPorts());
-                if (reportResult.Result == WizardResult.NothingToDo) await CheckDefaultPortMaxPower();
+                if (reportResult.Result == WizardResult.NothingToDo) await CheckDefaultMaxPowerAndResetPort();
                 string duration = Utils.CalcStringDuration(startTime, true);
                 if (!string.IsNullOrEmpty(reportResult.Message))
                 {
@@ -577,37 +577,37 @@ namespace PoEWizard
         private async Task Enable823BT()
         {
             await RunPoeWizard(new List<CommandType>() { CommandType.CHECK_823BT }, 15);
-            Logger.Info($"PoE Wizard Check Enable 802.3.bt on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             if (reportResult.Result == WizardResult.Skip) return;
             if (reportResult.Result == WizardResult.Warning)
             {
-                string error = reportResult.Error;
-                string msg = !string.IsNullOrEmpty(error) ? error : "To enable 802.3.bt all devices on the same slot will restart";
-                if (!ShowMessageBox("Enable 802.3.bt", $"{msg}. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
+                string alertDescription = reportResult.GetAlertDescription(selectedPort.Name);
+                string msg = !string.IsNullOrEmpty(alertDescription) ? alertDescription : "To enable 802.3.bt all devices on the same slot will restart";
+                if (!ShowMessageBox("Enable 802.3.bt", $"{msg}\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
                     return;
             }
             await RunPoeWizard(new List<CommandType>() { CommandType.POWER_823BT_ENABLE }, 15);
-            Logger.Info($"Enable 802.3.bt on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            Logger.Debug($"Enable 802.3.bt on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task Enable2PairPower()
         {
             await RunPoeWizard(new List<CommandType>() { CommandType.POWER_2PAIR_PORT }, 30);
-            Logger.Info($"Enable 2-Pair Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            Logger.Debug($"Enable 2-Pair Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task ChangePriority()
         {
             await RunPoeWizard(new List<CommandType>() { CommandType.CHECK_POWER_PRIORITY }, 15);
-            Logger.Info($"PoE Wizard Check Power Priority on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             if (reportResult.Result == WizardResult.Skip) return;
             if (reportResult.Result == WizardResult.Warning)
             {
-                string msg = "Some other devices with lower priority may stop. Do you want to proceed?";
-                if (!ShowMessageBox("Power Priority Change", $"{msg}. Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel)) return;
+                string alert = reportResult.GetAlertDescription(selectedPort.Name);
+                if (!ShowMessageBox("Power Priority Change",
+                                    $"{(!string.IsNullOrEmpty(alert) ? $"{alert}" : "")}\nSome other devices with lower priority may stop\nDo you want to proceed?",
+                                    MsgBoxIcons.Warning, MsgBoxButtons.OkCancel)) return;
             }
             await RunPoeWizard(new List<CommandType>() { CommandType.POWER_PRIORITY_PORT }, 15);
-            Logger.Info($"Change Power Priority on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            Logger.Debug($"Change Power Priority on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task EnableHdmiMdi()
@@ -616,21 +616,31 @@ namespace PoEWizard
             Logger.Info($"Enable Power over HDMI on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
-        private async Task CheckDefaultPortMaxPower()
-        {
-            List <CommandType> commands = new List<CommandType>() { CommandType.CHECK_MAX_POWER, CommandType.RESET_POWER_PORT };
-            if (selectedPort.Poe == PoeStatus.Off)
-            {
-                string msg = $"The PoE on Port {selectedPort.Name} is turned Off, it will be turned On";
-                if (!ShowMessageBox("Check default Max. Power", $"{msg}! Do you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel)) return;
-            }
-            await Task.Run(() => restApiService.RunCheckNothingToDo(selectedPort.Name, reportResult, commands, 15));
-            Logger.Info($"Check default Max. Power on port {selectedPort} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-        }
-
         private async Task RunPoeWizard(List<CommandType> cmdList, int waitSec)
         {
             await Task.Run(() => restApiService.RunPoeWizard(selectedPort.Name, reportResult, cmdList, waitSec));
+        }
+
+        private async Task CheckDefaultMaxPowerAndResetPort()
+        {
+            reportResult.RemoveLastWizardReport(selectedPort.Name);
+            await RunWizardCommands(new List<CommandType>() { CommandType.CHECK_MAX_POWER }, 15);
+            if (reportResult.Result == WizardResult.Skip) return;
+            if (reportResult.Result == WizardResult.Warning)
+            {
+                string alert = reportResult.GetAlertDescription(selectedPort.Name);
+                string msg = !string.IsNullOrEmpty(alert) ? alert : $"Changing Max. Power on port {selectedPort.Name} to default";
+                if (!ShowMessageBox("Check default Max. Power", $"{msg}\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel)) return;
+                await RunWizardCommands(new List<CommandType>() { CommandType.CHANGE_MAX_POWER }, 15);
+            }
+            Logger.Debug($"Check default Max. Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            await RunWizardCommands(new List<CommandType>() { CommandType.RESET_POWER_PORT }, 15);
+            Logger.Debug($"Reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+        }
+
+        private async Task RunWizardCommands(List<CommandType> cmdList, int waitSec)
+        {
+            await Task.Run(() => restApiService.RunWizardCommands(selectedPort.Name, reportResult, cmdList, waitSec));
         }
 
         private bool IsWizardStopped()

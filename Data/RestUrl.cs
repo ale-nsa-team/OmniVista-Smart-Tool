@@ -80,7 +80,8 @@ namespace PoEWizard.Data
             CHECK_POWER_PRIORITY = 100,
             RESET_POWER_PORT = 101,
             CHECK_823BT = 102,
-            CHECK_MAX_POWER = 103
+            CHECK_MAX_POWER = 103,
+            CHANGE_MAX_POWER = 104
         }
 
         private readonly static Dictionary<CommandType, string> CLI_TABLE = new Dictionary<CommandType, string>

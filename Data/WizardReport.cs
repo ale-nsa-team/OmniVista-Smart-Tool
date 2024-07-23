@@ -13,8 +13,9 @@ namespace PoEWizard.Data
         public string WizardAction { get; set; } = string.Empty;
         public string ActionResult { get; set; } = string.Empty;
         public string PortStatus { get; set; } = string.Empty;
-        public string Error {  get; set; } = string.Empty;
+        public string AlertDescription {  get; set; } = string.Empty;
         public string Duration {  get; set; } = string.Empty;
+        public object Parameter { get; set; } = null;
 
         public ReportResult(string port, string wizardAction)
         {
@@ -26,7 +27,7 @@ namespace PoEWizard.Data
         {
             StringBuilder txt = new StringBuilder("\n - ").Append(WizardAction);
             if (!string.IsNullOrEmpty(ActionResult)) txt.Append(" ").Append(ActionResult);
-            if (!string.IsNullOrEmpty(Error)) txt.Append("\n    ").Append(Error);
+            if (!string.IsNullOrEmpty(AlertDescription)) txt.Append("\n    ").Append(AlertDescription);
             return txt.ToString();
         }
     }
@@ -38,7 +39,6 @@ namespace PoEWizard.Data
         public WizardResult Result => this.GetReportResult();
         public ConcurrentDictionary<string, List<ReportResult>> ReportResult { get; set; } = new ConcurrentDictionary<string, List<ReportResult>>();
         public string Message => this.ToString();
-        public string Error => this.GetErrorMessage();
 
         public WizardReport() {  }
 
@@ -49,6 +49,22 @@ namespace PoEWizard.Data
                 List<ReportResult> reportList = GetReportList(port);
                 reportList.Add(new ReportResult(port, wizardAction));
                 this.ReportResult[port] = reportList;
+            }
+        }
+        public string GetAlertDescription(string port)
+        {
+            lock (_lock_report_result)
+            {
+                return GetCurrentReport(port)?.AlertDescription;
+            }
+        }
+
+
+        public object GetReturnParameter(string port)
+        {
+            lock (_lock_report_result)
+            {
+                return GetCurrentReport(port)?.Parameter;
             }
         }
 
@@ -101,12 +117,16 @@ namespace PoEWizard.Data
             }
         }
 
-        public void UpdateError(string port, string error)
+        public void UpdateAlert(string port, WizardResult alert, string alertDescription)
         {
             lock (_lock_report_result)
             {
                 ReportResult report = GetCurrentReport(port);
-                if (report != null) report.Error = error;
+                if (report != null)
+                {
+                    report.Result = alert;
+                    report.AlertDescription = alertDescription;
+                }
             }
         }
 
@@ -116,6 +136,15 @@ namespace PoEWizard.Data
             {
                 ReportResult report = GetCurrentReport(port);
                 if (report != null) report.Duration = duration;
+            }
+        }
+
+        public void SetReturnParameter(string port, object parameter)
+        {
+            lock (_lock_report_result)
+            {
+                ReportResult report = GetCurrentReport(port);
+                if (report != null) report.Parameter = parameter;
             }
         }
 
@@ -153,25 +182,6 @@ namespace PoEWizard.Data
                 if (this.ReportResult.TryGetValue(port, out List<ReportResult> reportList)) return reportList;
             }
             return new List<ReportResult>();
-        }
-
-        private string GetErrorMessage()
-        {
-            lock (_lock_report_result)
-            {
-                StringBuilder txt = new StringBuilder();
-                foreach (var reports in this.ReportResult)
-                {
-                    List<ReportResult> reportsList = reports.Value as List<ReportResult>;
-                    foreach (var report in reportsList)
-                    {
-                        if (string.IsNullOrEmpty(report.Error)) continue;
-                        if (txt.Length > 0) txt.Append("\n");
-                        txt.Append(report.Error);
-                    }
-                }
-                return txt.ToString();
-            }
         }
 
         public override string ToString()
