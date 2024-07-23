@@ -163,6 +163,7 @@ namespace PoEWizard
         private async void ViewVcBoot_Click(object sender, RoutedEventArgs e)
         {
             ShowProgress("Loading vcboot.cfg file...");
+            Logger.Debug($"Loading vcboot.cfg file from switch {device.Name}");
             string res = string.Empty;
             await Task.Run(() => 
             {
@@ -180,6 +181,7 @@ namespace PoEWizard
                 Owner = this,
                 SaveFilename = device.Name + "-vcboot.cfg"
             };
+            Logger.Debug("Displaying vcboot file.");
             tv.Show();
         }
 
