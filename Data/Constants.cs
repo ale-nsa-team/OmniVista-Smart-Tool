@@ -23,10 +23,14 @@ namespace PoEWizard.Data
         public enum PriorityLevelType { Low, High, Critical }
         public enum PowerSupplyState { Up, Down, Unknown }
         public enum ChassisStatus { Unknown, Up, Down }
-        public enum DictionaryType { System, Chassis, RunningDir, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList, MacAddressList,
-                                     TemperatureList, CpuTrafficList, LldpInventoryList }
+        public enum DictionaryType
+        {
+            System, Chassis, RunningDir, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList, MacAddressList,
+            TemperatureList, CpuTrafficList, LldpInventoryList
+        }
         public enum ConfigType { Enable, Disable, Unavailable }
-        public enum DeviceType {
+        public enum DeviceType
+        {
             [Description("Camera")]
             Camera = 0,
             [Description("Access Point")]
@@ -42,16 +46,23 @@ namespace PoEWizard.Data
         #endregion
 
         #region dictionaries
-        public static readonly Dictionary<string, string> fpga = new Dictionary<string, string>()
+        public static readonly Dictionary<string, string> fpgaVersions = new Dictionary<string, string>()
         {
-            {"OS6360-P10", "0.11"}, {"OS6360-P10A", "0.1"}, {"OS6360-P24", "0.15"}, {"OS6360-P24X", "0.12"}, 
+            {"OS6360-P10", "0.11"}, {"OS6360-P10A", "0.1"}, {"OS6360-P24", "0.15"}, {"OS6360-P24X", "0.12"},
             {"OS6360-PH24", "0.12"}, {"OS6360-P48", "0.15"},{"OS6360-P48X", "0.12"}, {"OS6360-PH48", "0.12"},
             {"OS6465-P6", "0.10" }, {"OS6465-P12", "0.10" }, {"OS6465-P28", "0.5" }, {"OS6465T-P12", "0.4" },
-            {"OS6560-P24Z24", "0.6" }, {"OS6560-P24Z8", "0.6"}, {"OS6560-P24X4", "0.4"}, 
+            {"OS6560-P24Z24", "0.6" }, {"OS6560-P24Z8", "0.6"}, {"OS6560-P24X4", "0.4"},
             {"OS6560-P48Z16", "0.6"}, {"OS6560-P48X4", "0.4" },
             {"OS6860", "0.9"}, {"OS6860E-P24Z8", "0.5"},
             {"OS6865-U28X", "0.14" }, {"OS6865-P16X", "0.25"}, {"OS6865-U12X", "0.25"}
         };
+
+        public static readonly Dictionary<string, string> cpldVersions = new Dictionary<string, string>()
+        {
+            {"OS6860N-U28", "12" }, {"OS6860N-P48Z", "12"}, {"OS6860N-P48M", "11"},
+            {"OS6860N-P24M", "12"}, {"OS6860N-P24Z", "2"}
+        };
+
         #endregion
 
         #region strings
@@ -112,6 +123,7 @@ namespace PoEWizard.Data
         public const string UP_TIME = "Up Time";
         // Used by "SHOW_CMM":
         public const string FPGA = "FPGA";
+        public const string CPLD = "CPLD";
         // Used by "SHOW_RUNNING_DIR"
         public const string RUNNING_CONFIGURATION = "Running configuration";
         public const string SYNCHRONIZATION_STATUS = "Running Configuration";
@@ -170,5 +182,5 @@ namespace PoEWizard.Data
         public const string MATCH_CHASSIS = @"([Local|Remote] Chassis ID )(\d+) \((.+)\)";
         public const string MATCH_AOS_VERSION = @"(\d+)\.(\d+)([\.\d +]+)(\.R)(\d+)";
         #endregion
-    } 
+    }
 }

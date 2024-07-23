@@ -107,15 +107,16 @@ namespace PoEWizard.Components
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (Utils.IsInvalid(values)) return Colors.Default;
+            string versionType = parameter?.ToString() ?? FPGA;
             try
             {
                 string model = values[0].ToString();
-                string fpga = values[1].ToString();
-                int[] minfpga = Utils.GetMinFpga(model);
-                if (minfpga == null) return Colors.Default;
-                string[] s = fpga.Split('.');
+                string versions = values[1].ToString();
+                int[] minversion = Utils.GetMinimunVersion(model, versionType);
+                if (minversion == null) return Colors.Default;
+                string[] s = versions.Split('.');
                 int[] fpgas = Array.ConvertAll(s, int.Parse);
-                return ((fpgas[0] < minfpga[0]) || (fpgas[0] == minfpga[0] && fpgas[1] < minfpga[1])) ? Colors.Orange : Colors.Default;
+                return ((fpgas[0] < minversion[0]) || (fpgas[0] == minversion[0] && fpgas[1] < minversion[1])) ? Colors.Orange : Colors.Default;
             }
             catch (Exception ex)
             {
@@ -130,7 +131,7 @@ namespace PoEWizard.Components
         }
     }
 
-    public class FpgaToVisibilityConverter : IMultiValueConverter
+    public class BadVersionToVisibilityConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {

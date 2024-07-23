@@ -324,7 +324,24 @@ namespace PoEWizard.Data
             string m = model;
             while (m.Length > 2)
             {
-                if (Constants.fpga.TryGetValue(m, out string val))
+                if (Constants.fpgaVersions.TryGetValue(m, out string val))
+                {
+                    string[] vals = val.Split('.');
+                    return Array.ConvertAll(vals, int.Parse);
+                }
+                m = m.Substring(0, m.Length - 1);
+            }
+            return null;
+        }
+
+        public static int[] GetMinimunVersion(string model, string versionType)
+        {
+            Dictionary<string, string> dict = (versionType == Constants.FPGA) ? Constants.fpgaVersions : Constants.cpldVersions;
+
+            string m = model;
+            while (m.Length > 2)
+            {
+                if (dict.TryGetValue(m, out string val))
                 {
                     string[] vals = val.Split('.');
                     return Array.ConvertAll(vals, int.Parse);

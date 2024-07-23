@@ -44,6 +44,8 @@ namespace PoEWizard
         private WizardReport reportResult = new WizardReport();
         private bool isClosing = false;
         private DeviceType selectedDeviceType;
+        private string lastIpAddr;
+        private string lastPwd;
         #endregion
         #region public variables
         public static Window Instance;
@@ -420,6 +422,13 @@ namespace PoEWizard
         {
             try
             {
+                if (string.IsNullOrEmpty(device.IpAddress))
+                {
+                    device.IpAddress = lastIpAddr;
+                    device.Login = "admin";
+                    device.Password = lastPwd;
+                }
+
                 restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
@@ -547,6 +556,7 @@ namespace PoEWizard
             await Enable823BT();
             if (IsWizardStopped()) return;
             await EnableHdmiMdi();
+            if (IsWizardStopped()) return;
             if (IsWizardStopped()) return;
             await ChangePriority();
             if (IsWizardStopped()) return;
@@ -727,6 +737,7 @@ namespace PoEWizard
 
         private async void SetConnectedState(bool checkCertified)
         {
+            DataContext = null;
             DataContext = device;
             if (device.RunningDir == CERTIFIED_DIR && checkCertified)
             {
@@ -760,6 +771,8 @@ namespace PoEWizard
             }
             _slotsView.Visibility = Visibility.Visible;
             _portList.Visibility = Visibility.Visible;
+            _fpgaLbl.Visibility = string.IsNullOrEmpty(device.Fpga) ? Visibility.Collapsed : Visibility.Visible;
+            _cpldLbl.Visibility = string.IsNullOrEmpty(device.Cpld) ? Visibility.Collapsed : Visibility.Visible;
             _btnConnect.IsEnabled = true;
             _comImg.ToolTip = "Click to disconnect";
         }
@@ -767,9 +780,10 @@ namespace PoEWizard
         private void SetDisconnectedState()
         {
             _comImg.Source = (ImageSource)currentDict["disconnected"];
-            string previousIp = device.IpAddress;
+            lastIpAddr = device.IpAddress;
+            lastPwd = device.Password;
+            DataContext = null;
             device = new SwitchModel();
-            device.IpAddress = previousIp;
             _switchAttributes.Text = "";
             _btnRunWiz.IsEnabled = false;
             _switchMenuItem.IsEnabled = true;
@@ -783,9 +797,12 @@ namespace PoEWizard
             _cpu.Visibility = Visibility.Hidden;
             _slotsView.Visibility= Visibility.Hidden;
             _portList.Visibility= Visibility.Hidden;
-            _aosWarn.Visibility = Visibility.Hidden;
-            _fpgaWarn.Visibility = Visibility.Hidden;
-            DataContext = null;
+            //_aosWarn.Visibility = Visibility.Hidden;
+            _fpgaLbl.Visibility = Visibility.Visible;
+            _cpldLbl.Visibility = Visibility.Collapsed;
+            //_fpgaWarn.Visibility = Visibility.Collapsed;
+            //_cpldWarn.Visibility = Visibility.Collapsed;
+            DataContext = device;
             restApiService = null;
         }
 

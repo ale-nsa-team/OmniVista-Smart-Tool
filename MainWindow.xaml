@@ -84,7 +84,7 @@
                 <Label Grid.Row="1" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_serialNo" Content="{Binding SerialNumber}"/>
                 <Label Grid.Row="2" Grid.Column="0" Style="{DynamicResource keyLabel}">Model:</Label>
                 <Label Grid.Row="2" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_model" Content="{Binding Model}"/>
-                <Label Grid.Row="3" Grid.Column="0" Style="{DynamicResource keyLabel}">Realease:</Label>
+                <Label Grid.Row="3" Grid.Column="0" Style="{DynamicResource keyLabel}">Release:</Label>
                 <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
                     <Label Style="{DynamicResource valLabel}" x:Name="_release" 
                        Content="{Binding Version}"
@@ -93,11 +93,14 @@
                            ToolTip="Switch AOS version is too old. Please buy a support contract and upgrade your switch"
                            Visibility="{Binding Path=Version, Converter={StaticResource AosVersionToVisibilityConverter}}" />
                 </StackPanel>
-                <Label Grid.Row="4" Grid.Column="0" Style="{DynamicResource keyLabel}">FPGA Version:</Label>
+                <Label Grid.Row="4" Grid.Column="0" x:Name="_fpgaLbl" Style="{DynamicResource keyLabel}"
+                       Visibility="Visible">FPGA Version:</Label>
+                <Label Grid.Row="4" Grid.Column="0" x:Name="_cpldLbl" Style="{DynamicResource keyLabel}"
+                       Visibility="Hidden">CPLD Version:</Label>
                 <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
                     <Label Style="{DynamicResource valLabel}" x:Name="_fpga" Content="{Binding Fpga}">
                         <Label.Foreground>
-                            <MultiBinding Converter="{StaticResource FpgaToColorConveter}">
+                            <MultiBinding Converter="{StaticResource FpgaToColorConveter}" ConverterParameter="FPGA">
                                 <Binding Path="Model" />
                                 <Binding Path="Fpga" />
                             </MultiBinding>
@@ -106,9 +109,28 @@
                     <Image x:Name="_fpgaWarn" Style="{DynamicResource warnImg}"
                         ToolTip="Switch FPGA version is too old. Please buy a support contract and upgrade your switch">
                         <Image.Visibility>
-                            <MultiBinding Converter="{StaticResource FpgaToVisibilityConverter}">
+                            <MultiBinding Converter="{StaticResource BadVersionToVisibilityConverter}" ConverterParameter="FPGA">
                                 <Binding Path="Model" />
                                 <Binding Path="Fpga" />
+                            </MultiBinding>
+                        </Image.Visibility>
+                    </Image>
+                </StackPanel>
+                <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
+                    <Label Style="{DynamicResource valLabel}" x:Name="_cpld" Content="{Binding Cpld}">
+                        <Label.Foreground>
+                            <MultiBinding Converter="{StaticResource FpgaToColorConveter}" ConverterParameter="CPLD">
+                                <Binding Path="Model" />
+                                <Binding Path="Cpld" />
+                            </MultiBinding>
+                        </Label.Foreground>
+                    </Label>
+                    <Image x:Name="_cpldWarn" Style="{DynamicResource warnImg}"
+		                ToolTip="Switch CPLD version is too old. Please buy a support contract and upgrade your switch">
+                        <Image.Visibility>
+                            <MultiBinding Converter="{StaticResource BadVersionToVisibilityConverter}" ConverterParameter="CPLD">
+                                <Binding Path="Model" />
+                                <Binding Path="Cpld" />
                             </MultiBinding>
                         </Image.Visibility>
                     </Image>
