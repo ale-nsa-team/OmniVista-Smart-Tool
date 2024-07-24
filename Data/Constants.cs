@@ -63,6 +63,14 @@ namespace PoEWizard.Data
             {"OS6860N-P24M", "12"}, {"OS6860N-P24Z", "2"}
         };
 
+        public static readonly Dictionary<string, string> powerClassTable= new Dictionary<string, string>()
+        {
+            {"0", "15.4 Watts"}, {"1", "4 Watts"}, {"2", "7 Watts"}, {"3", "15.4 Watts"},
+            {"4", "30 Watts"}, {"5", "45 Watts"},{"6", "60 Watts"}, {"7", "75 Watts"},
+            {"8", "90-100 Watts" }
+        };
+
+
         #endregion
 
         #region strings

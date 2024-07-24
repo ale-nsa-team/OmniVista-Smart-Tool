@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
         Closing="OnWindowClosing"
-        Title="PoE Wizard" Height="800" Width="1290" Icon="/wiz.ico">
+        Title="PoE Wizard" Height="800" Width="1300" Icon="/wiz.ico">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -298,7 +298,7 @@
                     </DataGridComboBoxColumn>
                     <DataGridTextColumn Header="Power (Watts)" Width="*" Binding="{Binding Path=Power}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Max Power (Watts)" Width="1.2*" Binding="{Binding Path=MaxPower}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="PoE Class" Width="0.8*" Binding="{Binding Path=Class}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="PoE Class" Width="*" Binding="{Binding Path=Class}" IsReadOnly="True" />
                     <DataGridTextColumn Header="PoE Mode" Width="0.8*" IsReadOnly="True">
                         <DataGridTextColumn.Binding>
                             <MultiBinding Converter="{StaticResource BoolToPoEModeConverter}">
