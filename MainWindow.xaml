@@ -201,8 +201,8 @@
                     <DataGridTemplateColumn Header="802.3BT Support" Width="1.1*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Is8023bt, Converter={StaticResource BoolToSymbolConverter}}"
-                                           Foreground="{Binding Path=Is8023bt,
+                                <TextBlock Text="{Binding Path=Is8023btSupport, Converter={StaticResource BoolToSymbolConverter}}"
+                                           Foreground="{Binding Path=Is8023btSupport,
                                            Converter={StaticResource ValueToColorConverter},
                                            ConverterParameter=Boolean}"/>
                             </DataTemplate>
