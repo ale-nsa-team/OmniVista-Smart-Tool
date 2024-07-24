@@ -795,11 +795,11 @@ namespace PoEWizard
             _comImg.ToolTip = "Click to disconnect";
             if (device.TemperatureStatus == ThresholdType.Danger)
             {
-                _tempWarn.Source = new BitmapImage(new Uri(".//danger.png"));
+                _tempWarn.Source = new BitmapImage(new Uri(@"Resources\danger.png", UriKind.Relative));
             }
             else
             {
-                _tempWarn.Source = new BitmapImage(new Uri("warning.png"));
+                _tempWarn.Source = new BitmapImage(new Uri(@"Resources\warning.png", UriKind.Relative));
             }
         }
 

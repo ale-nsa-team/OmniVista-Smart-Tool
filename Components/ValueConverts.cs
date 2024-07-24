@@ -11,7 +11,7 @@ namespace PoEWizard.Components
 {
     internal static class Colors
     {
-        internal static SolidColorBrush Red => (SolidColorBrush)new BrushConverter().ConvertFrom("#f00736");
+        internal static SolidColorBrush Red => (SolidColorBrush)new BrushConverter().ConvertFrom("#ff6347");
         internal static SolidColorBrush Green => MainWindow.theme == ThemeType.Dark ? Brushes.Lime
                         : (SolidColorBrush)new BrushConverter().ConvertFrom("#12b826");
         internal static SolidColorBrush Orange => Brushes.Orange;
