@@ -337,6 +337,7 @@ namespace PoEWizard.Comm
                     reportResult.CreateReportResult(_wizardSwitchPort.Name, $"Port {port} not found!");
                     return;
                 }
+                _progress.Report(new ProgressReport("Running PoE Wizard..."));
                 if (!_wizardSwitchSlot.IsInitialized) PowerUpSlot();
                 _wizardReportResult = reportResult;
                 if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
@@ -507,6 +508,7 @@ namespace PoEWizard.Comm
             double maxDefaultPower = (double)obj;
             string error = null;
             string wizardAction = $"Restoring Max. Power on port {_wizardSwitchPort.Name} from {_wizardSwitchPort.MaxPower} Watts to default {maxDefaultPower} Watts";
+            _progress.Report(new ProgressReport(wizardAction));
             _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
             double prevMaxPower = _wizardSwitchPort.MaxPower;
             string powerSet = $"default {maxDefaultPower} Watts";
