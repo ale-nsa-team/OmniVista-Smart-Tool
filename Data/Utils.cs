@@ -97,7 +97,7 @@ namespace PoEWizard.Data
 
         public static double StringToDouble(string strNumber)
         {
-            if (strNumber == null) return 0;
+            if (string.IsNullOrEmpty(strNumber)) return 0;
             try
             {
                 string number = ExtractNumber(strNumber);
@@ -279,26 +279,26 @@ namespace PoEWizard.Data
             }
             finally
             {
-                if (pinger != null) pinger.Dispose();
+                pinger?.Dispose();
             }
             return false;
         }
 
         public static string GetDictValue(Dictionary<string, string> dict, string param)
         {
-            return (dict.TryGetValue(param, out string val) ? val.Trim() : string.Empty);
+            return !dict.TryGetValue(param, out string val) || string.IsNullOrEmpty(val) ? string.Empty : val.Trim();
         }
 
         public static bool IsInvalid(object[] values)
         {
-            return (values == null || values.Length < 2 
-                || values[0] == null || values[0] == DependencyProperty.UnsetValue)
+            return values == null || values.Length < 2 
+                || values[0] == null || values[0] == DependencyProperty.UnsetValue
                 || values[1] == null || values[1] == DependencyProperty.UnsetValue;
         }
 
         public static bool IsInvalid(object value)
         {
-            return (value == null || value == DependencyProperty.UnsetValue);
+            return value == null || value == DependencyProperty.UnsetValue;
         }
 
         public static bool IsOldAosVersion(object aos)

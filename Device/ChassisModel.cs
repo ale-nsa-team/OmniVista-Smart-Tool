@@ -55,7 +55,7 @@ namespace PoEWizard.Device
         {
             foreach (Dictionary<string, string> dict in list)
             {
-                int slotId = Utils.ParseNumber(dict.TryGetValue(CHAS_SLOT_PORT, out string s) ? s : "", 1);
+                int slotId = Utils.ParseNumber(Utils.GetDictValue(dict, CHAS_SLOT_PORT), 1);
                 var slot = this.Slots.FirstOrDefault(x => x.Number == slotId);
                 if (slot == null) return;
                 slot.LoadFromDictionary(dict);

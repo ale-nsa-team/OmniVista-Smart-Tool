@@ -56,25 +56,25 @@ namespace PoEWizard.Device
             switch (dt)
             {
                 case DictionaryType.System:
-                    Name = dict.TryGetValue(NAME, out s) ? s : "";
-                    Description = dict.TryGetValue(DESCRIPTION, out s) ? s : "";
-                    Location = dict.TryGetValue(LOCATION, out s) ? s : "";
-                    Contact = dict.TryGetValue(CONTACT, out s) ? s : "";
-                    UpTime = dict.TryGetValue(UP_TIME, out s) ? s : "";
+                    Name = Utils.GetDictValue(dict, NAME);
+                    Description = Utils.GetDictValue(dict, DESCRIPTION);
+                    Location = Utils.GetDictValue(dict, LOCATION);
+                    Contact = Utils.GetDictValue(dict, CONTACT);
+                    UpTime = Utils.GetDictValue(dict, UP_TIME);
                     break;
                 case DictionaryType.RunningDir:
-                    RunningDir = Utils.FirstChToUpper(dict.TryGetValue(RUNNING_CONFIGURATION, out s) ? s : "");
-                    SyncStatus = Utils.FirstChToUpper(dict.TryGetValue(SYNCHRONIZATION_STATUS, out s) ? s : "");
+                    RunningDir = Utils.FirstChToUpper(Utils.GetDictValue(dict, RUNNING_CONFIGURATION));
+                    SyncStatus = Utils.FirstChToUpper(Utils.GetDictValue(dict, SYNCHRONIZATION_STATUS));
                     break;
                 case DictionaryType.MicroCode:
-                    Version = dict.TryGetValue(RELEASE, out s) ? s : "";
+                    Version = Utils.GetDictValue(dict, RELEASE);
                     break;
                 case DictionaryType.Cmm:
-                    SerialNumber = dict.TryGetValue(SERIAL_NUMBER, out s) ? s : "";
-                    Model = dict.TryGetValue(MODEL_NAME, out s) ? s : "";
-                    Fpga = dict.TryGetValue(FPGA, out s) ? s : "";
-                    Cpld = dict.TryGetValue(CPLD, out s) ? s : "";
-                    MacAddress = dict.TryGetValue(CHASSIS_MAC_ADDRESS, out s) ? s : "";
+                    SerialNumber = Utils.GetDictValue(dict, SERIAL_NUMBER);
+                    Model = Utils.GetDictValue(dict, MODEL_NAME);
+                    Fpga = Utils.GetDictValue(dict, FPGA);
+                    Cpld = Utils.GetDictValue(dict, CPLD);
+                    MacAddress = Utils.GetDictValue(dict, CHASSIS_MAC_ADDRESS);
                     break;
             }
 ;
@@ -147,7 +147,7 @@ namespace PoEWizard.Device
                     string prevPort = "";
                     foreach (Dictionary<string, string> dict in list)
                     {
-                        string currPort = dict.TryGetValue(INTERFACE, out string s) ? s : "";
+                        string currPort = Utils.GetDictValue(dict, INTERFACE);
                         ChassisSlotPort slotPort = new ChassisSlotPort(currPort);
                         ChassisModel chassis = GetChassis(slotPort.ChassisNr);
                         if (chassis == null) continue;
@@ -160,15 +160,16 @@ namespace PoEWizard.Device
                             port.MacList.Clear();
                             prevPort = currPort;
                         }
-                        if (port.AddMacToList(dict) >= 10) break;
+                        if (port.MacList?.Count >= 10) continue;
+                        port.AddMacToList(dict);
                     }
                     break;
                 case DictionaryType.TemperatureList:
                     SwitchTemperature temperature = new SwitchTemperature();
                     foreach (var dic in list)
                     {
-                        string[] split = (dic.TryGetValue(CHAS_DEVICE, out string s) ? s : "").Trim().Split('/');
-                        var chas = GetChassis(Utils.StringToInt(split[0]));
+                        string[] split = Utils.GetDictValue(dic, CHAS_DEVICE).Trim().Split('/');
+                        ChassisModel chas = GetChassis(Utils.StringToInt(split[0]));
                         if (chas == null) continue;
                         chas.LoadTemperature(dic);
                         if (temperature.Status < chas.Temperature.Status)
@@ -182,10 +183,10 @@ namespace PoEWizard.Device
                     int cpu = 0;
                     foreach (var dic in list)
                     {
-                        string slotNr = (dic.TryGetValue(CPU, out string s) ? s : "").ToLower().Replace("slot", "").Trim();
+                        string slotNr = Utils.GetDictValue(dic, CPU).ToLower().Replace("slot", "").Trim();
                         SlotModel slot = GetSlot(slotNr);
                         if (slot == null) continue;
-                        slot.Cpu = Utils.StringToInt(dic.TryGetValue(CURRENT, out s) ? s : "");
+                        slot.Cpu = Utils.StringToInt(Utils.GetDictValue(dic, CURRENT));
                         if (slot.Cpu > cpu) cpu = slot.Cpu;
                     }
                     Cpu = cpu;
@@ -195,7 +196,7 @@ namespace PoEWizard.Device
 
         public void UpdateCpuThreshold(Dictionary<string, string> dict)
         {
-            CpuThreshold = Utils.StringToInt((dict.TryGetValue(CPU_THRESHOLD, out string s) ? s : "").Trim());
+            CpuThreshold = Utils.StringToInt(Utils.GetDictValue(dict, CPU_THRESHOLD).Trim());
         }
 
         public ChassisModel GetChassis(int chassisNumber)

@@ -81,23 +81,13 @@ namespace PoEWizard.Device
             return Ports.FirstOrDefault(p => p.Number == portNumber);
         }
 
-        public void Clone(SlotModel slot)
-        {
-            var props = GetType().GetProperties().Where(p => p.CanWrite && p.CanRead);
-            foreach (var p in props)
-            {
-                var value = p.GetValue(slot, null);
-                if (value != null) p.SetValue(this, value, null);
-            }
-        }
-
-        public int ParseNumber(string slot, int index)
+        private int ParseNumber(string slot, int index)
         {
             string[] parts = slot.Split('/');
             return parts.Length > index ? (int.TryParse(parts[index], out int n) ? n : 0) : 0;
         }
 
-        public double ParseDouble(string val)
+        private double ParseDouble(string val)
         {
             return double.TryParse(val, out double d) ? d : 0;
         }
