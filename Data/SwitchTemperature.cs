@@ -32,9 +32,6 @@ namespace PoEWizard.Data
             if (Current < Threshold) Status = ThresholdType.UnderThreshold;
             else if (Current >= Threshold && Current < Danger) Status = ThresholdType.OverThreshold;
             else Status = ThresholdType.Danger;
-            //test
-            Status = ThresholdType.Danger;
-            //end test
         }
     }
 }
