@@ -53,7 +53,6 @@ namespace PoEWizard.Device
 
         public void LoadFromDictionary(Dictionary<string, string> dict, DictionaryType dt)
         {
-            string s;
             switch (dt)
             {
                 case DictionaryType.System:
@@ -63,13 +62,16 @@ namespace PoEWizard.Device
                     Contact = Utils.GetDictValue(dict, CONTACT);
                     UpTime = Utils.GetDictValue(dict, UP_TIME);
                     break;
+
                 case DictionaryType.RunningDir:
                     RunningDir = Utils.FirstChToUpper(Utils.GetDictValue(dict, RUNNING_CONFIGURATION));
                     SyncStatus = Utils.FirstChToUpper(Utils.GetDictValue(dict, SYNCHRONIZATION_STATUS));
                     break;
+
                 case DictionaryType.MicroCode:
                     Version = Utils.GetDictValue(dict, RELEASE);
                     break;
+
                 case DictionaryType.Cmm:
                     SerialNumber = Utils.GetDictValue(dict, SERIAL_NUMBER);
                     Model = Utils.GetDictValue(dict, MODEL_NAME);
@@ -93,6 +95,7 @@ namespace PoEWizard.Device
                         ChassisList.Add(ci);
                     }
                     break;
+
                 case DictionaryType.PortsList:
                     int nchas = list.GroupBy(d => GetChassisId(d)).Count();
                     for (int i = 1; i <= nchas; i++)
@@ -121,6 +124,7 @@ namespace PoEWizard.Device
                         }
                     }
                     break;
+
                 case DictionaryType.PowerSupply:
                     foreach (var dic in list)
                     {
@@ -130,6 +134,7 @@ namespace PoEWizard.Device
                         chas.PowerSupplies.Add(new PowerSupplyModel(psId, dic[LOCATION]) { Name = $"{chas.Number}/{psId}" });
                     }
                     break;
+
                 case DictionaryType.LldpInventoryList:
                 case DictionaryType.LldpRemoteList:
                     foreach (Dictionary<string, string> dict in list)
@@ -144,6 +149,7 @@ namespace PoEWizard.Device
                         if (dt == DictionaryType.LldpRemoteList) port.LoadLldpRemoteTable(dict); else port.LoadLldpInventoryTable(dict);
                     }
                     break;
+
                 case DictionaryType.MacAddressList:
                     string prevPort = "";
                     foreach (Dictionary<string, string> dict in list)
@@ -165,6 +171,7 @@ namespace PoEWizard.Device
                         port.AddMacToList(dict);
                     }
                     break;
+
                 case DictionaryType.TemperatureList:
                     SwitchTemperature temperature = new SwitchTemperature();
                     foreach (var dic in list)
@@ -178,6 +185,7 @@ namespace PoEWizard.Device
                     CurrTemperature = $"{(temperature.Current * 9 / 5) + 32}{F} ({temperature.Current}{C})";
                     TemperatureStatus = temperature.Status;
                     break;
+
                 case DictionaryType.CpuTrafficList:
                     int cpu = 0;
                     foreach (var dic in list)
@@ -289,12 +297,6 @@ namespace PoEWizard.Device
             string[] parts = chas[CHAS_SLOT_PORT].Split('/');
             int idx = (parts.Length > 2) ? 1 : 0;
             return ParseId(chas[CHAS_SLOT_PORT], idx);
-        }
-
-        private string GetPortId(string chSlotPort)
-        {
-            string[] parts = chSlotPort.Split('/');
-            return parts.Length > 2 ? parts[2] : "0";
         }
 
         private int GetPsId(string chId)

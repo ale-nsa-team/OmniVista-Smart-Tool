@@ -72,18 +72,9 @@ namespace PoEWizard.Device
             this.Power = Ports.Sum(p => p.Power);
             double powerConsumedMetric = 100 * this.Power / this.Budget;
             double nearThreshold = 0.9 * this.Threshold;
-            if (powerConsumedMetric < nearThreshold)
-            {
-                this.PoeStatus = SlotPoeStatus.Normal;
-            }
-            else if (powerConsumedMetric >= nearThreshold && powerConsumedMetric < Threshold)
-            {
-                this.PoeStatus = SlotPoeStatus.NearThreshold;
-            }
-            else
-            {
-                this.PoeStatus = SlotPoeStatus.Critical;
-            }
+            if (powerConsumedMetric < nearThreshold) this.PoeStatus = SlotPoeStatus.Normal;
+            else if (powerConsumedMetric >= nearThreshold && powerConsumedMetric < Threshold) this.PoeStatus = SlotPoeStatus.NearThreshold;
+            else this.PoeStatus = SlotPoeStatus.Critical;
         }
 
         public PortModel GetPort(string portNumber)
