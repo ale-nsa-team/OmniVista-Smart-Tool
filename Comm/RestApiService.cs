@@ -60,6 +60,10 @@ namespace PoEWizard.Comm
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.Cmm);
                 SendRequest(GetRestUrlEntry(CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE));
                 ScanSwitch();
+                if (SwitchModel.Status == SwitchStatus.NotSupportPoE)
+                {
+                    _progress?.Report(new ProgressReport(ReportType.Error, "Connect", $"Switch {SwitchModel.IpAddress} doesn't support PoE!"));
+                }
             }
             catch (Exception ex)
             {
@@ -883,9 +887,12 @@ namespace PoEWizard.Comm
             List<Dictionary<string, string>> diclist;
             Dictionary<string, string> dict;
             _progress.Report(new ProgressReport($"Reading PoE information on Switch {SwitchModel.IpAddress}"));
+            int nbChassisPoE = SwitchModel.ChassisList.Count;
+            bool chassisHasPoE;
             foreach (var chassis in SwitchModel.ChassisList)
             {
-                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CHASSIS_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
+                chassisHasPoE = GetLanPowerStatus(chassis);
+                if (!chassisHasPoE) nbChassisPoE--;
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 chassis.LoadFromList(diclist);
                 chassis.PowerBudget = 0;
@@ -910,6 +917,21 @@ namespace PoEWizard.Comm
                     ps.LoadFromDictionary(dict);
                 }
             }
+            if (nbChassisPoE <= 0) SwitchModel.Status = SwitchStatus.NotSupportPoE;
+        }
+
+        private bool GetLanPowerStatus(ChassisModel chassis)
+        {
+            try
+            {
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CHASSIS_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return false;
         }
 
         private void GetSlotPower(SlotModel slot)
