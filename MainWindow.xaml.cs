@@ -16,6 +16,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
 
@@ -792,6 +793,14 @@ namespace PoEWizard
             _cpldLbl.Visibility = string.IsNullOrEmpty(device.Cpld) ? Visibility.Collapsed : Visibility.Visible;
             _btnConnect.IsEnabled = true;
             _comImg.ToolTip = "Click to disconnect";
+            if (device.TemperatureStatus == ThresholdType.Danger)
+            {
+                _tempWarn.Source = new BitmapImage(new Uri(".//danger.png"));
+            }
+            else
+            {
+                _tempWarn.Source = new BitmapImage(new Uri("warning.png"));
+            }
         }
 
         private void SetDisconnectedState()
@@ -814,11 +823,8 @@ namespace PoEWizard
             _cpu.Visibility = Visibility.Hidden;
             _slotsView.Visibility= Visibility.Hidden;
             _portList.Visibility= Visibility.Hidden;
-            //_aosWarn.Visibility = Visibility.Hidden;
             _fpgaLbl.Visibility = Visibility.Visible;
             _cpldLbl.Visibility = Visibility.Collapsed;
-            //_fpgaWarn.Visibility = Visibility.Collapsed;
-            //_cpldWarn.Visibility = Visibility.Collapsed;
             DataContext = device;
             restApiService = null;
         }
