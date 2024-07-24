@@ -561,6 +561,8 @@ namespace PoEWizard
             await ChangePriority();
             if (IsWizardStopped()) return;
             await Enable2PairPower();
+            if (IsWizardStopped()) return;
+            await EnableCapacitorDetection();
         }
 
         private async Task RunWizardTelephone()
@@ -572,6 +574,8 @@ namespace PoEWizard
             await EnableHdmiMdi();
             if (IsWizardStopped()) return;
             await Enable823BT();
+            if (IsWizardStopped()) return;
+            await EnableCapacitorDetection();
         }
 
         private async Task RunWizardWirelessLan()
@@ -594,6 +598,8 @@ namespace PoEWizard
             await EnableHdmiMdi();
             if (IsWizardStopped()) return;
             await Enable2PairPower();
+            if (IsWizardStopped()) return;
+            await EnableCapacitorDetection();
         }
 
         private async Task Enable823BT()
@@ -615,6 +621,12 @@ namespace PoEWizard
         {
             await RunPoeWizard(new List<CommandType>() { CommandType.POWER_2PAIR_PORT }, 30);
             Logger.Debug($"Enable 2-Pair Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+        }
+
+        private async Task EnableCapacitorDetection()
+        {
+            await RunPoeWizard(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE }, 15);
+            Logger.Debug($"Enable Capacitor Detection on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task ChangePriority()
@@ -652,12 +664,17 @@ namespace PoEWizard
             {
                 string alert = reportResult.GetAlertDescription(selectedPort.Name);
                 string msg = !string.IsNullOrEmpty(alert) ? alert : $"Changing Max. Power on port {selectedPort.Name} to default";
-                if (!ShowMessageBox("Check default Max. Power", $"{msg}\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel)) return;
-                await RunWizardCommands(new List<CommandType>() { CommandType.CHANGE_MAX_POWER }, 15);
+                if (ShowMessageBox("Check default Max. Power", $"{msg}\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
+                {
+                    await RunWizardCommands(new List<CommandType>() { CommandType.CHANGE_MAX_POWER }, 15);
+                }
             }
             Logger.Debug($"Check default Max. Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-            await RunWizardCommands(new List<CommandType>() { CommandType.RESET_POWER_PORT }, 15);
-            Logger.Debug($"Reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            if (ShowMessageBox("Resetting Port", $"Resetting the port  {selectedPort.Name} may solve the problem\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
+            {
+                await RunWizardCommands(new List<CommandType>() { CommandType.RESET_POWER_PORT }, 15);
+                Logger.Debug($"Reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            }
         }
 
         private async Task RunWizardCommands(List<CommandType> cmdList, int waitSec)
