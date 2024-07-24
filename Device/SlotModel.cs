@@ -18,7 +18,8 @@ namespace PoEWizard.Device
         public double Budget { get; set; }
         public List<PortModel> Ports { get; set; }
         public double Threshold { get; set; }
-        public bool Is8023bt {get;set;}
+        public bool Is8023btSupport {get;set;}
+        public bool Is8023btDisabled { get; set; } = true;
         public bool IsPriorityDisconnect { get; set; }
         public ConfigType FPoE { get; set; }
         public ConfigType PPoE { get; set; }
@@ -40,7 +41,7 @@ namespace PoEWizard.Device
         {
             this.Budget = ParseDouble(Utils.GetDictValue(dict, MAX_POWER));
             this.IsInitialized = (Utils.GetDictValue(dict, INIT_STATUS)).ToLower() == "initialized";
-            this.Is8023bt = (Utils.GetDictValue(dict, BT_SUPPORT)) == "Yes";
+            this.Is8023btSupport = (Utils.GetDictValue(dict, BT_SUPPORT)) == "Yes";
             PowerClassDetection = Enum.TryParse(Utils.GetDictValue(dict, CLASS_DETECTION), true, out ConfigType res) ? res : ConfigType.Unavailable;
             this.IsHiResDetection = (Utils.GetDictValue(dict, HI_RES_DETECTION)) == "enable";
             this.PPoE = Enum.TryParse(Utils.GetDictValue(dict, PPOE), true, out res) ? res : ConfigType.Unavailable;
@@ -54,9 +55,18 @@ namespace PoEWizard.Device
             {
                 string[] split = (dict.TryGetValue((dt == DictionaryType.LanPower) ? PORT : CHAS_SLOT_PORT, out string s) ? s : "0").Split('/');
                 if (split.Length < 2) continue;
-                string port = (split.Length == 3) ? split[2] : split[1];
-                if (port == null) continue;
-                if (dt == DictionaryType.LanPower) GetPort(port).LoadPoEData(dict); else GetPort(port).LoadPoEConfig(dict);
+                string sport = (split.Length == 3) ? split[2] : split[1];
+                if (sport == null) continue;
+                PortModel port = GetPort(sport);
+                if (dt == DictionaryType.LanPower)
+                {
+                    port.LoadPoEData(dict);
+                }
+                else
+                {
+                    port.LoadPoEConfig(dict);
+                    if (port.Protocol8023bt == ConfigType.Enable) Is8023btDisabled = false;
+                }
             }
             this.NbPoePorts = list.Count;
             this.Power = Ports.Sum(p => p.Power);

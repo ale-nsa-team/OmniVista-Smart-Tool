@@ -943,7 +943,7 @@ namespace PoEWizard.Comm
             if (!_wizardSwitchSlot.IsInitialized) PowerUpSlot();
             if (cmd == CommandType.POE_FAST_ENABLE)
             {
-                if (_wizardSwitchSlot.Is8023bt && _wizardSwitchSlot.Ports?.FirstOrDefault(p => p.Protocol8023bt == ConfigType.Enable) != null)
+                if (_wizardSwitchSlot.Is8023btSupport && _wizardSwitchSlot.Ports?.FirstOrDefault(p => p.Protocol8023bt == ConfigType.Enable) != null)
                 {
                     Change823BT(CommandType.POWER_823BT_DISABLE);
                 }
