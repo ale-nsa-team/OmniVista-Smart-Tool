@@ -346,30 +346,38 @@ namespace PoEWizard.Comm
                 }
                 if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny)
                 {
-                    StringBuilder txt = new StringBuilder(PrintPortStatus());
-                    if (_wizardSwitchPort.EndPointDevice != null && !string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.MacAddress))
+                    Thread.Sleep(5000);
+                    GetSlotLanPower(_wizardSwitchSlot);
+                    if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny)
                     {
-                        txt.Append(", Device MAC: ").Append(_wizardSwitchPort.EndPointDevice.MacAddress);
-                        if (!string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.IpAddress)) txt.Append(", IP: ").Append(_wizardSwitchPort.EndPointDevice.IpAddress);
+                        NothingToDo();
+                        return;
                     }
-                    else if (_wizardSwitchPort.MacList?.Count > 0 && !string.IsNullOrEmpty(_wizardSwitchPort.MacList[0]))
-                    {
-                        txt.Append(", Device MAC: ").Append(_wizardSwitchPort.MacList[0]);
-                    }
-                    string wizardAction = $"Nothing to do on port {_wizardSwitchPort.Name}.{txt}";
-                    _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
-                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.NothingToDo);
-                    Logger.Debug($"{wizardAction}\n{_wizardProgressReport.Message}");
                 }
-                else
-                {
-                    ExecuteWizardCommands(commands, waitSec);
-                }
+                ExecuteWizardCommands(commands, waitSec);
             }
             catch (Exception ex)
             {
                 SendSwitchConnectionFailed(ex);
             }
+        }
+
+        private void NothingToDo()
+        {
+            StringBuilder txt = new StringBuilder(PrintPortStatus());
+            if (_wizardSwitchPort.EndPointDevice != null && !string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.MacAddress))
+            {
+                txt.Append(", Device MAC: ").Append(_wizardSwitchPort.EndPointDevice.MacAddress);
+                if (!string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.IpAddress)) txt.Append(", IP: ").Append(_wizardSwitchPort.EndPointDevice.IpAddress);
+            }
+            else if (_wizardSwitchPort.MacList?.Count > 0 && !string.IsNullOrEmpty(_wizardSwitchPort.MacList[0]))
+            {
+                txt.Append(", Device MAC: ").Append(_wizardSwitchPort.MacList[0]);
+            }
+            string wizardAction = $"Nothing to do on port {_wizardSwitchPort.Name}.{txt}";
+            _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
+            _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.NothingToDo);
+            Logger.Debug($"{wizardAction}\n{_wizardProgressReport.Message}");
         }
 
         private void CreateReportPortNoPoe()
@@ -904,12 +912,17 @@ namespace PoEWizard.Comm
 
         private void GetSlotPower(SlotModel slot)
         {
+            GetSlotLanPower(slot);
+            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER_CONFIG, new string[1] { $"{slot.Name}" }));
+            List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+            slot.LoadFromList(diclist, DictionaryType.LanPowerCfg);
+        }
+
+        private void GetSlotLanPower(SlotModel slot)
+        {
             this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER, new string[1] { $"{slot.Name}" }));
             List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
             slot.LoadFromList(diclist, DictionaryType.LanPower);
-            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER_CONFIG, new string[1] { $"{slot.Name}" }));
-            diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
-            slot.LoadFromList(diclist, DictionaryType.LanPowerCfg);
         }
 
         private void ParseException(ProgressReport progressReport, Exception ex)
