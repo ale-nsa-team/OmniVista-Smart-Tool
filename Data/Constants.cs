@@ -171,6 +171,9 @@ namespace PoEWizard.Data
         // Used by "SHOW_HEALTH"
         public const string CPU_THRESHOLD = "CPU Threshold";
         public const string CPU = "CPU";
+
+        public const string C = " \u2103";
+        public const string F = " \u2109";
         #endregion
 
         #region regex patterns

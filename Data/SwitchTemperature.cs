@@ -29,9 +29,9 @@ namespace PoEWizard.Data
             Range = Utils.GetDictValue(dict, RANGE);
             Threshold = Utils.StringToInt(Utils.GetDictValue(dict, THRESHOLD));
             Danger = Utils.StringToInt(Utils.GetDictValue(dict, DANGER));
-            if (Current <= Threshold) Status = ThresholdType.UnderThreshold;
-            else if (Current >= Danger) Status = ThresholdType.Danger;
-            else Status = ThresholdType.OverThreshold;
+            if (Current < Threshold) Status = ThresholdType.UnderThreshold;
+            else if (Current >= Threshold && Current < Danger) Status = ThresholdType.OverThreshold;
+            else Status = ThresholdType.Danger;
         }
     }
 }

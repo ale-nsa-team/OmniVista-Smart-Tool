@@ -135,10 +135,10 @@
                         </Image.Visibility>
                     </Image>
                 </StackPanel>
-                <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}">Temperature Status:</Label>
+                <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}">Temperature:</Label>
                 <StackPanel x:Name="_tempStatus" Grid.Row="5" Grid.Column="1" Orientation="Horizontal" Visibility="Hidden">
                     <Label Style="{DynamicResource valLabel}" 
-                           Content="{Binding TemperatureStatus}" 
+                           Content="{Binding CurrTemperature}" 
                            Foreground="{Binding Path=TemperatureStatus, Converter={StaticResource ValueToColorConverter}, ConverterParameter=Temperature}"/>
                     <Image x:Name="_tempWarn" Style="{DynamicResource warnImg}"
                            ToolTip="Switch may reduce PoE output because temperature is too high" 

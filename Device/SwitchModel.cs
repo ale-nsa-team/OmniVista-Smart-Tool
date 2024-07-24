@@ -35,6 +35,7 @@ namespace PoEWizard.Device
         public PowerSupplyState PowerSupplyState => GetPowerSupplyState();
         public string ConfigSnapshot { get; set; }
         public bool ConfigChanged { get; set; } = false;
+        public string CurrTemperature { get; set; } 
         public ThresholdType TemperatureStatus { get; set; }
         public int Cpu { get; set; }
         public int CpuThreshold { get; set; }
@@ -172,11 +173,9 @@ namespace PoEWizard.Device
                         ChassisModel chas = GetChassis(Utils.StringToInt(split[0]));
                         if (chas == null) continue;
                         chas.LoadTemperature(dic);
-                        if (temperature.Status < chas.Temperature.Status)
-                        {
-                            temperature = chas.Temperature;
-                        }
+                        if (temperature.Current < chas.Temperature.Current) temperature = chas.Temperature;
                     }
+                    CurrTemperature = $"{(temperature.Current * 9 / 5) + 32}{F} ({temperature.Current}{C})";
                     TemperatureStatus = temperature.Status;
                     break;
                 case DictionaryType.CpuTrafficList:
