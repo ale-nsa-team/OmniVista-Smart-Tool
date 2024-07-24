@@ -230,6 +230,17 @@
         <Setter Property="Margin" Value="0,10,10,5" />
     </Style>
 
+    <Style TargetType="TextBlock" x:Key="toolTip">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+        <Style.Resources>
+            <Style TargetType="ToolTip">
+                <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+                <Setter Property="Background" Value="{StaticResource barBackground}" />
+            </Style>
+        </Style.Resources>
+    </Style>
+
     <Style x:Key="fileBox" TargetType="RichTextBox">
         <Setter Property="Background" Value="{StaticResource popupBackgroundColor}" />
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />

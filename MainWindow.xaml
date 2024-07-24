@@ -309,16 +309,33 @@
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
                     <DataGridTextColumn Header="802.3BT" Width="0.8*" Binding="{Binding Path=Protocol8023bt, Converter={StaticResource ConfigTypeToSimbolConverter}}" />
-                    <DataGridTemplateColumn Header="Device Moldel" IsReadOnly="True">
+                    <DataGridTemplateColumn Header="Device Model" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Model}"
-                                           ToolTip="{Binding Path=EndPointDevice, Converter={StaticResource DeviceToTooltipConverter}}" />
+                                           ToolTip="{Binding Path=EndPointDevice, Converter={StaticResource DeviceToTooltipConverter}}"
+                                           Style="{DynamicResource toolTip}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Device Type" Width="*" Binding="{Binding Path=EndPointDevice.Type}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Device Name" Width="1.5*" Binding="{Binding Path=EndPointDevice.Name}" IsReadOnly="True" />
+                    <DataGridTemplateColumn Header="Device Type" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=EndPointDevice.Type}"
+                                           ToolTip="{Binding Path=EndPointDevice, Converter={StaticResource DeviceToTooltipConverter}}"
+                                           Style="{DynamicResource toolTip}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Device Name" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=EndPointDevice.Name}"
+                                           ToolTip="{Binding Path=EndPointDevice, Converter={StaticResource DeviceToTooltipConverter}}"
+                                           Style="{DynamicResource toolTip}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
