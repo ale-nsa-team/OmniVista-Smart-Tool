@@ -19,7 +19,7 @@ namespace PoEWizard.Device
         public List<PortModel> Ports { get; set; }
         public double Threshold { get; set; }
         public bool Is8023btSupport {get;set;}
-        public bool Is8023btDisabled { get; set; } = true;
+        public bool IsPoeModeEnable { get; set; } = true;
         public bool IsPriorityDisconnect { get; set; }
         public ConfigType FPoE { get; set; }
         public ConfigType PPoE { get; set; }
@@ -65,7 +65,7 @@ namespace PoEWizard.Device
                 else
                 {
                     port.LoadPoEConfig(dict);
-                    if (port.Protocol8023bt == ConfigType.Enable) Is8023btDisabled = false;
+                    if (port.Protocol8023bt == ConfigType.Enable) IsPoeModeEnable = false;
                 }
             }
             this.NbPoePorts = list.Count;

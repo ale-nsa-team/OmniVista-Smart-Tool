@@ -1,4 +1,5 @@
 ﻿using PoEWizard.Data;
+using PoEWizard.Device;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -316,6 +317,24 @@ namespace PoEWizard.Components
         {
             string[] splitValues = (value.ToString()).Split(' ');
             return splitValues;
+        }
+    }
+
+    public class DeviceToTooltipConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (Utils.IsInvalid(value)) return null;
+            if (value is EndPointDeviceModel edm)
+            {
+                return edm.ToString().Replace(", ", "\n");
+            }
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
         }
     }
 }
