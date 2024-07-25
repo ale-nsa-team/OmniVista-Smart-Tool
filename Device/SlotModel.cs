@@ -72,6 +72,11 @@ namespace PoEWizard.Device
             }
             this.NbPoePorts = list.Count;
             this.Power = Ports.Sum(p => p.Power);
+            if (!this.IsInitialized)
+            {
+                this.PoeStatus = SlotPoeStatus.PoweredOff;
+                return;
+            }
             double powerConsumedMetric = 100 * this.Power / this.Budget;
             double nearThreshold = 0.9 * this.Threshold;
             if (powerConsumedMetric < nearThreshold) this.PoeStatus = SlotPoeStatus.Normal;
