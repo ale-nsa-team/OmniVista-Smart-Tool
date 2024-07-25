@@ -75,8 +75,13 @@ namespace PoEWizard.Device
 
         public override string ToString()
         {
-            StringBuilder txt = new StringBuilder("Device Type: ");
+            StringBuilder txt = new StringBuilder("Type: ");
             txt.Append(string.IsNullOrEmpty(Type) ? "Unknown" : Type);
+            if (!string.IsNullOrEmpty(Name)) txt.Append(", Name: ").Append(Name);
+            if (!string.IsNullOrEmpty(Description)) txt.Append(", Description: ").Append(Description);
+            if (!string.IsNullOrEmpty(Vendor)) txt.Append(", Vendor: ").Append(Vendor);
+            if (!string.IsNullOrEmpty(SoftwareVersion)) txt.Append(", Version: ").Append(SoftwareVersion);
+            if (!string.IsNullOrEmpty(SerialNumber)) txt.Append(", Serial #: ").Append(SerialNumber);
             if (!string.IsNullOrEmpty(MacAddress)) txt.Append(", MAC: ").Append(MacAddress);
             if (Type.Contains("none")) txt.Append(", Remote Port: ").Append(RemotePort);
             if (!string.IsNullOrEmpty(IpAddress)) txt.Append(", IP: ").Append(IpAddress);
