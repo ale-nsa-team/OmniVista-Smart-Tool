@@ -661,7 +661,7 @@ namespace PoEWizard
             reportResult.RemoveLastWizardReport(selectedPort.Name);
             if (selectedPort.Status == PortStatus.Down)
             {
-                await RunWizardCommands(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE, CommandType.RESET_POWER_PORT });
+                await RunWizardCommands(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE });
                 Logger.Debug($"Reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             }
             else
