@@ -130,7 +130,7 @@ namespace PoEWizard
             Login login = new Login(device.Login)
             {
                 Password = device.Password,
-                IpAddress = device.IpAddress,
+                IpAddress = string.IsNullOrEmpty(device.IpAddress) ? lastIpAddr : device.IpAddress,
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
