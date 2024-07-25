@@ -74,7 +74,7 @@ namespace PoEWizard.Device
             this.Power = Ports.Sum(p => p.Power);
             if (!this.IsInitialized)
             {
-                this.PoeStatus = SlotPoeStatus.PoweredOff;
+                this.PoeStatus = SlotPoeStatus.Off;
                 return;
             }
             double powerConsumedMetric = 100 * this.Power / this.Budget;
