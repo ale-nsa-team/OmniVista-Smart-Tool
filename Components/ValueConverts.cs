@@ -327,7 +327,7 @@ namespace PoEWizard.Components
             if (Utils.IsInvalid(value)) return null;
             if (value is EndPointDeviceModel edm)
             {
-                return edm.ToString().Replace(", ", "\n");
+                return edm.ToTooltip();
             }
             return null;
         }

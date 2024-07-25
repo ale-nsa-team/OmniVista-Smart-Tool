@@ -27,7 +27,7 @@ namespace PoEWizard.Device
         public bool IsHiResDetection { get; set; }
         public bool IsInitialized { get; set; }
         public int Cpu {  get; set; }
-        public bool HasNoPoE { get; set; }
+        public bool SupportsPoE { get; set; }
 
         public SlotModel() { }
 

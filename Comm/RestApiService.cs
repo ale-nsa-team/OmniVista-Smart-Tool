@@ -106,7 +106,7 @@ namespace PoEWizard.Comm
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
                 SwitchModel.LoadFromList(diclist, DictionaryType.MacAddressList);
                 string title = string.IsNullOrEmpty(source) ? $"Refresh switch {SwitchModel.IpAddress}" : source;
-                if (SwitchModel.HasNoPoE) _progress?.Report(new ProgressReport(ReportType.Error, title, $"Switch {SwitchModel.IpAddress} doesn't support PoE!"));
+                if (!SwitchModel.SupportsPoE) _progress?.Report(new ProgressReport(ReportType.Error, title, $"Switch {SwitchModel.IpAddress} doesn't support PoE!"));
             }
             catch (Exception ex)
             {
@@ -915,14 +915,14 @@ namespace PoEWizard.Comm
             foreach (var chassis in SwitchModel.ChassisList)
             {
                 GetLanPowerStatus(chassis);
-                if (chassis.HasNoPoE) nbChassisPoE--;
+                if (!chassis.SupportsPoE) nbChassisPoE--;
                 foreach (var slot in chassis.Slots)
                 {
                     if (slot.Ports.Count == 0) continue;
-                    if (chassis.HasNoPoE)
+                    if (!chassis.SupportsPoE)
                     {
                         slot.IsPoeModeEnable = false;
-                        slot.HasNoPoE = true;
+                        slot.SupportsPoE = false;
                         continue;
                     }
                     if (slot.PowerClassDetection == ConfigType.Disable)
@@ -942,7 +942,7 @@ namespace PoEWizard.Comm
                     ps.LoadFromDictionary(dict);
                 }
             }
-            if (nbChassisPoE <= 0) SwitchModel.HasNoPoE = true;
+            SwitchModel.SupportsPoE = (nbChassisPoE > 0);
         }
 
         private void GetLanPowerStatus(ChassisModel chassis)
@@ -957,7 +957,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                chassis.HasNoPoE = (ex.Message.ToLower().Contains("lanpower not supported"));
+                if (ex.Message.ToLower().Contains("lanpower not supported")) chassis.SupportsPoE = false;
                 Logger.Error(ex);
             }
         }

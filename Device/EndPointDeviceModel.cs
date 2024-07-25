@@ -1,6 +1,8 @@
 ﻿using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using static PoEWizard.Data.Constants;
 
@@ -75,13 +77,8 @@ namespace PoEWizard.Device
 
         public override string ToString()
         {
-            StringBuilder txt = new StringBuilder("Type: ");
+            StringBuilder txt = new StringBuilder("Device Type: ");
             txt.Append(string.IsNullOrEmpty(Type) ? "Unknown" : Type);
-            if (!string.IsNullOrEmpty(Name)) txt.Append(", Name: ").Append(Name);
-            if (!string.IsNullOrEmpty(Description)) txt.Append(", Description: ").Append(Description);
-            if (!string.IsNullOrEmpty(Vendor)) txt.Append(", Vendor: ").Append(Vendor);
-            if (!string.IsNullOrEmpty(SoftwareVersion)) txt.Append(", Version: ").Append(SoftwareVersion);
-            if (!string.IsNullOrEmpty(SerialNumber)) txt.Append(", Serial #: ").Append(SerialNumber);
             if (!string.IsNullOrEmpty(MacAddress)) txt.Append(", MAC: ").Append(MacAddress);
             if (Type.Contains("none")) txt.Append(", Remote Port: ").Append(RemotePort);
             if (!string.IsNullOrEmpty(IpAddress)) txt.Append(", IP: ").Append(IpAddress);
@@ -90,6 +87,24 @@ namespace PoEWizard.Device
             if (!string.IsNullOrEmpty(MEDPowerValue)) txt.Append(", Power Value: ").Append(MEDPowerValue);
             if (!string.IsNullOrEmpty(MEDPowerPriority)) txt.Append(", Power Priority: ").Append(MEDPowerPriority);
             return txt.ToString();
+        }
+
+        public string ToTooltip()
+        {
+            List<string> tip = new List<string>();
+            if (!string.IsNullOrEmpty(Type)) tip.Add($"Type: {Type}");
+            if (!string.IsNullOrEmpty(Name)) tip.Add($"Name: {Name}");
+            if (!string.IsNullOrEmpty(Description)) tip.Add($"Description: {Description}");
+            if (!string.IsNullOrEmpty(Vendor)) tip.Add($"Vendor: {Vendor}");
+            if (!string.IsNullOrEmpty(SoftwareVersion)) tip.Add($"Version: {SoftwareVersion}");
+            if (!string.IsNullOrEmpty(SerialNumber)) tip.Add($"Serial #: {SerialNumber}");
+            if (!string.IsNullOrEmpty(MacAddress)) tip.Add($"MAC: {MacAddress}");
+            if (!string.IsNullOrEmpty(IpAddress)) tip.Add($"IP: {IpAddress}");
+            //if (Capabilities?.Count > 0) tip.Add($"Capabilities: [{string.Join(",", Capabilities)}]");
+            if(!string.IsNullOrEmpty(MEDPowerValue)) tip.Add($"Power Value: {MEDPowerValue}");
+            if (!string.IsNullOrEmpty(MEDPowerPriority)) tip.Add($"Power Priority: {MEDPowerPriority}");
+                
+            return string.Join("\n", tip);
         }
 
     }

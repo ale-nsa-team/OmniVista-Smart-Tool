@@ -24,7 +24,7 @@ namespace PoEWizard.Device
         public string HardwareRevision { get; set; }
         public string MacAddress { get; set; }
         public SwitchTemperature Temperature { get; set; }
-        public bool HasNoPoE { get; set; }
+        public bool SupportsPoE { get; set; }
 
         public ChassisModel(Dictionary<string, string> dict)
         {
@@ -43,6 +43,7 @@ namespace PoEWizard.Device
             Slots = new List<SlotModel>();
             PowerSupplies = new List<PowerSupplyModel>();
             Temperature = null;
+            SupportsPoE = true;
         }
 
         public ChassisModel(string sn, string mac, string model)
