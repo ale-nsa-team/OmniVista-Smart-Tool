@@ -92,7 +92,7 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_HEALTH));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.CpuTrafficList);
-                GetLanPower();
+                string poeAlert = GetLanPower();
                 GetSnapshot();
                 _progress.Report(new ProgressReport($"Reading lldp remote information on Switch {SwitchModel.IpAddress}"));
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LLDP_REMOTE));
@@ -106,7 +106,7 @@ namespace PoEWizard.Comm
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
                 SwitchModel.LoadFromList(diclist, DictionaryType.MacAddressList);
                 string title = string.IsNullOrEmpty(source) ? $"Refresh switch {SwitchModel.IpAddress}" : source;
-                if (!SwitchModel.SupportsPoE) _progress?.Report(new ProgressReport(ReportType.Error, title, $"Switch {SwitchModel.IpAddress} doesn't support PoE!"));
+                if (!string.IsNullOrEmpty(poeAlert)) _progress?.Report(new ProgressReport(ReportType.Error, title, poeAlert));
             }
             catch (Exception ex)
             {
@@ -906,11 +906,12 @@ namespace PoEWizard.Comm
             if (dictList?.Count > 0) _wizardSwitchPort.LoadLldpRemoteTable(dictList[0]);
         }
 
-        private void GetLanPower()
+        private string GetLanPower()
         {
             Dictionary<string, string> dict;
             _progress.Report(new ProgressReport($"Reading PoE information on Switch {SwitchModel.IpAddress}"));
             int nbChassisPoE = SwitchModel.ChassisList.Count;
+            string alert = "";
             foreach (var chassis in SwitchModel.ChassisList)
             {
                 GetLanPowerStatus(chassis);
@@ -930,6 +931,11 @@ namespace PoEWizard.Comm
                         SendRequest(GetRestUrlEntry(CommandType.POWER_CLASS_DETECTION_ENABLE, new string[1] { $"{slot.Name}" }));
                     }
                     GetSlotPower(slot);
+                    if (!slot.IsInitialized)
+                    {
+                        slot.IsPoeModeEnable = false;
+                        alert += $"\nSlot {slot.Name} is turned off!";
+                    }
                     chassis.PowerBudget += slot.Budget;
                     chassis.PowerConsumed += slot.Power;
                 }
@@ -942,6 +948,8 @@ namespace PoEWizard.Comm
                 }
             }
             SwitchModel.SupportsPoE = (nbChassisPoE > 0);
+            if (!SwitchModel.SupportsPoE) alert = $"Switch {SwitchModel.IpAddress} doesn't support PoE!";
+            return alert;
         }
 
         private void GetLanPowerStatus(ChassisModel chassis)
