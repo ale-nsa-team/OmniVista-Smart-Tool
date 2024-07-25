@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
-        Title="Login" Height="200" Width="900" WindowStyle="None" ShowInTaskbar="False">
+        Title="Login" Height="200" Width="950" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -28,13 +28,13 @@
                   IsHitTestVisible="False"
                   IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Chassis/PS" Width="*" Binding="{Binding Path=Name}" />
+                    <DataGridTextColumn Header="Chassis/PS" Width="0.8*" Binding="{Binding Path=Name}" />
                     <DataGridTextColumn Header="Model" Width="*" Binding="{Binding Path=Model}" />
                     <DataGridTextColumn Header="Type" Width="*" Binding="{Binding Path=Type}" />
                     <DataGridTextColumn Header="Location" Width="*" Binding="{Binding Path=Location}" />
-                    <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Path=Description}" />
+                    <DataGridTextColumn Header="Description" Width="1.2*" Binding="{Binding Path=Description}" />
                     <DataGridTextColumn Header="Power Provision" Width="1.2*" Binding="{Binding Path=PowerProvision}" />
-                    <DataGridTemplateColumn Header="Status" Width="*">
+                    <DataGridTemplateColumn Header="Status" Width="0.8*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Status}"
