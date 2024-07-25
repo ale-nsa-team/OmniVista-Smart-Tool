@@ -36,6 +36,7 @@ namespace PoEWizard.Device
             this.Number = ParseNumber(slotString, 1);
             this.Name = slotString.Substring(0, slotString.Length - 2);
             this.Ports = new List<PortModel>();
+            this.SupportsPoE = true;
         }
 
         public void LoadFromDictionary(Dictionary<string, string> dict)
