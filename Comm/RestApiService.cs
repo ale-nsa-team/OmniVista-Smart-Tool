@@ -490,8 +490,7 @@ namespace PoEWizard.Comm
                 _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
                 SendRequest(GetRestUrlEntry(_wizardCommand, new string[1] { _wizardSwitchPort.Name }));
                 Thread.Sleep(3000);
-                RestartDeviceOnPort(waitSec + 15, wizardAction);
-                WaitPortUp(waitSec, txt.ToString());
+                RestartDeviceOnPort(waitSec, wizardAction);
                 if (_wizardReportResult.Result == WizardResult.Ok)
                 {
                     SwitchModel.ConfigChanged = true;
@@ -795,7 +794,7 @@ namespace PoEWizard.Comm
                 StringBuilder txt = new StringBuilder(wizardAction);
                 _progress.Report(new ProgressReport(txt.ToString()));
                 SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, priority.ToString() }));
-                RestartDeviceOnPort(waitSec, txt.ToString());
+                WaitPortUp(waitSec, txt.ToString());
                 string actionResult;
                 if (_wizardReportResult.Result == WizardResult.Fail)
                 {
@@ -842,7 +841,7 @@ namespace PoEWizard.Comm
             SendRequest(GetRestUrlEntry(CommandType.POWER_UP_PORT, new string[1] { _wizardSwitchPort.Name }));
             _progress.Report(new ProgressReport($"{msg} ...\nTurning power ON{PrintPortStatus()}"));
             Thread.Sleep(5000);
-            WaitPortUp(waitSec, progressMessage);
+            WaitPortUp(waitSec + 15, progressMessage);
         }
 
         private void WaitPortUp(int waitSec, string progressMessage)
