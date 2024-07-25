@@ -662,7 +662,7 @@ namespace PoEWizard
             if (selectedPort.Status == PortStatus.Down && selectedPort.Poe == PoeStatus.On)
             {
                 await RunWizardCommands(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE });
-                Logger.Debug($"Reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                Logger.Debug($"Enable capacitor detection on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             }
             else
             {
