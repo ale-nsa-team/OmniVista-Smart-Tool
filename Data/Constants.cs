@@ -15,7 +15,7 @@ namespace PoEWizard.Data
         public enum MsgBoxIcons { Info, Warning, Error, Question, None };
         public enum GridBorderions { Dhcp, Edge, Core, Lps, Lldp, Security, MaxConfigs };
         public enum AosVersion { V6, V8 };
-        public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail, NotSupportPoE }
+        public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
         public enum PortStatus { Unknown, Up, Down }
         public enum PoeStatus { On, Off, Fault, Deny, Conflict, NoPoe }
         public enum SlotPoeStatus { Normal, NearThreshold, Critical }

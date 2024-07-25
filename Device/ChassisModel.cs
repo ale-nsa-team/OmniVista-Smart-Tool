@@ -24,6 +24,7 @@ namespace PoEWizard.Device
         public string HardwareRevision { get; set; }
         public string MacAddress { get; set; }
         public SwitchTemperature Temperature { get; set; }
+        public bool HasNoPoE { get; set; }
 
         public ChassisModel(Dictionary<string, string> dict)
         {

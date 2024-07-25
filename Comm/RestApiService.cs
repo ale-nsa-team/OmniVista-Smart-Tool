@@ -59,11 +59,7 @@ namespace PoEWizard.Comm
                 dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.Cmm);
                 SendRequest(GetRestUrlEntry(CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE));
-                ScanSwitch();
-                if (SwitchModel.Status == SwitchStatus.NotSupportPoE)
-                {
-                    _progress?.Report(new ProgressReport(ReportType.Error, "Connect", $"Switch {SwitchModel.IpAddress} doesn't support PoE!"));
-                }
+                ScanSwitch($"Connect to switch {SwitchModel.IpAddress}");
             }
             catch (Exception ex)
             {
@@ -71,11 +67,10 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void ScanSwitch()
+        public void ScanSwitch(string source = null)
         {
             try
             {
-                _progress.Report(new ProgressReport($"Scanning switch {SwitchModel.IpAddress}"));
                 List<Dictionary<string, string>> diclist;
                 GetRunningDir();
                 _progress.Report(new ProgressReport($"Reading chassis and port information on Switch {SwitchModel.IpAddress}"));
@@ -110,6 +105,8 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_MAC_LEARNING));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
                 SwitchModel.LoadFromList(diclist, DictionaryType.MacAddressList);
+                string title = string.IsNullOrEmpty(source) ? $"Refresh switch {SwitchModel.IpAddress}" : source;
+                if (SwitchModel.HasNoPoE) _progress?.Report(new ProgressReport(ReportType.Error, title, $"Switch {SwitchModel.IpAddress} doesn't support PoE!"));
             }
             catch (Exception ex)
             {
@@ -884,22 +881,22 @@ namespace PoEWizard.Comm
 
         private void GetLanPower()
         {
-            List<Dictionary<string, string>> diclist;
             Dictionary<string, string> dict;
             _progress.Report(new ProgressReport($"Reading PoE information on Switch {SwitchModel.IpAddress}"));
             int nbChassisPoE = SwitchModel.ChassisList.Count;
-            bool chassisHasPoE;
             foreach (var chassis in SwitchModel.ChassisList)
             {
-                chassisHasPoE = GetLanPowerStatus(chassis);
-                if (!chassisHasPoE) nbChassisPoE--;
-                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
-                chassis.LoadFromList(diclist);
-                chassis.PowerBudget = 0;
-                chassis.PowerConsumed = 0;
+                GetLanPowerStatus(chassis);
+                if (chassis.HasNoPoE) nbChassisPoE--;
                 foreach (var slot in chassis.Slots)
                 {
                     if (slot.Ports.Count == 0) continue;
+                    if (chassis.HasNoPoE)
+                    {
+                        slot.IsPoeModeEnable = false;
+                        slot.HasNoPoE = true;
+                        continue;
+                    }
                     if (slot.PowerClassDetection == ConfigType.Disable)
                     {
                         SwitchModel.ConfigChanged = true;
@@ -917,21 +914,24 @@ namespace PoEWizard.Comm
                     ps.LoadFromDictionary(dict);
                 }
             }
-            if (nbChassisPoE <= 0) SwitchModel.Status = SwitchStatus.NotSupportPoE;
+            if (nbChassisPoE <= 0) SwitchModel.HasNoPoE = true;
         }
 
-        private bool GetLanPowerStatus(ChassisModel chassis)
+        private void GetLanPowerStatus(ChassisModel chassis)
         {
             try
             {
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CHASSIS_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
-                return true;
+                List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+                chassis.LoadFromList(diclist);
+                chassis.PowerBudget = 0;
+                chassis.PowerConsumed = 0;
             }
             catch (Exception ex)
             {
+                chassis.HasNoPoE = (ex.Message.ToLower().Contains("lanpower not supported"));
                 Logger.Error(ex);
             }
-            return false;
         }
 
         private void GetSlotPower(SlotModel slot)

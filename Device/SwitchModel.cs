@@ -39,6 +39,7 @@ namespace PoEWizard.Device
         public ThresholdType TemperatureStatus { get; set; }
         public int Cpu { get; set; }
         public int CpuThreshold { get; set; }
+        public bool HasNoPoE { get; set; }
 
         public SwitchModel() : this("", DEFAULT_USERNAME, DEFAULT_PASSWORD, 5) { }
 
