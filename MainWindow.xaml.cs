@@ -605,7 +605,7 @@ namespace PoEWizard
 
         private async Task Enable823BT()
         {
-            await RunPoeWizard(new List<CommandType>() { CommandType.CHECK_823BT }, 15);
+            await RunPoeWizard(new List<CommandType>() { CommandType.CHECK_823BT });
             if (reportResult.Result == WizardResult.Skip) return;
             if (reportResult.Result == WizardResult.Warning)
             {
@@ -614,7 +614,7 @@ namespace PoEWizard
                 if (!ShowMessageBox("Enable 802.3.bt", $"{msg}\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
                     return;
             }
-            await RunPoeWizard(new List<CommandType>() { CommandType.POWER_823BT_ENABLE }, 15);
+            await RunPoeWizard(new List<CommandType>() { CommandType.POWER_823BT_ENABLE });
             Logger.Debug($"Enable 802.3.bt on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
@@ -626,13 +626,13 @@ namespace PoEWizard
 
         private async Task EnableCapacitorDetection()
         {
-            await RunPoeWizard(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE }, 15);
+            await RunPoeWizard(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE });
             Logger.Debug($"Enable Capacitor Detection on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task ChangePriority()
         {
-            await RunPoeWizard(new List<CommandType>() { CommandType.CHECK_POWER_PRIORITY }, 15);
+            await RunPoeWizard(new List<CommandType>() { CommandType.CHECK_POWER_PRIORITY });
             if (reportResult.Result == WizardResult.Skip) return;
             if (reportResult.Result == WizardResult.Warning)
             {
@@ -641,7 +641,7 @@ namespace PoEWizard
                                     $"{(!string.IsNullOrEmpty(alert) ? $"{alert}" : "")}\nSome other devices with lower priority may stop\nDo you want to proceed?",
                                     MsgBoxIcons.Warning, MsgBoxButtons.OkCancel)) return;
             }
-            await RunPoeWizard(new List<CommandType>() { CommandType.POWER_PRIORITY_PORT }, 15);
+            await RunPoeWizard(new List<CommandType>() { CommandType.POWER_PRIORITY_PORT });
             Logger.Debug($"Change Power Priority on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
@@ -651,7 +651,7 @@ namespace PoEWizard
             Logger.Info($"Enable Power over HDMI on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
-        private async Task RunPoeWizard(List<CommandType> cmdList, int waitSec)
+        private async Task RunPoeWizard(List<CommandType> cmdList, int waitSec = 15)
         {
             await Task.Run(() => restApiService.RunPoeWizard(selectedPort.Name, reportResult, cmdList, waitSec));
         }
@@ -659,7 +659,25 @@ namespace PoEWizard
         private async Task CheckDefaultMaxPowerAndResetPort()
         {
             reportResult.RemoveLastWizardReport(selectedPort.Name);
-            await RunWizardCommands(new List<CommandType>() { CommandType.CHECK_MAX_POWER }, 15);
+            if (selectedPort.Status == PortStatus.Down)
+            {
+                await RunWizardCommands(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE, CommandType.RESET_POWER_PORT });
+                Logger.Debug($"Reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            }
+            else
+            {
+                await CheckDefaultMaxPower();
+                if (ShowMessageBox("Resetting Port", $"Resetting the port  {selectedPort.Name} may solve the problem\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
+                {
+                    await RunWizardCommands(new List<CommandType>() { CommandType.RESET_POWER_PORT });
+                    Logger.Debug($"Reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                }
+            }
+        }
+
+        private async Task CheckDefaultMaxPower()
+        {
+            await RunWizardCommands(new List<CommandType>() { CommandType.CHECK_MAX_POWER });
             if (reportResult.Result == WizardResult.Skip) return;
             if (reportResult.Result == WizardResult.Warning)
             {
@@ -667,18 +685,13 @@ namespace PoEWizard
                 string msg = !string.IsNullOrEmpty(alert) ? alert : $"Changing Max. Power on port {selectedPort.Name} to default";
                 if (ShowMessageBox("Check default Max. Power", $"{msg}\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
                 {
-                    await RunWizardCommands(new List<CommandType>() { CommandType.CHANGE_MAX_POWER }, 15);
+                    await RunWizardCommands(new List<CommandType>() { CommandType.CHANGE_MAX_POWER });
                 }
             }
             Logger.Debug($"Check default Max. Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-            if (ShowMessageBox("Resetting Port", $"Resetting the port  {selectedPort.Name} may solve the problem\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
-            {
-                await RunWizardCommands(new List<CommandType>() { CommandType.RESET_POWER_PORT }, 15);
-                Logger.Debug($"Reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-            }
         }
 
-        private async Task RunWizardCommands(List<CommandType> cmdList, int waitSec)
+        private async Task RunWizardCommands(List<CommandType> cmdList, int waitSec = 15)
         {
             await Task.Run(() => restApiService.RunWizardCommands(selectedPort.Name, reportResult, cmdList, waitSec));
         }

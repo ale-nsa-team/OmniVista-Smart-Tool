@@ -444,16 +444,11 @@ namespace PoEWizard.Comm
                         break;
 
                     case CommandType.CAPACITOR_DETECTION_ENABLE:
-                        if (_wizardSwitchPort.IsCapacitorDetection)
-                        {
-                            _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed);
-                            continue;
-                        }
-                        ExecuteActionOnPort($"Enabling Capacitor Detection on Port {_wizardSwitchPort.Name}", waitSec, CommandType.CAPACITOR_DETECTION_DISABLE);
+                        EnableCapacitorDetection(waitSec);
                         break;
 
                     case CommandType.RESET_POWER_PORT:
-                        ResetPortPower(_wizardSwitchPort.Name, waitSec);
+                        ResetPortPower(waitSec + 15);
                         break;
 
                     case CommandType.CHECK_MAX_POWER:
@@ -477,6 +472,39 @@ namespace PoEWizard.Comm
                 }
             }
             Logger.Info($"PoE Wizard completed on port {_wizardSwitchPort.Name}, Waiting Time: {waitSec} sec\n{_wizardProgressReport.Message}");
+        }
+
+        private void EnableCapacitorDetection(int waitSec)
+        {
+            if (_wizardSwitchPort.IsCapacitorDetection)
+            {
+                _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed);
+                return;
+            }
+            try
+            {
+                string wizardAction = $"Enabling Capacitor Detection on Port {_wizardSwitchPort.Name}";
+                StringBuilder txt = new StringBuilder(wizardAction);
+                //txt.Append("\n").Append(_wizardSwitchPort.EndPointDevice);
+                _progress.Report(new ProgressReport(txt.ToString()));
+                _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
+                SendRequest(GetRestUrlEntry(_wizardCommand, new string[1] { _wizardSwitchPort.Name }));
+                Thread.Sleep(3000);
+                RestartDeviceOnPort(waitSec + 15, wizardAction);
+                WaitPortUp(waitSec, txt.ToString());
+                if (_wizardReportResult.Result == WizardResult.Ok)
+                {
+                    SwitchModel.ConfigChanged = true;
+                    return;
+                }
+                SendRequest(GetRestUrlEntry(CommandType.CAPACITOR_DETECTION_DISABLE, new string[1] { _wizardSwitchPort.Name }));
+            }
+            catch (Exception ex)
+            {
+                ParseException(_wizardProgressReport, ex);
+            }
+
+
         }
 
         private void CheckMaxPower()
@@ -767,7 +795,7 @@ namespace PoEWizard.Comm
                 StringBuilder txt = new StringBuilder(wizardAction);
                 _progress.Report(new ProgressReport(txt.ToString()));
                 SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, priority.ToString() }));
-                RestartDeviceOnPort(_wizardSwitchPort.Name, waitSec, txt.ToString());
+                RestartDeviceOnPort(waitSec, txt.ToString());
                 string actionResult;
                 if (_wizardReportResult.Result == WizardResult.Fail)
                 {
@@ -787,17 +815,17 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void ResetPortPower(string port, int waitSec)
+        private void ResetPortPower(int waitSec)
         {
             try
             {
-                string wizardAction = $"Resetting Power on Port {port}";
-                _wizardReportResult.CreateReportResult(port, wizardAction);
+                string wizardAction = $"Resetting Power on Port {_wizardSwitchPort.Name}";
+                _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, wizardAction);
                 DateTime startTime = DateTime.Now;
                 _progress.Report(new ProgressReport(wizardAction));
-                RestartDeviceOnPort(port, waitSec + 15, wizardAction);
-                _wizardReportResult.UpdateDuration(port, Utils.PrintTimeDurationSec(startTime));
-                _wizardReportResult.UpdateWizardReport(_wizardSwitchPort.Name, WizardResult.Proceed, $"Resetting Power on Port {port} completed");
+                RestartDeviceOnPort(waitSec, wizardAction);
+                _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
+                _wizardReportResult.UpdateWizardReport(_wizardSwitchPort.Name, WizardResult.Proceed, $"Resetting Power on Port {_wizardSwitchPort.Name} completed");
             }
             catch (Exception ex)
             {
@@ -805,13 +833,13 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void RestartDeviceOnPort(string port, int waitSec, string progressMessage)
+        private void RestartDeviceOnPort(int waitSec, string progressMessage)
         {
             string msg = !string.IsNullOrEmpty(progressMessage) ? progressMessage : "";
-            SendRequest(GetRestUrlEntry(CommandType.POWER_DOWN_PORT, new string[1] { port }));
+            SendRequest(GetRestUrlEntry(CommandType.POWER_DOWN_PORT, new string[1] { _wizardSwitchPort.Name }));
             _progress.Report(new ProgressReport($"{msg} ...\nTurning power OFF{PrintPortStatus()}"));
             Thread.Sleep(5000);
-            SendRequest(GetRestUrlEntry(CommandType.POWER_UP_PORT, new string[1] { port }));
+            SendRequest(GetRestUrlEntry(CommandType.POWER_UP_PORT, new string[1] { _wizardSwitchPort.Name }));
             _progress.Report(new ProgressReport($"{msg} ...\nTurning power ON{PrintPortStatus()}"));
             Thread.Sleep(5000);
             WaitPortUp(waitSec, progressMessage);
