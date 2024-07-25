@@ -103,8 +103,8 @@ namespace PoEWizard.Device
             //if (Capabilities?.Count > 0) tip.Add($"Capabilities: [{string.Join(",", Capabilities)}]");
             if(!string.IsNullOrEmpty(MEDPowerValue)) tip.Add($"Power Value: {MEDPowerValue}");
             if (!string.IsNullOrEmpty(MEDPowerPriority)) tip.Add($"Power Priority: {MEDPowerPriority}");
-                
-            return string.Join("\n", tip);
+
+            return tip.Count > 0 ? string.Join("\n", tip) : null;
         }
 
     }
