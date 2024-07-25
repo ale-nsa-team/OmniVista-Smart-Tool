@@ -30,11 +30,11 @@
 
     <SolidColorBrush x:Key="fontColor" Color="Black" />
     <SolidColorBrush x:Key="linkColor" Color="Blue" />
-    <SolidColorBrush x:Key="mainWindowBackgroundColor" Color="White" />
+    <SolidColorBrush x:Key="mainWindowBackgroundColor" Color="GhostWhite" />
     <SolidColorBrush x:Key="popupBackgroundColor" Color="#fafafa" />
     <SolidColorBrush x:Key="infoBackgroundColor" Color="LightYellow" />
     <SolidColorBrush x:Key="borderColor" Color="#bbb" />
-    <SolidColorBrush x:Key="barBackground" Color="#f0f0f0" />
+    <SolidColorBrush x:Key="barBackground" Color="#ddd" />
     <SolidColorBrush x:Key="buttonBackground" Color="White" />
 
     <LinearGradientBrush x:Key="blueGradientBrush" StartPoint="0,0.5" EndPoint="1,0.5">
@@ -51,8 +51,8 @@
         <Setter Property="Width" Value="Auto" />
         <Setter Property="Height" Value="Auto" />
         <Setter Property="MaxHeight" Value="570" />
-        <Setter Property="RowBackground" Value="white" />
-        <Setter Property="AlternatingRowBackground" Value="#eee" />
+        <Setter Property="RowBackground" Value="#fafafa" />
+        <Setter Property="AlternatingRowBackground" Value="#dfdfdf" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="GridLinesVisibility" Value="None" />
         <Setter Property="HorizontalGridLinesBrush" Value="#666" />
