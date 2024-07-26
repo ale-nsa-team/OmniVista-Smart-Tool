@@ -521,7 +521,7 @@ namespace PoEWizard
                     progress.Report(wizardProgressReport);
                     await WaitAckProgress();
                 }
-                Logger.Activity($"PoE Wizard completed on port {selectedPort.Name}:\n{result}");
+                Logger.Activity($"PoE Wizard completed on port {selectedPort.Name} with device type {deviceType}:{result}");
                 RefreshSlotAndPortsView();
             }
             catch (Exception ex)
@@ -709,13 +709,13 @@ namespace PoEWizard
                                                                      MsgBoxIcons.Warning, MsgBoxButtons.OkCancel)))
             {
                 await RunWizardCommands(new List<CommandType>() { CommandType.RESET_POWER_PORT });
-                Logger.Activity($"PoE turned Off, reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                Logger.Info($"PoE turned Off, reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                 resetPort = true;
             }
             if (selectedPort.Status == PortStatus.Down && selectedPort.Poe == PoeStatus.On)
             {
                 await RunWizardCommands(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE });
-                Logger.Activity($"Enable capacitor detection on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                Logger.Info($"Enable capacitor detection on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                 resetPort = true;
             }
             await CheckDefaultMaxPower();
