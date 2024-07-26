@@ -516,7 +516,7 @@ namespace PoEWizard
                 {
                     wizardProgressReport.Title = "PoE Wizard Report:";
                     wizardProgressReport.Type = reportResult.GetReportResult(selectedPort.Name) == WizardResult.Fail ? ReportType.Error : ReportType.Info;
-                    wizardProgressReport.Message = $"{reportResult.Message}\n\nTotal duration: {duration}";
+                    wizardProgressReport.Message = $"{reportResult.Message}\nTotal duration: {duration}";
                     progress.Report(wizardProgressReport);
                     await WaitAckProgress();
                 }
@@ -564,7 +564,7 @@ namespace PoEWizard
             WizardResult result = reportResult.GetReportResult(SWITCH);
             if (result == WizardResult.Fail || result == WizardResult.Warning)
             {
-                progress.Report(new ProgressReport(title) { Title = title, Type = ReportType.Error, Message = $"{reportResult.Message}\n\nTotal duration: {duration}" });
+                progress.Report(new ProgressReport(title) { Title = title, Type = ReportType.Error, Message = $"{reportResult.Message}" });
                 await WaitAckProgress();
             }
             else if (reportResult.Result?.Count > 0)
