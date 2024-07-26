@@ -59,8 +59,10 @@ namespace PoEWizard.Device
             switch (Utils.GetDictValue(dict, STATUS))
             {
                 case POWERED_ON:
-                case SEARCHING:
                     Poe = PoeStatus.On;
+                    break;
+                case SEARCHING:
+                    Poe = PoeStatus.Searching;
                     break;
                 case POWERED_OFF:
                     Poe = PoeStatus.Off;

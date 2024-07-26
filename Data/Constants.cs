@@ -17,7 +17,7 @@ namespace PoEWizard.Data
         public enum AosVersion { V6, V8 };
         public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
         public enum PortStatus { Unknown, Up, Down }
-        public enum PoeStatus { On, Off, Fault, Deny, Conflict, NoPoe }
+        public enum PoeStatus { On, Off, Searching, Fault, Deny, Conflict, NoPoe }
         public enum SlotPoeStatus { Normal, NearThreshold, Critical, Off }
         public enum EType { Fiber, Copper, Unknown }
         public enum PriorityLevelType { Low, High, Critical }

@@ -18,6 +18,8 @@ namespace PoEWizard.Components
         internal static SolidColorBrush Orange => Brushes.Orange;
         internal static SolidColorBrush Gray => Brushes.Gray;
         internal static SolidColorBrush LightGray => (SolidColorBrush)new BrushConverter().ConvertFrom("#aaa");
+        internal static SolidColorBrush Yellow => MainWindow.theme == ThemeType.Dark 
+            ? (SolidColorBrush)new BrushConverter().ConvertFrom("#C29494") : Brushes.Orchid;
         internal static SolidColorBrush Default => MainWindow.theme == ThemeType.Dark ? Brushes.White : Brushes.Black;
     }
 
@@ -75,6 +77,8 @@ namespace PoEWizard.Components
                         case "Deny":
                         case "Conflict":
                             return Colors.Red;
+                        case "Searching":
+                            return Colors.Yellow;
                         case "Off":
                             return Colors.Orange;
                         default:
