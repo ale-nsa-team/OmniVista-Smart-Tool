@@ -268,10 +268,7 @@ namespace PoEWizard.Components
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (Utils.IsInvalid(values)) return Colors.Default;
-            int cpu = int.TryParse(values[0].ToString(), out int i) ? i : 0;
-            int thrshld = int.TryParse(values[1].ToString(), out i) ? i : 0;
-            if (thrshld == 0) return Colors.Default;
-            double pct = 1 - cpu / thrshld;
+            double pct = Utils.GetThresholdPercentage(values);
             return pct > 0.1 ? Colors.Green : pct < 0 ? Colors.Red : Colors.Orange;
         }
 
@@ -287,11 +284,9 @@ namespace PoEWizard.Components
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (Utils.IsInvalid(values)) return string.Empty;
-            int cpu = int.TryParse(values[0].ToString(), out int i) ? i : 0;
-            int thrshld = int.TryParse(values[1].ToString(), out i) ? i : 0;
-            if (thrshld == 0) return string.Empty;
-            double pct = 1 - cpu / thrshld;
-            return pct > 0.1 ? string.Empty : pct < 0 ? $"CPU usage over threshold {thrshld}%)" : $"CPU usage near threshold {thrshld}%)";
+            int thrshld = int.TryParse(values[1].ToString(), out int i) ? i : 0;
+            double pct = Utils.GetThresholdPercentage(values);
+            return pct > 0.1 ? string.Empty : pct < 0 ? $"CPU usage over threshold ({thrshld}%)" : $"CPU usage near threshold ({thrshld}%)";
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
@@ -306,10 +301,7 @@ namespace PoEWizard.Components
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (Utils.IsInvalid(values)) return Visibility.Collapsed;
-            int cpu = int.TryParse(values[0].ToString(), out int i) ? i : 0;
-            int thrshld = int.TryParse(values[1].ToString(), out i) ? i : 0;
-            if (thrshld == 0) return Visibility.Collapsed;
-            double pct = 1 - cpu / thrshld;
+            double pct = Utils.GetThresholdPercentage(values);
             return pct > 0.1 ? Visibility.Collapsed : Visibility.Visible;
         }
 

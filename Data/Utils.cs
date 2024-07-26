@@ -351,6 +351,14 @@ namespace PoEWizard.Data
             return null;
         }
 
+        public static double GetThresholdPercentage(object[] values)
+        {
+            double cpu = double.TryParse(values[0].ToString(), out double d) ? d : 0;
+            double thrshld = double.TryParse(values[1].ToString(), out d) ? d : 0;
+            if (thrshld == 0) return 1;
+            return 1 - cpu / thrshld;
+        }
+
     }
 }
 
