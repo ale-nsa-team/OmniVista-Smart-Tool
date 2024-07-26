@@ -541,6 +541,7 @@ namespace PoEWizard
             selectedSlot = device.GetSlot(selectedSlot.Name);
             _slotsView.ItemsSource = device.GetChassis(selectedSlot.Name)?.Slots ?? new List<SlotModel>();
             _portList.ItemsSource = selectedSlot?.Ports ?? new List<PortModel>();
+            ReselectPort();
         }
 
         private async void RefreshSwitch()
@@ -881,12 +882,7 @@ namespace PoEWizard
             {
                 _tempWarn.Source = new BitmapImage(new Uri(@"Resources\warning.png", UriKind.Relative));
             }
-            if (selectedPort != null)
-            {
-                _portList.SelectionChanged -= PortSelection_Changed;
-                _portList.SelectedItem = _portList.Items[selectedPortIndex];
-                _portList.SelectionChanged += PortSelection_Changed;
-            }
+            ReselectPort();
         }
 
         private void SetDisconnectedState()
@@ -915,6 +911,16 @@ namespace PoEWizard
             selectedPortIndex = -1;
             DataContext = device;
             restApiService = null;
+        }
+
+        private void ReselectPort()
+        {
+            if (selectedPort != null)
+            {
+                _portList.SelectionChanged -= PortSelection_Changed;
+                _portList.SelectedItem = _portList.Items[selectedPortIndex];
+                _portList.SelectionChanged += PortSelection_Changed;
+            }
         }
 
         private async Task RebootSwitch(int waitSec)
