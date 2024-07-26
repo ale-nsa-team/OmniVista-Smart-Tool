@@ -97,7 +97,7 @@ namespace PoEWizard.Components
                 case "AosVersion":
                     return Utils.IsOldAosVersion(val) ? Colors.Warn : Colors.Default;
                 default:
-                    return Colors.Danger;
+                    return Colors.Unknown;
             }
         }
 
