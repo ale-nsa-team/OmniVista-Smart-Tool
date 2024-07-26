@@ -21,16 +21,23 @@ namespace PoEWizard.Data
         public ReportResult(string id, WizardResult result, string action)
         {
             ID = id;
-            Action = action;
             Result = result;
-            if (result == WizardResult.Warning || result == WizardResult.Fail) AlertDescription = action;
+            if (result == WizardResult.Warning || result == WizardResult.Fail) AlertDescription = action; else Action = action;
         }
 
         public override string ToString()
         {
-            StringBuilder txt = new StringBuilder("\n - ").Append(Action);
-            if (!string.IsNullOrEmpty(ActionResult)) txt.Append(" ").Append(ActionResult);
-            if (!string.IsNullOrEmpty(AlertDescription)) txt.Append("\n    ").Append(AlertDescription);
+            StringBuilder txt = new StringBuilder();
+            if (!string.IsNullOrEmpty(Action))
+            {
+                txt.Append("\n - ").Append(Action);
+                if (!string.IsNullOrEmpty(ActionResult)) txt.Append(" ").Append(ActionResult);
+            }
+            if (!string.IsNullOrEmpty(AlertDescription))
+            {
+                if (!string.IsNullOrEmpty(Action)) txt.Append("\n    ");
+                txt.Append(AlertDescription);
+            }
             return txt.ToString();
         }
     }
@@ -191,7 +198,8 @@ namespace PoEWizard.Data
                     List<ReportResult> reportsList = reports.Value as List<ReportResult>;
                     foreach (var report in reportsList)
                     {
-                        txt.Append(report.ToString());
+                        if (txt.Length > 0) txt.Append("\n - ");
+                        txt.Append(report);
                     }
                 }
                 return txt.ToString();

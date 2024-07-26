@@ -516,7 +516,7 @@ namespace PoEWizard
                 {
                     wizardProgressReport.Title = "PoE Wizard Report:";
                     wizardProgressReport.Type = reportResult.GetReportResult(selectedPort.Name) == WizardResult.Fail ? ReportType.Error : ReportType.Info;
-                    wizardProgressReport.Message = $"{reportResult.Message}\n\nTotal duration: {duration}";
+                    wizardProgressReport.Message = $"{reportResult.Message}\nTotal duration: {duration}";
                     progress.Report(wizardProgressReport);
                     await WaitAckProgress();
                 }
@@ -564,7 +564,7 @@ namespace PoEWizard
             WizardResult result = reportResult.GetReportResult(SWITCH);
             if (result == WizardResult.Fail || result == WizardResult.Warning)
             {
-                progress.Report(new ProgressReport(title) { Title = title, Type = ReportType.Error, Message = $"{reportResult.Message}\n\nTotal duration: {duration}" });
+                progress.Report(new ProgressReport(title) { Title = title, Type = ReportType.Error, Message = $"{reportResult.Message}" });
                 await WaitAckProgress();
             }
             else if (reportResult.Result?.Count > 0)
@@ -587,6 +587,7 @@ namespace PoEWizard
                 }
                 if (resetSlotCnt > 0)
                 {
+                    await Task.Run(() => WaitTask(20, $"Waiting Ports to come UP on Switch {device.IpAddress}"));
                     await Task.Run(() => restApiService.RefreshSwitchPorts());
                     RefreshSlotAndPortsView();
                 }
@@ -748,6 +749,19 @@ namespace PoEWizard
         private bool IsWizardStopped()
         {
             return reportResult.GetReportResult(selectedPort.Name) == WizardResult.Ok || reportResult.GetReportResult(selectedPort.Name) == WizardResult.NothingToDo;
+        }
+
+        private void WaitTask(int waitTime, string txt)
+        {
+            DateTime startTime = DateTime.Now;
+            int dur = 0;
+            progress.Report(new ProgressReport($"{txt} ..."));
+            while (dur < waitTime)
+            {
+                Thread.Sleep(1000);
+                dur = (int)Utils.GetTimeDuration(startTime);
+                progress.Report(new ProgressReport($"{txt} ({dur} sec) ..."));
+            }
         }
 
         private async Task WaitAckProgress()

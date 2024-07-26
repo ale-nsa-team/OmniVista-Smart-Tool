@@ -306,7 +306,11 @@ namespace PoEWizard.Comm
             try
             {
                 _wizardSwitchSlot = SwitchModel.GetSlot(slotNr);
-                if (_wizardSwitchSlot != null && !_wizardSwitchSlot.IsInitialized) PowerUpSlot();
+                if (_wizardSwitchSlot != null && !_wizardSwitchSlot.IsInitialized)
+                {
+                    PowerUpSlot();
+                    SwitchModel.ConfigChanged = true;
+                }
             }
             catch (Exception ex)
             {
@@ -1097,11 +1101,11 @@ namespace PoEWizard.Comm
             WaitSlotPower(true);
         }
 
-        private void WaitSlotPower(bool waitInit)
+        private void WaitSlotPower(bool powerUp)
         {
             DateTime startTime = DateTime.Now;
             StringBuilder txt = new StringBuilder("Powering ");
-            if (waitInit) txt.Append("UP"); else txt.Append("DOWN");
+            if (powerUp) txt.Append("UP"); else txt.Append("DOWN");
             txt.Append(" Slot ").Append(_wizardSwitchSlot.Name).Append(" on Switch ").Append(SwitchModel.IpAddress);
             _progress.Report(new ProgressReport($"{txt} ..."));
             int dur = 0;
@@ -1113,7 +1117,7 @@ namespace PoEWizard.Comm
                 if (dur % 5 == 0)
                 {
                     GetSlotPowerStatus();
-                    if (waitInit && _wizardSwitchSlot.IsInitialized || !waitInit && !_wizardSwitchSlot.IsInitialized) break;
+                    if (powerUp && _wizardSwitchSlot.IsInitialized || !powerUp && !_wizardSwitchSlot.IsInitialized) break;
                 }
             }
         }
