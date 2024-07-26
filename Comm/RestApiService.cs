@@ -306,7 +306,11 @@ namespace PoEWizard.Comm
             try
             {
                 _wizardSwitchSlot = SwitchModel.GetSlot(slotNr);
-                if (_wizardSwitchSlot != null && !_wizardSwitchSlot.IsInitialized) PowerUpSlot();
+                if (_wizardSwitchSlot != null && !_wizardSwitchSlot.IsInitialized)
+                {
+                    PowerUpSlot();
+                    SwitchModel.ConfigChanged = true;
+                }
             }
             catch (Exception ex)
             {
