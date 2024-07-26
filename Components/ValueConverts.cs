@@ -12,13 +12,13 @@ namespace PoEWizard.Components
 {
     internal static class Colors
     {
-        internal static SolidColorBrush Red => (SolidColorBrush)new BrushConverter().ConvertFrom("#ff6347");
-        internal static SolidColorBrush Green => MainWindow.theme == ThemeType.Dark ? Brushes.Lime
+        internal static SolidColorBrush Danger => (SolidColorBrush)new BrushConverter().ConvertFrom("#ff6347");
+        internal static SolidColorBrush Clear => MainWindow.theme == ThemeType.Dark ? Brushes.Lime
                         : (SolidColorBrush)new BrushConverter().ConvertFrom("#12b826");
-        internal static SolidColorBrush Orange => Brushes.Orange;
-        internal static SolidColorBrush Gray => Brushes.Gray;
-        internal static SolidColorBrush LightGray => (SolidColorBrush)new BrushConverter().ConvertFrom("#aaa");
-        internal static SolidColorBrush Yellow => MainWindow.theme == ThemeType.Dark 
+        internal static SolidColorBrush Warn => Brushes.Orange;
+        internal static SolidColorBrush Unknown => Brushes.Gray;
+        internal static SolidColorBrush Disable => (SolidColorBrush)new BrushConverter().ConvertFrom("#aaa");
+        internal static SolidColorBrush Problem => MainWindow.theme == ThemeType.Dark 
             ? (SolidColorBrush)new BrushConverter().ConvertFrom("#C29494") : Brushes.Orchid;
         internal static SolidColorBrush Default => MainWindow.theme == ThemeType.Dark ? Brushes.White : Brushes.Black;
     }
@@ -62,42 +62,42 @@ namespace PoEWizard.Components
             switch (param)
             {
                 case "ConnectionStatus":
-                    return val == "Reachable" ? Colors.Green : Colors.Red;
+                    return val == "Reachable" ? Colors.Clear : Colors.Danger;
                 case "Temperature":
-                    return val == "UnderThreshold" ? Colors.Green : val == "OverThreshold" ? Colors.Orange : Colors.Red;
+                    return val == "UnderThreshold" ? Colors.Clear : val == "OverThreshold" ? Colors.Warn : Colors.Danger;
                 case "Power":
                     float percent = RectangleValueConverter.GetFloat(value);
-                    return percent > 10 ? Colors.Green : (percent > 0 ? Colors.Orange : Colors.Red);
+                    return percent > 10 ? Colors.Clear : (percent > 0 ? Colors.Warn : Colors.Danger);
                 case "Poe":
                     switch (val)
                     {
                         case "On":
-                            return Colors.Green;
+                            return Colors.Clear;
                         case "Fault":
                         case "Deny":
                         case "Conflict":
-                            return Colors.Red;
+                            return Colors.Danger;
                         case "Searching":
-                            return Colors.Yellow;
+                            return Colors.Problem;
                         case "Off":
-                            return Colors.Orange;
+                            return Colors.Warn;
                         default:
-                            return Colors.LightGray;
+                            return Colors.Disable;
                     }
                 case "PoeStatus":
-                    return val == "Normal" ? Colors.Green : val == "NearThreshold" ? Colors.Orange : Colors.Red;
+                    return val == "Normal" ? Colors.Clear : val == "NearThreshold" ? Colors.Warn : Colors.Danger;
                 case "PortStatus":
-                    return val == "Up" ? Colors.Green : val == "Down" ? Colors.Red : Colors.Gray;
+                    return val == "Up" ? Colors.Clear : val == "Down" ? Colors.Danger : Colors.Unknown;
                 case "PowerSupply":
-                    return val == "Up" ? Colors.Green : Colors.Red;
+                    return val == "Up" ? Colors.Clear : Colors.Danger;
                 case "RunningDir":
-                    return val == CERTIFIED_DIR ? Colors.Red : Colors.Default;
+                    return val == CERTIFIED_DIR ? Colors.Danger : Colors.Default;
                 case "Boolean":
-                    return val.ToLower() == "true" ? Colors.Green : Colors.Red;
+                    return val.ToLower() == "true" ? Colors.Clear : Colors.Danger;
                 case "AosVersion":
-                    return Utils.IsOldAosVersion(val) ? Colors.Orange : Colors.Default;
+                    return Utils.IsOldAosVersion(val) ? Colors.Warn : Colors.Default;
                 default:
-                    return Colors.Red;
+                    return Colors.Unknown;
             }
         }
 
@@ -121,7 +121,7 @@ namespace PoEWizard.Components
                 if (minversion == null) return Colors.Default;
                 string[] s = versions.Split('.');
                 int[] fpgas = Array.ConvertAll(s, int.Parse);
-                return ((fpgas[0] < minversion[0]) || (fpgas[0] == minversion[0] && fpgas[1] < minversion[1])) ? Colors.Orange : Colors.Default;
+                return ((fpgas[0] < minversion[0]) || (fpgas[0] == minversion[0] && fpgas[1] < minversion[1])) ? Colors.Warn : Colors.Default;
             }
             catch (Exception ex)
             {
@@ -141,7 +141,7 @@ namespace PoEWizard.Components
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             SolidColorBrush val = new FpgaToColorConverter().Convert(values, targetType, parameter, culture) as SolidColorBrush;
-            return val == Colors.Orange ? Visibility.Visible : Visibility.Collapsed;
+            return val == Colors.Warn ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
@@ -273,7 +273,7 @@ namespace PoEWizard.Components
         {
             if (Utils.IsInvalid(values)) return Colors.Default;
             double pct = Utils.GetThresholdPercentage(values);
-            return pct > 0.1 ? Colors.Green : pct < 0 ? Colors.Red : Colors.Orange;
+            return pct > 0.1 ? Colors.Clear : pct < 0 ? Colors.Danger : Colors.Warn;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
