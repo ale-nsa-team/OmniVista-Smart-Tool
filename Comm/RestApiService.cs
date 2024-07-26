@@ -873,7 +873,7 @@ namespace PoEWizard.Comm
                 Thread.Sleep(1000);
                 dur = (int)Utils.GetTimeDuration(startTime);
                 _progress.Report(new ProgressReport($"{msg} ({Utils.CalcStringDuration(startTime, true)}) ...{PrintPortStatus()}"));
-                if (_wizardSwitchPort != null && _wizardSwitchPort.Status == PortStatus.Up && _wizardSwitchPort.Power >= 0.5) break;
+                if (_wizardSwitchPort.Status == PortStatus.Up && _wizardSwitchPort.Poe == PoeStatus.On) break;
                 if (dur % 5 == 0) UpdatePortData();
             }
             UpdateProgressReport();
