@@ -320,7 +320,7 @@ namespace PoEWizard.Comm
 
         public void RunWizardCommands(string port, WizardReport reportResult, List<CommandType> commands, int waitSec)
         {
-            if (string.IsNullOrEmpty(port) || reportResult.GetReportResult(port) == WizardResult.NothingToDo || reportResult.GetReportResult(port) == WizardResult.Ok) return;
+            if (string.IsNullOrEmpty(port)) return;
             _wizardProgressReport = new ProgressReport("PoE Wizard Report:");
             try
             {
@@ -385,7 +385,8 @@ namespace PoEWizard.Comm
 
         private void NothingToDo()
         {
-            StringBuilder txt = new StringBuilder(PrintPortStatus());
+            StringBuilder txt = new StringBuilder().Append($"\n    PoE status: ").Append(_wizardSwitchPort.Poe).Append(", Port Status: ");
+            txt.Append(_wizardSwitchPort.Status).Append(", Power: ").Append(_wizardSwitchPort.Power).Append(" Watts");
             if (_wizardSwitchPort.EndPointDevice != null && !string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.MacAddress))
             {
                 txt.Append(", Device MAC: ").Append(_wizardSwitchPort.EndPointDevice.MacAddress);

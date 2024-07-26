@@ -512,13 +512,14 @@ namespace PoEWizard
                         break;
                 }
                 await Task.Run(() => restApiService.RefreshSwitchPorts());
-                if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.NothingToDo) await CheckDefaultMaxPowerAndResetPort();
-                string result = $"{reportResult.Message}\n\nTotal duration: {Utils.CalcStringDuration(startTime, true)}";
+                WizardResult result = reportResult.GetReportResult(selectedPort.Name);
+                if (result == WizardResult.NothingToDo || result == WizardResult.Fail) await ExecuteOtherWizardActions();
+                string msg = $"{reportResult.Message}\n\nTotal duration: {Utils.CalcStringDuration(startTime, true)}";
                 if (!string.IsNullOrEmpty(reportResult.Message))
                 {
                     wizardProgressReport.Title = "PoE Wizard Report:";
                     wizardProgressReport.Type = reportResult.GetReportResult(selectedPort.Name) == WizardResult.Fail ? ReportType.Error : ReportType.Info;
-                    wizardProgressReport.Message = result;
+                    wizardProgressReport.Message = msg;
                     progress.Report(wizardProgressReport);
                     await WaitAckProgress();
                 }
@@ -702,9 +703,8 @@ namespace PoEWizard
             await Task.Run(() => restApiService.RunPoeWizard(selectedPort.Name, reportResult, cmdList, waitSec));
         }
 
-        private async Task CheckDefaultMaxPowerAndResetPort()
+        private async Task ExecuteOtherWizardActions()
         {
-            reportResult.RemoveLastWizardReport(selectedPort.Name);
             bool resetPort = false;
             if (selectedPort.Poe == PoeStatus.Off && (ShowMessageBox("Port PoE turned Off", $"The PoE on port {selectedPort.Name} is turned Off!\n Do you want to turn it On?",
                                                                      MsgBoxIcons.Warning, MsgBoxButtons.OkCancel)))
