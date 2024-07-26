@@ -34,7 +34,7 @@
     <SolidColorBrush x:Key="popupBackgroundColor" Color="#fafafa" />
     <SolidColorBrush x:Key="infoBackgroundColor" Color="LightYellow" />
     <SolidColorBrush x:Key="borderColor" Color="#bbb" />
-    <SolidColorBrush x:Key="barBackground" Color="#ddd" />
+    <SolidColorBrush x:Key="barBackground" Color="#eaeada" />
     <SolidColorBrush x:Key="buttonBackground" Color="White" />
 
     <LinearGradientBrush x:Key="blueGradientBrush" StartPoint="0,0.5" EndPoint="1,0.5">
@@ -65,7 +65,7 @@
     </Style>
 
     <Style TargetType="DataGridColumnHeader" x:Key="gridHeader">
-        <Setter Property="Background" Value="#eee" />
+        <Setter Property="Background" Value="{StaticResource barBackground}" />
         <Setter Property="Foreground" Value="DarkBlue" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -373,6 +373,11 @@
 
     <Style TargetType="Label" x:Key="valLabel" BasedOn="{StaticResource keyLabel}">
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.65" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="Image" x:Key="warnImg">
