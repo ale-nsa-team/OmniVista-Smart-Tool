@@ -194,9 +194,9 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsSelected" Value="True">
-                <Setter Property="Background" Value="#888" />
+                <Setter Property="Background" Value="#666" />
                 <Setter Property="Foreground" Value="Yellow" />
-                <Setter Property="BorderBrush" Value="#888" />
+                <Setter Property="BorderBrush" Value="#666" />
             </Trigger>
         </Style.Triggers>
     </Style>
