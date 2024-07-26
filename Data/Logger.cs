@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static PoEWizard.Data.Constants;
 
@@ -31,7 +30,7 @@ namespace PoEWizard.Data
         {
             try
             {
-                LogLevel = LogLevel.Info;
+                LogLevel = LogLevel.Activity;
                 string filename = "PoEWizard.log";
                 LogPath = Path.Combine(MainWindow.dataPath, "Log", filename);
                 if (!Directory.Exists(Path.GetDirectoryName(LogPath)))
@@ -88,6 +87,11 @@ namespace PoEWizard.Data
         public static void Info(string message)
         {
             Log(message, LogLevel.Info);
+        }
+
+        public static void Activity(string message)
+        {
+            Log(message, LogLevel.Activity);
         }
 
         public static void Debug(string message)

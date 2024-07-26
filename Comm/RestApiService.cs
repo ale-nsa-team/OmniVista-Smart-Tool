@@ -488,7 +488,6 @@ namespace PoEWizard.Comm
                         break;
                 }
             }
-            Logger.Info($"PoE Wizard completed on port {_wizardSwitchPort.Name}, Waiting Time: {waitSec} sec\n{_wizardProgressReport.Message}");
         }
 
         private void EnableCapacitorDetection(int waitSec)
@@ -1186,8 +1185,7 @@ namespace PoEWizard.Comm
         private void LogSendRequest(RestUrlEntry entry, Dictionary<string, string> response)
         {
             StringBuilder txt = new StringBuilder("API Request sent").Append(Utils.PrintMethodClass(3)).Append(" with ").Append(entry.ToString());
-            Logger.Info(txt.ToString());
-            txt = new StringBuilder("Request API URL: ").Append(response[REST_URL]);
+            txt.Append("Request API URL: ").Append(response[REST_URL]);
             if (entry.Response.ContainsKey(RESULT))
             {
                 txt.Append("\nSwitch Response:\n").Append(new string('=', 132)).Append("\n").Append(Utils.PrintXMLDoc(response[RESULT]));

@@ -2,6 +2,7 @@
 using PoEWizard.Components;
 using PoEWizard.Data;
 using PoEWizard.Device;
+using Renci.SshNet.Messages;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -511,15 +512,16 @@ namespace PoEWizard
                 }
                 await Task.Run(() => restApiService.RefreshSwitchPorts());
                 if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.NothingToDo) await CheckDefaultMaxPowerAndResetPort();
-                string duration = Utils.CalcStringDuration(startTime, true);
+                string result = $"{reportResult.Message}\n\nTotal duration: {Utils.CalcStringDuration(startTime, true)}";
                 if (!string.IsNullOrEmpty(reportResult.Message))
                 {
                     wizardProgressReport.Title = "PoE Wizard Report:";
                     wizardProgressReport.Type = reportResult.GetReportResult(selectedPort.Name) == WizardResult.Fail ? ReportType.Error : ReportType.Info;
-                    wizardProgressReport.Message = $"{reportResult.Message}\nTotal duration: {duration}";
+                    wizardProgressReport.Message = result;
                     progress.Report(wizardProgressReport);
                     await WaitAckProgress();
                 }
+                Logger.Activity($"PoE Wizard completed on port {selectedPort.Name}:\n{result}");
                 RefreshSlotAndPortsView();
             }
             catch (Exception ex)
@@ -691,7 +693,7 @@ namespace PoEWizard
         private async Task EnableHdmiMdi()
         {
             await RunPoeWizard(new List<CommandType>() { CommandType.POWER_HDMI_ENABLE, CommandType.LLDP_POWER_MDI_ENABLE, CommandType.LLDP_EXT_POWER_MDI_ENABLE }, 15);
-            Logger.Info($"Enable Power over HDMI on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            Logger.Debug($"Enable Power over HDMI on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task RunPoeWizard(List<CommandType> cmdList, int waitSec = 15)
@@ -707,13 +709,13 @@ namespace PoEWizard
                                                                      MsgBoxIcons.Warning, MsgBoxButtons.OkCancel)))
             {
                 await RunWizardCommands(new List<CommandType>() { CommandType.RESET_POWER_PORT });
-                Logger.Debug($"PoE turned Off, reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                Logger.Activity($"PoE turned Off, reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                 resetPort = true;
             }
             if (selectedPort.Status == PortStatus.Down && selectedPort.Poe == PoeStatus.On)
             {
                 await RunWizardCommands(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE });
-                Logger.Debug($"Enable capacitor detection on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                Logger.Activity($"Enable capacitor detection on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                 resetPort = true;
             }
             await CheckDefaultMaxPower();
@@ -736,6 +738,7 @@ namespace PoEWizard
                 if (ShowMessageBox("Check default Max. Power", $"{msg}\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
                 {
                     await RunWizardCommands(new List<CommandType>() { CommandType.CHANGE_MAX_POWER });
+                    Logger.Activity($"{msg} on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                 }
             }
             Logger.Debug($"Check default Max. Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
@@ -819,12 +822,12 @@ namespace PoEWizard
         {
             if (device.IsConnected)
             {
-                Logger.Info($"Connected to switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                Logger.Activity($"Connected to switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                 SetConnectedState(checkCertified);
             }
             else
             {
-                Logger.Info($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
+                Logger.Activity($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
                 SetDisconnectedState();
             }
         }

@@ -35,7 +35,7 @@ namespace PoEWizard.Data
             }
             if (!string.IsNullOrEmpty(AlertDescription))
             {
-                if (!string.IsNullOrEmpty(Action)) txt.Append("\n    ");
+                if (txt.Length > 0) txt.Append("\n    ");
                 txt.Append(AlertDescription);
             }
             return txt.ToString();
@@ -198,8 +198,8 @@ namespace PoEWizard.Data
                     List<ReportResult> reportsList = reports.Value as List<ReportResult>;
                     foreach (var report in reportsList)
                     {
-                        if (txt.Length > 0) txt.Append("\n - ");
-                        txt.Append(report);
+                        string result = report.ToString();
+                        if (!string.IsNullOrEmpty(result)) txt.Append(result);
                     }
                 }
                 return txt.ToString();
