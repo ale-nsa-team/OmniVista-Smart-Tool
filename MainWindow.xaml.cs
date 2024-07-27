@@ -2,7 +2,6 @@
 using PoEWizard.Components;
 using PoEWizard.Data;
 using PoEWizard.Device;
-using Renci.SshNet.Messages;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -42,6 +41,7 @@ namespace PoEWizard
         private SwitchModel device;
         private SlotView slotView;
         private PortModel selectedPort;
+        private int selectedPortIndex;
         private SlotModel selectedSlot;
         private WizardReport reportResult = new WizardReport();
         private bool isClosing = false;
@@ -310,6 +310,7 @@ namespace PoEWizard
             if (_portList.SelectedItem is PortModel port)
             {
                 selectedPort = port;
+                selectedPortIndex = _portList.SelectedIndex;
                 _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
             }
         }
@@ -540,6 +541,7 @@ namespace PoEWizard
             selectedSlot = device.GetSlot(selectedSlot.Name);
             _slotsView.ItemsSource = device.GetChassis(selectedSlot.Name)?.Slots ?? new List<SlotModel>();
             _portList.ItemsSource = selectedSlot?.Ports ?? new List<PortModel>();
+            ReselectPort();
         }
 
         private async void RefreshSwitch()
@@ -878,6 +880,7 @@ namespace PoEWizard
             {
                 _tempWarn.Source = new BitmapImage(new Uri(@"Resources\warning.png", UriKind.Relative));
             }
+            ReselectPort();
         }
 
         private void SetDisconnectedState()
@@ -902,8 +905,20 @@ namespace PoEWizard
             _portList.Visibility= Visibility.Hidden;
             _fpgaLbl.Visibility = Visibility.Visible;
             _cpldLbl.Visibility = Visibility.Collapsed;
+            selectedPort = null;
+            selectedPortIndex = -1;
             DataContext = device;
             restApiService = null;
+        }
+
+        private void ReselectPort()
+        {
+            if (selectedPort != null)
+            {
+                _portList.SelectionChanged -= PortSelection_Changed;
+                _portList.SelectedItem = _portList.Items[selectedPortIndex];
+                _portList.SelectionChanged += PortSelection_Changed;
+            }
         }
 
         private async Task RebootSwitch(int waitSec)
