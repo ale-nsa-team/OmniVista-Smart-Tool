@@ -52,7 +52,7 @@ namespace PoEWizard.Data
 
         public WizardReport() {  }
 
-        public void CreateReportResult(string id, WizardResult result, string action)
+        public void CreateReportResult(string id, WizardResult result, string action = "")
         {
             lock (_lock_report_result)
             {
@@ -88,7 +88,7 @@ namespace PoEWizard.Data
             }
         }
 
-        public void UpdateResult(string id, WizardResult result, string actionResult = null)
+        public void UpdateResult(string id, WizardResult result, string actionResult = "")
         {
             lock (_lock_report_result)
             {
