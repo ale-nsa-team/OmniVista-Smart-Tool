@@ -534,7 +534,7 @@ namespace PoEWizard.Comm
             _progress.Report(new ProgressReport(wizardAction));
             _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
             double prevMaxPower = _wizardSwitchPort.MaxPower;
-            string powerSet = $"default {maxDefaultPower} Watts";
+            string powerSet = null;
             double maxPowerAllowed = SetMaxPowerToDefault(maxDefaultPower);
             if (maxPowerAllowed > 0)
             {
@@ -548,17 +548,17 @@ namespace PoEWizard.Comm
                     powerSet = $"{maxPowerAllowed} Watts{(!_wizardSwitchPort.Is4Pair ? " (2-pair enable)" : "")}";
                 }
             }
-            string actionResult;
+            string actionResult = "";
             if (!string.IsNullOrEmpty(error))
             {
                 actionResult = $"{error}";
             }
-            else if (prevMaxPower != _wizardSwitchPort.MaxPower)
+            else if (!string.IsNullOrEmpty(powerSet) && prevMaxPower != _wizardSwitchPort.MaxPower)
             {
                 SwitchModel.ConfigChanged = true;
                 actionResult = $"\n    Restoring Max. Power on port {_wizardSwitchPort.Name} from {_wizardSwitchPort.MaxPower} Watts to {powerSet}";
             }
-            else
+            else if (!string.IsNullOrEmpty(powerSet))
             {
                 actionResult = $"\n    Max. Power on port {_wizardSwitchPort.Name} is already the maximum allowed {powerSet}";
             }

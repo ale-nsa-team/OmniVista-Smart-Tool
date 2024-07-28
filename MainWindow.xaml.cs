@@ -746,7 +746,7 @@ namespace PoEWizard
             {
                 string alert = reportResult.GetAlertDescription(selectedPort.Name);
                 string msg = !string.IsNullOrEmpty(alert) ? alert : $"Changing Max. Power on port {selectedPort.Name} to default";
-                if (ShowMessageBox("Check default Max. Power", $"{msg}\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
+                if (ShowMessageBox("Check default Max. Power", $"{msg}\nDo you want to change?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
                 {
                     await RunWizardCommands(new List<CommandType>() { CommandType.CHANGE_MAX_POWER });
                 }
