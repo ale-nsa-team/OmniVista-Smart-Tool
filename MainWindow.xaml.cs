@@ -715,6 +715,7 @@ namespace PoEWizard
         {
             bool reset = false;
             WizardResult result = reportResult.GetReportResult(selectedPort.Name);
+            if (result == WizardResult.NothingToDo) reportResult.RemoveLastWizardReport(selectedPort.Name);
             if (selectedPort.Poe == PoeStatus.Searching)
             {
                 await RunWizardCommands(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE }, 45);

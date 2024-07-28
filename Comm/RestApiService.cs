@@ -548,20 +548,21 @@ namespace PoEWizard.Comm
                     powerSet = $"{maxPowerAllowed} Watts{(!_wizardSwitchPort.Is4Pair ? " (2-pair enable)" : "")}";
                 }
             }
+            string actionResult;
             if (!string.IsNullOrEmpty(error))
             {
-                wizardAction += $"{error}";
+                actionResult = $"{error}";
             }
             else if (prevMaxPower != _wizardSwitchPort.MaxPower)
             {
                 SwitchModel.ConfigChanged = true;
-                wizardAction += $"\n    Restoring Max. Power on port {_wizardSwitchPort.Name} from {_wizardSwitchPort.MaxPower} Watts to {powerSet}";
+                actionResult = $"\n    Restoring Max. Power on port {_wizardSwitchPort.Name} from {_wizardSwitchPort.MaxPower} Watts to {powerSet}";
             }
             else
             {
-                wizardAction += $"\n    Max. Power on port {_wizardSwitchPort.Name} is already the Max. Power allowed {powerSet}";
+                actionResult = $"\n    Max. Power on port {_wizardSwitchPort.Name} is already the maximum allowed {powerSet}";
             }
-            _wizardReportResult.UpdateWizardReport(_wizardSwitchPort.Name, WizardResult.Proceed, wizardAction);
+            _wizardReportResult.UpdateWizardReport(_wizardSwitchPort.Name, WizardResult.Proceed, actionResult);
             Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
         }
 

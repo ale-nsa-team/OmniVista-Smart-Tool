@@ -86,8 +86,12 @@ namespace PoEWizard.Data
                 return GetCurrentReport(id)?.Parameter;
             }
         }
+        public void UpdateResult(string id, WizardResult result)
+        {
+            UpdateResult(id, result, null);
+        }
 
-        public void UpdateResult(string id, WizardResult result, string actionResult = "")
+        public void UpdateResult(string id, WizardResult result, string actionResult)
         {
             lock (_lock_report_result)
             {
@@ -113,7 +117,12 @@ namespace PoEWizard.Data
             }
         }
 
-        public void UpdateWizardReport(string id, WizardResult result, string action = null)
+        public void UpdateWizardReport(string id, WizardResult result)
+        {
+            UpdateWizardReport(id, result, null);
+        }
+
+        public void UpdateWizardReport(string id, WizardResult result, string action)
         {
             lock (_lock_report_result)
             {
@@ -121,8 +130,8 @@ namespace PoEWizard.Data
                 if (report != null)
                 {
                     report.Result = result;
-                    if (!string.IsNullOrEmpty(action)) report.ActionResult = action;
-                    report.ActionResult = string.Empty;
+                    if (string.IsNullOrEmpty(action)) report.ActionResult = string.Empty;
+                    else report.ActionResult = action;
                 }
             }
         }
