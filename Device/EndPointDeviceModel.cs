@@ -77,13 +77,13 @@ namespace PoEWizard.Device
         {
             StringBuilder txt = new StringBuilder("Device Type: ");
             txt.Append(string.IsNullOrEmpty(Type) ? "Unknown" : Type);
+            if (!string.IsNullOrEmpty(Name)) txt.Append(", Name: ").Append(Name);
+            if (!string.IsNullOrEmpty(Description)) txt.Append(", Description: ").Append(Description);
+            if (!string.IsNullOrEmpty(Vendor)) txt.Append(", Vendor: ").Append(Vendor);
+            if (!string.IsNullOrEmpty(SoftwareVersion)) txt.Append("\nVersion: ").Append(SoftwareVersion);
+            if (!string.IsNullOrEmpty(SerialNumber)) txt.Append(", Serial #: ").Append(SerialNumber);
             if (!string.IsNullOrEmpty(MacAddress)) txt.Append(", MAC: ").Append(MacAddress);
-            if (Type.Contains("none")) txt.Append(", Remote Port: ").Append(RemotePort);
             if (!string.IsNullOrEmpty(IpAddress)) txt.Append(", IP: ").Append(IpAddress);
-            if (Capabilities?.Count > 0) txt.Append(", Capabilities: [").Append(string.Join(",", Capabilities)).Append("]");
-            if (!string.IsNullOrEmpty(Name)) txt.Append(", Class: ").Append(Name);
-            if (!string.IsNullOrEmpty(MEDPowerValue)) txt.Append(", Power Value: ").Append(MEDPowerValue);
-            if (!string.IsNullOrEmpty(MEDPowerPriority)) txt.Append(", Power Priority: ").Append(MEDPowerPriority);
             return txt.ToString();
         }
 

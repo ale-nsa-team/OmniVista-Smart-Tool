@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -337,13 +338,13 @@ namespace PoEWizard
             await Task.Run(() => ok = restApiService.ChangePowerPriority(port.Name, port.PriorityLevel));
             if (ok)
             {
-                Logger.Info($"{txt} completed on Switch {device.Name}, S/N {device.SerialNumber}, Model {device.Model}");
+                Logger.Activity($"{txt} completed on Switch {device.Name}, S/N {device.SerialNumber}, Model {device.Model}");
                 await WaitAckProgress();
             }
             else
             {
                 port.PriorityLevel = prevPriority;
-                Logger.Error($"Couldn't change the Priority to {port.PriorityLevel} on Port {port.Name} of Switch {device.IpAddress}");
+                Logger.Error($"Couldn't change the Priority to {port.PriorityLevel} on port {port.Name} of Switch {device.IpAddress}");
             }
             HideInfoBox();
             HideProgress();
@@ -399,7 +400,7 @@ namespace PoEWizard
             ShowProgress($"{action} {poeType} PoE on slot {selectedSlot.Name}...");
             bool ok = false;
             await Task.Run(() => ok = restApiService.SetPerpetualOrFastPoe(selectedSlot, cmd));
-            Logger.Info($"{action} {poeType} PoE on slot {selectedSlot.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+            Logger.Activity($"{action} {poeType} PoE on slot {selectedSlot.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             await WaitAckProgress();
             RefreshSlotAndPortsView();
             return ok;
@@ -464,8 +465,9 @@ namespace PoEWizard
                     isClosing = true;
                     if (device.ConfigChanged)
                     {
-                        bool proceed = ShowMessageBox("Write Memory required", "Switch configuration has changed!\nIt will take around 30 sec to execute Write Memory Flash.\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
-                        if (proceed)
+                        if (ShowMessageBox("Write Memory required",
+                                           "Switch configuration has changed!\nIt will take around 30 sec to execute Write Memory Flash.\nDo you want to proceed?",
+                                           MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
                         {
                             _btnRunWiz.IsEnabled = false;
                             _refreshSwitch.IsEnabled = false;
@@ -523,7 +525,12 @@ namespace PoEWizard
                     progress.Report(wizardProgressReport);
                     await WaitAckProgress();
                 }
-                Logger.Activity($"PoE Wizard completed on port {selectedPort.Name} with device type {deviceType}:{msg}");
+                StringBuilder txt = new StringBuilder("PoE Wizard completed on port ");
+                txt.Append(selectedPort.Name).Append(" with device type ").Append(deviceType).Append(":").Append(msg).Append("\nPoE status: ").Append(selectedPort.Poe);
+                txt.Append(", Port Status: ").Append(selectedPort.Status).Append(", Power: ").Append(selectedPort.Power).Append(" Watts");
+                if (selectedPort.EndPointDevice != null) txt.Append("\nDevice Connected:\n").Append(selectedPort.EndPointDevice);
+                else if (selectedPort.MacList?.Count > 0 && !string.IsNullOrEmpty(selectedPort.MacList[0])) txt.Append(", Device MAC: ").Append(selectedPort.MacList[0]);
+                Logger.Activity(txt.ToString());
                 RefreshSlotAndPortsView();
             }
             catch (Exception ex)
@@ -706,26 +713,24 @@ namespace PoEWizard
 
         private async Task RunLastWizardActions()
         {
-            bool resetPort = false;
-            //if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.NothingToDo) reportResult.RemoveLastWizardReport(selectedPort.Name);
+            bool reset = false;
+            if (selectedPort.Poe == PoeStatus.Searching)
+            {
+                await RunWizardCommands(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE }, 45);
+                reset = true;
+            }
+            await CheckDefaultMaxPower();
             if (selectedPort.Poe == PoeStatus.Off && (ShowMessageBox("Port PoE turned Off", $"The PoE on port {selectedPort.Name} is turned Off!\n Do you want to turn it On?",
                                                                      MsgBoxIcons.Warning, MsgBoxButtons.OkCancel)))
             {
-                await RunWizardCommands(new List<CommandType>() { CommandType.RESET_POWER_PORT });
+                await RunWizardCommands(new List<CommandType>() { CommandType.RESET_POWER_PORT }, 30);
                 Logger.Info($"PoE turned Off, reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                resetPort = true;
+                reset = true;
             }
-            if (selectedPort.Poe == PoeStatus.Searching)
+            if (!reset && ShowMessageBox("Resetting Port", $"Do you want to recycle the power on port {selectedPort.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
             {
-                await RunWizardCommands(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE });
-                resetPort = true;
-            }
-            await CheckDefaultMaxPower();
-            if (!resetPort && ShowMessageBox("Resetting Port", $"Resetting the port  {selectedPort.Name} may solve the problem\nDo you want to proceed?",
-                                             MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
-            {
-                await RunWizardCommands(new List<CommandType>() { CommandType.RESET_POWER_PORT });
-                Logger.Info($"Reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                await RunWizardCommands(new List<CommandType>() { CommandType.RESET_POWER_PORT }, 30);
+                Logger.Info($"Recycling the power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             }
         }
 

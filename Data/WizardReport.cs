@@ -17,7 +17,6 @@ namespace PoEWizard.Data
         public string Duration {  get; set; } = string.Empty;
         public object Parameter { get; set; } = null;
 
-        public ReportResult(string id, string action) : this(id, WizardResult.Starting, action) { }
         public ReportResult(string id, WizardResult result, string action)
         {
             ID = id;
@@ -114,7 +113,7 @@ namespace PoEWizard.Data
             }
         }
 
-        public void UpdateWizardReport(string id, WizardResult result, string action)
+        public void UpdateWizardReport(string id, WizardResult result, string action = null)
         {
             lock (_lock_report_result)
             {
@@ -122,7 +121,7 @@ namespace PoEWizard.Data
                 if (report != null)
                 {
                     report.Result = result;
-                    report.Action = action;
+                    if (!string.IsNullOrEmpty(action)) report.ActionResult = action;
                     report.ActionResult = string.Empty;
                 }
             }
