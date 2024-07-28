@@ -528,7 +528,7 @@ namespace PoEWizard
                 StringBuilder txt = new StringBuilder("PoE Wizard completed on port ");
                 txt.Append(selectedPort.Name).Append(" with device type ").Append(deviceType).Append(":").Append(msg).Append("\nPoE status: ").Append(selectedPort.Poe);
                 txt.Append(", Port Status: ").Append(selectedPort.Status).Append(", Power: ").Append(selectedPort.Power).Append(" Watts");
-                if (selectedPort.EndPointDevice != null) txt.Append("\nDevice Connected:\n").Append(selectedPort.EndPointDevice);
+                if (selectedPort.EndPointDevice != null) txt.Append("\n").Append(selectedPort.EndPointDevice);
                 else if (selectedPort.MacList?.Count > 0 && !string.IsNullOrEmpty(selectedPort.MacList[0])) txt.Append(", Device MAC: ").Append(selectedPort.MacList[0]);
                 Logger.Activity(txt.ToString());
                 RefreshSlotAndPortsView();
@@ -714,9 +714,11 @@ namespace PoEWizard
         private async Task RunLastWizardActions()
         {
             bool reset = false;
+            WizardResult result = reportResult.GetReportResult(selectedPort.Name);
             if (selectedPort.Poe == PoeStatus.Searching)
             {
                 await RunWizardCommands(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE }, 45);
+                result = reportResult.GetReportResult(selectedPort.Name);
                 reset = true;
             }
             await CheckDefaultMaxPower();
@@ -732,6 +734,7 @@ namespace PoEWizard
                 await RunWizardCommands(new List<CommandType>() { CommandType.RESET_POWER_PORT }, 30);
                 Logger.Info($"Recycling the power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             }
+            reportResult.UpdateResult(selectedPort.Name, result);
         }
 
         private async Task CheckDefaultMaxPower()
