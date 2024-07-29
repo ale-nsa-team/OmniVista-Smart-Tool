@@ -211,6 +211,13 @@ namespace PoEWizard.Data
             return false;
         }
 
+        public static float ParseFloat(object value)
+        {
+            if (value == null) return 0f;
+            string num = new string(value.ToString().Where(c => char.IsDigit(c) || c == '.').ToArray());
+            return float.TryParse(num, out float res) ? res : 0f;
+        }
+
         public static string PrintTimeDurationSec(DateTime startTime)
         {
             return $"{RoundUp(GetTimeDuration(startTime))} sec";
@@ -291,14 +298,18 @@ namespace PoEWizard.Data
 
         public static bool IsInvalid(object[] values)
         {
-            return values == null || values.Length < 2 
+            bool res = values == null || values.Length < 2 
                 || values[0] == null || values[0] == DependencyProperty.UnsetValue
                 || values[1] == null || values[1] == DependencyProperty.UnsetValue;
+            if (!res) Logger.Debug($"Invalid value in converter: {(values == null ? "null" : string.Join(",", values))}");
+            return res;
         }
 
         public static bool IsInvalid(object value)
         {
-            return value == null || value == DependencyProperty.UnsetValue;
+            bool res = value == null || value == DependencyProperty.UnsetValue;
+            if (!res) Logger.Debug($"Invalid value in converter: {(value ?? "null")}");
+            return res;
         }
 
         public static bool IsOldAosVersion(object aos)

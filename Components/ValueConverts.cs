@@ -29,7 +29,7 @@ namespace PoEWizard.Components
         {
             try
             {
-                float val = GetFloat(value);
+                float val = Utils.ParseFloat(value);
                 return val > 45 ? val - 45 : val;
             }
             catch (Exception ex)
@@ -42,13 +42,6 @@ namespace PoEWizard.Components
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return DependencyProperty.UnsetValue;
-        }
-
-        internal static float GetFloat(object input)
-        {
-            if (input == null) return 0;
-            string num = new string(input.ToString().Where(c => char.IsDigit(c) || c == '.').ToArray());
-            return float.TryParse(num, out float res) ? res : 0;
         }
     }
 
@@ -66,7 +59,7 @@ namespace PoEWizard.Components
                 case "Temperature":
                     return val == "UnderThreshold" ? Colors.Clear : val == "OverThreshold" ? Colors.Warn : Colors.Danger;
                 case "Power":
-                    float percent = RectangleValueConverter.GetFloat(value);
+                    float percent = Utils.ParseFloat(value);
                     return percent > 10 ? Colors.Clear : (percent > 0 ? Colors.Warn : Colors.Danger);
                 case "Poe":
                     switch (val)

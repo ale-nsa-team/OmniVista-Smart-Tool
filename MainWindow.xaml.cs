@@ -844,6 +844,7 @@ namespace PoEWizard
         {
             DataContext = null;
             DataContext = device;
+            Logger.Debug($"Data context set to {device.Name}");
             if (device.RunningDir == CERTIFIED_DIR && checkCertified)
             {
                 string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be saved.\n" +
@@ -869,6 +870,7 @@ namespace PoEWizard
             _cpu.Visibility = Visibility.Visible;
             slotView = new SlotView(device);
             _slotsView.ItemsSource = slotView.Slots;
+            Logger.Debug($"Slots view items source: {slotView.Slots.Count} slot(s)");
             _slotsView.SelectedIndex = 0;
             if (slotView.Slots.Count == 1) //do not highlight if only one row
             {
