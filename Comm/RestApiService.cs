@@ -481,6 +481,20 @@ namespace PoEWizard.Comm
                 //txt.Append("\n").Append(_wizardSwitchPort.EndPointDevice);
                 _progress.Report(new ProgressReport(txt.ToString()));
                 _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
+                PortSubType portSubType = _wizardSwitchPort.EndPointDevice != null ? _wizardSwitchPort.EndPointDevice.PortSubType : PortSubType.Unknown;
+                switch(portSubType)
+                {
+                    case PortSubType.MacAddress:
+                    case PortSubType.NetworkAddress:
+                    case PortSubType.LocallyAssigned:
+                        StringBuilder actionResult = new StringBuilder("\n    Cannot enable capacitor detection for device type ").Append(_wizardSwitchPort.EndPointDevice.Type);
+                        if (!string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.Name)) actionResult.Append(" (").Append(_wizardSwitchPort.EndPointDevice.Name).Append(")");
+                        _wizardReportResult.UpdateWizardReport(_wizardSwitchPort.Name, WizardResult.Proceed, actionResult.ToString());
+                        return;
+
+                    default:
+                        break;
+                }
                 SendRequest(GetRestUrlEntry(_wizardCommand, new string[1] { _wizardSwitchPort.Name }));
                 Thread.Sleep(3000);
                 RestartDeviceOnPort(wizardAction);
