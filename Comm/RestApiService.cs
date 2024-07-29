@@ -529,40 +529,34 @@ namespace PoEWizard.Comm
                 return;
             }
             double maxDefaultPower = (double)obj;
-            string error = null;
             string wizardAction = $"Restoring Max. Power on port {_wizardSwitchPort.Name} from {_wizardSwitchPort.MaxPower} Watts to default {maxDefaultPower} Watts";
             _progress.Report(new ProgressReport(wizardAction));
             _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
             double prevMaxPower = _wizardSwitchPort.MaxPower;
-            string powerSet = null;
             double maxPowerAllowed = SetMaxPowerToDefault(maxDefaultPower);
+            StringBuilder actionResult = new StringBuilder();
             if (maxPowerAllowed > 0)
             {
                 double maxAllowed = SetMaxPowerToDefault(maxPowerAllowed);
                 if (maxAllowed > 0)
                 {
-                    error = $"\n    Couldn't restore Max. Power on port {_wizardSwitchPort.Name} to {maxPowerAllowed} Watts (Max. Allowed: {maxAllowed} Watts)";
+                    actionResult.Append($"\n    Couldn't restore Max. Power on port ").Append(_wizardSwitchPort.Name).Append(" to ");
+                    actionResult.Append(maxPowerAllowed).Append(" Watts (Max. Allowed: ").Append(maxAllowed).Append(" Watts)");
                 }
                 else
                 {
-                    powerSet = $"{maxPowerAllowed} Watts{(!_wizardSwitchPort.Is4Pair ? " (2-pair enable)" : "")}";
+                    actionResult.Append($"\n    Max. Power on port ").Append(_wizardSwitchPort.Name).Append(" ");
+                    if (prevMaxPower != _wizardSwitchPort.MaxPower) actionResult.Append("was restored to"); else actionResult.Append("is already");
+                    actionResult.Append($" the maximum allowed ").Append(maxPowerAllowed).Append(" Watts");
+                    if (!_wizardSwitchPort.Is4Pair) actionResult.Append(" (2-pair enable)");
                 }
             }
-            string actionResult = "";
-            if (!string.IsNullOrEmpty(error))
+            else if (prevMaxPower != _wizardSwitchPort.MaxPower)
             {
-                actionResult = $"{error}";
+                actionResult.Append("completed");
             }
-            else if (!string.IsNullOrEmpty(powerSet) && prevMaxPower != _wizardSwitchPort.MaxPower)
-            {
-                SwitchModel.ConfigChanged = true;
-                actionResult = $"\n    Restoring Max. Power on port {_wizardSwitchPort.Name} from {_wizardSwitchPort.MaxPower} Watts to {powerSet}";
-            }
-            else if (!string.IsNullOrEmpty(powerSet))
-            {
-                actionResult = $"\n    Max. Power on port {_wizardSwitchPort.Name} is already the maximum allowed {powerSet}";
-            }
-            _wizardReportResult.UpdateWizardReport(_wizardSwitchPort.Name, WizardResult.Proceed, actionResult);
+            SwitchModel.ConfigChanged = (prevMaxPower != _wizardSwitchPort.MaxPower);
+            _wizardReportResult.UpdateWizardReport(_wizardSwitchPort.Name, WizardResult.Proceed, actionResult.ToString());
             Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
         }
 

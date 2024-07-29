@@ -38,14 +38,23 @@ namespace PoEWizard.Device
             ID = Utils.GetDictValue(dict, REMOTE_ID);
             LocalPort = Utils.GetDictValue(dict, LOCAL_PORT);
             MacAddress = Utils.GetDictValue(dict, CHASSIS_MAC_ADDRESS);
+            string macId = MacAddress.Replace(":", "");
+            string remoteId = Utils.GetDictValue(dict, REMOTE_PORT);
+            if (remoteId != macId) RemotePort = remoteId;
             string[] portSplit = Utils.GetDictValue(dict, PORT_SUBTYPE).Split(' ');
             if (portSplit.Length > 1) PortSubType = (PortSubType)Enum.ToObject(typeof(PortSubType), Utils.StringToInt(portSplit[0]));
             Type = Utils.GetDictValue(dict, CAPABILITIES_ENABLED);
             if (PortSubType == PortSubType.LocallyAssigned) Type = string.Empty;
             IpAddress = Utils.GetDictValue(dict, MED_IP_ADDRESS);
             EthernetType = Utils.GetDictValue(dict, MAU_TYPE);
-            RemotePort = Utils.GetDictValue(dict, LOCAL_PORT);
             Name = Utils.GetDictValue(dict, SYSTEM_NAME).Replace("(null)", string.Empty);
+            int ifIndex = Utils.StringToInt(RemotePort);
+            if (PortSubType == PortSubType.LocallyAssigned && (ifIndex >= 1000))
+            {
+                RemotePort = Utils.ParseIfIndex(ifIndex.ToString());
+                Name = $"Remote port {RemotePort}";
+                Type = SWITCH;
+            }
             Description = Utils.GetDictValue(dict, SYSTEM_DESCRIPTION).Replace("(null)", string.Empty);
             string[] capList = Utils.GetDictValue(dict, MED_CAPABILITIES).Split('|');
             if (capList.Length > 1)
@@ -76,7 +85,7 @@ namespace PoEWizard.Device
         public override string ToString()
         {
             StringBuilder txt = new StringBuilder("Device Type connected: ");
-            txt.Append(string.IsNullOrEmpty(Type) ? "Unknown" : Type);
+            txt.Append(string.IsNullOrEmpty(Type) ? $"Unknown ({PortSubType})" : Type);
             if (!string.IsNullOrEmpty(Name)) txt.Append(", Name: ").Append(Name);
             if (!string.IsNullOrEmpty(Description)) txt.Append(", Description: ").Append(Description);
             if (!string.IsNullOrEmpty(Vendor)) txt.Append(", Vendor: ").Append(Vendor);

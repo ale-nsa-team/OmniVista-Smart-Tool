@@ -359,6 +359,21 @@ namespace PoEWizard.Data
             return 1 - cpu / thrshld;
         }
 
+        public static string ParseIfIndex(string value)
+        {
+            try
+            {
+                int ifIndex = StringToInt(value);
+                int chassisDiv = ifIndex / 100000;
+                int chassisNr = chassisDiv + 1;
+                int slotNr = (ifIndex % 10000) / 1000;
+                int portNr = (ifIndex % 1000);
+                return $"{chassisNr}/{slotNr}/{portNr}";
+            }
+            catch { }
+            return "";
+        }
+
     }
 }
 
