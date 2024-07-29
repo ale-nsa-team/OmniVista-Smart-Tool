@@ -490,6 +490,7 @@ namespace PoEWizard.Comm
                         StringBuilder actionResult = new StringBuilder("\n    Cannot enable capacitor detection for device type ").Append(_wizardSwitchPort.EndPointDevice.Type);
                         if (!string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.Name)) actionResult.Append(" (").Append(_wizardSwitchPort.EndPointDevice.Name).Append(")");
                         _wizardReportResult.UpdateWizardReport(_wizardSwitchPort.Name, WizardResult.Proceed, actionResult.ToString());
+                        Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
                         return;
 
                     default:
@@ -518,7 +519,10 @@ namespace PoEWizard.Comm
             string wizardAction = $"Checking Max. Power on port {_wizardSwitchPort.Name}";
             _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
             _progress.Report(new ProgressReport(wizardAction));
+            double prevMaxPower = _wizardSwitchPort.MaxPower;
             double maxDefaultPower = GetMaxDefaultPower();
+            double maxPowerAllowed = SetMaxPowerToDefault(maxDefaultPower);
+            if (maxPowerAllowed == 0) SetMaxPowerToDefault(prevMaxPower); else maxDefaultPower = maxPowerAllowed;
             string info;
             if (_wizardSwitchPort.MaxPower < maxDefaultPower)
             {
@@ -528,7 +532,7 @@ namespace PoEWizard.Comm
             }
             else
             {
-                info = $"\n    Max. Power on port {_wizardSwitchPort.Name} is already the default ({_wizardSwitchPort.MaxPower} Watts)";
+                info = $"\n    Max. Power on port {_wizardSwitchPort.Name} is already the maximum allowed ({_wizardSwitchPort.MaxPower} Watts)";
                 _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed, info);
             }
             Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
@@ -543,35 +547,16 @@ namespace PoEWizard.Comm
                 return;
             }
             double maxDefaultPower = (double)obj;
-            string wizardAction = $"Restoring Max. Power on port {_wizardSwitchPort.Name} from {_wizardSwitchPort.MaxPower} Watts to default {maxDefaultPower} Watts";
+            string wizardAction = $"Restoring Max. Power on port {_wizardSwitchPort.Name} from {_wizardSwitchPort.MaxPower} Watts to maximum allowed {maxDefaultPower} Watts";
             _progress.Report(new ProgressReport(wizardAction));
-            _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
             double prevMaxPower = _wizardSwitchPort.MaxPower;
-            double maxPowerAllowed = SetMaxPowerToDefault(maxDefaultPower);
-            StringBuilder actionResult = new StringBuilder();
-            if (maxPowerAllowed > 0)
+            SetMaxPowerToDefault(maxDefaultPower);
+            if (prevMaxPower != _wizardSwitchPort.MaxPower)
             {
-                double maxAllowed = SetMaxPowerToDefault(maxPowerAllowed);
-                if (maxAllowed > 0)
-                {
-                    actionResult.Append($"\n    Couldn't restore Max. Power on port ").Append(_wizardSwitchPort.Name).Append(" to ");
-                    actionResult.Append(maxPowerAllowed).Append(" Watts (Max. Allowed: ").Append(maxAllowed).Append(" Watts)");
-                }
-                else
-                {
-                    actionResult.Append($"\n    Max. Power on port ").Append(_wizardSwitchPort.Name).Append(" ");
-                    if (prevMaxPower != _wizardSwitchPort.MaxPower) actionResult.Append("was restored to"); else actionResult.Append("is already");
-                    actionResult.Append($" the maximum allowed ").Append(maxPowerAllowed).Append(" Watts");
-                    if (!_wizardSwitchPort.Is4Pair) actionResult.Append(" (2-pair enable)");
-                }
+                _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
+                SwitchModel.ConfigChanged = true;
+                Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
             }
-            else if (prevMaxPower != _wizardSwitchPort.MaxPower)
-            {
-                actionResult.Append("completed");
-            }
-            SwitchModel.ConfigChanged = (prevMaxPower != _wizardSwitchPort.MaxPower);
-            _wizardReportResult.UpdateWizardReport(_wizardSwitchPort.Name, WizardResult.Proceed, actionResult.ToString());
-            Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
         }
 
         private double SetMaxPowerToDefault(double maxDefaultPower)

@@ -719,7 +719,7 @@ namespace PoEWizard
             if (selectedPort.Poe == PoeStatus.Searching)
             {
                 await RunWizardCommands(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE }, 45);
-                result = reportResult.GetReportResult(selectedPort.Name);
+                if (reportResult.GetReportResult(selectedPort.Name) != WizardResult.Ok && result != WizardResult.Fail) reportResult.RemoveLastWizardReport(selectedPort.Name);
                 reset = true;
             }
             await CheckDefaultMaxPower();
@@ -741,7 +741,6 @@ namespace PoEWizard
         private async Task CheckDefaultMaxPower()
         {
             await RunWizardCommands(new List<CommandType>() { CommandType.CHECK_MAX_POWER });
-            if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.Skip) return;
             if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.Warning)
             {
                 string alert = reportResult.GetAlertDescription(selectedPort.Name);
