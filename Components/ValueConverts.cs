@@ -2,7 +2,6 @@
 using PoEWizard.Device;
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -49,49 +48,58 @@ namespace PoEWizard.Components
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(value)) return Colors.Default;
-            string val = value?.ToString() ?? string.Empty;
-            string param = parameter?.ToString() ?? string.Empty;
-            switch (param)
+
+            try
             {
-                case "ConnectionStatus":
-                    return val == "Reachable" ? Colors.Clear : Colors.Danger;
-                case "Temperature":
-                    return val == "UnderThreshold" ? Colors.Clear : val == "OverThreshold" ? Colors.Warn : Colors.Danger;
-                case "Power":
-                    float percent = Utils.ParseFloat(value);
-                    return percent > 10 ? Colors.Clear : (percent > 0 ? Colors.Warn : Colors.Danger);
-                case "Poe":
-                    switch (val)
-                    {
-                        case "On":
-                            return Colors.Clear;
-                        case "Fault":
-                        case "Deny":
-                        case "Conflict":
-                            return Colors.Danger;
-                        case "Searching":
-                            return Colors.Problem;
-                        case "Off":
-                            return Colors.Warn;
-                        default:
-                            return Colors.Disable;
-                    }
-                case "PoeStatus":
-                    return val == "Normal" ? Colors.Clear : val == "NearThreshold" ? Colors.Warn : Colors.Danger;
-                case "PortStatus":
-                    return val == "Up" ? Colors.Clear : val == "Down" ? Colors.Danger : Colors.Unknown;
-                case "PowerSupply":
-                    return val == "Up" ? Colors.Clear : Colors.Danger;
-                case "RunningDir":
-                    return val == CERTIFIED_DIR ? Colors.Danger : Colors.Default;
-                case "Boolean":
-                    return val.ToLower() == "true" ? Colors.Clear : Colors.Danger;
-                case "AosVersion":
-                    return Utils.IsOldAosVersion(val) ? Colors.Warn : Colors.Default;
-                default:
-                    return Colors.Unknown;
+                if (Utils.IsInvalid(value)) return Colors.Default;
+                string val = value?.ToString() ?? string.Empty;
+                string param = parameter?.ToString() ?? string.Empty;
+                switch (param)
+                {
+                    case "ConnectionStatus":
+                        return val == "Reachable" ? Colors.Clear : Colors.Danger;
+                    case "Temperature":
+                        return val == "UnderThreshold" ? Colors.Clear : val == "OverThreshold" ? Colors.Warn : Colors.Danger;
+                    case "Power":
+                        float percent = Utils.ParseFloat(value);
+                        return percent > 10 ? Colors.Clear : (percent > 0 ? Colors.Warn : Colors.Danger);
+                    case "Poe":
+                        switch (val)
+                        {
+                            case "On":
+                                return Colors.Clear;
+                            case "Fault":
+                            case "Deny":
+                            case "Conflict":
+                                return Colors.Danger;
+                            case "Searching":
+                                return Colors.Problem;
+                            case "Off":
+                                return Colors.Warn;
+                            default:
+                                return Colors.Disable;
+                        }
+                    case "PoeStatus":
+                        return val == "Normal" ? Colors.Clear : val == "NearThreshold" ? Colors.Warn : Colors.Danger;
+                    case "PortStatus":
+                        return val == "Up" ? Colors.Clear : val == "Down" ? Colors.Danger : Colors.Unknown;
+                    case "PowerSupply":
+                        return val == "Up" ? Colors.Clear : Colors.Danger;
+                    case "RunningDir":
+                        return val == CERTIFIED_DIR ? Colors.Danger : Colors.Default;
+                    case "Boolean":
+                        return val.ToLower() == "true" ? Colors.Clear : Colors.Danger;
+                    case "AosVersion":
+                        return Utils.IsOldAosVersion(val) ? Colors.Warn : Colors.Default;
+                    default:
+                        return Colors.Unknown;
+                }
             }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return Colors.Unknown;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -104,10 +112,10 @@ namespace PoEWizard.Components
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(values)) return Colors.Default;
-            string versionType = parameter?.ToString() ?? FPGA;
             try
             {
+                if (Utils.IsInvalid(values)) return Colors.Default;
+                string versionType = parameter?.ToString() ?? FPGA;
                 string model = values[0].ToString();
                 string versions = values[1].ToString();
                 int[] minversion = Utils.GetMinimunVersion(model, versionType);
@@ -125,7 +133,8 @@ namespace PoEWizard.Components
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            return null;
+            string[] splitValues = (value?.ToString() ?? string.Empty).Split(' ');
+            return splitValues;
         }
     }
 
@@ -139,7 +148,8 @@ namespace PoEWizard.Components
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            return null;
+            string[] splitValues = (value?.ToString() ?? string.Empty).Split(' ');
+            return splitValues;
         }
     }
 
@@ -147,11 +157,18 @@ namespace PoEWizard.Components
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(value)) return false;
-            string val = value?.ToString() ?? string.Empty;
-            string par = parameter?.ToString() ?? string.Empty;
-            ConfigType ct = Enum.TryParse(val, true, out ConfigType c) ? c : ConfigType.Unavailable;
-            return par == "Available" ? ct != ConfigType.Unavailable : ct == ConfigType.Enable;
+            try
+            {
+                if (Utils.IsInvalid(value)) return false;
+                string val = value?.ToString() ?? string.Empty;
+                string par = parameter?.ToString() ?? string.Empty;
+                ConfigType ct = Enum.TryParse(val, true, out ConfigType c) ? c : ConfigType.Unavailable;
+                return par == "Available" ? ct != ConfigType.Unavailable : ct == ConfigType.Enable;
+            } catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return false;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -164,14 +181,22 @@ namespace PoEWizard.Components
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(value)) return string.Empty;
-            string val = value?.ToString() ?? string.Empty;
-            ConfigType ct = Enum.TryParse(val, true, out ConfigType c) ? c : ConfigType.Unavailable;
-            switch (ct)
+            try
             {
-                case ConfigType.Enable: return "✓";
-                case ConfigType.Disable: return "✗";
-                default: return string.Empty;
+                if (Utils.IsInvalid(value)) return string.Empty;
+                string val = value?.ToString() ?? string.Empty;
+                ConfigType ct = Enum.TryParse(val, true, out ConfigType c) ? c : ConfigType.Unavailable;
+                switch (ct)
+                {
+                    case ConfigType.Enable: return "✓";
+                    case ConfigType.Disable: return "✗";
+                    default: return string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return string.Empty;
             }
         }
 
@@ -185,8 +210,17 @@ namespace PoEWizard.Components
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(value)) return Visibility.Collapsed;
-            return Utils.IsOldAosVersion(value) ? Visibility.Visible : Visibility.Collapsed;
+            try
+            {
+                if (Utils.IsInvalid(value)) return Visibility.Collapsed;
+                return Utils.IsOldAosVersion(value) ? Visibility.Visible : Visibility.Collapsed;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return Visibility.Collapsed;
+            }
+
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -199,8 +233,16 @@ namespace PoEWizard.Components
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(value)) return Visibility.Collapsed;
-            return value.ToString() == "OverThreshold" || value.ToString() == "Danger" ? Visibility.Visible : Visibility.Collapsed;
+            try
+            {
+                if (Utils.IsInvalid(value)) return Visibility.Collapsed;
+                return value.ToString() == "OverThreshold" || value.ToString() == "Danger" ? Visibility.Visible : Visibility.Collapsed;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return Visibility.Collapsed;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -213,9 +255,17 @@ namespace PoEWizard.Components
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(value)) return string.Empty;
-            bool val = bool.TryParse(value.ToString(), out bool b) && b;
-            return val ? "✓" : "✗";
+            try
+            {
+                if (Utils.IsInvalid(value)) return string.Empty;
+                bool val = bool.TryParse(value.ToString(), out bool b) && b;
+                return val ? "✓" : "✗";
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return string.Empty;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -228,16 +278,25 @@ namespace PoEWizard.Components
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(values)) return string.Empty;
-            string val = values[0].ToString();
-            PoeStatus poeType = string.IsNullOrEmpty(val) || val.Contains("UnsetValue") ? PoeStatus.NoPoe : (PoeStatus)Enum.Parse(typeof(PoeStatus), val);
-            bool is4pair = !bool.TryParse(values[1].ToString(), out bool b) || b;
-            return poeType != PoeStatus.NoPoe ? (is4pair ? "4-pair" : "2-pair") : string.Empty;
+            try
+            {
+                if (Utils.IsInvalid(values)) return string.Empty;
+                string val = values[0].ToString();
+                PoeStatus poeType = string.IsNullOrEmpty(val) || val.Contains("UnsetValue") ? PoeStatus.NoPoe : (PoeStatus)Enum.Parse(typeof(PoeStatus), val);
+                bool is4pair = !bool.TryParse(values[1].ToString(), out bool b) || b;
+                return poeType != PoeStatus.NoPoe ? (is4pair ? "4-pair" : "2-pair") : string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return string.Empty;
+            }
+
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            string[] splitValues = (value.ToString()).Split(' ');
+            string[] splitValues = (value?.ToString() ?? string.Empty).Split(' ');
             return splitValues;
         }
     }
@@ -246,16 +305,25 @@ namespace PoEWizard.Components
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(values)) return PriorityLevelType.Low;
-            string val = values[0].ToString();
-            PoeStatus poeType = string.IsNullOrEmpty(val) || val.Contains("UnsetValue") ? PoeStatus.NoPoe : (PoeStatus)Enum.Parse(typeof(PoeStatus), val);
-            string priorityLevel = values[1].ToString();
-            return poeType != PoeStatus.NoPoe ? Enum.Parse(typeof(PriorityLevelType), priorityLevel) : PriorityLevelType.Low;
+            try
+            {
+                if (Utils.IsInvalid(values)) return PriorityLevelType.Low;
+                string val = values[0].ToString();
+                PoeStatus poeType = string.IsNullOrEmpty(val) || val.Contains("UnsetValue") ? PoeStatus.NoPoe : (PoeStatus)Enum.Parse(typeof(PoeStatus), val);
+                string priorityLevel = values[1].ToString();
+                return poeType != PoeStatus.NoPoe ? Enum.Parse(typeof(PriorityLevelType), priorityLevel) : PriorityLevelType.Low;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return PriorityLevelType.Low;
+            }
+
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            string[] splitValues = (value.ToString()).Split(' ');
+            string[] splitValues = (value?.ToString() ?? string.Empty).Split(' ');
             return splitValues;
         }
     }
@@ -264,14 +332,23 @@ namespace PoEWizard.Components
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(values)) return Colors.Default;
-            double pct = Utils.GetThresholdPercentage(values);
-            return pct > 0.1 ? Colors.Clear : pct < 0 ? Colors.Danger : Colors.Warn;
+            try
+            {
+                if (Utils.IsInvalid(values)) return Colors.Default;
+                double pct = Utils.GetThresholdPercentage(values);
+                return pct > 0.1 ? Colors.Clear : pct < 0 ? Colors.Danger : Colors.Warn;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return Colors.Unknown;
+            }
+
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            string[] splitValues = (value.ToString()).Split(' ');
+            string[] splitValues = (value?.ToString() ?? string.Empty).Split(' ');
             return splitValues;
         }
     }
@@ -280,15 +357,24 @@ namespace PoEWizard.Components
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(values)) return string.Empty;
-            int thrshld = int.TryParse(values[1].ToString(), out int i) ? i : 0;
-            double pct = Utils.GetThresholdPercentage(values);
-            return pct > 0.1 ? string.Empty : pct < 0 ? $"CPU usage over threshold ({thrshld}%)" : $"CPU usage near threshold ({thrshld}%)";
+            try
+            {
+                if (Utils.IsInvalid(values)) return null;
+                int thrshld = int.TryParse(values[1].ToString(), out int i) ? i : 0;
+                double pct = Utils.GetThresholdPercentage(values);
+                return pct > 0.1 ? string.Empty : pct < 0 ? $"CPU usage over threshold ({thrshld}%)" : $"CPU usage near threshold ({thrshld}%)";
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return null;    
+            }
+
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            string[] splitValues = (value.ToString()).Split(' ');
+            string[] splitValues = (value?.ToString() ?? string.Empty).Split(' ');
             return splitValues;
         }
     }
@@ -297,14 +383,22 @@ namespace PoEWizard.Components
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(values)) return Visibility.Collapsed;
-            double pct = Utils.GetThresholdPercentage(values);
-            return pct > 0.1 ? Visibility.Collapsed : Visibility.Visible;
+            try
+            {
+                if (Utils.IsInvalid(values)) return Visibility.Collapsed;
+                double pct = Utils.GetThresholdPercentage(values);
+                return pct > 0.1 ? Visibility.Collapsed : Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return Visibility.Collapsed;
+            }
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            string[] splitValues = (value.ToString()).Split(' ');
+            string[] splitValues = (value?.ToString() ?? string.Empty).Split(' ');
             return splitValues;
         }
     }
@@ -313,12 +407,21 @@ namespace PoEWizard.Components
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(value)) return null;
-            if (value is EndPointDeviceModel edm)
+            try
             {
-                return edm.ToTooltip();
+                if (Utils.IsInvalid(value)) return null;
+                if (value is EndPointDeviceModel edm)
+                {
+                    return edm.ToTooltip();
+                }
+                return null;
             }
-            return null;
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return null;
+            }
+
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

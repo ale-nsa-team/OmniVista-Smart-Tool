@@ -316,11 +316,11 @@ namespace PoEWizard.Data
         {
             if (aos == null) return false;
             Match version = Regex.Match(aos.ToString(), Constants.MATCH_AOS_VERSION);
-            if (version.Success)
+            if (version.Success && version.Groups.Count > 5)
             {
-                int v1 = int.Parse(version.Groups[1].ToString());
-                int v2 = int.Parse(version.Groups[2].ToString());
-                int r = int.Parse(version.Groups[5].ToString());
+                int v1 = int.TryParse(version.Groups[1].ToString(),out int i) ? i : 9;
+                int v2 = int.TryParse(version.Groups[2].ToString(), out i) ? i : 9;
+                int r = int.TryParse(version.Groups[5].ToString(), out i) ? i : 9;
                 string[] minver = Constants.MIN_AOS_VERSION.Split(' ');
                 int minv1 = int.Parse(minver[0].Split('.')[0]);
                 int minv2 = int.Parse(minver[0].Split('.')[1]);
