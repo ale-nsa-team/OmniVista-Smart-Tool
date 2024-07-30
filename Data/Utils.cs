@@ -180,7 +180,7 @@ namespace PoEWizard.Data
                 string[] parts = fname.Split(new char[] { '.', '<', '>' });
                 if (parts.Length > 2) return $"{parts[1].Replace("+", string.Empty)}: {parts[2]}";
             }
-            return $" by Method {method.Name} of {method.DeclaringType.Name}";
+            return $"Method {method.Name} of {method.DeclaringType.Name} class";
         }
 
         public static string PrintXMLDoc(string xmlDoc)

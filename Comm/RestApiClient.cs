@@ -188,13 +188,11 @@ namespace PoEWizard.Comm
 
         private Dictionary<string, string> SendRestApiRequest(RestUrlEntry entry, string url)
         {
-            Dictionary<string, string> response = new Dictionary<string, string>
-            {
-                [RestUrl.REST_URL] = url, [RestUrl.RESULT] = "", [Constants.ERROR] = "", [RestUrl.DURATION] = ""
-            };
+            Dictionary<string, string> response = new Dictionary<string, string> { [RestUrl.REST_URL] = url, [Constants.ERROR] = "", [RestUrl.DURATION] = "" };
             try
             {
                 url = $"{this._httpClient.BaseAddress}{url}";
+                response[RestUrl.REST_URL] = url;
                 HttpRequestMessage request = GetHttpRequest(entry, url);
                 var http_response = this._httpClient.SendAsync(request);
                 while (!http_response.IsCompleted) { };

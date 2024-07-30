@@ -1169,7 +1169,7 @@ namespace PoEWizard.Comm
 
         private void LogSendRequest(RestUrlEntry entry, Dictionary<string, string> response)
         {
-            StringBuilder txt = new StringBuilder("API Request sent").Append(Utils.PrintMethodClass(3)).Append(":\n").Append(entry.ToString());
+            StringBuilder txt = new StringBuilder("API Request sent by ").Append(Utils.PrintMethodClass(3)).Append(":\n").Append(entry.ToString());
             txt.Append("\nRequest API URL: ").Append(response[REST_URL]);
             if (Logger.LogLevel == LogLevel.Info) Logger.Info(txt.ToString());
             if (entry.Response.ContainsKey(RESULT))
