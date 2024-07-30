@@ -188,7 +188,6 @@ namespace PoEWizard.Comm
             {
                 if (SwitchModel.SyncStatus != SyncStatusType.Synchronized)
                 {
-                    SwitchModel.ConfigChanged = false;
                     WriteFlashSynchro(waitSec);
                 }
             }
@@ -246,7 +245,6 @@ namespace PoEWizard.Comm
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
                 _progress.Report(progressReport);
                 Logger.Info($"{result}\n{progressReport.Message}");
-                SwitchModel.ConfigChanged = true;
                 Logger.Info($"{action} on Slot {_wizardSwitchSlot.Name}\n{progressReport.Message}");
                 return true;
             }
@@ -278,7 +276,6 @@ namespace PoEWizard.Comm
                 progressReport.Message += $"\n - Priority on port {port} set to {priority}";
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
                 _progress.Report(progressReport);
-                SwitchModel.ConfigChanged = true;
                 Logger.Info($"Changed priority to {priority} on port {port}\n{progressReport.Message}");
                 return true;
             }
@@ -313,7 +310,6 @@ namespace PoEWizard.Comm
                 if (_wizardSwitchSlot != null && !_wizardSwitchSlot.IsInitialized)
                 {
                     PowerUpSlot();
-                    SwitchModel.ConfigChanged = true;
                 }
             }
             catch (Exception ex)
@@ -506,7 +502,6 @@ namespace PoEWizard.Comm
                 WaitPortUp(waitSec, wizardAction);
                 if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok)
                 {
-                    SwitchModel.ConfigChanged = true;
                     return;
                 }
                 SendRequest(GetRestUrlEntry(CommandType.CAPACITOR_DETECTION_DISABLE, new string[1] { _wizardSwitchPort.Name }));
@@ -558,7 +553,6 @@ namespace PoEWizard.Comm
             if (prevMaxPower != _wizardSwitchPort.MaxPower)
             {
                 _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
-                SwitchModel.ConfigChanged = true;
                 Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
             }
         }
@@ -632,7 +626,6 @@ namespace PoEWizard.Comm
                 SendRequest(GetRestUrlEntry(CommandType.POWER_4PAIR_PORT, new string[1] { _wizardSwitchPort.Name }));
                 Thread.Sleep(3000);
                 ExecuteActionOnPort($"Re-enabling 2-Pair Power on port {_wizardSwitchPort.Name}", waitSec, CommandType.POWER_2PAIR_PORT);
-                if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok) SwitchModel.ConfigChanged = false;
             }
             else
             {
@@ -683,7 +676,6 @@ namespace PoEWizard.Comm
                 _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
                 if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok)
                 {
-                    SwitchModel.ConfigChanged = true;
                     return;
                 }
                 if (restoreCmd != _wizardCommand) SendRequest(GetRestUrlEntry(restoreCmd, new string[1] { _wizardSwitchPort.Name }));
@@ -738,7 +730,6 @@ namespace PoEWizard.Comm
                 _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
                 if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok)
                 {
-                    SwitchModel.ConfigChanged = true;
                     return;
                 }
                 Change823BT(CommandType.POWER_823BT_DISABLE);
@@ -804,7 +795,6 @@ namespace PoEWizard.Comm
                 _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.CalcStringDuration(startTime, true));
                 if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok)
                 {
-                    SwitchModel.ConfigChanged = true;
                     return;
                 }
                 SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, prevPriority.ToString() }));
@@ -940,7 +930,6 @@ namespace PoEWizard.Comm
                     }
                     if (slot.PowerClassDetection == ConfigType.Disable)
                     {
-                        SwitchModel.ConfigChanged = true;
                         SendRequest(GetRestUrlEntry(CommandType.POWER_CLASS_DETECTION_ENABLE, new string[1] { $"{slot.Name}" }));
                     }
                     GetSlotPower(slot);
@@ -1038,7 +1027,6 @@ namespace PoEWizard.Comm
                 cmd == CommandType.POE_PERPETUAL_DISABLE && _wizardSwitchSlot.PPoE == ConfigType.Disable ||
                 cmd == CommandType.POE_FAST_DISABLE && _wizardSwitchSlot.FPoE == ConfigType.Disable)
             {
-                SwitchModel.ConfigChanged = true;
                 result += "executed";
             }
             else

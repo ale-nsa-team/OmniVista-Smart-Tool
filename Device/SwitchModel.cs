@@ -35,7 +35,6 @@ namespace PoEWizard.Device
         public bool IsConnected { get; set; }
         public PowerSupplyState PowerSupplyState => GetPowerSupplyState();
         public string ConfigSnapshot { get; set; }
-        public bool ConfigChanged { get; set; } = false;
         public string CurrTemperature { get; set; } 
         public ThresholdType TemperatureStatus { get; set; }
         public int Cpu { get; set; }
