@@ -87,7 +87,7 @@ namespace PoEWizard.Data
             CHANGE_MAX_POWER = 104
         }
 
-        private readonly static Dictionary<CommandType, string> CLI_TABLE = new Dictionary<CommandType, string>
+        public readonly static Dictionary<CommandType, string> CLI_TABLE = new Dictionary<CommandType, string>
         {
             // 0 - 29: Basic commands to gather switch data
             [CommandType.SHOW_SYSTEM] = "show system",                                            //  0

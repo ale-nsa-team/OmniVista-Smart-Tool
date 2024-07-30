@@ -55,7 +55,6 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CMM));
                 Dictionary<string, string> dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.Cmm);
-                SendRequest(GetRestUrlEntry(CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE));
                 ScanSwitch(reportResult, $"Connect to switch {SwitchModel.IpAddress}");
             }
             catch (Exception ex)
@@ -68,6 +67,7 @@ namespace PoEWizard.Comm
         {
             try
             {
+                GetSnapshot();
                 this._wizardReportResult = reportResult;
                 List<Dictionary<string, string>> diclist;
                 GetSystemInfo();
@@ -91,7 +91,6 @@ namespace PoEWizard.Comm
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.CpuTrafficList);
                 GetLanPower();
-                GetSnapshot();
                 _progress.Report(new ProgressReport($"Reading lldp remote information on Switch {SwitchModel.IpAddress}"));
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LLDP_REMOTE));
                 diclist = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
@@ -126,6 +125,14 @@ namespace PoEWizard.Comm
                 Logger.Debug(txt);
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CONFIGURATION));
                 SwitchModel.ConfigSnapshot = _response[RESULT];
+                txt = $"Checking LLDP description enabled on Switch {SwitchModel.IpAddress}";
+                _progress.Report(new ProgressReport(txt));
+                Logger.Debug(txt);
+                if (!SwitchModel.ConfigSnapshot.Contains(RestUrl.CLI_TABLE[CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE]))
+                {
+                    SendRequest(GetRestUrlEntry(CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE));
+                    WriteMemory();
+                }
             }
             catch (Exception ex)
             {
@@ -179,7 +186,7 @@ namespace PoEWizard.Comm
         {
             try
             {
-                if (SwitchModel.ConfigChanged)
+                if (SwitchModel.SyncStatus != SyncStatusType.Synchronized)
                 {
                     SwitchModel.ConfigChanged = false;
                     WriteFlashSynchro(waitSec);
