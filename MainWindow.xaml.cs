@@ -925,9 +925,12 @@ namespace PoEWizard
         {
             if (selectedPort != null)
             {
-                _portList.SelectionChanged -= PortSelection_Changed;
-                _portList.SelectedItem = _portList.Items[selectedPortIndex];
-                _portList.SelectionChanged += PortSelection_Changed;
+                if (_portList.Items?.Count > selectedPortIndex)
+                {
+                    _portList.SelectionChanged -= PortSelection_Changed;
+                    _portList.SelectedItem = _portList.Items[selectedPortIndex];
+                    _portList.SelectionChanged += PortSelection_Changed;
+                }
             }
         }
 
