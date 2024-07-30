@@ -129,6 +129,7 @@ namespace PoEWizard.Data
             List <Dictionary<string, string>> dictList = new List<Dictionary<string, string>>();
             Dictionary<string, string> dict = new Dictionary<string, string>();
             string[] split;
+            bool skip = false;
             using (StringReader reader = new StringReader(data))
             {
                 string line;
@@ -138,9 +139,11 @@ namespace PoEWizard.Data
                     if (line.Contains("Local Port "))
                     {
                         if (dict.Count > 3) dictList.Add(dict);
+                        skip = false;
                         dict = new Dictionary<string, string> { ["Local Port"] = Utils.ExtractSubString(line.Trim(), "Local Port ", ":") };
                         continue;
                     }
+                    if (skip) continue;
                     char sep = line.Contains("=") ? '=' : (line.Contains(",") ? ',' : '\0'); 
                     if (sep == '\0') continue;
                     split = line.Trim().Split(sep);
@@ -148,6 +151,11 @@ namespace PoEWizard.Data
                     {
                         if (split[0].Contains("Chassis") && !split[0].Contains("Subtype"))
                         {
+                            if (dict.ContainsKey(CHASSIS_MAC_ADDRESS) && dict.ContainsKey(REMOTE_PORT))
+                            {
+                                skip = true;
+                                continue;
+                            }
                             string[] splitVal = split[0].Trim().Split(' ');
                             dict[CHASSIS_MAC_ADDRESS] = splitVal[1].Trim();
                             splitVal = split[1].Trim().Split(' ');

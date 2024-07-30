@@ -44,7 +44,6 @@ namespace PoEWizard.Device
             string[] portSplit = Utils.GetDictValue(dict, PORT_SUBTYPE).Split(' ');
             if (portSplit.Length > 1) PortSubType = (PortSubType)Enum.ToObject(typeof(PortSubType), Utils.StringToInt(portSplit[0]));
             Type = Utils.GetDictValue(dict, CAPABILITIES_ENABLED);
-            if (PortSubType == PortSubType.LocallyAssigned) Type = string.Empty;
             IpAddress = Utils.GetDictValue(dict, MED_IP_ADDRESS);
             EthernetType = Utils.GetDictValue(dict, MAU_TYPE);
             Name = Utils.GetDictValue(dict, SYSTEM_NAME).Replace("(null)", string.Empty);
@@ -55,7 +54,7 @@ namespace PoEWizard.Device
                 if (string.IsNullOrEmpty(Name)) Name = $"Remote port {RemotePort}";
                 Type = SWITCH;
             }
-            Description = Utils.GetDictValue(dict, SYSTEM_DESCRIPTION).Replace("(null)", string.Empty);
+            Description = Utils.GetDictValue(dict, SYSTEM_DESCRIPTION).Replace("(null)", string.Empty).Replace("-", string.Empty);
             string[] capList = Utils.GetDictValue(dict, MED_CAPABILITIES).Split('|');
             if (capList.Length > 1)
             {
@@ -74,7 +73,7 @@ namespace PoEWizard.Device
 
         public void LoadLldpInventoryTable(Dictionary<string, string> dict)
         {
-            if (Utils.GetDictValue(dict, LOCAL_PORT) != LocalPort) return;
+            if (Utils.GetDictValue(dict, LOCAL_PORT) != LocalPort || Utils.GetDictValue(dict, CHASSIS_MAC_ADDRESS) != MacAddress) return;
             Vendor = Utils.GetDictValue(dict, MED_MANUFACTURER).Replace("\"", "");
             Model = Utils.GetDictValue(dict, MED_MODEL).Replace("\"", "");
             HardwareVersion = Utils.GetDictValue(dict, MED_HARDWARE_REVISION).Replace("\"", "");
@@ -110,7 +109,7 @@ namespace PoEWizard.Device
             //if (Capabilities?.Count > 0) tip.Add($"Capabilities: [{string.Join(",", Capabilities)}]");
             if(!string.IsNullOrEmpty(MEDPowerValue)) tip.Add($"Power Value: {MEDPowerValue}");
             if (!string.IsNullOrEmpty(MEDPowerPriority)) tip.Add($"Power Priority: {MEDPowerPriority}");
-
+            if (!string.IsNullOrEmpty(RemotePort)) tip.Add($"Remote Port: {RemotePort}");
             return tip.Count > 0 ? string.Join("\n", tip) : null;
         }
 
