@@ -25,7 +25,8 @@ namespace PoEWizard.Data
         public enum ChassisStatus { Unknown, Up, Down }
         public enum DictionaryType
         {
-            SystemRunningDir, Chassis, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList, MacAddressList, TemperatureList, CpuTrafficList, LldpInventoryList
+            SystemRunningDir, Chassis, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, 
+            LldpRemoteList, MacAddressList, TemperatureList, CpuTrafficList, LldpInventoryList
         }
         public enum ConfigType { Enable, Disable, Unavailable }
         public enum DeviceType

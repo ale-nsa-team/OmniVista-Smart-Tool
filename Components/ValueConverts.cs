@@ -91,6 +91,10 @@ namespace PoEWizard.Components
                         return val.ToLower() == "true" ? Colors.Clear : Colors.Danger;
                     case "AosVersion":
                         return Utils.IsOldAosVersion(val) ? Colors.Warn : Colors.Default;
+                    case "SyncStatus":
+                        return val == SyncStatusType.Synchronized.ToString() ? Colors.Clear :
+                               val == SyncStatusType.NotSynchronized.ToString() ? Colors.Danger :
+                               val == SyncStatusType.Unknown.ToString() ? Colors.Unknown : Colors.Warn;
                     default:
                         return Colors.Unknown;
                 }

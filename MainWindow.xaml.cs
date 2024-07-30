@@ -466,8 +466,8 @@ namespace PoEWizard
                     if (device.SyncStatus == SyncStatusType.NotSynchronized)
                     {
                         if (ShowMessageBox("Write Memory required",
-                                           "Switch configuration has changed!\nIt will take around 30 sec to execute Write Memory Flash.\nDo you want to proceed?",
-                                           MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
+                                "Flash memory is not synchronized\nDo you want to save it now?\nIt will may take up to 30 sec to execute Write Memory.",
+                                MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
                         {
                             _btnRunWiz.IsEnabled = false;
                             _refreshSwitch.IsEnabled = false;
