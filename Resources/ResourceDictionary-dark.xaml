@@ -590,6 +590,7 @@
     <Style x:Key="fileBox" TargetType="RichTextBox">
         <Setter Property="Background" Value="{StaticResource popupBackgroundColor}" />
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+        <Setter Property="Block.LineHeight" Value="2" />
         <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
     </Style>
 
