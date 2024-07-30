@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -109,6 +111,22 @@ namespace PoEWizard.Data
             }
             catch { }
             return 0;
+        }
+
+        public static long StringToLong(string strNumber)
+        {
+            if (string.IsNullOrEmpty(strNumber)) return -1;
+            try
+            {
+                string number = ExtractNumber(strNumber);
+                if (!string.IsNullOrEmpty(number))
+                {
+                    bool isNumeric = long.TryParse(number.Trim(), out long longVal);
+                    if (isNumeric && (longVal >= 0)) return longVal;
+                }
+            }
+            catch { }
+            return -1;
         }
 
         public static string ExtractNumber(string strNumber)
@@ -383,6 +401,17 @@ namespace PoEWizard.Data
             }
             catch { }
             return "";
+        }
+
+        public static string GetEnumDescription(Enum enaumValue)
+        {
+            try
+            {
+                FieldInfo fi = enaumValue.GetType().GetField(enaumValue.ToString());
+                return fi.GetCustomAttributes(typeof(DescriptionAttribute), false) is DescriptionAttribute[] attributes && attributes.Any() ? attributes.First().Description : enaumValue.ToString();
+            }
+            catch { }
+            return enaumValue.ToString();
         }
 
     }

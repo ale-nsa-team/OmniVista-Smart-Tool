@@ -25,8 +25,7 @@ namespace PoEWizard.Data
         public enum ChassisStatus { Unknown, Up, Down }
         public enum DictionaryType
         {
-            System, Chassis, RunningDir, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList, MacAddressList,
-            TemperatureList, CpuTrafficList, LldpInventoryList
+            SystemRunningDir, Chassis, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList, MacAddressList, TemperatureList, CpuTrafficList, LldpInventoryList
         }
         public enum ConfigType { Enable, Disable, Unavailable }
         public enum DeviceType
@@ -43,6 +42,19 @@ namespace PoEWizard.Data
         public enum ThresholdType { Unknown, UnderThreshold, OverThreshold, Danger }
         public enum WizardResult { Starting, Ok, Warning, Fail, NothingToDo, Proceed, Skip };
         public enum PortSubType { Unknown = 0, InterfaceAlias = 1, PortComponent = 2, MacAddress = 3, NetworkAddress = 4, InterfaceName = 5, AgentCircuitId = 6, LocallyAssigned = 7 }
+        public enum SyncStatusType
+        {
+            [Description("Unknown")]
+            Unknown = 0,
+            [Description("Synchronized (Certified)")]
+            Synchronized = 1,
+            [Description("Not Synchronized")]
+            NotSynchronized = 2,
+            [Description("Synchronized (Need Certified)")]
+            SynchronizedNeedCertified = 3,
+            [Description("Synchronized (Certified Unknown)")]
+            SynchronizedUnknownCertified = 4
+        }
         #endregion
 
         #region dictionaries
@@ -135,6 +147,17 @@ namespace PoEWizard.Data
         // Used by "SHOW_RUNNING_DIR"
         public const string RUNNING_CONFIGURATION = "Running configuration";
         public const string SYNCHRONIZATION_STATUS = "Running Configuration";
+        // Used by "SHOW_SYSTEM_RUNNING_DIR"
+        public const string CONFIG_CHANGE_STATUS = "configChangeStatus";
+        public const string SYS_NAME = "sysName";
+        public const string SYS_DESCR = "sysDescr";
+        public const string SYS_LOCATION = "sysLocation";
+        public const string SYS_CONTACT = "sysContact";
+        public const string SYS_UP_TIME = "sysUpTime";
+        public const string SYS_RUNNING_CONFIGURATION = "chasControlCurrentRunningVersion";
+        public const string CHAS_CONTROL_CERTIFY = "chasControlCertifyStatus";
+        public const string SYNCHRONIZED = "Synchronized";
+        public const string NOT_SYNCHRONIZED = "Not Synchronized";
         // Used by "SHOW_MICROCODE"
         public const string RELEASE = "Release";
         // Used by SHOW_POWER_SUPPLY

@@ -463,7 +463,7 @@ namespace PoEWizard
                 if (restApiService != null && !isClosing)
                 {
                     isClosing = true;
-                    if (device.ConfigChanged)
+                    if (device.SyncStatus == SyncStatusType.NotSynchronized)
                     {
                         if (ShowMessageBox("Write Memory required",
                                            "Switch configuration has changed!\nIt will take around 30 sec to execute Write Memory Flash.\nDo you want to proceed?",

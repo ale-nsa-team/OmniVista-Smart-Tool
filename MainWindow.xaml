@@ -190,7 +190,8 @@
                 <Label Grid.Row="11" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_runningDir" Content="{Binding RunningDir}"
                        Foreground="{Binding Path=RunningDir, Converter={StaticResource ValueToColorConverter}, ConverterParameter=RunningDir}"/>
                 <Label Grid.Row="12" Grid.Column="0" Style="{DynamicResource keyLabel}">Synchronization:</Label>
-                <Label Grid.Row="12" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_syncStatus" Content="{Binding SyncStatus}"/>
+                <Label Grid.Row="12" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_syncStatus" Content="{Binding SyncStatusLabel}"
+                       Foreground="{Binding Path=SyncStatus, Converter={StaticResource ValueToColorConverter}, ConverterParameter=SyncStatus}"/>
             </Grid>
         </StackPanel>
         <Border Grid.Row="2" x:Name="_slotInfo" Style="{DynamicResource gridBorder}" Margin="5">
