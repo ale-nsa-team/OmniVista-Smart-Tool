@@ -22,7 +22,8 @@ namespace PoEWizard.Device
         public string Fpga { get; set; }
         public string Cpld { get; set; }
         public string RunningDir { get; set; }
-        public string SyncStatus { get; set; }
+        public SyncStatusType SyncStatus { get; set; }
+        public string SyncStatusLabel { get; set; }
         public string Location { get; set; }
         public string Description { get; set; }
         public string SerialNumber { get; set; }
@@ -50,23 +51,28 @@ namespace PoEWizard.Device
             Password = password;
             CnxTimeout = cnxTimeout;
             IsConnected = false;
+            SyncStatus = SyncStatusType.Unknown;
+            SyncStatusLabel = string.Empty;
         }
 
         public void LoadFromDictionary(Dictionary<string, string> dict, DictionaryType dt)
         {
             switch (dt)
             {
-                case DictionaryType.System:
-                    Name = Utils.GetDictValue(dict, NAME);
-                    Description = Utils.GetDictValue(dict, DESCRIPTION);
-                    Location = Utils.GetDictValue(dict, LOCATION);
-                    Contact = Utils.GetDictValue(dict, CONTACT);
-                    UpTime = Utils.GetDictValue(dict, UP_TIME);
-                    break;
-
-                case DictionaryType.RunningDir:
-                    RunningDir = Utils.FirstChToUpper(Utils.GetDictValue(dict, RUNNING_CONFIGURATION));
-                    SyncStatus = Utils.FirstChToUpper(Utils.GetDictValue(dict, SYNCHRONIZATION_STATUS));
+                case DictionaryType.SystemRunningDir:
+                    Name = Utils.GetDictValue(dict, SYS_NAME);
+                    Description = Utils.GetDictValue(dict, SYS_DESCR);
+                    Location = Utils.GetDictValue(dict, SYS_LOCATION);
+                    Contact = Utils.GetDictValue(dict, SYS_CONTACT);
+                    TimeSpan dur = TimeSpan.FromSeconds(Utils.StringToLong(Utils.GetDictValue(dict, SYS_UP_TIME)) / 100);
+                    UpTime = $"{dur.Days} days, {dur.Hours} hours, {dur.Minutes} minutes and {dur.Seconds} seconds";
+                    string sync = Utils.GetDictValue(dict, CONFIG_CHANGE_STATUS);
+                    string cert = Utils.GetDictValue(dict, CHAS_CONTROL_CERTIFY);
+                    SyncStatus = sync == "1" ? cert == "3" ? SyncStatusType.Synchronized : 
+                                 cert == "2" ? SyncStatusType.SynchronizedNeedCertified : SyncStatusType.SynchronizedUnknownCertified :
+                                 SyncStatusType.NotSynchronized;
+                    SyncStatusLabel = Utils.GetEnumDescription(SyncStatus);
+                    RunningDir = Utils.GetDictValue(dict, SYS_RUNNING_CONFIGURATION);
                     break;
 
                 case DictionaryType.MicroCode:

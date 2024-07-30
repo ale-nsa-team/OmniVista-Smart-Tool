@@ -29,6 +29,23 @@ namespace PoEWizard.Data
             return dictionary;
         }
 
+        public static Dictionary<string, string> ParseStringDictionary(string data)
+        {
+            Dictionary<string, string> dictionary = new Dictionary<string, string>();
+            using (StringReader reader = new StringReader(data))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.Trim().Length == 0) continue;
+                    string[] split = line.Split('=');
+                    if (split.Length != 2) continue;
+                    dictionary[split[0]] = split[1];
+                }
+            }
+            return dictionary;
+        }
+
         public static Dictionary<string, string> ParseVTable(string data)
         {
             return ParseTable(data, vtableRegex);

@@ -49,14 +49,11 @@ namespace PoEWizard.Comm
                 if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to Switch {SwitchModel.IpAddress}!");
                 SwitchModel.IsConnected = true;
                 _progress.Report(new ProgressReport($"Reading System information on Switch {SwitchModel.IpAddress}"));
-                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_SYSTEM));
-                Dictionary<string, string> dict = CliParseUtils.ParseVTable(_response[RESULT]);
-                SwitchModel.LoadFromDictionary(dict, DictionaryType.System);
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_MICROCODE));
                 List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(diclist[0], DictionaryType.MicroCode);
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CMM));
-                dict = CliParseUtils.ParseVTable(_response[RESULT]);
+                Dictionary<string, string> dict = CliParseUtils.ParseVTable(_response[RESULT]);
                 SwitchModel.LoadFromDictionary(dict, DictionaryType.Cmm);
                 SendRequest(GetRestUrlEntry(CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE));
                 ScanSwitch(reportResult, $"Connect to switch {SwitchModel.IpAddress}");
@@ -73,7 +70,7 @@ namespace PoEWizard.Comm
             {
                 this._wizardReportResult = reportResult;
                 List<Dictionary<string, string>> diclist;
-                GetRunningDir();
+                GetSystemInfo();
                 _progress.Report(new ProgressReport($"Reading chassis and port information on Switch {SwitchModel.IpAddress}"));
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CHASSIS));
                 diclist = CliParseUtils.ParseChassisTable(_response[RESULT]);
@@ -114,10 +111,10 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void GetRunningDir()
+        private void GetSystemInfo()
         {
-            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_RUNNING_DIR));
-            SwitchModel.LoadFromDictionary(CliParseUtils.ParseVTable(_response[RESULT]), DictionaryType.RunningDir);
+            this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_SYSTEM_RUNNING_DIR));
+            SwitchModel.LoadFromDictionary(CliParseUtils.ParseStringDictionary(_response[RESULT]), DictionaryType.SystemRunningDir);
         }
 
         public void GetSnapshot()
@@ -211,8 +208,8 @@ namespace PoEWizard.Comm
                     if (dur % 5 == 0)
                     {
                         bool done = false;
-                        GetRunningDir();
-                        done = SwitchModel.SyncStatus == "Synchronized";
+                        GetSystemInfo();
+                        done = SwitchModel.SyncStatus != SyncStatusType.NotSynchronized;
                     }
                 }
                 catch { }
@@ -1167,9 +1164,24 @@ namespace PoEWizard.Comm
             }
             LogSendRequest(entry, response);
             Dictionary<string, string> result = CliParseUtils.ParseXmlToDictionary(response[RESULT], "//nodes//result//*");
-            if (result != null && result.ContainsKey(OUTPUT) && !string.IsNullOrEmpty(result[OUTPUT]))
+            if (result != null)
             {
-                response[RESULT] = result[OUTPUT];
+                if (result.ContainsKey(OUTPUT) && !string.IsNullOrEmpty(result[OUTPUT]))
+                {
+                    response[RESULT] = result[OUTPUT];
+                }
+                else if (result.ContainsKey(DATA) && !string.IsNullOrEmpty(result[DATA]))
+                {
+                    List<string> data = new List<string>();
+                    bool readData = false;
+                    foreach (KeyValuePair<string, string> keyVal in result)
+                    {
+                        if (!readData && keyVal.Key == "rows") readData = true;
+                        if (!readData || keyVal.Key == "rows" || keyVal.Key == "node") continue;
+                        data.Add($"{keyVal.Key}={keyVal.Value}");
+                    }
+                    response[RESULT] = String.Join("\n", data);
+                }
             }
             return response;
         }

@@ -13,6 +13,7 @@ namespace PoEWizard.Data
         public const string DURATION = "DURATION";
         public const string API_ERROR = "error";
         public const string OUTPUT = "output";
+        public const string DATA = "data";
         public const string NODE = "node";
         public const string HTTP_RESPONSE = "diag";
 
@@ -46,6 +47,7 @@ namespace PoEWizard.Data
             LLDP_SYSTEM_DESCRIPTION_ENABLE = 18,
             SHOW_HEALTH_CONFIG = 19,
             SHOW_LLDP_INVENTORY = 20,
+            SHOW_SYSTEM_RUNNING_DIR = 21,
             // 30 - 69: Commands related to actions on port
             POWER_DOWN_PORT = 30,
             POWER_UP_PORT = 31,
@@ -109,6 +111,7 @@ namespace PoEWizard.Data
             [CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE] = "lldp nearest-bridge chassis tlv management port-description enable system-name enable system-description enable", // 18
             [CommandType.SHOW_HEALTH_CONFIG] = "show health configuration",                       // 19
             [CommandType.SHOW_LLDP_INVENTORY] = "show lldp remote-system med inventory",          // 20
+            [CommandType.SHOW_SYSTEM_RUNNING_DIR] = "mibObject0=sysName&mibObject1=sysLocation&mibObject2=sysContact&mibObject3=sysUpTime&mibObject4=sysDescr&mibObject5=configChangeStatus&mibObject6=chasControlCurrentRunningVersion&mibObject7=chasControlCertifyStatus&urn=chasControlModuleTable", // 21
             // 30 - 69: Commands related to actions on port
             [CommandType.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",        // 30
             [CommandType.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",           // 31
@@ -146,7 +149,14 @@ namespace PoEWizard.Data
         {
             string cli = GetCliFromTable(entry.RestUrl, entry.Data).Trim();
             if (string.IsNullOrEmpty(cli)) return null;
-            return $"cli/aos?cmd={WebUtility.UrlEncode(cli)}";
+            switch (entry.RestUrl)
+            {
+                case CommandType.SHOW_SYSTEM_RUNNING_DIR:
+                    return $"?domain=mib&{cli}";
+
+                default:
+                    return $"cli/aos?cmd={WebUtility.UrlEncode(cli)}";
+            }
         }
 
         private static string GetCliFromTable(CommandType restUrlId, string[] data)
