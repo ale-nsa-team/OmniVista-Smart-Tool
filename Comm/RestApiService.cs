@@ -182,23 +182,9 @@ namespace PoEWizard.Comm
             return Utils.CalcStringDuration(startTime, true);
         }
 
-        public void WriteMemory(int waitSec = 25)
+        public void WriteMemory(int waitSec = 40)
         {
-            try
-            {
-                if (SwitchModel.SyncStatus != SyncStatusType.Synchronized)
-                {
-                    WriteFlashSynchro(waitSec);
-                }
-            }
-            catch (Exception ex)
-            {
-                SendSwitchConnectionFailed(ex);
-            }
-        }
-
-        private void WriteFlashSynchro(int waitSec = 25)
-        {
+            if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized) return;
             _progress.Report(new ProgressReport($"Writing memory on Switch {SwitchModel.IpAddress}"));
             SendRequest(GetRestUrlEntry(CommandType.WRITE_MEMORY));
             DateTime startTime = DateTime.Now;
@@ -207,16 +193,11 @@ namespace PoEWizard.Comm
             {
                 Thread.Sleep(1000);
                 dur = (int)Utils.GetTimeDuration(startTime);
-                if (dur >= waitSec) break;
+                if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
                 _progress.Report(new ProgressReport($"Writing memory on Switch {SwitchModel.IpAddress} ({dur} sec) ..."));
                 try
                 {
-                    if (dur % 5 == 0)
-                    {
-                        bool done = false;
-                        GetSystemInfo();
-                        done = SwitchModel.SyncStatus != SyncStatusType.NotSynchronized;
-                    }
+                    if (dur >= 15 && dur % 5 == 0) GetSystemInfo();
                 }
                 catch { }
             }
@@ -288,6 +269,7 @@ namespace PoEWizard.Comm
 
         public void RefreshSwitchPorts()
         {
+            GetSystemInfo();
             GetLanPower();
             RefreshPortsInformation();
         }
@@ -1073,7 +1055,7 @@ namespace PoEWizard.Comm
             }
             catch
             {
-                WriteFlashSynchro();
+                WriteMemory();
             }
             SendRequest(GetRestUrlEntry(CommandType.POWER_DOWN_SLOT, new string[1] { _wizardSwitchSlot.Name }));
         }

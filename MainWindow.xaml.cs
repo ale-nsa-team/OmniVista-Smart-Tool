@@ -513,10 +513,10 @@ namespace PoEWizard
                         await RunWizardOther();
                         break;
                 }
-                await Task.Run(() => restApiService.RefreshSwitchPorts());
                 WizardResult result = reportResult.GetReportResult(selectedPort.Name);
                 if (result == WizardResult.NothingToDo || result == WizardResult.Fail) await RunLastWizardActions();
                 string msg = $"{reportResult.Message}\n\nTotal duration: {Utils.CalcStringDuration(startTime, true)}";
+                await Task.Run(() => restApiService.RefreshSwitchPorts());
                 if (!string.IsNullOrEmpty(reportResult.Message))
                 {
                     wizardProgressReport.Title = "PoE Wizard Report:";
@@ -543,9 +543,11 @@ namespace PoEWizard
 
         private void RefreshSlotAndPortsView()
         {
+            DataContext = null;
             _slotsView.ItemsSource = null;
             _portList.ItemsSource = null;
             selectedSlot = device.GetSlot(selectedSlot.Name);
+            DataContext = device;
             _slotsView.ItemsSource = device.GetChassis(selectedSlot.Name)?.Slots ?? new List<SlotModel>();
             _portList.ItemsSource = selectedSlot?.Ports ?? new List<PortModel>();
             ReselectPort();
