@@ -266,8 +266,8 @@
                       CellStyle="{DynamicResource gridCell}"
                       SelectionChanged="PortSelection_Changed">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header=" Port" Width="0.8*" Binding="{Binding Path=Name}" IsReadOnly="True"/>
-                    <DataGridTemplateColumn Header="Status" Width="0.8*" IsReadOnly="True">
+                    <DataGridTextColumn Header=" Port" Width="0.7*" Binding="{Binding Path=Name}" IsReadOnly="True"/>
+                    <DataGridTemplateColumn Header="Status" Width="0.7*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Status}"
@@ -306,10 +306,10 @@
                             </Style>
                         </DataGridComboBoxColumn.EditingElementStyle>
                     </DataGridComboBoxColumn>
-                    <DataGridTextColumn Header="Power (Watts)" Width="*" Binding="{Binding Path=Power}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Max Power (Watts)" Width="1.2*" Binding="{Binding Path=MaxPower}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Power (Watts)" Width="0.9*" Binding="{Binding Path=Power}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Max Power (Watts)" Width="1.1*" Binding="{Binding Path=MaxPower}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="PoE Class" Width="*" Binding="{Binding Path=Class}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="PoE Mode" Width="0.8*" IsReadOnly="True">
+                    <DataGridTextColumn Header="PoE Mode" Width="0.7*" IsReadOnly="True">
                         <DataGridTextColumn.Binding>
                             <MultiBinding Converter="{StaticResource BoolToPoEModeConverter}">
                                 <Binding Path="Poe" />
@@ -317,8 +317,8 @@
                             </MultiBinding>
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="802.3BT" Width="0.8*" Binding="{Binding Path=Protocol8023bt, Converter={StaticResource ConfigTypeToSimbolConverter}}" />
-                    <DataGridTemplateColumn Header="Device Model" IsReadOnly="True">
+                    <DataGridTextColumn Header="802.3BT" Width="0.7*" Binding="{Binding Path=Protocol8023bt, Converter={StaticResource ConfigTypeToSimbolConverter}}" />
+                    <DataGridTemplateColumn Header="Device Model" Width="1.4*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Model}"
@@ -327,7 +327,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Device Type" IsReadOnly="True">
+                    <DataGridTemplateColumn Header="Device Type" Width="1.4*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Type}"
@@ -336,7 +336,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Device Name" IsReadOnly="True">
+                    <DataGridTemplateColumn Header="Device Name" Width="1.2*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Name}"
