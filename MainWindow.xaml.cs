@@ -67,11 +67,11 @@ namespace PoEWizard
             string title = assembly.GetCustomAttribute<AssemblyTitleAttribute>().Title;
             string ale = assembly.GetCustomAttribute<AssemblyCompanyAttribute>().Company;
             appVersion = title + " (V." + string.Join(".", version.Split('.').ToList().Take(2)) + ")";
-            this.Title += $" (V {string.Join(".", version.Split('.').ToList().Take(2))})";
             //datapath
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             dataPath = Path.Combine(appData, ale, title);
             InitializeComponent();
+            this.Title += $" (V {string.Join(".", version.Split('.').ToList().Take(2))})";
             lightDict = Resources.MergedDictionaries[0];
             darkDict = Resources.MergedDictionaries[1];
             currentDict = darkDict;

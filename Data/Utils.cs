@@ -319,14 +319,12 @@ namespace PoEWizard.Data
             bool res = values == null || values.Length < 2 
                 || values[0] == null || values[0] == DependencyProperty.UnsetValue
                 || values[1] == null || values[1] == DependencyProperty.UnsetValue;
-            if (!res) Logger.Debug($"Invalid value in converter: {(values == null ? "null" : string.Join(",", values))}");
             return res;
         }
 
         public static bool IsInvalid(object value)
         {
             bool res = value == null || value == DependencyProperty.UnsetValue;
-            if (!res) Logger.Debug($"Invalid value in converter: {(value ?? "null")}");
             return res;
         }
 
