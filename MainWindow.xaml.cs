@@ -60,11 +60,6 @@ namespace PoEWizard
         #region constructor and initialization
         public MainWindow()
         {
-            InitializeComponent();
-            lightDict = Resources.MergedDictionaries[0];
-            darkDict = Resources.MergedDictionaries[1];
-            currentDict = darkDict;
-            Instance = this;
             device = new SwitchModel();
             //application info
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -76,6 +71,11 @@ namespace PoEWizard
             //datapath
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             dataPath = Path.Combine(appData, ale, title);
+            InitializeComponent();
+            lightDict = Resources.MergedDictionaries[0];
+            darkDict = Resources.MergedDictionaries[1];
+            currentDict = darkDict;
+            Instance = this;
 
             // progress report handling
             progress = new Progress<ProgressReport>(report =>

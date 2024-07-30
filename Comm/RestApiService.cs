@@ -43,7 +43,7 @@ namespace PoEWizard.Comm
             try
             {
                 this.IsReady = true;
-                Logger.Debug($"Connecting Rest API");
+                Logger.Info($"Connecting Rest API");
                 _progress.Report(new ProgressReport("Connecting to switch..."));
                 RestApiClient.Login();
                 if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to Switch {SwitchModel.IpAddress}!");
@@ -71,7 +71,7 @@ namespace PoEWizard.Comm
                 this._wizardReportResult = reportResult;
                 List<Dictionary<string, string>> diclist;
                 GetSystemInfo();
-                _progress.Report(new ProgressReport($"Reading chassis and port information on Switch {SwitchModel.IpAddress}"));
+                SendProgressReport("Reading chassis and port information");
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CHASSIS));
                 diclist = CliParseUtils.ParseChassisTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.Chassis);
@@ -83,7 +83,7 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORTS_LIST));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 3);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PortsList);
-                _progress.Report(new ProgressReport($"Reading power supply information on Switch {SwitchModel.IpAddress}"));
+                SendProgressReport("Reading power supply information");
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_POWER_SUPPLIES));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.PowerSupply);
@@ -91,14 +91,14 @@ namespace PoEWizard.Comm
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
                 SwitchModel.LoadFromList(diclist, DictionaryType.CpuTrafficList);
                 GetLanPower();
-                _progress.Report(new ProgressReport($"Reading lldp remote information on Switch {SwitchModel.IpAddress}"));
+                SendProgressReport("Reading lldp remote information");
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LLDP_REMOTE));
                 diclist = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.LldpRemoteList);
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LLDP_INVENTORY));
                 diclist = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
                 SwitchModel.LoadFromList(diclist, DictionaryType.LldpInventoryList);
-                _progress.Report(new ProgressReport($"Reading MAC Address information on Switch {SwitchModel.IpAddress}"));
+                SendProgressReport("Reading MAC Address information");
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_MAC_LEARNING));
                 diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
                 SwitchModel.LoadFromList(diclist, DictionaryType.MacAddressList);
@@ -112,6 +112,7 @@ namespace PoEWizard.Comm
 
         private void GetSystemInfo()
         {
+            SendProgressReport("Reading System information");
             this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_SYSTEM_RUNNING_DIR));
             SwitchModel.LoadFromDictionary(CliParseUtils.ParseStringDictionary(_response[RESULT]), DictionaryType.SystemRunningDir);
         }
@@ -120,16 +121,12 @@ namespace PoEWizard.Comm
         {
             try
             {
-                string txt = $"Reading configuration snapshot on Switch {SwitchModel.IpAddress}";
-                _progress.Report(new ProgressReport(txt));
-                Logger.Debug(txt);
+                SendProgressReport("Reading configuration snapshot");
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CONFIGURATION));
                 SwitchModel.ConfigSnapshot = _response[RESULT];
-                txt = $"Checking LLDP description enabled on Switch {SwitchModel.IpAddress}";
-                _progress.Report(new ProgressReport(txt));
-                Logger.Debug(txt);
                 if (!SwitchModel.ConfigSnapshot.Contains(RestUrl.CLI_TABLE[CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE]))
                 {
+                    SendProgressReport("Enabling LLDP description");
                     SendRequest(GetRestUrlEntry(CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE));
                     WriteMemory();
                 }
@@ -145,6 +142,7 @@ namespace PoEWizard.Comm
             DateTime startTime = DateTime.Now;
             try
             {
+                Logger.Info($"Rebooting Switch {SwitchModel.IpAddress}");
                 _progress.Report(new ProgressReport($"Rebooting Switch {SwitchModel.IpAddress}"));
                 SendRequest(GetRestUrlEntry(CommandType.REBOOT_SWITCH));
                 if (waitSec <= 0) return "";
@@ -173,7 +171,7 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                 }
-                Logger.Info($"Rebooting Switch {SwitchModel.IpAddress} (Duration: {Utils.CalcStringDuration(startTime, true)})");
+                Logger.Info($"Switch {SwitchModel.IpAddress} rebooted after {Utils.CalcStringDuration(startTime, true)}");
             }
             catch (Exception ex)
             {
@@ -185,7 +183,7 @@ namespace PoEWizard.Comm
         public void WriteMemory(int waitSec = 40)
         {
             if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized) return;
-            _progress.Report(new ProgressReport($"Writing memory on Switch {SwitchModel.IpAddress}"));
+            SendProgressReport("Writing memory");
             SendRequest(GetRestUrlEntry(CommandType.WRITE_MEMORY));
             DateTime startTime = DateTime.Now;
             int dur = 0;
@@ -197,11 +195,11 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport($"Writing memory on Switch {SwitchModel.IpAddress} ({dur} sec) ..."));
                 try
                 {
-                    if (dur >= 15 && dur % 5 == 0) GetSystemInfo();
+                    if (dur > 15 && dur % 5 == 0) GetSystemInfo();
                 }
                 catch { }
             }
-            Logger.Info($"Writing memory on Switch {SwitchModel.IpAddress} (Duration: {dur} sec)");
+            Logger.Info($"Write memory on Switch {SwitchModel.IpAddress} completed (Duration: {dur} sec)");
         }
 
         public bool SetPerpetualOrFastPoe(SlotModel slot, CommandType cmd)
@@ -225,7 +223,6 @@ namespace PoEWizard.Comm
                 //if (!string.IsNullOrEmpty(result)) Thread.Sleep(5000);
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
                 _progress.Report(progressReport);
-                Logger.Info($"{result}\n{progressReport.Message}");
                 Logger.Info($"{action} on Slot {_wizardSwitchSlot.Name}\n{progressReport.Message}");
                 return true;
             }
@@ -691,7 +688,7 @@ namespace PoEWizard.Comm
                     break;
             }
             _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
-            Logger.Debug($"{wizardAction}{txt}");
+            Logger.Info($"{wizardAction}{txt}");
         }
 
         private void Enable823BT(int waitSec)
@@ -758,7 +755,7 @@ namespace PoEWizard.Comm
             }
             _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, changePriority, text);
             _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
-            Logger.Debug(txt.ToString());
+            Logger.Info(txt.ToString());
         }
 
         private void TryChangePriority(int waitSec)
@@ -838,7 +835,7 @@ namespace PoEWizard.Comm
             StringBuilder text = new StringBuilder("Port ").Append(_wizardSwitchPort.Name).Append(" Status: ").Append(_wizardSwitchPort.Status).Append(", PoE Status: ");
             text.Append(_wizardSwitchPort.Poe).Append(", Power: ").Append(_wizardSwitchPort.Power).Append(" (Duration: ").Append(Utils.CalcStringDuration(startTime));
             text.Append(", MAC List: ").Append(String.Join(",", _wizardSwitchPort.MacList)).Append(")");
-            Logger.Debug(text.ToString());
+            Logger.Info(text.ToString());
         }
 
         private void UpdateProgressReport()
@@ -895,7 +892,7 @@ namespace PoEWizard.Comm
         private void GetLanPower()
         {
             Dictionary<string, string> dict;
-            _progress.Report(new ProgressReport($"Reading PoE information on Switch {SwitchModel.IpAddress}"));
+            SendProgressReport("Reading PoE information");
             int nbChassisPoE = SwitchModel.ChassisList.Count;
             foreach (var chassis in SwitchModel.ChassisList)
             {
@@ -993,13 +990,13 @@ namespace PoEWizard.Comm
             {
                 _progress.Report(new ProgressReport($"{(enable ? "Enabling" : "Disabling")} {txt}"));
                 txt = $"{txt} is already {(enable ? "enabled" : "disabled")}";
-                Logger.Debug(txt);
+                Logger.Info(txt);
                 return $"\n - {txt} ";
             }
             txt = $"{(enable ? "Enabling" : "Disabling")} {txt}";
             _progress.Report(new ProgressReport(txt));
             string result = $"\n - {txt} ";
-            Logger.Debug(txt);
+            Logger.Info(txt);
             CheckFPOEand823BT(cmd);
             SendRequest(GetRestUrlEntry(cmd, new string[1] { $"{_wizardSwitchSlot.Name}" }));
             Thread.Sleep(2000);
@@ -1115,9 +1112,16 @@ namespace PoEWizard.Comm
             }
         }
 
+        private void SendProgressReport(string progrMsg)
+        {
+            string msg = $"{progrMsg} on Switch {SwitchModel.IpAddress}";
+            _progress.Report(new ProgressReport(msg));
+            Logger.Info(msg);
+        }
+
         public void Close()
         {
-            Logger.Debug($"Closing Rest API");
+            Logger.Info($"Closing Rest API");
         }
 
         private RestUrlEntry GetRestUrlEntry(CommandType url)
@@ -1165,8 +1169,9 @@ namespace PoEWizard.Comm
 
         private void LogSendRequest(RestUrlEntry entry, Dictionary<string, string> response)
         {
-            StringBuilder txt = new StringBuilder("API Request sent").Append(Utils.PrintMethodClass(3)).Append(" with ").Append(entry.ToString());
-            txt.Append("Request API URL: ").Append(response[REST_URL]);
+            StringBuilder txt = new StringBuilder("API Request sent").Append(Utils.PrintMethodClass(3)).Append(":\n").Append(entry.ToString());
+            txt.Append("\nRequest API URL: ").Append(response[REST_URL]);
+            if (Logger.LogLevel == LogLevel.Info) Logger.Info(txt.ToString());
             if (entry.Response.ContainsKey(RESULT))
             {
                 txt.Append("\nSwitch Response:\n").Append(new string('=', 132)).Append("\n").Append(Utils.PrintXMLDoc(response[RESULT]));
