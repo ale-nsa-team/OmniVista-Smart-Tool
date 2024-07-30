@@ -52,7 +52,7 @@ namespace PoEWizard.Device
             if (PortSubType == PortSubType.LocallyAssigned && (ifIndex >= 1000))
             {
                 RemotePort = Utils.ParseIfIndex(ifIndex.ToString());
-                Name = $"Remote port {RemotePort}";
+                if (string.IsNullOrEmpty(Name)) Name = $"Remote port {RemotePort}";
                 Type = SWITCH;
             }
             Description = Utils.GetDictValue(dict, SYSTEM_DESCRIPTION).Replace("(null)", string.Empty);
