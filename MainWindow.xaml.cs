@@ -170,7 +170,7 @@ namespace PoEWizard
             ShowProgress("Loading vcboot.cfg file...");
             Logger.Debug($"Loading vcboot.cfg file from switch {device.Name}");
             string res = string.Empty;
-            await Task.Run(() => 
+            await Task.Run(() =>
             {
                 if (sftpService == null)
                 {
@@ -911,8 +911,8 @@ namespace PoEWizard
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
             _tempStatus.Visibility = Visibility.Hidden;
             _cpu.Visibility = Visibility.Hidden;
-            _slotsView.Visibility= Visibility.Hidden;
-            _portList.Visibility= Visibility.Hidden;
+            _slotsView.Visibility = Visibility.Hidden;
+            _portList.Visibility = Visibility.Hidden;
             _fpgaLbl.Visibility = Visibility.Visible;
             _cpldLbl.Visibility = Visibility.Collapsed;
             selectedPort = null;
@@ -923,14 +923,11 @@ namespace PoEWizard
 
         private void ReselectPort()
         {
-            if (selectedPort != null)
+            if (selectedPort != null && _portList.Items?.Count > selectedPortIndex)
             {
-                if (_portList.Items?.Count > selectedPortIndex)
-                {
-                    _portList.SelectionChanged -= PortSelection_Changed;
-                    _portList.SelectedItem = _portList.Items[selectedPortIndex];
-                    _portList.SelectionChanged += PortSelection_Changed;
-                }
+                _portList.SelectionChanged -= PortSelection_Changed;
+                _portList.SelectedItem = _portList.Items[selectedPortIndex];
+                _portList.SelectionChanged += PortSelection_Changed;
             }
         }
 
