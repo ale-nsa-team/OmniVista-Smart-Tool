@@ -22,6 +22,7 @@ namespace PoEWizard.Comm
         private ProgressReport _wizardProgressReport;
         private CommandType _wizardCommand = CommandType.SHOW_SYSTEM;
         private WizardReport _wizardReportResult;
+        private SwitchDebugModel DebugModel;
 
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
@@ -135,6 +136,31 @@ namespace PoEWizard.Comm
             {
                 SendSwitchConnectionFailed(ex);
             }
+        }
+
+        public SwitchDebugModel GetSwitchLog(string port, string debugLevel)
+        {
+            try
+            {
+                GetSwitchSlotPort(port);
+                SendProgressReport($"Reading slot {_wizardSwitchSlot.Name} power status");
+                this._response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LAN_POWER_STATUS, new string[1] { _wizardSwitchSlot.Name }));
+                DebugModel = new SwitchDebugModel(this._response[RESULT], debugLevel);
+                this._response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LEVEL));
+                DebugModel.PrevDebugLevel = "info";
+                SendProgressReport($"Enabling debug level to {DebugModel.DebugLevel}");
+                this._response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LEVEL, new string[1] { DebugModel.DebugLevel }));
+                ResetPortPower(30);
+                SendProgressReport($"Resetting debug level to {DebugModel.PrevDebugLevel}");
+                this._response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LEVEL, new string[1] { DebugModel.PrevDebugLevel }));
+                WriteMemory();
+                return DebugModel;
+            }
+            catch (Exception ex)
+            {
+                SendSwitchConnectionFailed(ex);
+            }
+            return null;
         }
 
         public string RebootSwitch(int waitSec)

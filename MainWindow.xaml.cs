@@ -531,6 +531,10 @@ namespace PoEWizard
                 if (selectedPort.EndPointDevice != null) txt.Append("\n").Append(selectedPort.EndPointDevice);
                 else if (selectedPort.MacList?.Count > 0 && !string.IsNullOrEmpty(selectedPort.MacList[0])) txt.Append(", Device MAC: ").Append(selectedPort.MacList[0]);
                 Logger.Activity(txt.ToString());
+                if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.Fail)
+                {
+                    // await RunGetSwitchLog("debug1");
+                }
                 RefreshSlotAndPortsView();
             }
             catch (Exception ex)
@@ -757,6 +761,13 @@ namespace PoEWizard
         private async Task RunWizardCommands(List<CommandType> cmdList, int waitSec = 15)
         {
             await Task.Run(() => restApiService.RunWizardCommands(selectedPort.Name, reportResult, cmdList, waitSec));
+        }
+
+        private async Task<SwitchDebugModel> RunGetSwitchLog(string debugLevel)
+        {
+            SwitchDebugModel debugModel = null;
+            await Task.Run(() => debugModel = restApiService.GetSwitchLog(selectedPort.Name, debugLevel));
+            return debugModel;
         }
 
         private bool IsWizardStopped()

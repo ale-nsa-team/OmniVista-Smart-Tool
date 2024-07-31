@@ -84,65 +84,72 @@ namespace PoEWizard.Data
             RESET_POWER_PORT = 101,
             CHECK_823BT = 102,
             CHECK_MAX_POWER = 103,
-            CHANGE_MAX_POWER = 104
+            CHANGE_MAX_POWER = 104,
+            // 100 - 119: Virtual commands
+            DEBUG_SHOW_LAN_POWER_STATUS = 120,
+            DEBUG_SHOW_LEVEL = 121,
+            DEBUG_UPDATE_LEVEL = 122
         }
 
         public readonly static Dictionary<CommandType, string> CLI_TABLE = new Dictionary<CommandType, string>
         {
             // 0 - 29: Basic commands to gather switch data
-            [CommandType.SHOW_SYSTEM] = "show system",                                            //  0
-            [CommandType.SHOW_MICROCODE] = "show microcode",                                      //  1
-            [CommandType.SHOW_RUNNING_DIR] = "show running-directory",                            //  2
-            [CommandType.SHOW_CHASSIS] = "show chassis",                                          //  3
-            [CommandType.SHOW_PORTS_LIST] = "show interfaces alias",                              //  4
-            [CommandType.SHOW_POWER_SUPPLIES] = $"show powersupply",                              //  5
-            [CommandType.SHOW_POWER_SUPPLY] = $"show powersupply {DATA_0}",                       //  6
-            [CommandType.SHOW_LAN_POWER] = $"show lanpower slot {DATA_0}",                        //  7
-            [CommandType.SHOW_CHASSIS_LAN_POWER_STATUS] = $"show lanpower chassis {DATA_0} status", //  8
-            [CommandType.SHOW_SLOT] = $"show slot {DATA_0}",                                      //  9
-            [CommandType.SHOW_MAC_LEARNING] = $"show mac-learning domain vlan",                   // 10
-            [CommandType.SHOW_TEMPERATURE] = $"show temperature",                                 // 11
-            [CommandType.SHOW_HEALTH] = $"show health all cpu",                                   // 12
-            [CommandType.SHOW_LAN_POWER_CONFIG] = $"show lanpower slot {DATA_0} port-config",     // 13
-            [CommandType.SHOW_LLDP_REMOTE] = "show lldp remote-system",                           // 14
-            [CommandType.SHOW_CMM] = "show cmm",                                                  // 15
-            [CommandType.POWER_CLASS_DETECTION_ENABLE] = $"lanpower slot {DATA_0} class-detection enable", // 16
-            [CommandType.SHOW_SLOT_LAN_POWER_STATUS] = $"show lanpower slot {DATA_0} status",     //  17
-            [CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE] = "lldp nearest-bridge chassis tlv management port-description enable system-name enable system-description enable", // 18
-            [CommandType.SHOW_HEALTH_CONFIG] = "show health configuration",                       // 19
-            [CommandType.SHOW_LLDP_INVENTORY] = "show lldp remote-system med inventory",          // 20
-            [CommandType.SHOW_SYSTEM_RUNNING_DIR] = "mibObject0=sysName&mibObject1=sysLocation&mibObject2=sysContact&mibObject3=sysUpTime&mibObject4=sysDescr&mibObject5=configChangeStatus&mibObject6=chasControlCurrentRunningVersion&mibObject7=chasControlCertifyStatus&urn=chasControlModuleTable", // 21
+            [CommandType.SHOW_SYSTEM] = "show system",                                                          //   0
+            [CommandType.SHOW_MICROCODE] = "show microcode",                                                    //   1
+            [CommandType.SHOW_RUNNING_DIR] = "show running-directory",                                          //   2
+            [CommandType.SHOW_CHASSIS] = "show chassis",                                                        //   3
+            [CommandType.SHOW_PORTS_LIST] = "show interfaces alias",                                            //   4
+            [CommandType.SHOW_POWER_SUPPLIES] = $"show powersupply",                                            //   5
+            [CommandType.SHOW_POWER_SUPPLY] = $"show powersupply {DATA_0}",                                     //   6
+            [CommandType.SHOW_LAN_POWER] = $"show lanpower slot {DATA_0}",                                      //   7
+            [CommandType.SHOW_CHASSIS_LAN_POWER_STATUS] = $"show lanpower chassis {DATA_0} status",             //   8
+            [CommandType.SHOW_SLOT] = $"show slot {DATA_0}",                                                    //   9
+            [CommandType.SHOW_MAC_LEARNING] = $"show mac-learning domain vlan",                                 //  10
+            [CommandType.SHOW_TEMPERATURE] = $"show temperature",                                               //  11
+            [CommandType.SHOW_HEALTH] = $"show health all cpu",                                                 //  12
+            [CommandType.SHOW_LAN_POWER_CONFIG] = $"show lanpower slot {DATA_0} port-config",                   //  13
+            [CommandType.SHOW_LLDP_REMOTE] = "show lldp remote-system",                                         //  14
+            [CommandType.SHOW_CMM] = "show cmm",                                                                //  15
+            [CommandType.POWER_CLASS_DETECTION_ENABLE] = $"lanpower slot {DATA_0} class-detection enable",      //  16
+            [CommandType.SHOW_SLOT_LAN_POWER_STATUS] = $"show lanpower slot {DATA_0} status",                   //  17
+            [CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE] = "lldp nearest-bridge chassis tlv management port-description enable system-name enable system-description enable", //  18
+            [CommandType.SHOW_HEALTH_CONFIG] = "show health configuration",                                     //  19
+            [CommandType.SHOW_LLDP_INVENTORY] = "show lldp remote-system med inventory",                        //  20
+            [CommandType.SHOW_SYSTEM_RUNNING_DIR] = "mibObject0=sysName&mibObject1=sysLocation&mibObject2=sysContact&mibObject3=sysUpTime&mibObject4=sysDescr&mibObject5=configChangeStatus&mibObject6=chasControlCurrentRunningVersion&mibObject7=chasControlCertifyStatus&urn=chasControlModuleTable", //  21
             // 30 - 69: Commands related to actions on port
-            [CommandType.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",        // 30
-            [CommandType.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",           // 31
-            [CommandType.POWER_PRIORITY_PORT] = $"lanpower port {DATA_0} priority {DATA_1}",      // 32
-            [CommandType.POWER_4PAIR_PORT] = $"lanpower port {DATA_0} 4pair enable",              // 33
-            [CommandType.POWER_2PAIR_PORT] = $"lanpower port {DATA_0} 4pair disable",             // 34
-            [CommandType.POWER_DOWN_SLOT] = $"lanpower slot {DATA_0} service stop",               // 35
-            [CommandType.POWER_UP_SLOT] = $"lanpower slot {DATA_0} service start",                // 36
-            [CommandType.POWER_823BT_ENABLE] = $"lanpower slot {DATA_0} 8023bt enable",           // 37
-            [CommandType.POWER_823BT_DISABLE] = $"lanpower slot {DATA_0} 8023bt disable",         // 38
-            [CommandType.POWER_HDMI_ENABLE] = $"lanpower port {DATA_0} power-over-hdmi enable",   // 39
-            [CommandType.POWER_HDMI_DISABLE] = $"lanpower port {DATA_0} power-over-hdmi disable", // 40
-            [CommandType.LLDP_POWER_MDI_ENABLE] = $"lldp nearest-bridge port {DATA_0} tlv dot3 power-via-mdi enable",          // 41
-            [CommandType.LLDP_POWER_MDI_DISABLE] = $"lldp nearest-bridge port {DATA_0} tlv dot3 power-via-mdi disable",        // 42
-            [CommandType.LLDP_EXT_POWER_MDI_ENABLE] = $"lldp nearest-bridge port {DATA_0} tlv med ext-power-via-mdi enable",   // 43
-            [CommandType.LLDP_EXT_POWER_MDI_DISABLE] = $"lldp nearest-bridge port {DATA_0} tlv med ext-power-via-mdi disable", // 44
-            [CommandType.POE_FAST_ENABLE] = $"lanpower slot {DATA_0} fpoe enable",                // 45
-            [CommandType.POE_PERPETUAL_ENABLE] = $"lanpower slot {DATA_0} ppoe enable",           // 46
-            [CommandType.SHOW_PORT_MAC_ADDRESS] = $"show mac-learning port {DATA_0}",             // 47
-            [CommandType.SHOW_PORT_STATUS] = $"show interfaces port {DATA_0} alias",              // 48
-            [CommandType.SHOW_PORT_POWER] = $"show lanpower slot {DATA_0}|grep {DATA_1}",         // 49
-            [CommandType.SHOW_PORT_LLDP_REMOTE] = $"show lldp port {DATA_0} remote-system",       // 50
-            [CommandType.POE_FAST_DISABLE] = $"lanpower slot {DATA_0} fpoe disable",              // 51
-            [CommandType.POE_PERPETUAL_DISABLE] = $"lanpower slot {DATA_0} ppoe disable",         // 52
-            [CommandType.SET_MAX_POWER_PORT] = $"lanpower port {DATA_0} power {DATA_1}",          // 53
-            [CommandType.CAPACITOR_DETECTION_ENABLE] = $"lanpower port {DATA_0} capacitor-detection enable",   // 54
-            [CommandType.CAPACITOR_DETECTION_DISABLE] = $"lanpower port {DATA_0} capacitor-detection disable", // 55
+            [CommandType.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",                      //  30
+            [CommandType.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",                         //  31
+            [CommandType.POWER_PRIORITY_PORT] = $"lanpower port {DATA_0} priority {DATA_1}",                    //  32
+            [CommandType.POWER_4PAIR_PORT] = $"lanpower port {DATA_0} 4pair enable",                            //  33
+            [CommandType.POWER_2PAIR_PORT] = $"lanpower port {DATA_0} 4pair disable",                           //  34
+            [CommandType.POWER_DOWN_SLOT] = $"lanpower slot {DATA_0} service stop",                             //  35
+            [CommandType.POWER_UP_SLOT] = $"lanpower slot {DATA_0} service start",                              //  36
+            [CommandType.POWER_823BT_ENABLE] = $"lanpower slot {DATA_0} 8023bt enable",                         //  37
+            [CommandType.POWER_823BT_DISABLE] = $"lanpower slot {DATA_0} 8023bt disable",                       //  38
+            [CommandType.POWER_HDMI_ENABLE] = $"lanpower port {DATA_0} power-over-hdmi enable",                 //  39
+            [CommandType.POWER_HDMI_DISABLE] = $"lanpower port {DATA_0} power-over-hdmi disable",               //  40
+            [CommandType.LLDP_POWER_MDI_ENABLE] = $"lldp nearest-bridge port {DATA_0} tlv dot3 power-via-mdi enable",          //  41
+            [CommandType.LLDP_POWER_MDI_DISABLE] = $"lldp nearest-bridge port {DATA_0} tlv dot3 power-via-mdi disable",        //  42
+            [CommandType.LLDP_EXT_POWER_MDI_ENABLE] = $"lldp nearest-bridge port {DATA_0} tlv med ext-power-via-mdi enable",   //  43
+            [CommandType.LLDP_EXT_POWER_MDI_DISABLE] = $"lldp nearest-bridge port {DATA_0} tlv med ext-power-via-mdi disable", //  44
+            [CommandType.POE_FAST_ENABLE] = $"lanpower slot {DATA_0} fpoe enable",                              //  45
+            [CommandType.POE_PERPETUAL_ENABLE] = $"lanpower slot {DATA_0} ppoe enable",                         //  46
+            [CommandType.SHOW_PORT_MAC_ADDRESS] = $"show mac-learning port {DATA_0}",                           //  47
+            [CommandType.SHOW_PORT_STATUS] = $"show interfaces port {DATA_0} alias",                            //  48
+            [CommandType.SHOW_PORT_POWER] = $"show lanpower slot {DATA_0}|grep {DATA_1}",                       //  49
+            [CommandType.SHOW_PORT_LLDP_REMOTE] = $"show lldp port {DATA_0} remote-system",                     //  50
+            [CommandType.POE_FAST_DISABLE] = $"lanpower slot {DATA_0} fpoe disable",                            //  51
+            [CommandType.POE_PERPETUAL_DISABLE] = $"lanpower slot {DATA_0} ppoe disable",                       //  52
+            [CommandType.SET_MAX_POWER_PORT] = $"lanpower port {DATA_0} power {DATA_1}",                        //  53
+            [CommandType.CAPACITOR_DETECTION_ENABLE] = $"lanpower port {DATA_0} capacitor-detection enable",    //  54
+            [CommandType.CAPACITOR_DETECTION_DISABLE] = $"lanpower port {DATA_0} capacitor-detection disable",  //  55
             // 70 - 99: Special switch commands
-            [CommandType.WRITE_MEMORY] = "write memory flash-synchro",                            // 70
-            [CommandType.SHOW_CONFIGURATION] = "show configuration snapshot",                     // 71
-            [CommandType.REBOOT_SWITCH] = "reload from working no rollback-timeout"               // 72
+            [CommandType.WRITE_MEMORY] = "write memory flash-synchro",                                          //  70
+            [CommandType.SHOW_CONFIGURATION] = "show configuration snapshot",                                   //  71
+            [CommandType.REBOOT_SWITCH] = "reload from working no rollback-timeout",                            //  72
+            [CommandType.DEBUG_SHOW_LAN_POWER_STATUS] = $"debug show lanpower slot {DATA_0} status ni",         // 120
+            [CommandType.DEBUG_SHOW_LEVEL] = "show swlog appid lpni",                                           // 121
+            [CommandType.DEBUG_UPDATE_LEVEL] = $"swlog appid lpni subapp all level {DATA_0}"                    // 122
         };
 
         public static string ParseUrl(RestUrlEntry entry)
@@ -198,6 +205,8 @@ namespace PoEWizard.Data
                     case CommandType.POE_PERPETUAL_DISABLE:       // 52
                     case CommandType.CAPACITOR_DETECTION_ENABLE:  // 54
                     case CommandType.CAPACITOR_DETECTION_DISABLE: // 55
+                    case CommandType.DEBUG_SHOW_LAN_POWER_STATUS: // 120
+                    case CommandType.DEBUG_UPDATE_LEVEL:          // 121
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 
