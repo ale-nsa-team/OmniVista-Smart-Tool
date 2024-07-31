@@ -153,14 +153,16 @@ namespace PoEWizard.Comm
                 DebugModel.PrevLanxtrLPNILevel = "info";
                 SendProgressReport($"Enabling debug level to {DebugModel.DebugLevel}");
                 SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LLDPNI_LEVEL, new string[1] { DebugModel.DebugLevel }));
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanni", DebugModel.DebugLevel }));
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanxtr", DebugModel.DebugLevel }));
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "all", DebugModel.DebugLevel }));
+                //SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanni", DebugModel.DebugLevel }));
+                //SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanxtr", DebugModel.DebugLevel }));
                 RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 15);
                 SendRequest(GetRestUrlEntry(CommandType.DEBUG_CREATE_LOG));
                 SendProgressReport($"Resetting debug level to {DebugModel.PrevLLDPNILevel}");
                 SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LLDPNI_LEVEL, new string[1] { DebugModel.PrevLLDPNILevel }));
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanni", DebugModel.PrevLanniLPNILevel }));
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanxtr", DebugModel.PrevLanniLPNILevel }));
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "all", DebugModel.PrevLanniLPNILevel }));
+                //SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanni", DebugModel.PrevLanniLPNILevel }));
+                //SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanxtr", DebugModel.PrevLanniLPNILevel }));
                 return DebugModel;
             }
             catch (Exception ex)
