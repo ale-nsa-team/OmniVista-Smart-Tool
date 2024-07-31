@@ -78,6 +78,7 @@ namespace PoEWizard.Device
             Model = Utils.GetDictValue(dict, MED_MODEL).Replace("\"", "");
             HardwareVersion = Utils.GetDictValue(dict, MED_HARDWARE_REVISION).Replace("\"", "");
             SoftwareVersion = Utils.GetDictValue(dict, MED_SOFTWARE_REVISION).Replace("\"", "");
+            if (string.IsNullOrEmpty(SoftwareVersion)) SoftwareVersion = Utils.GetDictValue(dict, MED_FIRMWARE_REVISION).Replace("\"", "");
             SerialNumber = Utils.GetDictValue(dict, MED_SERIAL_NUMBER).Replace("\"", "");
         }
 

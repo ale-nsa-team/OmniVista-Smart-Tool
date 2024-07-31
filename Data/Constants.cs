@@ -192,6 +192,7 @@ namespace PoEWizard.Data
         public const string MED_MANUFACTURER = "Manufacturer Name";
         public const string MED_MODEL = "Model Name";
         public const string MED_HARDWARE_REVISION = "Hardware Revision";
+        public const string MED_FIRMWARE_REVISION = "Firmware Revision";
         public const string MED_SOFTWARE_REVISION = "Software Revision";
         public const string MED_SERIAL_NUMBER = "Serial Number";
         // Used by "SHOW_CHASSIS"
