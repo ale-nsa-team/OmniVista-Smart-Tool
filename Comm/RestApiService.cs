@@ -146,14 +146,21 @@ namespace PoEWizard.Comm
                 SendProgressReport($"Reading slot {_wizardSwitchSlot.Name} power status");
                 this._response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LAN_POWER_STATUS, new string[1] { _wizardSwitchSlot.Name }));
                 DebugModel = new SwitchDebugModel(this._response[RESULT], debugLevel);
-                this._response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LEVEL));
-                DebugModel.PrevDebugLevel = "info";
+                this._response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LLDPNI_LEVEL));
+                DebugModel.PrevLLDPNILevel = "info";
+                this._response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LPNI_LEVEL));
+                DebugModel.PrevLanniLPNILevel = "info";
+                DebugModel.PrevLanxtrLPNILevel = "info";
                 SendProgressReport($"Enabling debug level to {DebugModel.DebugLevel}");
-                this._response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LEVEL, new string[1] { DebugModel.DebugLevel }));
-                ResetPortPower(30);
-                SendProgressReport($"Resetting debug level to {DebugModel.PrevDebugLevel}");
-                this._response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LEVEL, new string[1] { DebugModel.PrevDebugLevel }));
-                WriteMemory();
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LLDPNI_LEVEL, new string[1] { DebugModel.DebugLevel }));
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanni", DebugModel.DebugLevel }));
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanxtr", DebugModel.DebugLevel }));
+                RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 15);
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_CREATE_LOG));
+                SendProgressReport($"Resetting debug level to {DebugModel.PrevLLDPNILevel}");
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LLDPNI_LEVEL, new string[1] { DebugModel.PrevLLDPNILevel }));
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanni", DebugModel.PrevLanniLPNILevel }));
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanxtr", DebugModel.PrevLanniLPNILevel }));
                 return DebugModel;
             }
             catch (Exception ex)
@@ -830,12 +837,12 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void RestartDeviceOnPort(string progressMessage)
+        private void RestartDeviceOnPort(string progressMessage, int waitTimeSec = 5)
         {
             string msg = !string.IsNullOrEmpty(progressMessage) ? progressMessage : "";
             SendRequest(GetRestUrlEntry(CommandType.POWER_DOWN_PORT, new string[1] { _wizardSwitchPort.Name }));
             _progress.Report(new ProgressReport($"{msg} ...\nTurning power OFF{PrintPortStatus()}"));
-            Thread.Sleep(5000);
+            Thread.Sleep(waitTimeSec * 1000);
             SendRequest(GetRestUrlEntry(CommandType.POWER_UP_PORT, new string[1] { _wizardSwitchPort.Name }));
             _progress.Report(new ProgressReport($"{msg} ...\nTurning power ON{PrintPortStatus()}"));
             Thread.Sleep(5000);

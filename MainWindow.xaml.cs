@@ -533,7 +533,7 @@ namespace PoEWizard
                 Logger.Activity(txt.ToString());
                 if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.Fail)
                 {
-                    // await RunGetSwitchLog("debug1");
+                    await RunGetSwitchLog("debug1");
                 }
                 RefreshSlotAndPortsView();
             }

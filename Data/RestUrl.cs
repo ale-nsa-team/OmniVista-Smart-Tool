@@ -85,10 +85,13 @@ namespace PoEWizard.Data
             CHECK_823BT = 102,
             CHECK_MAX_POWER = 103,
             CHANGE_MAX_POWER = 104,
-            // 100 - 119: Virtual commands
+            // 120 - 139: Switch debug commands
             DEBUG_SHOW_LAN_POWER_STATUS = 120,
-            DEBUG_SHOW_LEVEL = 121,
-            DEBUG_UPDATE_LEVEL = 122
+            DEBUG_SHOW_LLDPNI_LEVEL = 121,
+            DEBUG_SHOW_LPNI_LEVEL = 122,
+            DEBUG_UPDATE_LLDPNI_LEVEL = 123,
+            DEBUG_UPDATE_LPNI_LEVEL = 124,
+            DEBUG_CREATE_LOG = 125
         }
 
         public readonly static Dictionary<CommandType, string> CLI_TABLE = new Dictionary<CommandType, string>
@@ -147,9 +150,13 @@ namespace PoEWizard.Data
             [CommandType.WRITE_MEMORY] = "write memory flash-synchro",                                          //  70
             [CommandType.SHOW_CONFIGURATION] = "show configuration snapshot",                                   //  71
             [CommandType.REBOOT_SWITCH] = "reload from working no rollback-timeout",                            //  72
+            // 120 - 139: Switch debug commands
             [CommandType.DEBUG_SHOW_LAN_POWER_STATUS] = $"debug show lanpower slot {DATA_0} status ni",         // 120
-            [CommandType.DEBUG_SHOW_LEVEL] = "show swlog appid lpni",                                           // 121
-            [CommandType.DEBUG_UPDATE_LEVEL] = $"swlog appid lpni subapp all level {DATA_0}"                    // 122
+            [CommandType.DEBUG_SHOW_LLDPNI_LEVEL] = "show swlog appid lldpni",                                  // 121
+            [CommandType.DEBUG_SHOW_LPNI_LEVEL] = "show swlog appid lpni",                                      // 122
+            [CommandType.DEBUG_UPDATE_LLDPNI_LEVEL] = $"swlog appid lldpni subapp all level {DATA_0}",          // 123
+            [CommandType.DEBUG_UPDATE_LPNI_LEVEL] = $"swlog appid lpni subapp {DATA_0} level {DATA_1}",         // 124
+            [CommandType.DEBUG_CREATE_LOG] = "show tech-support eng complete"                                   // 125
         };
 
         public static string ParseUrl(RestUrlEntry entry)
@@ -175,52 +182,55 @@ namespace PoEWizard.Data
                 {
 
                     // 0 - 29: Basic commands to gather switch data
-                    case CommandType.SHOW_POWER_SUPPLY:           //  6
-                    case CommandType.SHOW_LAN_POWER:              //  7
-                    case CommandType.SHOW_CHASSIS_LAN_POWER_STATUS: //  8
-                    case CommandType.SHOW_LAN_POWER_CONFIG:       // 13
-                    case CommandType.POWER_CLASS_DETECTION_ENABLE: // 16
-                    case CommandType.SHOW_SLOT_LAN_POWER_STATUS:  //17
+                    case CommandType.SHOW_POWER_SUPPLY:             //   6
+                    case CommandType.SHOW_LAN_POWER:                //   7
+                    case CommandType.SHOW_CHASSIS_LAN_POWER_STATUS: //   8
+                    case CommandType.SHOW_LAN_POWER_CONFIG:         //  13
+                    case CommandType.POWER_CLASS_DETECTION_ENABLE:  //  16
+                    case CommandType.SHOW_SLOT_LAN_POWER_STATUS:    //  17
                     // 30 - 69: Commands related to actions on port
-                    case CommandType.POWER_DOWN_PORT:             // 30
-                    case CommandType.POWER_UP_PORT:               // 31
-                    case CommandType.POWER_4PAIR_PORT:            // 33
-                    case CommandType.POWER_2PAIR_PORT:            // 34
-                    case CommandType.POWER_DOWN_SLOT:             // 35
-                    case CommandType.POWER_UP_SLOT:               // 36
-                    case CommandType.POWER_823BT_ENABLE:          // 37
-                    case CommandType.POWER_823BT_DISABLE:         // 38
-                    case CommandType.POWER_HDMI_ENABLE:           // 39
-                    case CommandType.POWER_HDMI_DISABLE:          // 40
-                    case CommandType.LLDP_POWER_MDI_ENABLE:       // 41
-                    case CommandType.LLDP_POWER_MDI_DISABLE:      // 42
-                    case CommandType.LLDP_EXT_POWER_MDI_ENABLE:   // 43
-                    case CommandType.LLDP_EXT_POWER_MDI_DISABLE:  // 44
-                    case CommandType.POE_FAST_ENABLE:             // 45
-                    case CommandType.POE_PERPETUAL_ENABLE:        // 46
-                    case CommandType.SHOW_PORT_MAC_ADDRESS:       // 47
-                    case CommandType.SHOW_PORT_STATUS:            // 48
-                    case CommandType.SHOW_PORT_LLDP_REMOTE:       // 50
-                    case CommandType.POE_FAST_DISABLE:            // 51
-                    case CommandType.POE_PERPETUAL_DISABLE:       // 52
-                    case CommandType.CAPACITOR_DETECTION_ENABLE:  // 54
-                    case CommandType.CAPACITOR_DETECTION_DISABLE: // 55
-                    case CommandType.DEBUG_SHOW_LAN_POWER_STATUS: // 120
-                    case CommandType.DEBUG_UPDATE_LEVEL:          // 121
+                    case CommandType.POWER_DOWN_PORT:               //  30
+                    case CommandType.POWER_UP_PORT:                 //  31
+                    case CommandType.POWER_4PAIR_PORT:              //  33
+                    case CommandType.POWER_2PAIR_PORT:              //  34
+                    case CommandType.POWER_DOWN_SLOT:               //  35
+                    case CommandType.POWER_UP_SLOT:                 //  36
+                    case CommandType.POWER_823BT_ENABLE:            //  37
+                    case CommandType.POWER_823BT_DISABLE:           //  38
+                    case CommandType.POWER_HDMI_ENABLE:             //  39
+                    case CommandType.POWER_HDMI_DISABLE:            //  40
+                    case CommandType.LLDP_POWER_MDI_ENABLE:         //  41
+                    case CommandType.LLDP_POWER_MDI_DISABLE:        //  42
+                    case CommandType.LLDP_EXT_POWER_MDI_ENABLE:     //  43
+                    case CommandType.LLDP_EXT_POWER_MDI_DISABLE:    //  44
+                    case CommandType.POE_FAST_ENABLE:               //  45
+                    case CommandType.POE_PERPETUAL_ENABLE:          //  46
+                    case CommandType.SHOW_PORT_MAC_ADDRESS:         //  47
+                    case CommandType.SHOW_PORT_STATUS:              //  48
+                    case CommandType.SHOW_PORT_LLDP_REMOTE:         //  50
+                    case CommandType.POE_FAST_DISABLE:              //  51
+                    case CommandType.POE_PERPETUAL_DISABLE:         //  52
+                    case CommandType.CAPACITOR_DETECTION_ENABLE:    //  54
+                    case CommandType.CAPACITOR_DETECTION_DISABLE:   //  55
+                    // 120 - 139: Switch debug commands
+                    case CommandType.DEBUG_SHOW_LAN_POWER_STATUS:   // 120
+                    case CommandType.DEBUG_UPDATE_LLDPNI_LEVEL:     // 123
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 
                     // 30 - 69: Commands related to actions on port
-                    case CommandType.POWER_PRIORITY_PORT:         // 32
-                    case CommandType.SHOW_PORT_POWER:             // 49
-                    case CommandType.SET_MAX_POWER_PORT:          // 53
+                    case CommandType.POWER_PRIORITY_PORT:           //  32
+                    case CommandType.SHOW_PORT_POWER:               //  49
+                    case CommandType.SET_MAX_POWER_PORT:            //  53
+                    // 120 - 139: Switch debug commands
+                    case CommandType.DEBUG_UPDATE_LPNI_LEVEL:       // 124
                         if (data == null || data.Length < 2) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
                         return url.Replace(DATA_0, data[0]).Replace(DATA_1, data[1]);
 
                     // 100 - 119: Virtual commands
-                    case CommandType.CHECK_POWER_PRIORITY:                //  100
-                    case CommandType.RESET_POWER_PORT:                    //  101
-                    case CommandType.NO_COMMAND:                          //  -1
+                    case CommandType.CHECK_POWER_PRIORITY:          //  100
+                    case CommandType.RESET_POWER_PORT:              //  101
+                    case CommandType.NO_COMMAND:                    //  -1
                         return null;
 
                     default:

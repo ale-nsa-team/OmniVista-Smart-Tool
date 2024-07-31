@@ -11,14 +11,18 @@ namespace PoEWizard.Device
         public string LanPowerStatus { get; set; }
         public string LogFilePath { get; set; }
         public string SaveFilePath { get; set; }
-        public string PrevDebugLevel { get; set; }
+        public string PrevLLDPNILevel { get; set; }
+        public string PrevLanniLPNILevel { get; set; }
+        public string PrevLanxtrLPNILevel { get; set; }
         public string DebugLevel { get; set; }
         public SwitchDebugModel(string lanPowerStatus, string debugLevel)
         {
             LanPowerStatus = lanPowerStatus;
-            LogFilePath = "/flash/swlog_archive/swlogvc.tar";
+            LogFilePath = "/flash/tech_support_complete.tar";
             SaveFilePath = string.Empty;
-            PrevDebugLevel = "info";
+            PrevLLDPNILevel = "info";
+            PrevLanniLPNILevel = "info";
+            PrevLanxtrLPNILevel = "info";
             DebugLevel = debugLevel;
         }
     }
