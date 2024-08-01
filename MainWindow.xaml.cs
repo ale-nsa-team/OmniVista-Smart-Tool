@@ -496,7 +496,7 @@ namespace PoEWizard
                 reportResult = new WizardReport();
                 ShowProgress($"Running PoE Wizard on port {selectedPort.Name}...");
                 DateTime startTime = DateTime.Now;
-                await Task.Run(() => restApiService.ScanSwitch());
+                await Task.Run(() => restApiService.ScanSwitch(reportResult, $"Running PoE Wizard on port {selectedPort.Name}..."));
                 UpdateConnectedState(false);
                 switch (deviceType)
                 {
@@ -533,7 +533,7 @@ namespace PoEWizard
                 Logger.Activity(txt.ToString());
                 if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.Fail)
                 {
-                    await RunGetSwitchLog("debug1");
+                    await RunGetSwitchLog(SwitchDebugLogLevel.Debug3);
                 }
                 RefreshSlotAndPortsView();
             }
@@ -563,7 +563,7 @@ namespace PoEWizard
             {
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
-                await Task.Run(() => restApiService.ScanSwitch(reportResult));
+                await Task.Run(() => restApiService.ScanSwitch(reportResult, $"Refresh switch {device.IpAddress}"));
                 UpdateConnectedState(false);
                 await CheckSwitchScanResult($"Refresh switch {device.IpAddress}", startTime);
             }
@@ -763,7 +763,7 @@ namespace PoEWizard
             await Task.Run(() => restApiService.RunWizardCommands(selectedPort.Name, reportResult, cmdList, waitSec));
         }
 
-        private async Task<SwitchDebugModel> RunGetSwitchLog(string debugLevel)
+        private async Task<SwitchDebugModel> RunGetSwitchLog(SwitchDebugLogLevel debugLevel)
         {
             SwitchDebugModel debugModel = null;
             await Task.Run(() => debugModel = restApiService.GetSwitchLog(selectedPort.Name, debugLevel));
@@ -855,6 +855,8 @@ namespace PoEWizard
 
         private async void SetConnectedState(bool checkCertified)
         {
+            try
+            {
             DataContext = null;
             DataContext = device;
             Logger.Debug($"Data context set to {device.Name}");
@@ -904,6 +906,11 @@ namespace PoEWizard
                 _tempWarn.Source = new BitmapImage(new Uri(@"Resources\warning.png", UriKind.Relative));
             }
             ReselectPort();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         private void SetDisconnectedState()

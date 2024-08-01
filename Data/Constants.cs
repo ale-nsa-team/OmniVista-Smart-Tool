@@ -56,6 +56,7 @@ namespace PoEWizard.Data
             [Description("Synchronized (Certified Unknown)")]
             SynchronizedUnknownCertified = 4
         }
+        public enum SwitchDebugLogLevel { Off = 0, Alarm = 1, Error = 2, Alert = 3, Warn = 4, Event = 5, Info = 6, Debug1 = 7, Debug2 = 8, Debug3 = 9 }
         #endregion
 
         #region dictionaries
@@ -205,6 +206,16 @@ namespace PoEWizard.Data
         public const string CPU_THRESHOLD = "CPU Threshold";
         public const string CPU = "CPU";
         public const string SWITCH = "Switch";
+        // Used by SwitchDebugModel class
+        public const string DEBUG_SWITCH_LOG = "systemSwitchLogging";
+        public const string DEBUG_APP_ID = "systemSwitchLoggingApplicationAppId";
+        public const string DEBUG_SUB_APP_ID = "systemSwitchLoggingApplicationSubAppId";
+        public const string DEBUG_APP_NAME = "systemSwitchLoggingApplicationAppName";
+        public const string DEBUG_SUB_APP_NAME = "systemSwitchLoggingApplicationSubAppName";
+        public const string DEBUG_SUB_APP_LEVEL = "systemSwitchLoggingApplicationSubAppLevel";
+        public const string DEBUG_SUB_APP_LANNI = "LanNi";
+        public const string DEBUG_SUB_APP_LANXTR = "LanXtr";
+        public const string DEBUG_SUB_APP_LANUTIL = "LanNiUtl";
 
         public const string C = " \u2103";
         public const string F = " \u2109";

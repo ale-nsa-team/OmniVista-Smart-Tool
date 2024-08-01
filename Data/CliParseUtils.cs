@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Xml;
+using System.Xml.Linq;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Data
@@ -14,36 +14,47 @@ namespace PoEWizard.Data
         private static readonly Regex htableRegex = new Regex(MATCH_TABLE_SEP);
         private static readonly Regex chassisRegex = new Regex(MATCH_CHASSIS);
 
-        public static Dictionary<string, string> ParseXmlToDictionary(string xml, string xpath)
+        public static List<Dictionary<string, string>> ParseListFromDictionary(Dictionary<string, string> inputDict, string match = null)
         {
-            Dictionary<string, string> dictionary = new Dictionary<string, string>();
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(xml);
-            XmlNodeList nodes = xmlDoc.SelectNodes(xpath);
-            foreach (XmlNode node in nodes)
+            List<Dictionary<string, string>> dictList = new List<Dictionary<string, string>>();
+            int idx = 0;
+            string lastIdx = "";
+            dictList.Add(new Dictionary<string, string>());
+            foreach (var keyVal in inputDict)
             {
-                string key = node.Name;
-                string value = node.InnerText.Trim(new char[] { ':', '\n' }); ;
-                dictionary[key] = value;
+                string key = keyVal.Key;
+                if (key.Contains($"_"))
+                {
+                    string id = Utils.ExtractNumber(key);
+                    if (lastIdx != $"_{id}")
+                    {
+                        dictList.Add(new Dictionary<string, string>());
+                        lastIdx = $"_{id}";
+                        idx++;
+                    }
+                    if (!string.IsNullOrEmpty(id)) key = key.Replace($"_{id}", "");
+                }
+                if (!string.IsNullOrEmpty(match) && !key.Contains(match)) continue;
+                dictList[idx][key] = keyVal.Value;
             }
-            return dictionary;
+            return dictList;
         }
 
-        public static Dictionary<string, string> ParseStringDictionary(string data)
+        public static Dictionary<string, string> ParseXmlToDictionary(string xml)
         {
-            Dictionary<string, string> dictionary = new Dictionary<string, string>();
-            using (StringReader reader = new StringReader(data))
+            XDocument doc = XDocument.Parse(xml);
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            foreach (XElement element in doc.Descendants().Where(p => p.HasElements == false))
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                int keyInt = 0;
+                string keyName = element.Name.LocalName;
+                while (dict.ContainsKey(keyName))
                 {
-                    if (line.Trim().Length == 0) continue;
-                    string[] split = line.Split('=');
-                    if (split.Length != 2) continue;
-                    dictionary[split[0]] = split[1];
+                    keyName = element.Name.LocalName + "_" + keyInt++;
                 }
+                dict.Add(keyName, element.Value);
             }
-            return dictionary;
+            return dict;
         }
 
         public static Dictionary<string, string> ParseVTable(string data)

@@ -86,7 +86,6 @@ namespace PoEWizard.Device
                     MacAddress = Utils.GetDictValue(dict, CHASSIS_MAC_ADDRESS);
                     break;
             }
-;
         }
 
         public void LoadFromList(List<Dictionary<string, string>> list, DictionaryType dt)

@@ -15,7 +15,7 @@ namespace PoEWizard.Comm
 {
     public class RestApiService
     {
-        private Dictionary<string, string> _response = new Dictionary<string, string>();
+        private Dictionary<string, Dictionary<string, object>> _response = new Dictionary<string, Dictionary<string, object>>();
         private readonly IProgress<ProgressReport> _progress;
         private PortModel _wizardSwitchPort;
         private SlotModel _wizardSwitchSlot;
@@ -51,16 +51,20 @@ namespace PoEWizard.Comm
                 SwitchModel.IsConnected = true;
                 _progress.Report(new ProgressReport($"Reading System information on Switch {SwitchModel.IpAddress}"));
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_MICROCODE));
-                List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response[RESULT]);
-                SwitchModel.LoadFromDictionary(diclist[0], DictionaryType.MicroCode);
+                if (_response[RESULT] != null && _response[RESULT][OUTPUT] != null)
+                {
+                    SwitchModel.LoadFromDictionary(CliParseUtils.ParseHTable(_response[RESULT][OUTPUT].ToString())[0], DictionaryType.MicroCode);
+                }
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CMM));
-                Dictionary<string, string> dict = CliParseUtils.ParseVTable(_response[RESULT]);
-                SwitchModel.LoadFromDictionary(dict, DictionaryType.Cmm);
+                if (_response[RESULT] != null && _response[RESULT][OUTPUT] != null)
+                {
+                    SwitchModel.LoadFromDictionary(CliParseUtils.ParseVTable(_response[RESULT][OUTPUT].ToString()), DictionaryType.Cmm);
+                }
                 ScanSwitch(reportResult, $"Connect to switch {SwitchModel.IpAddress}");
             }
             catch (Exception ex)
             {
-                SendSwitchConnectionFailed(ex);
+                SendSwitchConnectionFailed("Connect", ex);
             }
         }
 
@@ -70,44 +74,62 @@ namespace PoEWizard.Comm
             {
                 GetSnapshot();
                 this._wizardReportResult = reportResult;
-                List<Dictionary<string, string>> diclist;
                 GetSystemInfo();
                 SendProgressReport("Reading chassis and port information");
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CHASSIS));
-                diclist = CliParseUtils.ParseChassisTable(_response[RESULT]);
-                SwitchModel.LoadFromList(diclist, DictionaryType.Chassis);
+                if (_response[RESULT] != null && _response[RESULT][OUTPUT] != null)
+                {
+                    SwitchModel.LoadFromList(CliParseUtils.ParseChassisTable(_response[RESULT][OUTPUT].ToString()), DictionaryType.Chassis);
+                }
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_TEMPERATURE));
-                diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
-                SwitchModel.LoadFromList(diclist, DictionaryType.TemperatureList);
+                if (_response[RESULT] != null && _response[RESULT][OUTPUT] != null)
+                {
+                    SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[RESULT][OUTPUT].ToString(), 1), DictionaryType.TemperatureList);
+                }
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_HEALTH_CONFIG));
-                SwitchModel.UpdateCpuThreshold(CliParseUtils.ParseETable(_response[RESULT]));
+                if (_response[RESULT] != null && _response[RESULT][OUTPUT] != null)
+                {
+                    SwitchModel.UpdateCpuThreshold(CliParseUtils.ParseETable(_response[RESULT][OUTPUT].ToString()));
+                }
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORTS_LIST));
-                diclist = CliParseUtils.ParseHTable(_response[RESULT], 3);
-                SwitchModel.LoadFromList(diclist, DictionaryType.PortsList);
+                if (_response[RESULT] != null && _response[RESULT][OUTPUT] != null)
+                {
+                    SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[RESULT][OUTPUT].ToString(), 3), DictionaryType.PortsList);
+                }
                 SendProgressReport("Reading power supply information");
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_POWER_SUPPLIES));
-                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
-                SwitchModel.LoadFromList(diclist, DictionaryType.PowerSupply);
+                if (_response[RESULT] != null && _response[RESULT][OUTPUT] != null)
+                {
+                    SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[RESULT][OUTPUT].ToString(), 2), DictionaryType.PowerSupply);
+                }
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_HEALTH));
-                diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
-                SwitchModel.LoadFromList(diclist, DictionaryType.CpuTrafficList);
+                if (_response[RESULT] != null && _response[RESULT][OUTPUT] != null)
+                {
+                    SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[RESULT][OUTPUT].ToString(), 2), DictionaryType.CpuTrafficList);
+                }
                 GetLanPower();
                 SendProgressReport("Reading lldp remote information");
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LLDP_REMOTE));
-                diclist = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
-                SwitchModel.LoadFromList(diclist, DictionaryType.LldpRemoteList);
+                if (_response[RESULT] != null && _response[RESULT][OUTPUT] != null)
+                {
+                    SwitchModel.LoadFromList(CliParseUtils.ParseLldpRemoteTable(_response[RESULT][OUTPUT].ToString()), DictionaryType.LldpRemoteList);
+                }
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LLDP_INVENTORY));
-                diclist = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
-                SwitchModel.LoadFromList(diclist, DictionaryType.LldpInventoryList);
+                if (_response[RESULT] != null && _response[RESULT][OUTPUT] != null)
+                {
+                    SwitchModel.LoadFromList(CliParseUtils.ParseLldpRemoteTable(_response[RESULT][OUTPUT].ToString()), DictionaryType.LldpInventoryList);
+                }
                 SendProgressReport("Reading MAC Address information");
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_MAC_LEARNING));
-                diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
-                SwitchModel.LoadFromList(diclist, DictionaryType.MacAddressList);
+                if (_response[RESULT] != null && _response[RESULT][OUTPUT] != null)
+                {
+                    SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[RESULT][OUTPUT].ToString(), 1), DictionaryType.MacAddressList);
+                }
                 string title = string.IsNullOrEmpty(source) ? $"Refresh switch {SwitchModel.IpAddress}" : source;
             }
             catch (Exception ex)
             {
-                SendSwitchConnectionFailed(ex);
+                SendSwitchConnectionFailed(source, ex);
             }
         }
 
@@ -115,7 +137,10 @@ namespace PoEWizard.Comm
         {
             SendProgressReport("Reading System information");
             this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_SYSTEM_RUNNING_DIR));
-            SwitchModel.LoadFromDictionary(CliParseUtils.ParseStringDictionary(_response[RESULT]), DictionaryType.SystemRunningDir);
+            if (_response[RESULT] != null && _response[RESULT][DATA] != null)
+            {
+                SwitchModel.LoadFromDictionary((Dictionary<string, string>)_response[RESULT][DATA], DictionaryType.SystemRunningDir);
+            }
         }
 
         public void GetSnapshot()
@@ -124,8 +149,11 @@ namespace PoEWizard.Comm
             {
                 SendProgressReport("Reading configuration snapshot");
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CONFIGURATION));
-                SwitchModel.ConfigSnapshot = _response[RESULT];
-                if (!SwitchModel.ConfigSnapshot.Contains(RestUrl.CLI_TABLE[CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE]))
+                if (_response[RESULT] != null && _response[RESULT][OUTPUT] != null)
+                {
+                    SwitchModel.ConfigSnapshot = _response[RESULT][OUTPUT].ToString();
+                }
+                if (!SwitchModel.ConfigSnapshot.Contains(RestUrl.CMD_TBL[CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE]))
                 {
                     SendProgressReport("Enabling LLDP description");
                     SendRequest(GetRestUrlEntry(CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE));
@@ -134,40 +162,47 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchConnectionFailed(ex);
+                SendSwitchConnectionFailed("Get Snapshot", ex);
             }
         }
 
-        public SwitchDebugModel GetSwitchLog(string port, string debugLevel)
+        public SwitchDebugModel GetSwitchLog(string port, SwitchDebugLogLevel debugLevel)
         {
             try
             {
                 GetSwitchSlotPort(port);
                 SendProgressReport($"Reading slot {_wizardSwitchSlot.Name} power status");
                 this._response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LAN_POWER_STATUS, new string[1] { _wizardSwitchSlot.Name }));
-                DebugModel = new SwitchDebugModel(this._response[RESULT], debugLevel);
+                DebugModel = new SwitchDebugModel();
+                if (_response[RESULT] != null && _response[RESULT][OUTPUT] != null)
+                {
+                    DebugModel.LanPowerStatus = _response[RESULT][OUTPUT].ToString();
+                    DebugModel.DebugLevelSelected = debugLevel;
+                }
                 this._response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LLDPNI_LEVEL));
-                DebugModel.PrevLLDPNILevel = "info";
+                if (_response[RESULT] != null && _response[RESULT][DATA] != null)
+                {
+                    DebugModel.LoadLldpNiFromDictionary(_response[RESULT][DATA] as Dictionary<string, string>);
+                }
                 this._response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LPNI_LEVEL));
-                DebugModel.PrevLanniLPNILevel = "info";
-                DebugModel.PrevLanxtrLPNILevel = "info";
-                SendProgressReport($"Enabling debug level to {DebugModel.DebugLevel}");
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LLDPNI_LEVEL, new string[1] { DebugModel.DebugLevel }));
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "all", DebugModel.DebugLevel }));
-                //SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanni", DebugModel.DebugLevel }));
-                //SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanxtr", DebugModel.DebugLevel }));
+                if (_response[RESULT] != null && _response[RESULT][DATA] != null)
+                {
+                    DebugModel.LoadLpNiFromDictionary(CliParseUtils.ParseListFromDictionary((Dictionary<string, string>)_response[RESULT][DATA], DEBUG_SWITCH_LOG));
+                }
+                SendProgressReport($"Enabling debug level to {DebugModel.DebugLevelSelected}");
+                int logLevel = (int)DebugModel.DebugLevelSelected;
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LLDPNI_LEVEL, new string[1] { logLevel.ToString() }));
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "all", logLevel.ToString() }));
                 RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 15);
                 SendRequest(GetRestUrlEntry(CommandType.DEBUG_CREATE_LOG));
-                SendProgressReport($"Resetting debug level to {DebugModel.PrevLLDPNILevel}");
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LLDPNI_LEVEL, new string[1] { DebugModel.PrevLLDPNILevel }));
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "all", DebugModel.PrevLanniLPNILevel }));
-                //SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanni", DebugModel.PrevLanniLPNILevel }));
-                //SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "lanxtr", DebugModel.PrevLanniLPNILevel }));
+                SendProgressReport($"Resetting debug level to {DebugModel.LldpNiApp.DebugLevel}");
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LLDPNI_LEVEL, new string[1] { DebugModel.LldpNiApp.DebugLevel }));
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "all", DebugModel.LpNiApp.DebugLevel }));
                 return DebugModel;
             }
             catch (Exception ex)
             {
-                SendSwitchConnectionFailed(ex);
+                SendSwitchConnectionFailed("Get Switch Log", ex);
             }
             return null;
         }
@@ -210,7 +245,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchConnectionFailed(ex);
+                SendSwitchConnectionFailed($"Reboot switch {SwitchModel.IpAddress}", ex);
             }
             return Utils.CalcStringDuration(startTime, true);
         }
@@ -263,7 +298,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchConnectionFailed(ex);
+                SendSwitchConnectionFailed("Set Perpetual/Fast PoE", ex);
             }
             return false;
         }
@@ -294,7 +329,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchConnectionFailed(ex);
+                SendSwitchConnectionFailed("Change Power Priority", ex);
             }
             return false;
         }
@@ -310,7 +345,7 @@ namespace PoEWizard.Comm
         {
             _progress.Report(new ProgressReport($"Refreshing Ports Information on Switch {SwitchModel.IpAddress}"));
             this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORTS_LIST));
-            List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 3);
+            List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT][OUTPUT].ToString(), 3);
             SwitchModel.LoadFromList(dictList, DictionaryType.PortsList);
         }
 
@@ -328,7 +363,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchConnectionFailed(ex);
+                SendSwitchConnectionFailed("Power UP Slot", ex);
             }
         }
 
@@ -355,7 +390,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchConnectionFailed(ex);
+                SendSwitchConnectionFailed("PoE Wizard", ex);
             }
         }
 
@@ -393,7 +428,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchConnectionFailed(ex);
+                SendSwitchConnectionFailed("PoE Wizard", ex);
             }
         }
 
@@ -581,19 +616,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                string error;
-                string[] split = ex.Message.Split('\n');
-                if (split.Length < 2)
-                {
-                    error = ex.Message;
-                    Logger.Warn(error);
-                    return 0;
-                }
-                else
-                {
-                    error = split[2];
-                    return Utils.StringToDouble(Utils.ExtractSubString(error, "power not exceed ", " when").Trim()) / 1000;
-                }
+                return Utils.StringToDouble(Utils.ExtractSubString(ex.Message, "power not exceed ", " when").Trim()) / 1000;
             }
         }
 
@@ -606,9 +629,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                string[] split = ex.Message.Split('\n');
-                if (split.Length < 2) throw ex;
-                error = split[2];
+                error = ex.Message;
             }
             return !string.IsNullOrEmpty(error) ? Utils.StringToDouble(Utils.ExtractSubString(error, "to ", "mW").Trim())/1000 : _wizardSwitchPort.MaxPower;
         }
@@ -651,7 +672,7 @@ namespace PoEWizard.Comm
             _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
         }
 
-        private void SendSwitchConnectionFailed(Exception ex)
+        private void SendSwitchConnectionFailed(string title, Exception ex)
         {
             string error;
             if (ex is SwitchConnectionFailure || ex is SwitchConnectionDropped || ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure)
@@ -672,7 +693,7 @@ namespace PoEWizard.Comm
                 Logger.Error(ex);
                 error = $"Switch {SwitchModel.IpAddress} connection error:\n - {WebUtility.UrlDecode(ex.Message)}";
             }
-            _progress?.Report(new ProgressReport(ReportType.Error, "Connect", error));
+            _progress?.Report(new ProgressReport(ReportType.Error, title, error));
         }
 
         private void ExecuteActionOnPort(string wizardAction, int waitSec, CommandType restoreCmd)
@@ -914,13 +935,13 @@ namespace PoEWizard.Comm
             if (_wizardSwitchPort == null) return;
             GetSlotPower(_wizardSwitchSlot);
             this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORT_STATUS, new string[1] { _wizardSwitchPort.Name }));
-            List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 3);
+            List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT][OUTPUT].ToString(), 3);
             if (dictList?.Count > 0) _wizardSwitchPort.UpdatePortStatus(dictList[0]);
             this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORT_MAC_ADDRESS, new string[1] { _wizardSwitchPort.Name }));
-            dictList = CliParseUtils.ParseHTable(_response[RESULT], 1);
+            dictList = CliParseUtils.ParseHTable(_response[RESULT][OUTPUT].ToString(), 1);
             if (dictList?.Count > 0) _wizardSwitchPort.UpdateMacList(dictList);
             this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORT_LLDP_REMOTE, new string[] { _wizardSwitchPort.Name }));
-            dictList = CliParseUtils.ParseLldpRemoteTable(_response[RESULT]);
+            dictList = CliParseUtils.ParseLldpRemoteTable(_response[RESULT][OUTPUT].ToString());
             if (dictList?.Count > 0) _wizardSwitchPort.LoadLldpRemoteTable(dictList[0]);
         }
 
@@ -959,7 +980,7 @@ namespace PoEWizard.Comm
                 foreach (var ps in chassis.PowerSupplies)
                 {
                     this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_POWER_SUPPLY, new string[1] { ps.Id.ToString() }));
-                    dict = CliParseUtils.ParseVTable(_response[RESULT]);
+                    dict = CliParseUtils.ParseVTable(_response[RESULT][OUTPUT].ToString());
                     ps.LoadFromDictionary(dict);
                 }
             }
@@ -972,7 +993,7 @@ namespace PoEWizard.Comm
             try
             {
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CHASSIS_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
-                List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+                List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response[RESULT][OUTPUT].ToString(), 2);
                 chassis.LoadFromList(diclist);
                 chassis.PowerBudget = 0;
                 chassis.PowerConsumed = 0;
@@ -988,14 +1009,14 @@ namespace PoEWizard.Comm
         {
             GetSlotLanPower(slot);
             this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER_CONFIG, new string[1] { $"{slot.Name}" }));
-            List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response[RESULT], 2);
+            List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response[RESULT][OUTPUT].ToString(), 2);
             slot.LoadFromList(diclist, DictionaryType.LanPowerCfg);
         }
 
         private void GetSlotLanPower(SlotModel slot)
         {
             this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LAN_POWER, new string[1] { $"{slot.Name}" }));
-            List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response[RESULT], 1);
+            List<Dictionary<string, string>> diclist = CliParseUtils.ParseHTable(_response[RESULT][OUTPUT].ToString(), 1);
             slot.LoadFromList(diclist, DictionaryType.LanPower);
         }
 
@@ -1122,7 +1143,7 @@ namespace PoEWizard.Comm
         private void GetSlotPowerStatus()
         {
             this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_SLOT_LAN_POWER_STATUS, new string[] { _wizardSwitchSlot.Name }));
-            List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT], 2);
+            List<Dictionary<string, string>> dictList = CliParseUtils.ParseHTable(_response[RESULT][OUTPUT].ToString()   , 2);
             _wizardSwitchSlot.LoadFromDictionary(dictList[0]);
         }
 
@@ -1166,37 +1187,39 @@ namespace PoEWizard.Comm
 
         private RestUrlEntry GetRestUrlEntry(CommandType url, string[] data)
         {
-            RestUrlEntry entry = new RestUrlEntry(url, data) { Method = HttpMethod.Get };
+            Dictionary<string, string> body = GetContent(url, data);
+            RestUrlEntry entry = new RestUrlEntry(url, data) { Method = body == null ? HttpMethod.Get : HttpMethod.Post, Content = body };
             return entry;
         }
 
-        private Dictionary<string, string> SendRequest(RestUrlEntry entry)
+        private Dictionary<string, Dictionary<string, object>> SendRequest(RestUrlEntry entry)
         {
-            Dictionary<string, string> response = this.RestApiClient.SendRequest(entry);
-            if (response == null) return null;
-            if (response.ContainsKey(ERROR) && !string.IsNullOrEmpty(response[ERROR]))
+            Dictionary<string, Dictionary<string, object>> response = new Dictionary<string, Dictionary<string, object>>
             {
-                throw new SwitchCommandError(response[ERROR]);
+                [RESULT] = new Dictionary<string, object> { [OUTPUT] = null, [DATA] = null }
+            };
+            Dictionary<string, string> respReq = this.RestApiClient.SendRequest(entry);
+            if (respReq == null) return null;
+            if (respReq.ContainsKey(ERROR) && !string.IsNullOrEmpty(respReq[ERROR]))
+            {
+                throw new SwitchCommandError(respReq[ERROR]);
             }
-            LogSendRequest(entry, response);
-            Dictionary<string, string> result = CliParseUtils.ParseXmlToDictionary(response[RESULT], "//nodes//result//*");
+            LogSendRequest(entry, respReq);
+            Dictionary<string, string> result = CliParseUtils.ParseXmlToDictionary(respReq[RESULT]);
             if (result != null)
             {
                 if (result.ContainsKey(OUTPUT) && !string.IsNullOrEmpty(result[OUTPUT]))
                 {
-                    response[RESULT] = result[OUTPUT];
+                    response[RESULT][OUTPUT] = result[OUTPUT];
                 }
                 else if (result.ContainsKey(DATA) && !string.IsNullOrEmpty(result[DATA]))
                 {
-                    List<string> data = new List<string>();
-                    bool readData = false;
-                    foreach (KeyValuePair<string, string> keyVal in result)
-                    {
-                        if (!readData && keyVal.Key == "rows") readData = true;
-                        if (!readData || keyVal.Key == "rows" || keyVal.Key == "node") continue;
-                        data.Add($"{keyVal.Key}={keyVal.Value}");
-                    }
-                    response[RESULT] = String.Join("\n", data);
+                    Dictionary<string, string> data = CliParseUtils.ParseXmlToDictionary(respReq[RESULT]);
+                    response[RESULT][DATA] = data;
+                }
+                else
+                {
+                    response[RESULT][DATA] = result;
                 }
             }
             return response;
@@ -1209,7 +1232,7 @@ namespace PoEWizard.Comm
             if (Logger.LogLevel == LogLevel.Info) Logger.Info(txt.ToString());
             if (entry.Response.ContainsKey(RESULT))
             {
-                txt.Append("\nSwitch Response:\n").Append(new string('=', 132)).Append("\n").Append(Utils.PrintXMLDoc(response[RESULT]));
+                txt.Append("\nSwitch Response:\n").Append(new string('=', 132)).Append("\n").Append(Utils.PrintXMLDoc(response[RESULT].ToString()));
                 txt.Append("\n").Append(new string('=', 132));
             }
             Logger.Debug(txt.ToString());

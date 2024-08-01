@@ -104,7 +104,14 @@ namespace PoEWizard.Comm
                 {
                     this._connected = false;
                     tokenNode = xmlDoc.SelectSingleNode("/nodes/result/error");
-                    if (tokenNode != null) throw new SwitchAuthenticationFailure(tokenNode.InnerText);
+                    string error = "Connection failed";
+                    if (tokenNode != null)
+                    {
+                        error = tokenNode.InnerText;
+                        if (error.ToLower().Contains("denied")) throw new SwitchRejectConnection(error);
+                        if (error.ToLower().Contains("authentication fail")) throw new SwitchAuthenticationFailure(error);
+                    }
+                    if (tokenNode != null) throw new SwitchConnectionFailure(error);
                 }
             }
             catch (HttpRequestException ex)
@@ -230,18 +237,18 @@ namespace PoEWizard.Comm
             try
             {
                 string xmlError = http_response.Result.Content.ReadAsStringAsync().Result;
-                var errorList = CliParseUtils.ParseXmlToDictionary(xmlError, "//nodes//result//*");
+                var errorList = CliParseUtils.ParseXmlToDictionary(xmlError);
                 if (errorList.ContainsKey(RestUrl.API_ERROR) && !string.IsNullOrEmpty(errorList[RestUrl.API_ERROR]))
                 {
                     string error = errorList[RestUrl.API_ERROR].Trim();
-                    if (errorList.ContainsKey(RestUrl.HTTP_RESPONSE) && !string.IsNullOrEmpty(errorList[RestUrl.HTTP_RESPONSE]))
-                    {
-                        HttpStatusCode code = Utils.ConvertToHttpStatusCode(errorList);
-                        error = $"{code} ({errorList[RestUrl.HTTP_RESPONSE]})\r\n{error}";
-                    }
                     if (!string.IsNullOrEmpty(error))
                     {
-                        error = $"Requested URL: {url}\r\n{error}";
+                        error = Utils.ReplaceFirst(error, ":", "");
+                        if (errorList.ContainsKey(RestUrl.HTTP_RESPONSE) && !string.IsNullOrEmpty(errorList[RestUrl.HTTP_RESPONSE]))
+                        {
+                            HttpStatusCode code = Utils.ConvertToHttpStatusCode(errorList);
+                            Logger.Error($"Requested URL: {url}\r\n{code} ({errorList[RestUrl.HTTP_RESPONSE]})\r\n{error}");
+                        }
                         return error;
                     }
                 }

@@ -9,6 +9,7 @@ namespace PoEWizard.Device
         public SlotView(SwitchModel device) 
         {
             Slots = new List<SlotModel>();
+            if (device.ChassisList == null) return;
             foreach (var chas in device.ChassisList)
             {
                 foreach (var slot in chas.Slots)

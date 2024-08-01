@@ -1,5 +1,6 @@
 ﻿using PoEWizard.Exceptions;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 
 namespace PoEWizard.Data
@@ -94,7 +95,7 @@ namespace PoEWizard.Data
             DEBUG_CREATE_LOG = 125
         }
 
-        public readonly static Dictionary<CommandType, string> CLI_TABLE = new Dictionary<CommandType, string>
+        public readonly static Dictionary<CommandType, string> CMD_TBL = new Dictionary<CommandType, string>
         {
             // 0 - 29: Basic commands to gather switch data
             [CommandType.SHOW_SYSTEM] = "show system",                                                          //   0
@@ -118,7 +119,7 @@ namespace PoEWizard.Data
             [CommandType.LLDP_SYSTEM_DESCRIPTION_ENABLE] = "lldp nearest-bridge chassis tlv management port-description enable system-name enable system-description enable", //  18
             [CommandType.SHOW_HEALTH_CONFIG] = "show health configuration",                                     //  19
             [CommandType.SHOW_LLDP_INVENTORY] = "show lldp remote-system med inventory",                        //  20
-            [CommandType.SHOW_SYSTEM_RUNNING_DIR] = "mibObject0=sysName&mibObject1=sysLocation&mibObject2=sysContact&mibObject3=sysUpTime&mibObject4=sysDescr&mibObject5=configChangeStatus&mibObject6=chasControlCurrentRunningVersion&mibObject7=chasControlCertifyStatus&urn=chasControlModuleTable", //  21
+            [CommandType.SHOW_SYSTEM_RUNNING_DIR] = "urn=chasControlModuleTable&mibObject0=sysName&mibObject1=sysLocation&mibObject2=sysContact&mibObject3=sysUpTime&mibObject4=sysDescr&mibObject5=configChangeStatus&mibObject6=chasControlCurrentRunningVersion&mibObject7=chasControlCertifyStatus", //  21
             // 30 - 69: Commands related to actions on port
             [CommandType.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",                      //  30
             [CommandType.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",                         //  31
@@ -152,33 +153,55 @@ namespace PoEWizard.Data
             [CommandType.REBOOT_SWITCH] = "reload from working no rollback-timeout",                            //  72
             // 120 - 139: Switch debug commands
             [CommandType.DEBUG_SHOW_LAN_POWER_STATUS] = $"debug show lanpower slot {DATA_0} status ni",         // 120
-            [CommandType.DEBUG_SHOW_LLDPNI_LEVEL] = "show swlog appid lldpni",                                  // 121
-            [CommandType.DEBUG_SHOW_LPNI_LEVEL] = "show swlog appid lpni",                                      // 122
-            [CommandType.DEBUG_UPDATE_LLDPNI_LEVEL] = $"swlog appid lldpni subapp all level {DATA_0}",          // 123
-            [CommandType.DEBUG_UPDATE_LPNI_LEVEL] = $"swlog appid lpni subapp {DATA_0} level {DATA_1}",         // 124
+            [CommandType.DEBUG_SHOW_LLDPNI_LEVEL] = "urn=systemSwitchLoggingApplicationTable&startIndex=110.1.6&limit=1&mibObject0=systemSwitchLoggingApplicationAppId&mibObject1=systemSwitchLoggingApplicationSubAppId&mibObject2=systemSwitchLoggingApplicationSubAppVrfLevelIndex&mibObject3=systemSwitchLoggingApplicationAppName&mibObject4=systemSwitchLoggingApplicationSubAppName&mibObject6=systemSwitchLoggingApplicationSubAppLevel&ignoreError=true",                                  // 121
+            [CommandType.DEBUG_SHOW_LPNI_LEVEL] = "urn=systemSwitchLoggingApplicationTable&startIndex=122.2.6&limit=3&mibObject0=systemSwitchLoggingApplicationAppId&mibObject1=systemSwitchLoggingApplicationSubAppId&mibObject2=systemSwitchLoggingApplicationSubAppVrfLevelIndex&mibObject3=systemSwitchLoggingApplicationAppName&mibObject4=systemSwitchLoggingApplicationSubAppName&mibObject6=systemSwitchLoggingApplicationSubAppLevel&ignoreError=true",                                      // 122
+            [CommandType.DEBUG_UPDATE_LLDPNI_LEVEL] = "urn=systemSwitchLogging&setIndexForScalar=true",         // 123
+            [CommandType.DEBUG_UPDATE_LPNI_LEVEL] = "urn=systemSwitchLogging&setIndexForScalar=true",           // 124
             [CommandType.DEBUG_CREATE_LOG] = "show tech-support eng complete"                                   // 125
+        };
+
+        public static Dictionary<CommandType, Dictionary<string, string>> CONTENT_TABLE = new Dictionary<CommandType, Dictionary<string, string>>
+        {
+            [CommandType.DEBUG_UPDATE_LLDPNI_LEVEL] = new Dictionary<string, string> {
+                { "mibObject0-T1", "systemSwitchLoggingIndex:|-1" },
+                { "mibObject1-T1", "systemSwitchLoggingAppName:lldpNi" },
+                { "mibObject2-T1", $"systemSwitchLoggingLevel:{DATA_0}" },
+                { "mibObject3-T1", "systemSwitchLoggingVrf:" }
+            },
+            [CommandType.DEBUG_UPDATE_LPNI_LEVEL] = new Dictionary<string, string> {
+                { "mibObject0-T1", "systemSwitchLoggingIndex:|-1" },
+                { "mibObject1-T1", "systemSwitchLoggingAppName:lpNi" },
+                { "mibObject2-T1", $"systemSwitchLoggingLevel:{DATA_0}" },
+                { "mibObject3-T1", "systemSwitchLoggingVrf:" }
+            }
         };
 
         public static string ParseUrl(RestUrlEntry entry)
         {
-            string cli = GetCliFromTable(entry.RestUrl, entry.Data).Trim();
-            if (string.IsNullOrEmpty(cli)) return null;
+            string req = GetReqFromCmdTbl(entry.RestUrl, entry.Data).Trim();
+            if (string.IsNullOrEmpty(req)) return null;
             switch (entry.RestUrl)
             {
-                case CommandType.SHOW_SYSTEM_RUNNING_DIR:
-                    return $"?domain=mib&{cli}";
+                // 120 - 139: Switch debug commands
+                case CommandType.DEBUG_SHOW_LLDPNI_LEVEL:       // 121
+                case CommandType.DEBUG_SHOW_LPNI_LEVEL:         // 122
+                case CommandType.DEBUG_UPDATE_LLDPNI_LEVEL:     // 123
+                case CommandType.DEBUG_UPDATE_LPNI_LEVEL:       // 124
+                // 0 - 29: Basic commands to gather switch data
+                case CommandType.SHOW_SYSTEM_RUNNING_DIR:       //  21
+                    return $"?domain=mib&{req}";
 
                 default:
-                    return $"cli/aos?cmd={WebUtility.UrlEncode(cli)}";
+                    return $"cli/aos?cmd={WebUtility.UrlEncode(req)}";
             }
         }
 
-        private static string GetCliFromTable(CommandType restUrlId, string[] data)
+        private static string GetReqFromCmdTbl(CommandType cmd, string[] data)
         {
-            if (CLI_TABLE.ContainsKey(restUrlId))
+            if (CMD_TBL.ContainsKey(cmd))
             {
-                string url = CLI_TABLE[restUrlId];
-                switch (restUrlId)
+                string url = CMD_TBL[cmd];
+                switch (cmd)
                 {
 
                     // 0 - 29: Basic commands to gather switch data
@@ -215,7 +238,7 @@ namespace PoEWizard.Data
                     // 120 - 139: Switch debug commands
                     case CommandType.DEBUG_SHOW_LAN_POWER_STATUS:   // 120
                     case CommandType.DEBUG_UPDATE_LLDPNI_LEVEL:     // 123
-                        if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
+                        if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 
                     // 30 - 69: Commands related to actions on port
@@ -224,7 +247,7 @@ namespace PoEWizard.Data
                     case CommandType.SET_MAX_POWER_PORT:            //  53
                     // 120 - 139: Switch debug commands
                     case CommandType.DEBUG_UPDATE_LPNI_LEVEL:       // 124
-                        if (data == null || data.Length < 2) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
+                        if (data == null || data.Length < 2) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
                         return url.Replace(DATA_0, data[0]).Replace(DATA_1, data[1]);
 
                     // 100 - 119: Virtual commands
@@ -239,7 +262,49 @@ namespace PoEWizard.Data
             }
             else
             {
-                throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(restUrlId)}!");
+                throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
+            }
+        }
+
+        public static Dictionary<string, string> GetContent(CommandType cmd, string[] data)
+        {
+            if (data != null && data.Length > 0 && CONTENT_TABLE.ContainsKey(cmd))
+            {
+                Dictionary<string, string> content = CONTENT_TABLE[cmd];
+                var dict = new Dictionary<string, string>(content);
+                switch (cmd)
+                {
+                    // 120 - 139: Switch debug commands
+                    case CommandType.DEBUG_UPDATE_LLDPNI_LEVEL:     // 123
+                    case CommandType.DEBUG_UPDATE_LPNI_LEVEL:       // 124
+                        foreach (string key in dict.Keys.ToList())
+                        {
+                            if (data.Length > 0)
+                            {
+                                dict[key] = dict[key].Replace(DATA_0, data[0] ?? string.Empty);
+                            }
+                            if (data.Length > 1)
+                            {
+                                dict[key] = dict[key].Replace(DATA_1, data[1] ?? string.Empty);
+                            }
+                            if (data.Length > 2)
+                            {
+                                dict[key] = dict[key].Replace(DATA_2, data[2] ?? string.Empty);
+                            }
+                            if (data.Length > 3)
+                            {
+                                dict[key] = dict[key].Replace(DATA_3, data[3] ?? string.Empty);
+                            }
+                        }
+                        return dict;
+
+                    default:
+                        throw new SwitchCommandError($"Invalid command {Utils.PrintEnum(cmd)}!");
+                }
+            }
+            else
+            {
+                return null;
             }
         }
 
