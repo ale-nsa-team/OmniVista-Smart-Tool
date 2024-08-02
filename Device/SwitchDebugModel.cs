@@ -84,9 +84,11 @@ namespace PoEWizard.Device
         public LpNiModel LpNiApp { get; set; }
         public SwitchDebugLogLevel DebugLevelSelected { get; set; }
         public string SwitchDebugLevelSelected { get; set; }
+        public WizardReport WizardReport { get; set; }
 
-        public SwitchDebugModel(SwitchDebugLogLevel logLevel)
+        public SwitchDebugModel(WizardReport wizardReport, SwitchDebugLogLevel logLevel)
         {
+            this.WizardReport = wizardReport;
             this.LocalLogFilePath = Path.Combine(MainWindow.dataPath, Path.GetFileName(SWLOG_PATH));
             this.LanPowerStatus = string.Empty;
             this.LldpNiApp = new DebugAppModel();

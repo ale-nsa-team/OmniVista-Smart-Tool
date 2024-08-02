@@ -766,7 +766,7 @@ namespace PoEWizard
 
         private async Task RunGetSwitchLog(SwitchDebugLogLevel debugLevel)
         {
-            debugSwitchLog = new SwitchDebugModel(debugLevel);
+            debugSwitchLog = new SwitchDebugModel(reportResult, debugLevel);
             await Task.Run(() => restApiService.GetSwitchLog(selectedPort.Name, debugSwitchLog));
         }
 
