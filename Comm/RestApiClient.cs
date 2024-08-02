@@ -247,7 +247,8 @@ namespace PoEWizard.Comm
                         if (errorList.ContainsKey(RestUrl.HTTP_RESPONSE) && !string.IsNullOrEmpty(errorList[RestUrl.HTTP_RESPONSE]))
                         {
                             HttpStatusCode code = Utils.ConvertToHttpStatusCode(errorList);
-                            Logger.Error($"Requested URL: {url}\r\n{code} ({errorList[RestUrl.HTTP_RESPONSE]})\r\n{error}");
+                            string errorMsg = $"Requested URL: {url}\r\n{code} ({errorList[RestUrl.HTTP_RESPONSE]})\r\n{error}";
+                            if (error.ToLower().Contains("not supported")) Logger.Warn(errorMsg); else Logger.Error(errorMsg);
                         }
                         return error;
                     }
