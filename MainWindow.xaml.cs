@@ -535,7 +535,7 @@ namespace PoEWizard
                 Logger.Activity(txt.ToString());
                 RefreshSlotAndPortsView();
 
-                if (reportResult.GetReportResult(selectedPort.Name) != WizardResult.Fail)
+                if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.Fail)
                 {
                     bool res = ShowMessageBox("Wizard", "It looks like the wizard was unable to fix the problem.\nDo you want to collect information to send to TAC?"
                         , MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
