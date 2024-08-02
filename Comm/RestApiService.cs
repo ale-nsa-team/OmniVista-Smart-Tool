@@ -1209,12 +1209,15 @@ namespace PoEWizard.Comm
                     txt.Append("\n\t").Append(key).Append(": ").Append(entry.Content[key]);
                 }
             }
+            if (entry.Response.ContainsKey(ERROR) && !string.IsNullOrEmpty(entry.Response[ERROR]))
+            {
+                txt.Append("\nSwitch Error: ").Append(entry.Response[ERROR]);
+            }
             if (entry.Response.ContainsKey(RESULT))
             {
                 txt.Append("\nSwitch Response:\n").Append(new string('=', 132)).Append("\n").Append(Utils.PrintXMLDoc(response[RESULT]));
                 txt.Append("\n").Append(new string('=', 132));
             }
-            if (entry.Response.ContainsKey(ERROR) && !string.IsNullOrEmpty(entry.Response[ERROR])) 
             Logger.Debug(txt.ToString());
         }
     }
