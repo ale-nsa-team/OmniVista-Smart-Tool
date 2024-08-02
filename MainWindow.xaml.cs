@@ -553,6 +553,7 @@ namespace PoEWizard
                         sftpService.Connect();
                         fname = sftpService.DownloadFile(SWLOG_PATH);
                     });
+                    HideInfoBox();
                     HideProgress();
                     if (fname != null)
                     {
@@ -566,7 +567,7 @@ namespace PoEWizard
                         if (sfd.ShowDialog() == true)
                         {
                             string saveas = sfd.FileName;
-                            File.Copy(fname, saveas);
+                            File.Copy(fname, saveas, true);
                             File.Delete(fname);
                         }
                     }

@@ -57,11 +57,13 @@ namespace PoEWizard.Comm
         {
             try
             {
+                DateTime startTime = DateTime.Now;
                 string localPath = Path.Combine(MainWindow.dataPath, Path.GetFileName(remotePath));
                 using (var fs = new FileStream(localPath, FileMode.Create))
                 {
                     _sftpClient.DownloadFile(remotePath, fs);
                 }
+                Logger.Activity($"End download file {localPath}\nDuration : {Utils.CalcStringDuration(startTime)}");
                 return localPath;
             }
             catch (IOException ex)
