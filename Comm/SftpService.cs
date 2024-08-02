@@ -87,6 +87,18 @@ namespace PoEWizard.Comm
             return string.Empty;
         }
 
+        public void DeleteFile(string remotePath)
+        {
+            try
+            {
+                _sftpClient.DeleteFile(remotePath);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
         public long GetFileSize(string remotePath)
         {
             try

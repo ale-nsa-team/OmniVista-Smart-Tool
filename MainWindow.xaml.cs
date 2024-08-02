@@ -541,8 +541,10 @@ namespace PoEWizard
                         , MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
                     if (!res) return;
                     ShowProgress("Collecting switch logs...");
+                    ShowInfoBox("Cleaning up current log...");
                     if (sftpService == null) sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
-                    sftpService.Connect();
+                    await Task.Run(() => sftpService.Connect());
+                    await Task.Run(() => sftpService.DeleteFile(SWLOG_PATH));
                     await RunGetSwitchLog(SwitchDebugLogLevel.Debug3);
                     ShowInfoBox("Waiting for tar file ready...");
                     long fsize = 0;
