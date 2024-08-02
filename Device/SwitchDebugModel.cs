@@ -1,11 +1,7 @@
 ﻿using PoEWizard.Data;
-using System;
 using System.Collections.Generic;
+using System.IO;
 using static PoEWizard.Data.Constants;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Security.Cryptography.X509Certificates;
 
 namespace PoEWizard.Device
 {
@@ -78,20 +74,18 @@ namespace PoEWizard.Device
     public class SwitchDebugModel
     {
         public string LanPowerStatus { get; set; }
-        public string LogFilePath { get; set; }
-        public string SaveFilePath { get; set; }
+        public string LocalLogFilePath { get; set; }
         public DebugAppModel LldpNiApp { get; set; }
         public LlpNiModel LpNiApp { get; set; }
         public SwitchDebugLogLevel DebugLevelSelected { get; set; }
 
-        public SwitchDebugModel()
+        public SwitchDebugModel(SwitchDebugLogLevel logLevel)
         {
+            LocalLogFilePath = Path.Combine(MainWindow.dataPath, Path.GetFileName(SWLOG_PATH));
             LanPowerStatus = string.Empty;
-            LogFilePath = "/flash/tech_support_complete.tar";
-            SaveFilePath = string.Empty;
             LldpNiApp = new DebugAppModel();
             LpNiApp = new LlpNiModel();
-            DebugLevelSelected = SwitchDebugLogLevel.Info;
+            DebugLevelSelected = logLevel;
         }
 
         public void LoadLldpNiFromDictionary(Dictionary<string, string> dict)

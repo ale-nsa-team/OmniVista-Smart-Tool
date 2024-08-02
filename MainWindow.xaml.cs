@@ -49,6 +49,7 @@ namespace PoEWizard
         private DeviceType selectedDeviceType;
         private string lastIpAddr;
         private string lastPwd;
+        private SwitchDebugModel debugSwitchLog;
         #endregion
         #region public variables
         public static Window Instance;
@@ -496,7 +497,7 @@ namespace PoEWizard
                 reportResult = new WizardReport();
                 ShowProgress($"Running PoE Wizard on port {selectedPort.Name}...");
                 DateTime startTime = DateTime.Now;
-                await Task.Run(() => restApiService.ScanSwitch(reportResult, $"Running PoE Wizard on port {selectedPort.Name}..."));
+                await Task.Run(() => restApiService.ScanSwitch($"Running PoE Wizard on port {selectedPort.Name}...", reportResult));
                 UpdateConnectedState(false);
                 switch (deviceType)
                 {
@@ -563,7 +564,7 @@ namespace PoEWizard
             {
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
-                await Task.Run(() => restApiService.ScanSwitch(reportResult, $"Refresh switch {device.IpAddress}"));
+                await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.IpAddress}", reportResult));
                 UpdateConnectedState(false);
                 await CheckSwitchScanResult($"Refresh switch {device.IpAddress}", startTime);
             }
@@ -763,11 +764,10 @@ namespace PoEWizard
             await Task.Run(() => restApiService.RunWizardCommands(selectedPort.Name, reportResult, cmdList, waitSec));
         }
 
-        private async Task<SwitchDebugModel> RunGetSwitchLog(SwitchDebugLogLevel debugLevel)
+        private async Task RunGetSwitchLog(SwitchDebugLogLevel debugLevel)
         {
-            SwitchDebugModel debugModel = null;
-            await Task.Run(() => debugModel = restApiService.GetSwitchLog(selectedPort.Name, debugLevel));
-            return debugModel;
+            debugSwitchLog = new SwitchDebugModel(debugLevel);
+            await Task.Run(() => restApiService.GetSwitchLog(selectedPort.Name, debugSwitchLog));
         }
 
         private bool IsWizardStopped()

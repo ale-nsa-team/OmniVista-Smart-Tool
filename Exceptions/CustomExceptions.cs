@@ -72,9 +72,9 @@ namespace PoEWizard.Exceptions
     }
 
     [Serializable]
-    public class SwitchCommandWarning : Exception
+    public class SwitchCommandNotSupported : Exception
     {
-        public SwitchCommandWarning(string message)
+        public SwitchCommandNotSupported(string message)
             : base(message)
         { }
     }

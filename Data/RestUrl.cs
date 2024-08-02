@@ -13,6 +13,7 @@ namespace PoEWizard.Data
         public const string RESPONSE = "RESPONSE";
         public const string DURATION = "DURATION";
         public const string API_ERROR = "error";
+        public const string STRING = "string";
         public const string OUTPUT = "output";
         public const string DATA = "data";
         public const string NODE = "node";
@@ -279,22 +280,10 @@ namespace PoEWizard.Data
                     case CommandType.DEBUG_UPDATE_LPNI_LEVEL:       // 124
                         foreach (string key in dict.Keys.ToList())
                         {
-                            if (data.Length > 0)
-                            {
-                                dict[key] = dict[key].Replace(DATA_0, data[0] ?? string.Empty);
-                            }
-                            if (data.Length > 1)
-                            {
-                                dict[key] = dict[key].Replace(DATA_1, data[1] ?? string.Empty);
-                            }
-                            if (data.Length > 2)
-                            {
-                                dict[key] = dict[key].Replace(DATA_2, data[2] ?? string.Empty);
-                            }
-                            if (data.Length > 3)
-                            {
-                                dict[key] = dict[key].Replace(DATA_3, data[3] ?? string.Empty);
-                            }
+                            if (data.Length > 0) dict[key] = dict[key].Replace(DATA_0, data[0] ?? string.Empty);
+                            if (data.Length > 1) dict[key] = dict[key].Replace(DATA_1, data[1] ?? string.Empty);
+                            if (data.Length > 2) dict[key] = dict[key].Replace(DATA_2, data[2] ?? string.Empty);
+                            if (data.Length > 3) dict[key] = dict[key].Replace(DATA_3, data[3] ?? string.Empty);
                         }
                         return dict;
 
