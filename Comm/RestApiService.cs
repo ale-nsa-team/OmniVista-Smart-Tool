@@ -146,14 +146,15 @@ namespace PoEWizard.Comm
                 _response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LPNI_LEVEL));
                 if (_response[DATA] != null) _debugSwitchLog.LoadLpNiFromDictionary(CliParseUtils.ParseListFromDictionary((Dictionary<string, string>)_response[DATA], DEBUG_SWITCH_LOG));
                 SendProgressReport($"Enabling debug level to {_debugSwitchLog.DebugLevelSelected}");
-                int logLevel = (int)_debugSwitchLog.DebugLevelSelected;
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LLDPNI_LEVEL, new string[1] { logLevel.ToString() }));
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[1] { logLevel.ToString() }));
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LLDPNI_LEVEL, new string[1] { _debugSwitchLog.SwitchDebugLevelSelected }));
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[1] { _debugSwitchLog.SwitchDebugLevelSelected }));
                 RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 15);
+                Thread.Sleep(3000);
                 SendRequest(GetRestUrlEntry(CommandType.DEBUG_CREATE_LOG));
-                SendProgressReport($"Resetting debug level to {_debugSwitchLog.LldpNiApp.DebugLevel}");
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LLDPNI_LEVEL, new string[1] { _debugSwitchLog.LldpNiApp.DebugLevel }));
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[2] { "all", _debugSwitchLog.LpNiApp.DebugLevel }));
+                Thread.Sleep(5000);
+                SendProgressReport($"Resetting debug level back to {_debugSwitchLog.LldpNiApp.DebugLevel}");
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LLDPNI_LEVEL, new string[1] { _debugSwitchLog.LldpNiApp.SwitchLogLevel }));
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[1] { _debugSwitchLog.LpNiApp.SwitchLogLevel }));
             }
             catch (Exception ex)
             {

@@ -239,6 +239,7 @@ namespace PoEWizard.Data
                     // 120 - 139: Switch debug commands
                     case CommandType.DEBUG_SHOW_LAN_POWER_STATUS:   // 120
                     case CommandType.DEBUG_UPDATE_LLDPNI_LEVEL:     // 123
+                    case CommandType.DEBUG_UPDATE_LPNI_LEVEL:       // 124
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 
@@ -246,8 +247,6 @@ namespace PoEWizard.Data
                     case CommandType.POWER_PRIORITY_PORT:           //  32
                     case CommandType.SHOW_PORT_POWER:               //  49
                     case CommandType.SET_MAX_POWER_PORT:            //  53
-                    // 120 - 139: Switch debug commands
-                    case CommandType.DEBUG_UPDATE_LPNI_LEVEL:       // 124
                         if (data == null || data.Length < 2) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
                         return url.Replace(DATA_0, data[0]).Replace(DATA_1, data[1]);
 

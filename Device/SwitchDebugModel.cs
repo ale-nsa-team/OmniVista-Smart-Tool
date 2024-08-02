@@ -1,4 +1,5 @@
 ﻿using PoEWizard.Data;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using static PoEWizard.Data.Constants;
@@ -12,7 +13,8 @@ namespace PoEWizard.Device
         public string ApplicationName { get; set; }
         public string SubApplicationId { get; set; }
         public string SubApplicationName { get; set; }
-        public string DebugLevel { get; set; }
+        public SwitchDebugLogLevel DebugLevel { get; set; }
+        public string SwitchLogLevel { get; set; }
 
         public DebugAppModel()
         {
@@ -20,7 +22,9 @@ namespace PoEWizard.Device
             this.ApplicationName = string.Empty;
             this.SubApplicationId = string.Empty;
             this.SubApplicationName = string.Empty;
-            this.DebugLevel = "info";
+            this.DebugLevel = SwitchDebugLogLevel.Info;
+            int logLevel = (int)this.DebugLevel;
+            SwitchLogLevel = logLevel.ToString();
         }
         public DebugAppModel(Dictionary<string, string> dict)
         {
@@ -34,18 +38,19 @@ namespace PoEWizard.Device
             this.ApplicationName = Utils.GetDictValue(dict, DEBUG_APP_NAME);
             this.SubApplicationId = Utils.GetDictValue(dict, DEBUG_SUB_APP_ID);
             this.SubApplicationName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
-            this.DebugLevel = Utils.GetDictValue(dict, DEBUG_SUB_APP_LEVEL);
+            this.SwitchLogLevel = Utils.GetDictValue(dict, DEBUG_SUB_APP_LEVEL);
+            this.DebugLevel = !string.IsNullOrEmpty(this.SwitchLogLevel) ? (SwitchDebugLogLevel)Enum.Parse(typeof(SwitchDebugLogLevel), this.SwitchLogLevel) : SwitchDebugLogLevel.Info;
         }
     }
 
-    public class LlpNiModel
+    public class LpNiModel
     {
         public DebugAppModel LanNi { get; set; }
         public DebugAppModel LanXtr { get; set; }
         public DebugAppModel LanNiUtl { get; set; }
-        public string DebugLevel => GetDebugLevel();
+        public string SwitchLogLevel => GetSwitchDebugLevel();
 
-        public LlpNiModel()
+        public LpNiModel()
         {
             this.LanNi = new DebugAppModel();
             this.LanXtr = new DebugAppModel();
@@ -65,9 +70,9 @@ namespace PoEWizard.Device
             this.LanNiUtl.LoadFromDictionary(dict);
         }
 
-        private string GetDebugLevel()
+        private string GetSwitchDebugLevel()
         {
-            return this.LanNi.DebugLevel;
+            return this.LanNi.SwitchLogLevel;
         }
     }
 
@@ -76,16 +81,19 @@ namespace PoEWizard.Device
         public string LanPowerStatus { get; set; }
         public string LocalLogFilePath { get; set; }
         public DebugAppModel LldpNiApp { get; set; }
-        public LlpNiModel LpNiApp { get; set; }
+        public LpNiModel LpNiApp { get; set; }
         public SwitchDebugLogLevel DebugLevelSelected { get; set; }
+        public string SwitchDebugLevelSelected { get; set; }
 
         public SwitchDebugModel(SwitchDebugLogLevel logLevel)
         {
-            LocalLogFilePath = Path.Combine(MainWindow.dataPath, Path.GetFileName(SWLOG_PATH));
-            LanPowerStatus = string.Empty;
-            LldpNiApp = new DebugAppModel();
-            LpNiApp = new LlpNiModel();
-            DebugLevelSelected = logLevel;
+            this.LocalLogFilePath = Path.Combine(MainWindow.dataPath, Path.GetFileName(SWLOG_PATH));
+            this.LanPowerStatus = string.Empty;
+            this.LldpNiApp = new DebugAppModel();
+            this.LpNiApp = new LpNiModel();
+            this.DebugLevelSelected = logLevel;
+            int logDebugLevel = (int)this.DebugLevelSelected;
+            this.SwitchDebugLevelSelected = logDebugLevel.ToString();
         }
 
         public void LoadLldpNiFromDictionary(Dictionary<string, string> dict)
