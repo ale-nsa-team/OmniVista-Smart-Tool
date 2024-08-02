@@ -1135,7 +1135,7 @@ namespace PoEWizard.Comm
         private void SendProgressReport(string progrMsg)
         {
             string msg = $"{progrMsg} on Switch {SwitchModel.IpAddress}";
-            _progress.Report(new ProgressReport($"{msg} on Switch {SwitchModel.IpAddress}"));
+            _progress.Report(new ProgressReport(msg));
             Logger.Info(msg);
         }
 

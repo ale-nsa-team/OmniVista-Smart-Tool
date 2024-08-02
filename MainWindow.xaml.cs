@@ -540,19 +540,37 @@ namespace PoEWizard
                     bool res = ShowMessageBox("Wizard", "It looks like the wizard was unable to fix the problem.\nDo you want to collect information to send to TAC?"
                         , MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
                     if (!res) return;
-                    ShowProgress("Prepairing switch logs...");
+                    ShowProgress("Collecting switch logs...");
                     await RunGetSwitchLog(SwitchDebugLogLevel.Debug3);
-                    ShowProgress("Downloading logs from switch...");
-                    string fname = null;
-                    await Task.Run(() =>
+                    ShowInfoBox("Waiting for tar file ready...");
+                    long fsize = 0;
+                    long previousSize = -1;
+                    if (sftpService == null)
                     {
                         if (sftpService == null)
                         {
                             sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
+                            sftpService.Connect();
                         }
-                        sftpService.Connect();
+                    }
+                    while (fsize > previousSize)
+                    {
+                        await Task.Run(() => 
+                        {
+                            previousSize = fsize;
+                            fsize = sftpService.GetFileSize(SWLOG_PATH);
+                        });
+                        Thread.Sleep(2000);
+                    }
+
+                    ShowInfoBox("Downloading tar file from switch...");
+                    string fname = null;
+                    await Task.Run(() =>
+                    {
                         fname = sftpService.DownloadFile(SWLOG_PATH);
                     });
+
+                    sftpService.Disconnect();
                     HideInfoBox();
                     HideProgress();
                     if (fname != null)
@@ -632,7 +650,7 @@ namespace PoEWizard
                     {
                         ReportResult report = reportList[reportList.Count - 1];
                         string alertMsg = $"{report.AlertDescription}\nDo you want to turn it On?";
-                        if (report?.Result == WizardResult.Warning && ShowMessageBox($"Slot {report.ID} warning", alertMsg, MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
+                        if (report?.Result == WizardResult.Warning && ShowMessageBox($"Slot {report.ID} warning", alertMsg, MsgBoxIcons.Question, MsgBoxButtons.OkCancel))
                         {
                             await Task.Run(() => restApiService.RunPowerUpSlot(report.ID));
                             resetSlotCnt++;
@@ -773,7 +791,7 @@ namespace PoEWizard
                 Logger.Info($"PoE turned Off, reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                 reset = true;
             }
-            if (!reset && ShowMessageBox("Resetting Port", $"Do you want to recycle the power on port {selectedPort.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
+            if (!reset && ShowMessageBox("Resetting Port", $"Do you want to recycle the power on port {selectedPort.Name}?", MsgBoxIcons.Question, MsgBoxButtons.OkCancel))
             {
                 await RunWizardCommands(new List<CommandType>() { CommandType.RESET_POWER_PORT }, 30);
                 Logger.Info($"Recycling the power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");

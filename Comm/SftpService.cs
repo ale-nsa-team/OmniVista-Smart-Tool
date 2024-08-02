@@ -2,6 +2,7 @@
 using System.IO;
 using PoEWizard.Data;
 using Renci.SshNet;
+using Renci.SshNet.Sftp;
 
 namespace PoEWizard.Comm
 {
@@ -84,6 +85,20 @@ namespace PoEWizard.Comm
                 Logger.Error(ex);
             }
             return string.Empty;
+        }
+
+        public long GetFileSize(string remotePath)
+        {
+            try
+            {
+                ISftpFile file = _sftpClient.Get(remotePath);
+                return file.Attributes.Size;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return 0;
         }
 
         public void Disconnect()
