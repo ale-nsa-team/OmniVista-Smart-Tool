@@ -1,4 +1,5 @@
-﻿using PoEWizard.Comm;
+﻿using Microsoft.Win32;
+using PoEWizard.Comm;
 using PoEWizard.Components;
 using PoEWizard.Data;
 using PoEWizard.Device;
@@ -9,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -179,7 +181,6 @@ namespace PoEWizard
                 }
                 sftpService.Connect();
                 res = sftpService.DownloadToMemory(VCBOOT_PATH);
-                string fname = sftpService.DownloadFile(VCBOOT_PATH);
             });
             HideProgress();
             TextViewer tv = new TextViewer("VCBoot config file", res)
@@ -532,11 +533,45 @@ namespace PoEWizard
                 if (selectedPort.EndPointDevice != null) txt.Append("\n").Append(selectedPort.EndPointDevice);
                 else if (selectedPort.MacList?.Count > 0 && !string.IsNullOrEmpty(selectedPort.MacList[0])) txt.Append(", Device MAC: ").Append(selectedPort.MacList[0]);
                 Logger.Activity(txt.ToString());
+                RefreshSlotAndPortsView();
+
                 if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.Fail)
                 {
+                    bool res = ShowMessageBox("Wizard", "It looks like the wizard was unable to fix the problem.\nDo you want to collect information to send to TAC?"
+                        , MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
+                    if (!res) return;
+                    ShowProgress("Prepairing switch logs...");
                     await RunGetSwitchLog(SwitchDebugLogLevel.Debug3);
+                    ShowProgress("Downloading logs from switch...");
+                    string fname = null;
+                    await Task.Run(() =>
+                    {
+                        if (sftpService == null)
+                        {
+                            sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
+                        }
+                        sftpService.Connect();
+                        fname = sftpService.DownloadFile(SWLOG_PATH);
+                    });
+                    HideProgress();
+                    if (fname != null)
+                    {
+                        var sfd = new SaveFileDialog()
+                        {
+                            Filter = "Tar File|*.tar",
+                            Title = "Save switch logs",
+                            InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+                            FileName = Path.GetFileName(fname)
+                        };
+                        if (sfd.ShowDialog() == true)
+                        {
+                            string saveas = sfd.FileName;
+                            File.Copy(fname, saveas);
+                            File.Delete(fname);
+                        }
+                    }
                 }
-                RefreshSlotAndPortsView();
+
             }
             catch (Exception ex)
             {
@@ -857,55 +892,55 @@ namespace PoEWizard
         {
             try
             {
-            DataContext = null;
-            DataContext = device;
-            Logger.Debug($"Data context set to {device.Name}");
-            if (device.RunningDir == CERTIFIED_DIR && checkCertified)
-            {
-                string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be saved.\n" +
-                    $"Do you want to reboot the switch on {WORKING_DIR} directory?";
-                bool res = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
-                if (res)
+                DataContext = null;
+                DataContext = device;
+                Logger.Debug($"Data context set to {device.Name}");
+                if (device.RunningDir == CERTIFIED_DIR && checkCertified)
                 {
-                    await RebootSwitch(600);
-                    SetDisconnectedState();
-                    return;
+                    string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be saved.\n" +
+                        $"Do you want to reboot the switch on {WORKING_DIR} directory?";
+                    bool res = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                    if (res)
+                    {
+                        await RebootSwitch(600);
+                        SetDisconnectedState();
+                        return;
+                    }
                 }
-            }
-            _comImg.Source = (ImageSource)currentDict["connected"];
-            _switchAttributes.Text = $"Connected to: {device.Name}";
-            _btnConnect.Cursor = Cursors.Hand;
-            _switchMenuItem.IsEnabled = false;
-            _snapshotMenuItem.IsEnabled = true;
-            _vcbootMenuItem.IsEnabled = true;
-            _refreshSwitch.IsEnabled = true;
-            _psMenuItem.IsEnabled = true;
-            _disconnectMenuItem.Visibility = Visibility.Visible;
-            _tempStatus.Visibility = Visibility.Visible;
-            _cpu.Visibility = Visibility.Visible;
-            slotView = new SlotView(device);
-            _slotsView.ItemsSource = slotView.Slots;
-            Logger.Debug($"Slots view items source: {slotView.Slots.Count} slot(s)");
-            _slotsView.SelectedIndex = 0;
-            if (slotView.Slots.Count == 1) //do not highlight if only one row
-            {
-                _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
-            }
-            _slotsView.Visibility = Visibility.Visible;
-            _portList.Visibility = Visibility.Visible;
-            _fpgaLbl.Visibility = string.IsNullOrEmpty(device.Fpga) ? Visibility.Collapsed : Visibility.Visible;
-            _cpldLbl.Visibility = string.IsNullOrEmpty(device.Cpld) ? Visibility.Collapsed : Visibility.Visible;
-            _btnConnect.IsEnabled = true;
-            _comImg.ToolTip = "Click to disconnect";
-            if (device.TemperatureStatus == ThresholdType.Danger)
-            {
-                _tempWarn.Source = new BitmapImage(new Uri(@"Resources\danger.png", UriKind.Relative));
-            }
-            else
-            {
-                _tempWarn.Source = new BitmapImage(new Uri(@"Resources\warning.png", UriKind.Relative));
-            }
-            ReselectPort();
+                _comImg.Source = (ImageSource)currentDict["connected"];
+                _switchAttributes.Text = $"Connected to: {device.Name}";
+                _btnConnect.Cursor = Cursors.Hand;
+                _switchMenuItem.IsEnabled = false;
+                _snapshotMenuItem.IsEnabled = true;
+                _vcbootMenuItem.IsEnabled = true;
+                _refreshSwitch.IsEnabled = true;
+                _psMenuItem.IsEnabled = true;
+                _disconnectMenuItem.Visibility = Visibility.Visible;
+                _tempStatus.Visibility = Visibility.Visible;
+                _cpu.Visibility = Visibility.Visible;
+                slotView = new SlotView(device);
+                _slotsView.ItemsSource = slotView.Slots;
+                Logger.Debug($"Slots view items source: {slotView.Slots.Count} slot(s)");
+                _slotsView.SelectedIndex = 0;
+                if (slotView.Slots.Count == 1) //do not highlight if only one row
+                {
+                    _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
+                }
+                _slotsView.Visibility = Visibility.Visible;
+                _portList.Visibility = Visibility.Visible;
+                _fpgaLbl.Visibility = string.IsNullOrEmpty(device.Fpga) ? Visibility.Collapsed : Visibility.Visible;
+                _cpldLbl.Visibility = string.IsNullOrEmpty(device.Cpld) ? Visibility.Collapsed : Visibility.Visible;
+                _btnConnect.IsEnabled = true;
+                _comImg.ToolTip = "Click to disconnect";
+                if (device.TemperatureStatus == ThresholdType.Danger)
+                {
+                    _tempWarn.Source = new BitmapImage(new Uri(@"Resources\danger.png", UriKind.Relative));
+                }
+                else
+                {
+                    _tempWarn.Source = new BitmapImage(new Uri(@"Resources\warning.png", UriKind.Relative));
+                }
+                ReselectPort();
             }
             catch (Exception ex)
             {
