@@ -541,26 +541,22 @@ namespace PoEWizard
                         , MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
                     if (!res) return;
                     ShowProgress("Collecting switch logs...");
+                    if (sftpService == null) sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
+                    sftpService.Connect();
                     await RunGetSwitchLog(SwitchDebugLogLevel.Debug3);
                     ShowInfoBox("Waiting for tar file ready...");
                     long fsize = 0;
                     long previousSize = -1;
-                    if (sftpService == null)
-                    {
-                        if (sftpService == null)
-                        {
-                            sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
-                            sftpService.Connect();
-                        }
-                    }
-                    while (fsize > previousSize)
+                    int cnt = 0;
+                    while (cnt < 2)
                     {
                         await Task.Run(() => 
                         {
                             previousSize = fsize;
                             fsize = sftpService.GetFileSize(SWLOG_PATH);
                         });
-                        Thread.Sleep(2000);
+                        Thread.Sleep(5000);
+                        if (fsize == previousSize) cnt++; else cnt = 0;
                     }
 
                     ShowInfoBox("Downloading tar file from switch...");
