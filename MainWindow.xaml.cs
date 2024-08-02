@@ -557,8 +557,8 @@ namespace PoEWizard
                             previousSize = fsize;
                             fsize = sftpService.GetFileSize(SWLOG_PATH);
                         });
-                        Thread.Sleep(5000);
-                        if (fsize == previousSize) cnt++; else cnt = 0;
+                        Thread.Sleep(2000);
+                        if (fsize > 0 && fsize == previousSize) cnt++; else cnt = 0;
                     }
 
                     ShowInfoBox("Downloading tar file from switch...");

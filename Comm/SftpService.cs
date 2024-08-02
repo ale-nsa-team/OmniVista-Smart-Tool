@@ -48,7 +48,7 @@ namespace PoEWizard.Comm
                     _sftpClient.UploadFile(fs, remotePath);
                 }
             }
-            catch (IOException ex) 
+            catch (Exception ex) 
             {
                 Logger.Error("Error uploading file.", ex);
             }
@@ -67,7 +67,7 @@ namespace PoEWizard.Comm
                 Logger.Activity($"End download file {localPath}\nDuration : {Utils.CalcStringDuration(startTime)}");
                 return localPath;
             }
-            catch (IOException ex)
+            catch (Exception ex)
             {
                 Logger.Error("Error downloading file.", ex);
             }
@@ -93,10 +93,7 @@ namespace PoEWizard.Comm
             {
                 _sftpClient.DeleteFile(remotePath);
             }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+            catch { }
         }
 
         public long GetFileSize(string remotePath)
@@ -106,10 +103,7 @@ namespace PoEWizard.Comm
                 ISftpFile file = _sftpClient.Get(remotePath);
                 return file.Attributes.Size;
             }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+            catch { }
             return 0;
         }
 
