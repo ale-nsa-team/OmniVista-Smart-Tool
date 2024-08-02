@@ -535,7 +535,7 @@ namespace PoEWizard
                 Logger.Activity(txt.ToString());
                 RefreshSlotAndPortsView();
 
-                if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.Fail)
+                if (reportResult.GetReportResult(selectedPort.Name) != WizardResult.Fail)
                 {
                     bool res = ShowMessageBox("Wizard", "It looks like the wizard was unable to fix the problem.\nDo you want to collect information to send to TAC?"
                         , MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
@@ -546,12 +546,12 @@ namespace PoEWizard
                     await Task.Run(() => sftpService.Connect());
                     await Task.Run(() => sftpService.DeleteFile(SWLOG_PATH));
                     await RunGetSwitchLog(SwitchDebugLogLevel.Debug3);
-                    ShowInfoBox("Waiting for tar file ready...");
                     long fsize = 0;
                     long previousSize = -1;
                     int cnt = 0;
                     while (cnt < 2)
                     {
+                        ShowInfoBox($"Waiting for tar file ready (size: {fsize / 1024} KB)");
                         await Task.Run(() => 
                         {
                             previousSize = fsize;
