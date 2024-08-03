@@ -578,7 +578,7 @@ namespace PoEWizard
                 if (fsize > 0 && fsize == previousSize) cnt++; else cnt = 0;
             }
             dur = Utils.CalcStringDuration(startTime, true);
-            ShowInfoBox($"Downloading tar file from switch ...\nWaiting for tar file duration: {dur}, File size: {Utils.PrintNumberBytes(fsize)}");
+            ShowInfoBox($"Downloading tar file from switch ...\nWaiting tar file duration: {dur}, File size: {Utils.PrintNumberBytes(fsize)}");
             string fname = null;
             await Task.Run(() =>
             {
