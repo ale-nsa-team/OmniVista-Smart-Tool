@@ -418,6 +418,21 @@ namespace PoEWizard.Data
             if (pos < 0) return text;
             return text.Substring(0, pos) + replace + text.Substring(pos + search.Length).Trim();
         }
+
+        public static string PrintNumberBytes(long sizeBytes)
+        {
+            string[] sizeLabels = { "Bytes", "KB", "MB", "GB", "TB" };
+            double size = sizeBytes;
+            int labelIndex = 0;
+            while (size >= 1024 && labelIndex < sizeLabels.Length - 1)
+            {
+                size /= 1024;
+                labelIndex++;
+            }
+            size = Math.Round(size, 2);
+            return $"{size} {sizeLabels[labelIndex]}";
+        }
+
     }
 }
 
