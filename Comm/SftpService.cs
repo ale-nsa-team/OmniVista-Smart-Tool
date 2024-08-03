@@ -64,7 +64,7 @@ namespace PoEWizard.Comm
                 {
                     _sftpClient.DownloadFile(remotePath, fs);
                 }
-                Logger.Activity($"End download file {localPath}\nDuration : {Utils.CalcStringDuration(startTime)}");
+                Logger.Info($"End download file\n{localPath}\nDuration : {Utils.CalcStringDuration(startTime)}");
                 return localPath;
             }
             catch (Exception ex)

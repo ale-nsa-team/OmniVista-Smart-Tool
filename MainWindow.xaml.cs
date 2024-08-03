@@ -585,9 +585,7 @@ namespace PoEWizard
                 }
             }
             dur = Utils.CalcStringDuration(startTime, true);
-            msg = $"Downloading tar file from switch ...\nWaiting tar file duration: {dur}, File size: {Utils.PrintNumberBytes(fsize)}";
-            Logger.Activity(msg);
-            ShowInfoBox(msg);
+            ShowInfoBox($"Downloading tar file from switch ...\nFile creation duration: {dur}, File size: {Utils.PrintNumberBytes(fsize)}");
             string fname = null;
             await Task.Run(() =>
             {
@@ -596,6 +594,9 @@ namespace PoEWizard
             sftpService.Disconnect();
             HideInfoBox();
             HideProgress();
+            string saveas = fname;
+            FileInfo info = new FileInfo(saveas);
+            msg = $"File \"{SWLOG_PATH}\" from switch {device.IpAddress} downloaded";
             if (fname != null)
             {
                 var sfd = new SaveFileDialog()
@@ -607,11 +608,14 @@ namespace PoEWizard
                 };
                 if (sfd.ShowDialog() == true)
                 {
-                    string saveas = sfd.FileName;
+                    saveas = sfd.FileName;
                     File.Copy(fname, saveas, true);
                     File.Delete(fname);
+                    info = new FileInfo(saveas);
+                    msg += $" to:\n\"{info.FullName}\" ({Utils.PrintNumberBytes(info.Length)}), File creation duration: {dur}";
                 }
             }
+            Logger.Activity(msg);
         }
 
         private void RefreshSlotAndPortsView()
