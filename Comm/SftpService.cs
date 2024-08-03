@@ -103,7 +103,11 @@ namespace PoEWizard.Comm
                 ISftpFile file = _sftpClient.Get(remotePath);
                 return file.Attributes.Size;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                if (!ex.Message.ToLower().Contains("no such file")) Logger.Error(ex);
+                if (!_sftpClient.IsConnected) Connect();
+            }
             return 0;
         }
 

@@ -10,7 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -563,10 +562,11 @@ namespace PoEWizard
             int cnt = 0;
             DateTime startTime = DateTime.Now;
             string dur = string.Empty;
+            string msg;
             while (cnt < 2)
             {
                 dur = Utils.CalcStringDuration(startTime, true);
-                string msg = !string.IsNullOrEmpty(dur) ? $"Waiting for tar file ready ({dur}) ..." : "Waiting for tar file ready ...";
+                msg = !string.IsNullOrEmpty(dur) ? $"Waiting for tar file ready ({dur}) ..." : "Waiting for tar file ready ...";
                 if (fsize > 0) msg += $"\nFile size: {Utils.PrintNumberBytes(fsize)}";
                 ShowInfoBox(msg);
                 await Task.Run(() =>
@@ -576,9 +576,18 @@ namespace PoEWizard
                 });
                 Thread.Sleep(2000);
                 if (fsize > 0 && fsize == previousSize) cnt++; else cnt = 0;
+                if (Utils.GetTimeDuration(startTime) >= 60)
+                {
+                    msg = $"Waited too long for tar file ({dur})";
+                    Logger.Error(msg);
+                    ShowMessageBox("Waiting for tar file ready", msg, MsgBoxIcons.Error, MsgBoxButtons.Ok);
+                    return;
+                }
             }
             dur = Utils.CalcStringDuration(startTime, true);
-            ShowInfoBox($"Downloading tar file from switch ...\nWaiting tar file duration: {dur}, File size: {Utils.PrintNumberBytes(fsize)}");
+            msg = $"Downloading tar file from switch ...\nWaiting tar file duration: {dur}, File size: {Utils.PrintNumberBytes(fsize)}";
+            Logger.Activity(msg);
+            ShowInfoBox(msg);
             string fname = null;
             await Task.Run(() =>
             {
