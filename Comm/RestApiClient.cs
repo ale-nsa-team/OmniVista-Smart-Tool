@@ -244,11 +244,15 @@ namespace PoEWizard.Comm
                     if (!string.IsNullOrEmpty(error))
                     {
                         error = Utils.ReplaceFirst(error, ":", "");
+                        string errMsg = error.ToLower();
                         if (errorList.ContainsKey(RestUrl.HTTP_RESPONSE) && !string.IsNullOrEmpty(errorList[RestUrl.HTTP_RESPONSE]))
                         {
                             HttpStatusCode code = Utils.ConvertToHttpStatusCode(errorList);
                             string errorMsg = $"Requested URL: {url}\r\n{code} ({errorList[RestUrl.HTTP_RESPONSE]})\r\n{error}";
-                            if (error.ToLower().Contains("not supported")) Logger.Warn(errorMsg); else Logger.Error(errorMsg);
+                            if (errMsg.Contains("not supported") || errMsg.Contains("power range supported"))
+                                Logger.Warn(errorMsg);
+                            else
+                                Logger.Error(errorMsg);
                         }
                         return error;
                     }

@@ -559,14 +559,15 @@ namespace PoEWizard
         {
             long fsize = 0;
             long previousSize = -1;
-            int cnt = 0;
+            int waitCnt = 0;
             DateTime startTime = DateTime.Now;
-            string dur = string.Empty;
+            string strDur = string.Empty;
             string msg;
-            while (cnt < 2)
+            int loopCnt = 0;
+            while (waitCnt < 2)
             {
-                dur = Utils.CalcStringDuration(startTime, true);
-                msg = !string.IsNullOrEmpty(dur) ? $"Waiting for tar file ready ({dur}) ..." : "Waiting for tar file ready ...";
+                strDur = Utils.CalcStringDuration(startTime, true);
+                msg = !string.IsNullOrEmpty(strDur) ? $"Waiting for tar file ready ({strDur}) ..." : "Waiting for tar file ready ...";
                 if (fsize > 0) msg += $"\nFile size: {Utils.PrintNumberBytes(fsize)}";
                 ShowInfoBox(msg);
                 await Task.Run(() =>
@@ -575,17 +576,28 @@ namespace PoEWizard
                     fsize = sftpService.GetFileSize(SWLOG_PATH);
                 });
                 Thread.Sleep(2000);
-                if (fsize > 0 && fsize == previousSize) cnt++; else cnt = 0;
+                loopCnt++;
+                if (fsize == 0)
+                {
+                    if (loopCnt % 8 == 0)
+                    {
+                        Logger.Error($"File \"{SWLOG_PATH}\" from switch {device.IpAddress} is still empty (duration: {loopCnt * 2} sec)\nTrying to reconnect SFTP session");
+                        sftpService.Disconnect();
+                        sftpService.Connect();
+                    }
+                }
+                else if (fsize == previousSize) waitCnt++;
+                else waitCnt = 0;
                 if (Utils.GetTimeDuration(startTime) >= 60)
                 {
-                    msg = $"Waited too long for tar file ({dur})";
+                    msg = $"Waited too long for tar file ({Utils.CalcStringDuration(startTime, true)})";
                     Logger.Error(msg);
                     ShowMessageBox("Waiting for tar file ready", msg, MsgBoxIcons.Error, MsgBoxButtons.Ok);
                     return;
                 }
             }
-            dur = Utils.CalcStringDuration(startTime, true);
-            ShowInfoBox($"Downloading tar file from switch ...\nFile creation duration: {dur}, File size: {Utils.PrintNumberBytes(fsize)}");
+            strDur = Utils.CalcStringDuration(startTime, true);
+            ShowInfoBox($"Downloading tar file from switch ...\nFile creation duration: {strDur}, File size: {Utils.PrintNumberBytes(fsize)}");
             string fname = null;
             await Task.Run(() =>
             {
@@ -612,7 +624,7 @@ namespace PoEWizard
                     File.Copy(fname, saveas, true);
                     File.Delete(fname);
                     info = new FileInfo(saveas);
-                    msg += $" to:\n\"{info.FullName}\" ({Utils.PrintNumberBytes(info.Length)}), File creation duration: {dur}";
+                    msg += $" to:\n\"{info.FullName}\" ({Utils.PrintNumberBytes(info.Length)}), File creation duration: {strDur}";
                 }
             }
             Logger.Activity(msg);
