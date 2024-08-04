@@ -551,83 +551,89 @@ namespace PoEWizard
             {
                 Logger.Error(ex);
             }
-            HideProgress();
-            HideInfoBox();
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
+            }
         }
 
         private async Task DownloadSwitchLogFile()
         {
-            long fsize = 0;
-            long previousSize = -1;
-            int waitCnt = 0;
-            DateTime startTime = DateTime.Now;
-            string strDur = string.Empty;
-            string msg;
-            int loopCnt = 0;
-            while (waitCnt < 2)
+            try
             {
-                strDur = Utils.CalcStringDuration(startTime, true);
-                msg = !string.IsNullOrEmpty(strDur) ? $"Waiting for tar file ready ({strDur}) ..." : "Waiting for tar file ready ...";
-                if (fsize > 0) msg += $"\nFile size: {Utils.PrintNumberBytes(fsize)}";
-                ShowInfoBox(msg);
-                await Task.Run(() =>
+                long fsize = 0;
+                long previousSize = -1;
+                int waitCnt = 0;
+                DateTime startTime = DateTime.Now;
+                string strDur = string.Empty;
+                string msg;
+                while (waitCnt < 2)
                 {
-                    previousSize = fsize;
-                    fsize = sftpService.GetFileSize(SWLOG_PATH);
-                });
-                Thread.Sleep(2000);
-                loopCnt++;
-                if (fsize == 0)
-                {
-                    if (loopCnt % 8 == 0)
+                    strDur = Utils.CalcStringDuration(startTime, true);
+                    msg = !string.IsNullOrEmpty(strDur) ? $"Waiting for tar file ready ({strDur}) ..." : "Waiting for tar file ready ...";
+                    if (fsize > 0) msg += $"\nFile size: {Utils.PrintNumberBytes(fsize)}";
+                    ShowInfoBox(msg);
+                    await Task.Run(() =>
                     {
-                        Logger.Error($"File \"{SWLOG_PATH}\" from switch {device.IpAddress} is still empty (duration: {loopCnt * 2} sec)\nTrying to reconnect SFTP session");
-                        sftpService.Disconnect();
-                        sftpService.Connect();
+                        previousSize = fsize;
+                        fsize = sftpService.GetFileSize(SWLOG_PATH);
+                    });
+                    Thread.Sleep(2000);
+                    if (fsize > 0 && fsize == previousSize) waitCnt++; else waitCnt = 0;
+                    if (Utils.GetTimeDuration(startTime) >= 60)
+                    {
+                        msg = $"Waited too long for tar file ({Utils.CalcStringDuration(startTime, true)})\nFile size: ";
+                        msg += fsize == 0 ? "0 Bytes" : Utils.PrintNumberBytes(fsize);
+                        Logger.Error(msg);
+                        ShowMessageBox("Waiting for tar file ready", msg, MsgBoxIcons.Error, MsgBoxButtons.Ok);
+                        return;
                     }
                 }
-                else if (fsize == previousSize) waitCnt++;
-                else waitCnt = 0;
-                if (Utils.GetTimeDuration(startTime) >= 60)
+                strDur = Utils.CalcStringDuration(startTime, true);
+                ShowInfoBox($"Downloading tar file from switch ...\nFile creation duration: {strDur}, File size: {Utils.PrintNumberBytes(fsize)}");
+                string fname = null;
+                await Task.Run(() =>
                 {
-                    msg = $"Waited too long for tar file ({Utils.CalcStringDuration(startTime, true)})";
-                    Logger.Error(msg);
-                    ShowMessageBox("Waiting for tar file ready", msg, MsgBoxIcons.Error, MsgBoxButtons.Ok);
-                    return;
+                    fname = sftpService.DownloadFile(SWLOG_PATH);
+                });
+                if (fname != null)
+                {
+                    var sfd = new SaveFileDialog()
+                    {
+                        Filter = "Tar File|*.tar",
+                        Title = "Save switch logs",
+                        InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+                        FileName = Path.GetFileName(fname)
+                    };
+                    FileInfo info = new FileInfo(fname);
+                    if (sfd.ShowDialog() == true)
+                    {
+                        string saveas = sfd.FileName;
+                        File.Copy(fname, saveas, true);
+                        File.Delete(fname);
+                        info = new FileInfo(saveas);
+                    }
+                    StringBuilder txt = new StringBuilder("File \"").Append(SWLOG_PATH).Append("\" downloaded from the switch ").Append(device.IpAddress);
+                    txt.Append("\n\tLocal file: \"").Append(info.FullName).Append("\" (").Append(Utils.PrintNumberBytes(info.Length));
+                    txt.Append(")\n\tDuration of tar file creation: ").Append(strDur);
+                    Logger.Activity(txt.ToString());
+                }
+                else
+                {
+                    Logger.Error($"Couldn't download file \"{SWLOG_PATH}\" from the switch {device.IpAddress}!");
                 }
             }
-            strDur = Utils.CalcStringDuration(startTime, true);
-            ShowInfoBox($"Downloading tar file from switch ...\nFile creation duration: {strDur}, File size: {Utils.PrintNumberBytes(fsize)}");
-            string fname = null;
-            await Task.Run(() =>
+            catch (Exception ex)
             {
-                fname = sftpService.DownloadFile(SWLOG_PATH);
-            });
-            sftpService.Disconnect();
-            HideInfoBox();
-            HideProgress();
-            string saveas = fname;
-            FileInfo info = new FileInfo(saveas);
-            msg = $"File \"{SWLOG_PATH}\" from switch {device.IpAddress} downloaded";
-            if (fname != null)
-            {
-                var sfd = new SaveFileDialog()
-                {
-                    Filter = "Tar File|*.tar",
-                    Title = "Save switch logs",
-                    InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
-                    FileName = Path.GetFileName(fname)
-                };
-                if (sfd.ShowDialog() == true)
-                {
-                    saveas = sfd.FileName;
-                    File.Copy(fname, saveas, true);
-                    File.Delete(fname);
-                    info = new FileInfo(saveas);
-                    msg += $" to:\n\"{info.FullName}\" ({Utils.PrintNumberBytes(info.Length)}), File creation duration: {strDur}";
-                }
+                Logger.Error(ex);
             }
-            Logger.Activity(msg);
+            finally
+            {
+                HideInfoBox();
+                HideProgress();
+                sftpService.Disconnect();
+            }
         }
 
         private void RefreshSlotAndPortsView()
@@ -851,7 +857,7 @@ namespace PoEWizard
         private async Task RunGetSwitchLog(SwitchDebugLogLevel debugLevel)
         {
             debugSwitchLog = new SwitchDebugModel(reportResult, debugLevel);
-            await Task.Run(() => restApiService.GetSwitchLog(selectedPort.Name, debugSwitchLog));
+            await Task.Run(() => restApiService.RunGetSwitchLog(selectedPort.Name, debugSwitchLog));
         }
 
         private bool IsWizardStopped()

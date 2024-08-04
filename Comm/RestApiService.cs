@@ -127,7 +127,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void GetSwitchLog(string port, SwitchDebugModel debugLog)
+        public void RunGetSwitchLog(string port, SwitchDebugModel debugLog)
         {
             try
             {
