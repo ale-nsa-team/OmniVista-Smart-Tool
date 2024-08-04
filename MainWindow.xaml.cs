@@ -583,7 +583,7 @@ namespace PoEWizard
                     if (fsize > 0 && fsize == previousSize) waitCnt++; else waitCnt = 0;
                     if (Utils.GetTimeDuration(startTime) >= 60)
                     {
-                        msg = $"Waited too long for tar file ({Utils.CalcStringDuration(startTime, true)})\nFile size: ";
+                        msg = $"Couldn't download \"{SWLOG_PATH}\" file from switch {device.IpAddress}!\nWaited too long for tar file ({Utils.CalcStringDuration(startTime, true)})\nFile size: ";
                         msg += fsize == 0 ? "0 Bytes" : Utils.PrintNumberBytes(fsize);
                         Logger.Error(msg);
                         ShowMessageBox("Waiting for tar file ready", msg, MsgBoxIcons.Error, MsgBoxButtons.Ok);
