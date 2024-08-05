@@ -515,13 +515,17 @@ namespace PoEWizard
                         break;
                 }
                 WizardResult result = reportResult.GetReportResult(selectedPort.Name);
-                if (result == WizardResult.NothingToDo || result == WizardResult.Fail) await RunLastWizardActions();
+                if (result == WizardResult.NothingToDo || result == WizardResult.Fail)
+                {
+                    await RunLastWizardActions();
+                    result = reportResult.GetReportResult(selectedPort.Name);
+                }
                 string msg = $"{reportResult.Message}\n\nTotal duration: {Utils.CalcStringDuration(startTime, true)}";
                 await Task.Run(() => restApiService.RefreshSwitchPorts());
                 if (!string.IsNullOrEmpty(reportResult.Message))
                 {
                     wizardProgressReport.Title = "PoE Wizard Report:";
-                    wizardProgressReport.Type = reportResult.GetReportResult(selectedPort.Name) == WizardResult.Fail ? ReportType.Error : ReportType.Info;
+                    wizardProgressReport.Type = result == WizardResult.Fail ? ReportType.Error : ReportType.Info;
                     wizardProgressReport.Message = msg;
                     progress.Report(wizardProgressReport);
                     await WaitAckProgress();
@@ -533,7 +537,7 @@ namespace PoEWizard
                 else if (selectedPort.MacList?.Count > 0 && !string.IsNullOrEmpty(selectedPort.MacList[0])) txt.Append(", Device MAC: ").Append(selectedPort.MacList[0]);
                 Logger.Activity(txt.ToString());
                 RefreshSlotAndPortsView();
-                if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.Fail)
+                if (result == WizardResult.Fail)
                 {
                     bool res = ShowMessageBox("Wizard", "It looks like the wizard was unable to fix the problem.\nDo you want to collect information to send to TAC?",
                                               MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
@@ -708,59 +712,59 @@ namespace PoEWizard
         private async Task RunWizardCamera()
         {
             await Enable823BT();
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await EnableHdmiMdi();
-            if (IsWizardStopped()) return;
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await ChangePriority();
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable2PairPower();
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await EnableCapacitorDetection();
         }
 
         private async Task RunWizardTelephone()
         {
             await Enable2PairPower();
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await ChangePriority();
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await EnableHdmiMdi();
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable823BT();
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await EnableCapacitorDetection();
         }
 
         private async Task RunWizardWirelessLan()
         {
             await Enable823BT();
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable2PairPower();
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await EnableHdmiMdi();
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await ChangePriority();
         }
 
         private async Task RunWizardOther()
         {
             await ChangePriority();
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable823BT();
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await EnableHdmiMdi();
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable2PairPower();
-            if (IsWizardStopped()) return;
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await EnableCapacitorDetection();
         }
 
         private async Task Enable823BT()
         {
             await RunPoeWizard(new List<CommandType>() { CommandType.CHECK_823BT });
-            if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.Skip) return;
-            if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.Warning)
+            WizardResult result = reportResult.GetCurrentReportResult(selectedPort.Name);
+            if (result == WizardResult.Skip) return;
+            if (result == WizardResult.Warning)
             {
                 string alertDescription = reportResult.GetAlertDescription(selectedPort.Name);
                 string msg = !string.IsNullOrEmpty(alertDescription) ? alertDescription : "To enable 802.3.bt all devices on the same slot will restart";
@@ -786,8 +790,9 @@ namespace PoEWizard
         private async Task ChangePriority()
         {
             await RunPoeWizard(new List<CommandType>() { CommandType.CHECK_POWER_PRIORITY });
-            if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.Skip) return;
-            if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.Warning)
+            WizardResult result = reportResult.GetCurrentReportResult(selectedPort.Name);
+            if (result == WizardResult.Skip) return;
+            if (result == WizardResult.Warning)
             {
                 string alert = reportResult.GetAlertDescription(selectedPort.Name);
                 if (!ShowMessageBox("Power Priority Change",
@@ -812,12 +817,12 @@ namespace PoEWizard
         private async Task RunLastWizardActions()
         {
             bool reset = false;
-            WizardResult result = reportResult.GetReportResult(selectedPort.Name);
-            if (result == WizardResult.NothingToDo) reportResult.RemoveLastWizardReport(selectedPort.Name);
+            if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.NothingToDo) reportResult.RemoveLastWizardReport(selectedPort.Name);
             if (selectedPort.Poe == PoeStatus.Searching)
             {
                 await RunWizardCommands(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE }, 45);
-                if (reportResult.GetReportResult(selectedPort.Name) != WizardResult.Ok && result != WizardResult.Fail) reportResult.RemoveLastWizardReport(selectedPort.Name);
+                WizardResult result = reportResult.GetReportResult(selectedPort.Name);
+                if (result != WizardResult.Ok && result != WizardResult.Fail) reportResult.RemoveLastWizardReport(selectedPort.Name);
                 reset = true;
             }
             await CheckDefaultMaxPower();
@@ -833,13 +838,13 @@ namespace PoEWizard
                 await RunWizardCommands(new List<CommandType>() { CommandType.RESET_POWER_PORT }, 30);
                 Logger.Info($"Recycling the power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
             }
-            reportResult.UpdateResult(selectedPort.Name, result);
+            reportResult.UpdateResult(selectedPort.Name, reportResult.GetReportResult(selectedPort.Name));
         }
 
         private async Task CheckDefaultMaxPower()
         {
             await RunWizardCommands(new List<CommandType>() { CommandType.CHECK_MAX_POWER });
-            if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.Warning)
+            if (reportResult.GetCurrentReportResult(selectedPort.Name) == WizardResult.Warning)
             {
                 string alert = reportResult.GetAlertDescription(selectedPort.Name);
                 string msg = !string.IsNullOrEmpty(alert) ? alert : $"Changing Max. Power on port {selectedPort.Name} to default";
@@ -859,11 +864,6 @@ namespace PoEWizard
         {
             debugSwitchLog = new SwitchDebugModel(reportResult, debugLevel);
             await Task.Run(() => restApiService.RunGetSwitchLog(selectedPort.Name, debugSwitchLog));
-        }
-
-        private bool IsWizardStopped()
-        {
-            return reportResult.GetReportResult(selectedPort.Name) == WizardResult.Ok || reportResult.GetReportResult(selectedPort.Name) == WizardResult.NothingToDo;
         }
 
         private void WaitTask(int waitTime, string txt)

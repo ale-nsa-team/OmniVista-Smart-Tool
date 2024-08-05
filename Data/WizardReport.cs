@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using static PoEWizard.Data.Constants;
 
@@ -61,7 +62,28 @@ namespace PoEWizard.Data
             }
         }
 
+        public bool IsWizardStopped(string id)
+        {
+            WizardResult result = GetReportResult(id);
+            return result == WizardResult.NothingToDo || result == WizardResult.Ok;
+        }
+
         public WizardResult GetReportResult(string id)
+        {
+            lock (_lock_report_result)
+            {
+                List<ReportResult> reportList = GetReportList(id);
+                ReportResult report = null;
+                if (reportList?.Count > 0)
+                {
+                    report = reportList?.LastOrDefault(rp => rp.Result == WizardResult.NothingToDo || rp.Result == WizardResult.Fail || rp.Result == WizardResult.Ok);
+                }
+                if (report == null) return WizardResult.Proceed;
+                return report.Result;
+            }
+        }
+
+        public WizardResult GetCurrentReportResult(string id)
         {
             lock (_lock_report_result)
             {

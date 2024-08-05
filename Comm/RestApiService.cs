@@ -353,7 +353,7 @@ namespace PoEWizard.Comm
 
         public void RunPoeWizard(string port, WizardReport reportResult, List<CommandType> commands, int waitSec)
         {
-            if (reportResult.GetReportResult(port) == WizardResult.NothingToDo || reportResult.GetReportResult(port) == WizardResult.Ok) return;
+            if (reportResult.IsWizardStopped(port)) return;
             _wizardProgressReport = new ProgressReport("PoE Wizard Report:");
             try
             {
@@ -506,10 +506,7 @@ namespace PoEWizard.Comm
                 Thread.Sleep(3000);
                 RestartDeviceOnPort(wizardAction);
                 WaitPortUp(waitSec, wizardAction);
-                if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok)
-                {
-                    return;
-                }
+                if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok) return;
                 SendRequest(GetRestUrlEntry(CommandType.CAPACITOR_DETECTION_DISABLE, new string[1] { _wizardSwitchPort.Name }));
                 Logger.Info($"{wizardAction} didn't solve the problem\nDisabling capacitor detection on port {_wizardSwitchPort.Name} to restore the previous config");
             }
@@ -669,10 +666,7 @@ namespace PoEWizard.Comm
                 Thread.Sleep(3000);
                 WaitPortUp(waitSec, txt.ToString());
                 _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
-                if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok)
-                {
-                    return;
-                }
+                if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok) return;
                 if (restoreCmd != _wizardCommand) SendRequest(GetRestUrlEntry(restoreCmd, new string[1] { _wizardSwitchPort.Name }));
                 Logger.Info($"{wizardAction} didn't solve the problem\nExecuting command {restoreCmd} on port {_wizardSwitchPort.Name} to restore the previous config");
             }
@@ -723,10 +717,7 @@ namespace PoEWizard.Comm
                 Change823BT(CommandType.POWER_823BT_ENABLE);
                 WaitPortUp(waitSec, wizardAction);
                 _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
-                if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok)
-                {
-                    return;
-                }
+                if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok) return;
                 Change823BT(CommandType.POWER_823BT_DISABLE);
                 Logger.Info($"{wizardAction} didn't solve the problem\nDisabling 802.3.bt on port {_wizardSwitchPort.Name} to restore the previous config");
             }
@@ -788,10 +779,7 @@ namespace PoEWizard.Comm
                 SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, priority.ToString() }));
                 WaitPortUp(waitSec, txt.ToString());
                 _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.CalcStringDuration(startTime, true));
-                if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok)
-                {
-                    return;
-                }
+                if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok) return;
                 SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, prevPriority.ToString() }));
                 Logger.Info($"{wizardAction} didn't solve the problem\nChanging priority back to {prevPriority} on port {_wizardSwitchPort.Name} to restore the previous config");
             }
