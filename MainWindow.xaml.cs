@@ -540,7 +540,7 @@ namespace PoEWizard
                     await WaitAckProgress();
                 }
                 StringBuilder txt = new StringBuilder("PoE Wizard completed on port ");
-                txt.Append(selectedPort.Name).Append(" with device type ").Append(deviceType).Append(":").Append(msg).Append("\nPoE status: ").Append(selectedPort.Poe);
+                txt.Append(selectedPort.Name).Append(" with device type ").Append(selectedDeviceType).Append(":").Append(msg).Append("\nPoE status: ").Append(selectedPort.Poe);
                 txt.Append(", Port Status: ").Append(selectedPort.Status).Append(", Power: ").Append(selectedPort.Power).Append(" Watts");
                 if (selectedPort.EndPointDevice != null) txt.Append("\n").Append(selectedPort.EndPointDevice);
                 else if (selectedPort.MacList?.Count > 0 && !string.IsNullOrEmpty(selectedPort.MacList[0])) txt.Append(", Device MAC: ").Append(selectedPort.MacList[0]);
@@ -627,7 +627,7 @@ namespace PoEWizard
                         File.Delete(fname);
                         info = new FileInfo(saveas);
                     }
-                    debugSwitchLog.CreateTacTextFile(info.FullName, device, selectedPort);
+                    debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, selectedPort);
                     StringBuilder txt = new StringBuilder("Log tar file \"").Append(SWLOG_PATH).Append("\" downloaded from the switch ").Append(device.IpAddress);
                     txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\" (").Append(Utils.PrintNumberBytes(info.Length));
                     txt.Append(")\n\tDuration of tar file creation: ").Append(strDur);
