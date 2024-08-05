@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -433,6 +434,11 @@ namespace PoEWizard.Data
             return $"{size} {sizeLabels[labelIndex]}";
         }
 
+        public static void CreateTextFile(string filePath, StringBuilder txt)
+        {
+            if (File.Exists(filePath)) File.Delete(filePath);
+            File.WriteAllText(filePath, txt.ToString());
+        }
     }
 }
 

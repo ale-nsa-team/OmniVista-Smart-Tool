@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Device
@@ -79,7 +80,7 @@ namespace PoEWizard.Device
     public class SwitchDebugModel
     {
         public string LanPowerStatus { get; set; }
-        public string LocalLogFilePath { get; set; }
+        public string LocalSavedFilePath { get; set; }
         public DebugAppModel LldpNiApp { get; set; }
         public LpNiModel LpNiApp { get; set; }
         public SwitchDebugLogLevel DebugLevelSelected { get; set; }
@@ -89,7 +90,7 @@ namespace PoEWizard.Device
         public SwitchDebugModel(WizardReport wizardReport, SwitchDebugLogLevel logLevel)
         {
             this.WizardReport = wizardReport;
-            this.LocalLogFilePath = Path.Combine(MainWindow.dataPath, Path.GetFileName(SWLOG_PATH));
+            this.LocalSavedFilePath = Path.Combine(MainWindow.dataPath, Path.GetFileName(SWLOG_PATH));
             this.LanPowerStatus = string.Empty;
             this.LldpNiApp = new DebugAppModel();
             this.LpNiApp = new LpNiModel();
@@ -112,6 +113,36 @@ namespace PoEWizard.Device
                 else if (appName == DEBUG_SUB_APP_LANXTR) this.LpNiApp.LoadLanXtrFromDictionary(dict);
                 else this.LpNiApp.LoadLanNiUtlFromDictionary(dict);
             }
+        }
+
+        public void CreateTacTextFile(string localTarFilepath, SwitchModel device, PortModel port)
+        {
+            LocalSavedFilePath = localTarFilepath;
+            string filePath = Path.Combine(Path.GetDirectoryName(LocalSavedFilePath), Constants.TAC_TEXT_FILE_NAME);
+            StringBuilder txt = new StringBuilder("Hello ALE TAC,\n\n\tI am having problems with a PoE device");
+            if (port != null)
+            {
+                txt.Append(" on port ").Append(port.Name).Append(".");
+                if (port.EndPointDevice != null && !string.IsNullOrEmpty(port.EndPointDevice.Type))
+                {
+                    txt.Append("  It is a ");
+                    if (!string.IsNullOrEmpty(port.EndPointDevice.Description)) txt.Append(port.EndPointDevice.Description);
+                    else if (!string.IsNullOrEmpty(port.EndPointDevice.Name)) txt.Append(port.EndPointDevice.Name);
+                    else txt.Append(port.EndPointDevice.Type);
+                    if (!string.IsNullOrEmpty(port.EndPointDevice.EthernetType)) txt.Append(", ").Append(port.EndPointDevice.EthernetType);
+                    txt.Append(".");
+                }
+            }
+            else txt.Append(".");
+            txt.Append("\n\tI have run the ALE PoE wizard and it did not repair the problem.");
+            if (device != null)
+            {
+                txt.Append("\n\tThe switch IP address is ").Append(device.IpAddress).Append(". It is a ").Append(device.Model);
+                txt.Append(" model, running ").Append(device.Version).Append(" with serial number ").Append(device.SerialNumber).Append("\n");
+            }
+            if (WizardReport != null) txt.Append("\nALE PoE wizard attempts that have failed:").Append(WizardReport.Message);
+            txt.Append("\n\tThe switch log tech support .tar file is attached.\n\n\t\tThanks.\n");
+            Utils.CreateTextFile(filePath, txt);
         }
 
     }

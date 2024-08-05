@@ -581,7 +581,7 @@ namespace PoEWizard
                     });
                     Thread.Sleep(2000);
                     if (fsize > 0 && fsize == previousSize) waitCnt++; else waitCnt = 0;
-                    if (Utils.GetTimeDuration(startTime) >= 60)
+                    if (Utils.GetTimeDuration(startTime) >= 180)
                     {
                         msg = $"Couldn't download \"{SWLOG_PATH}\" file from switch {device.IpAddress}!\nWaited too long for tar file ({Utils.CalcStringDuration(startTime, true)})\nFile size: ";
                         msg += fsize == 0 ? "0 Bytes" : Utils.PrintNumberBytes(fsize);
@@ -614,8 +614,9 @@ namespace PoEWizard
                         File.Delete(fname);
                         info = new FileInfo(saveas);
                     }
-                    StringBuilder txt = new StringBuilder("File \"").Append(SWLOG_PATH).Append("\" downloaded from the switch ").Append(device.IpAddress);
-                    txt.Append("\n\tLocal file: \"").Append(info.FullName).Append("\" (").Append(Utils.PrintNumberBytes(info.Length));
+                    debugSwitchLog.CreateTacTextFile(info.FullName, device, selectedPort);
+                    StringBuilder txt = new StringBuilder("Log tar file \"").Append(SWLOG_PATH).Append("\" downloaded from the switch ").Append(device.IpAddress);
+                    txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\" (").Append(Utils.PrintNumberBytes(info.Length));
                     txt.Append(")\n\tDuration of tar file creation: ").Append(strDur);
                     Logger.Activity(txt.ToString());
                 }

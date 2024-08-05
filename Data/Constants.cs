@@ -100,6 +100,7 @@ namespace PoEWizard.Data
         public const string MIN_AOS_VERSION = "8.9 R1";
         public const string VCBOOT_PATH = "/flash/working/vcboot.cfg";
         public const string SWLOG_PATH = "/flash/tech_support_complete.tar";
+        public const string TAC_TEXT_FILE_NAME = "tech_support.txt";
         // Used by "Utils" class
         public const string P_CHASSIS = "CHASSIS_ID";
         public const string P_SLOT = "SLOT_ID";
