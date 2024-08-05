@@ -596,7 +596,7 @@ namespace PoEWizard
                     if (fsize > 0 && fsize == previousSize) waitCnt++; else waitCnt = 0;
                     if ((fsize == 0 && Utils.GetTimeDuration(startTime) >= 60) || Utils.GetTimeDuration(startTime) >= 180)
                     {
-                        msg = $"Couldn't download \"{SWLOG_PATH}\" file from switch {device.IpAddress}!\nWaited too long for tar file ({Utils.CalcStringDuration(startTime, true)})\nFile size: ";
+                        msg = $"Failed to create \"{SWLOG_PATH}\" file by the switch {device.IpAddress}!\nWaited too long for tar file ({Utils.CalcStringDuration(startTime, true)})\nFile size: ";
                         msg += fsize == 0 ? "0 Bytes" : Utils.PrintNumberBytes(fsize);
                         Logger.Error(msg);
                         ShowMessageBox("Waiting for tar file ready", msg, MsgBoxIcons.Error, MsgBoxButtons.Ok);
@@ -610,33 +610,31 @@ namespace PoEWizard
                 {
                     fname = sftpService.DownloadFile(SWLOG_PATH);
                 });
-                if (fname != null)
+                if (fname == null)
                 {
-                    var sfd = new SaveFileDialog()
-                    {
-                        Filter = "Tar File|*.tar",
-                        Title = "Save switch logs",
-                        InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
-                        FileName = Path.GetFileName(fname)
-                    };
-                    FileInfo info = new FileInfo(fname);
-                    if (sfd.ShowDialog() == true)
-                    {
-                        string saveas = sfd.FileName;
-                        File.Copy(fname, saveas, true);
-                        File.Delete(fname);
-                        info = new FileInfo(saveas);
-                    }
-                    debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, selectedPort);
-                    StringBuilder txt = new StringBuilder("Log tar file \"").Append(SWLOG_PATH).Append("\" downloaded from the switch ").Append(device.IpAddress);
-                    txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\" (").Append(Utils.PrintNumberBytes(info.Length));
-                    txt.Append(")\n\tDuration of tar file creation: ").Append(strDur);
-                    Logger.Activity(txt.ToString());
+                    ShowMessageBox("Downloading tar file", $"Failed to download file \"{SWLOG_PATH}\" from the switch {device.IpAddress}!", MsgBoxIcons.Error, MsgBoxButtons.Ok);
+                    return;
                 }
-                else
+                var sfd = new SaveFileDialog()
                 {
-                    Logger.Error($"Couldn't download file \"{SWLOG_PATH}\" from the switch {device.IpAddress}!");
+                    Filter = "Tar File|*.tar",
+                    Title = "Save switch logs",
+                    InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+                    FileName = Path.GetFileName(fname)
+                };
+                FileInfo info = new FileInfo(fname);
+                if (sfd.ShowDialog() == true)
+                {
+                    string saveas = sfd.FileName;
+                    File.Copy(fname, saveas, true);
+                    File.Delete(fname);
+                    info = new FileInfo(saveas);
                 }
+                debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, selectedPort);
+                StringBuilder txt = new StringBuilder("Log tar file \"").Append(SWLOG_PATH).Append("\" downloaded from the switch ").Append(device.IpAddress);
+                txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\" (").Append(Utils.PrintNumberBytes(info.Length));
+                txt.Append(")\n\tDuration of tar file creation: ").Append(strDur);
+                Logger.Activity(txt.ToString());
             }
             catch (Exception ex)
             {

@@ -610,6 +610,7 @@ namespace PoEWizard.Comm
             DateTime startTime = DateTime.Now;
             bool fastPoe = _wizardSwitchSlot.FPoE == ConfigType.Enable;
             if (fastPoe) SendRequest(GetRestUrlEntry(CommandType.POE_FAST_DISABLE, new string[1] { _wizardSwitchSlot.Name }));
+            double prevMaxPower = _wizardSwitchPort.MaxPower;
             if (!_wizardSwitchPort.Is4Pair)
             {
                 SendRequest(GetRestUrlEntry(CommandType.POWER_4PAIR_PORT, new string[1] { _wizardSwitchPort.Name }));
@@ -622,6 +623,7 @@ namespace PoEWizard.Comm
                 _wizardCommand = _wizardSwitchPort.Is4Pair ? CommandType.POWER_2PAIR_PORT : CommandType.POWER_4PAIR_PORT;
                 ExecuteActionOnPort($"Enabling {(_wizardSwitchPort.Is4Pair ? "2-Pair" : "4-Pair")} power on port {_wizardSwitchPort.Name}", waitSec, init4Pair);
             }
+            if (prevMaxPower != _wizardSwitchPort.MaxPower) SetMaxPowerToDefault(prevMaxPower);
             if (fastPoe) SendRequest(GetRestUrlEntry(CommandType.POE_FAST_ENABLE, new string[1] { _wizardSwitchSlot.Name }));
             _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
         }
