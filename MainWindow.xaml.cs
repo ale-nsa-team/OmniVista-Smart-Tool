@@ -102,6 +102,15 @@ namespace PoEWizard
                         break;
                 }
             });
+            //check cli arguments
+            string[] args = Environment.GetCommandLineArgs();
+            if (args.Length > 3)
+            {
+                device.IpAddress = args[1];
+                device.Login = args[2];
+                device.Password = args[3];
+                Connect();
+            }
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
