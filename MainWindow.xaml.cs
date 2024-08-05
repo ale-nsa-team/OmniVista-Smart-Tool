@@ -594,7 +594,7 @@ namespace PoEWizard
                     });
                     Thread.Sleep(2000);
                     if (fsize > 0 && fsize == previousSize) waitCnt++; else waitCnt = 0;
-                    if (Utils.GetTimeDuration(startTime) >= 180)
+                    if ((fsize == 0 && Utils.GetTimeDuration(startTime) >= 60) || Utils.GetTimeDuration(startTime) >= 180)
                     {
                         msg = $"Couldn't download \"{SWLOG_PATH}\" file from switch {device.IpAddress}!\nWaited too long for tar file ({Utils.CalcStringDuration(startTime, true)})\nFile size: ";
                         msg += fsize == 0 ? "0 Bytes" : Utils.PrintNumberBytes(fsize);
