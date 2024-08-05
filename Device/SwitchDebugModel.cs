@@ -115,7 +115,7 @@ namespace PoEWizard.Device
             }
         }
 
-        public void CreateTacTextFile(string localTarFilepath, SwitchModel device, PortModel port)
+        public void CreateTacTextFile(DeviceType deviceType, string localTarFilepath, SwitchModel device, PortModel port)
         {
             LocalSavedFilePath = localTarFilepath;
             string filePath = Path.Combine(Path.GetDirectoryName(LocalSavedFilePath), Constants.TAC_TEXT_FILE_NAME);
@@ -123,7 +123,8 @@ namespace PoEWizard.Device
             if (port != null)
             {
                 txt.Append(" on port ").Append(port.Name).Append(".");
-                if (port.EndPointDevice != null && !string.IsNullOrEmpty(port.EndPointDevice.Type))
+                if (port.EndPointDevice == null) txt.Append("  It is a ").Append(deviceType).Append(".");
+                else if (port.EndPointDevice != null && !string.IsNullOrEmpty(port.EndPointDevice.Type))
                 {
                     txt.Append("  It is a ");
                     if (!string.IsNullOrEmpty(port.EndPointDevice.Description)) txt.Append(port.EndPointDevice.Description);

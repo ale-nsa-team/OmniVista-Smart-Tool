@@ -236,7 +236,7 @@ namespace PoEWizard
             if (ds.ShowDialog() == true)
             {
                 selectedDeviceType = ds.DeviceType;
-                LaunchPoeWizard(ds.DeviceType);
+                LaunchPoeWizard();
             }
         }
 
@@ -498,7 +498,7 @@ namespace PoEWizard
             HideInfoBox();
         }
 
-        private async void LaunchPoeWizard(DeviceType deviceType)
+        private async void LaunchPoeWizard()
         {
             try
             {
@@ -508,7 +508,7 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 await Task.Run(() => restApiService.ScanSwitch($"Running PoE Wizard on port {selectedPort.Name}...", reportResult));
                 UpdateConnectedState(false);
-                switch (deviceType)
+                switch (selectedDeviceType)
                 {
                     case DeviceType.Camera:
                         await RunWizardCamera();
