@@ -43,7 +43,7 @@ namespace PoEWizard.Device
             LocalPort = Utils.GetDictValue(dict, LOCAL_PORT);
             MacAddress = Utils.GetDictValue(dict, CHASSIS_MAC_ADDRESS);
             string macId = MacAddress.Replace(":", "");
-            string remoteId = Utils.GetDictValue(dict, REMOTE_PORT);
+            string remoteId = Utils.GetDictValue(dict, REMOTE_PORT).Replace(":", "");
             if (remoteId != macId) RemotePort = remoteId;
             string[] portSplit = Utils.GetDictValue(dict, PORT_SUBTYPE).Split(' ');
             if (portSplit.Length > 1) PortSubType = (PortSubType)Enum.ToObject(typeof(PortSubType), Utils.StringToInt(portSplit[0]));
