@@ -418,6 +418,7 @@ namespace PoEWizard.Components
                 if (Utils.IsInvalid(value)) return null;
                 if (value is List<EndPointDeviceModel> edmList)
                 {
+                    if (edmList.Count < 1) return null;
                     string toolTip = "";
                     foreach (var edm in edmList)
                     {

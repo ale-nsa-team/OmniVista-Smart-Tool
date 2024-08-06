@@ -119,7 +119,7 @@ namespace PoEWizard.Device
         {
             LocalSavedFilePath = localTarFilepath;
             string filePath = Path.Combine(Path.GetDirectoryName(LocalSavedFilePath), Constants.TAC_TEXT_FILE_NAME);
-            StringBuilder txt = new StringBuilder("Hello ALE TAC,\n\n\tI am having problems with a PoE device");
+            StringBuilder txt = new StringBuilder("Hello tech support,\n\n\tI am having problems with a PoE device");
             if (port != null)
             {
                 txt.Append(" on port ").Append(port.Name).Append(".");
@@ -135,13 +135,13 @@ namespace PoEWizard.Device
                 }
             }
             else txt.Append(".");
-            txt.Append("\n\tI have run the ALE PoE wizard and it did not repair the problem.");
+            txt.Append("\n\tI have run the PoE wizard and it did not repair the problem.");
             if (device != null)
             {
                 txt.Append("\n\tThe switch IP address is ").Append(device.IpAddress).Append(". It is a ").Append(device.Model);
                 txt.Append(" model, running ").Append(device.Version).Append(" with serial number ").Append(device.SerialNumber).Append("\n");
             }
-            if (WizardReport != null) txt.Append("\nALE PoE wizard attempts that have failed:").Append(WizardReport.Message);
+            if (WizardReport != null) txt.Append("\nPoE wizard attempts that have failed:").Append(WizardReport.Message);
             txt.Append("\n\n\tThe switch log tech support .tar file is attached.\n\n\t\tThanks.\n");
             Utils.CreateTextFile(filePath, txt);
         }
