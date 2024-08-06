@@ -1,6 +1,7 @@
 ﻿using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -413,10 +414,18 @@ namespace PoEWizard.Components
         {
             try
             {
+                string header = new string('-', 50);
                 if (Utils.IsInvalid(value)) return null;
-                if (value is EndPointDeviceModel edm)
+                if (value is List<EndPointDeviceModel> edmList)
                 {
-                    return edm.ToTooltip();
+                    string toolTip = "";
+                    foreach (var edm in edmList)
+                    {
+                        if (!string.IsNullOrEmpty(toolTip)) toolTip += "\n";
+                        toolTip += $"{header}\n{edm.ToTooltip()}";
+                    }
+                    toolTip += $"\n{header}";
+                    return toolTip;
                 }
                 return null;
             }

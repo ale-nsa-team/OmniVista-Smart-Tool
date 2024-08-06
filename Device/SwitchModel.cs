@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using static PoEWizard.Data.Constants;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PoEWizard.Device
 {
@@ -140,21 +141,6 @@ namespace PoEWizard.Device
                     }
                     break;
 
-                case DictionaryType.LldpInventoryList:
-                case DictionaryType.LldpRemoteList:
-                    foreach (Dictionary<string, string> dict in list)
-                    {
-                        ChassisSlotPort slotPort = new ChassisSlotPort(dict[LOCAL_PORT]);
-                        ChassisModel chassis = GetChassis(slotPort.ChassisNr);
-                        if (chassis == null) continue;
-                        SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
-                        if (slot == null) continue;
-                        PortModel port = slot.GetPort(slotPort.PortNr);
-                        if (port == null) continue;
-                        if (dt == DictionaryType.LldpRemoteList) port.LoadLldpRemoteTable(dict); else port.LoadLldpInventoryTable(dict);
-                    }
-                    break;
-
                 case DictionaryType.MacAddressList:
                     string prevPort = "";
                     foreach (Dictionary<string, string> dict in list)
@@ -203,6 +189,22 @@ namespace PoEWizard.Device
                     }
                     Cpu = cpu;
                     break;
+            }
+        }
+
+        public void LoadLldpFromList(Dictionary<string, List<Dictionary<string, string>>> list, DictionaryType dt)
+        {
+            foreach (string key in list.Keys.ToList())
+            {
+                ChassisSlotPort slotPort = new ChassisSlotPort(key);
+                ChassisModel chassis = GetChassis(slotPort.ChassisNr);
+                if (chassis == null) continue;
+                SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
+                if (slot == null) continue;
+                PortModel port = slot.GetPort(slotPort.PortNr);
+                if (port == null) continue;
+                List<Dictionary<string, string>> dictList = list[key];
+                if (dt == DictionaryType.LldpRemoteList) port.LoadLldpRemoteTable(dictList); else port.LoadLldpInventoryTable(dictList);
             }
         }
 

@@ -32,6 +32,10 @@ namespace PoEWizard.Device
         public string MEDPowerValue { get; set; } = string.Empty;
 
         public EndPointDeviceModel() { }
+        public EndPointDeviceModel(Dictionary<string, string> dict)
+        {
+            LoadLldpRemoteTable(dict);
+        }
 
         public void LoadLldpRemoteTable(Dictionary<string, string> dict)
         {
@@ -53,6 +57,10 @@ namespace PoEWizard.Device
                 RemotePort = Utils.ParseIfIndex(ifIndex.ToString());
                 if (string.IsNullOrEmpty(Name)) Name = $"Remote port {RemotePort}";
                 Type = SWITCH;
+            }
+            else if (!Utils.IsNumber(RemotePort))
+            {
+                RemotePort = string.Empty;
             }
             Description = Utils.GetDictValue(dict, SYSTEM_DESCRIPTION).Replace("(null)", string.Empty).Replace("-", string.Empty);
             string[] capList = Utils.GetDictValue(dict, MED_CAPABILITIES).Split('|');

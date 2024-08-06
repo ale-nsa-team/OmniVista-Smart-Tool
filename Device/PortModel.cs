@@ -29,6 +29,7 @@ namespace PoEWizard.Device
         public string Type { get; set; }
         public List<string> MacList { get; set; }
         public EndPointDeviceModel EndPointDevice { get; set; }
+        public List<EndPointDeviceModel> EndPointDevicesList { get; set; }
         public List<PriorityLevelType> Priorities => Enum.GetValues(typeof(PriorityLevelType)).Cast<PriorityLevelType>().ToList();
 
         public PortModel(Dictionary<string, string> dict)
@@ -50,6 +51,7 @@ namespace PoEWizard.Device
             Protocol8023bt = ConfigType.Unavailable;
             MacList = new List<string>();
             EndPointDevice = new EndPointDeviceModel();
+            EndPointDevicesList = new List<EndPointDeviceModel>();
         }
 
         public void LoadPoEData(Dictionary<string, string> dict)
@@ -104,14 +106,29 @@ namespace PoEWizard.Device
             }
         }
 
-        public void LoadLldpRemoteTable(Dictionary<string, string> dict)
+        public void LoadLldpRemoteTable(List<Dictionary<string, string>> dictList)
         {
-            EndPointDevice.LoadLldpRemoteTable(dict);
+            if (dictList?.Count > 0)
+            {
+                EndPointDevice.LoadLldpRemoteTable(dictList[0]);
+                if (dictList.Count > 1) EndPointDevice.Type += " (Multiple)";
+                foreach (Dictionary<string, string> dict in dictList)
+                {
+                    EndPointDevicesList.Add(new EndPointDeviceModel(dict));
+                }
+            }
         }
 
-        public void LoadLldpInventoryTable(Dictionary<string, string> dict)
+        public void LoadLldpInventoryTable(List<Dictionary<string, string>> dictList)
         {
-            EndPointDevice.LoadLldpInventoryTable(dict);
+            if (dictList?.Count > 0)
+            {
+                EndPointDevice.LoadLldpInventoryTable(dictList[0]);
+                foreach (Dictionary<string, string> dict in dictList)
+                {
+                    EndPointDevicesList.FirstOrDefault(ep => ep.MacAddress == dict[CHASSIS_MAC_ADDRESS])?.LoadLldpInventoryTable(dict);
+                }
+            }
         }
 
         public void UpdatePortStatus(Dictionary<string, string> dict)

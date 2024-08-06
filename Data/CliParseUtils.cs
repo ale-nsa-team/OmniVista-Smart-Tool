@@ -135,12 +135,11 @@ namespace PoEWizard.Data
             return table;
         }
 
-        public static List<Dictionary<string, string>> ParseLldpRemoteTable(string data)
+        public static Dictionary<string, List<Dictionary<string, string>>> ParseLldpRemoteTable(string data)
         {
-            List <Dictionary<string, string>> dictList = new List<Dictionary<string, string>>();
-            Dictionary<string, string> dict = new Dictionary<string, string>();
+            Dictionary<string, List<Dictionary<string, string>>> dictList = new Dictionary<string, List<Dictionary<string, string>>> ();
             string[] split;
-            bool skip = false;
+            string currPort = string.Empty;
             using (StringReader reader = new StringReader(data))
             {
                 string line;
@@ -149,33 +148,36 @@ namespace PoEWizard.Data
                     if (line.Trim().Length == 0) continue;
                     if (line.Contains("Local Port "))
                     {
-                        if (dict.Count > 3) dictList.Add(dict);
-                        skip = false;
-                        dict = new Dictionary<string, string> { ["Local Port"] = Utils.ExtractSubString(line.Trim(), "Local Port ", ":") };
-                        continue;
+                        currPort = Utils.ExtractSubString(line.Trim(), "Local Port ", ":");
+                        dictList[currPort] = new List<Dictionary<string, string>>();
                     }
-                    if (skip) continue;
-                    char sep = line.Contains("=") ? '=' : (line.Contains(",") ? ',' : '\0'); 
-                    if (sep == '\0') continue;
-                    split = line.Trim().Split(sep);
-                    if (split.Length == 2)
+                    else if (line.Contains("Chassis ") && !line.Contains("Subtype") && line.Contains(","))
                     {
-                        if (split[0].Contains("Chassis") && !split[0].Contains("Subtype"))
+                        split = line.Trim().Split(',');
+                        if (split.Length == 2)
                         {
-                            if (dict.ContainsKey(CHASSIS_MAC_ADDRESS) && dict.ContainsKey(REMOTE_PORT))
-                            {
-                                skip = true;
-                                continue;
-                            }
-                            string[] splitVal = split[0].Trim().Split(' ');
-                            dict[CHASSIS_MAC_ADDRESS] = splitVal[1].Trim();
-                            splitVal = split[1].Trim().Split(' ');
-                            dict[REMOTE_PORT] = splitVal[1].Trim().Replace(":", "");
+                            dictList[currPort].Add(new Dictionary<string, string>());
+                            dictList[currPort][dictList[currPort].Count - 1] = new Dictionary<string, string> {
+                                ["Local Port"] = currPort,
+                                [CHASSIS_MAC_ADDRESS] = Utils.ExtractSubString(split[0].Trim(), "Chassis "),
+                                [REMOTE_PORT] = Utils.ExtractSubString(split[1].Trim(), "Port ")
+                            };
                         }
-                        else dict[split[0].Trim()] = split[1].Replace(",", "").Trim();
+                    }
+                    else
+                    {
+                        split = line.Trim().Split('=');
+                        if (split.Length == 2)
+                        {
+                            dictList[currPort][dictList[currPort].Count - 1][split[0].Trim()] = split[1].Replace(",", "").Replace("\"", "").Trim();
+                        }
+                        else if (line.Contains(REMOTE_ID))
+                        {
+                            split = line.Trim().Split(' ');
+                            if (split.Length > 3) dictList[currPort][dictList[currPort].Count - 1][REMOTE_ID] = split[3].Trim().Replace(":", "");
+                        }
                     }
                 }
-                if (dict.Count > 3) dictList.Add(dict);
             }
             return dictList;
         }

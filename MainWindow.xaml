@@ -322,7 +322,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Model}"
-                                           ToolTip="{Binding Path=EndPointDevice, Converter={StaticResource DeviceToTooltipConverter}}"
+                                           ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
                                            Style="{DynamicResource toolTip}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -331,7 +331,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Type}"
-                                           ToolTip="{Binding Path=EndPointDevice, Converter={StaticResource DeviceToTooltipConverter}}"
+                                           ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
                                            Style="{DynamicResource toolTip}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -340,7 +340,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Name}"
-                                           ToolTip="{Binding Path=EndPointDevice, Converter={StaticResource DeviceToTooltipConverter}}"
+                                           ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
                                            Style="{DynamicResource toolTip}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>

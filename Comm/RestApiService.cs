@@ -86,9 +86,9 @@ namespace PoEWizard.Comm
                 GetLanPower();
                 SendProgressReport("Reading lldp remote information");
                 _response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LLDP_REMOTE));
-                if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString()), DictionaryType.LldpRemoteList);
+                if (_response[STRING] != null) SwitchModel.LoadLldpFromList(CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString()), DictionaryType.LldpRemoteList);
                 _response = SendRequest(GetRestUrlEntry(CommandType.SHOW_LLDP_INVENTORY));
-                if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString()), DictionaryType.LldpInventoryList);
+                if (_response[STRING] != null) SwitchModel.LoadLldpFromList(CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString()), DictionaryType.LldpInventoryList);
                 SendProgressReport("Reading MAC address information");
                 _response = SendRequest(GetRestUrlEntry(CommandType.SHOW_MAC_LEARNING));
                 if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 1), DictionaryType.MacAddressList);
@@ -896,8 +896,8 @@ namespace PoEWizard.Comm
             _response = SendRequest(GetRestUrlEntry(CommandType.SHOW_PORT_LLDP_REMOTE, new string[] { _wizardSwitchPort.Name }));
             if (_response[STRING] != null)
             {
-                dictList = CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString());
-                if (dictList?.Count > 0) _wizardSwitchPort.LoadLldpRemoteTable(dictList[0]);
+                Dictionary<string, List<Dictionary<string, string>>> lldpList = CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString());
+                if (lldpList?.Count > 0) _wizardSwitchPort.LoadLldpRemoteTable(lldpList[_wizardSwitchPort.Name]);
             }
         }
 
