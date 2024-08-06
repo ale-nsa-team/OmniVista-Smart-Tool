@@ -108,9 +108,22 @@ namespace PoEWizard.Device
         {
             List<string> tip = new List<string>();
             if (!string.IsNullOrEmpty(Type)) tip.Add($"Type: {Type}");
-            if (!string.IsNullOrEmpty(Name)) tip.Add($"Name: {Name}");
+            if (!string.IsNullOrEmpty(Name))
+            {
+                if (Name.Contains(","))
+                {
+                    string[] split = Name.Split(',');
+                    tip.Add(string.Join("\n", split));
+                    if (split.Length >= 10) tip.Add("          . . .");
+                }
+                else
+                {
+                    tip.Add($"Name: {Name}");
+                }
+            }
             if (!string.IsNullOrEmpty(Description)) tip.Add($"Description: {Description}");
             if (!string.IsNullOrEmpty(Vendor)) tip.Add($"Vendor: {Vendor}");
+            if (!string.IsNullOrEmpty(Model)) tip.Add($"Model: {Model}");
             if (!string.IsNullOrEmpty(SoftwareVersion)) tip.Add($"Version: {SoftwareVersion}");
             if (!string.IsNullOrEmpty(SerialNumber)) tip.Add($"Serial #: {SerialNumber}");
             if (!string.IsNullOrEmpty(MacAddress)) tip.Add($"MAC: {MacAddress}");

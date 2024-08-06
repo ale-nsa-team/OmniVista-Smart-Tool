@@ -143,6 +143,7 @@ namespace PoEWizard.Device
 
                 case DictionaryType.MacAddressList:
                     string prevPort = "";
+                    Dictionary<string, PortModel> ports = new Dictionary<string, PortModel>();
                     foreach (Dictionary<string, string> dict in list)
                     {
                         string currPort = Utils.GetDictValue(dict, INTERFACE);
@@ -160,6 +161,20 @@ namespace PoEWizard.Device
                         }
                         if (port.MacList?.Count >= 10) continue;
                         port.AddMacToList(dict);
+                        ports[port.Name] = port;
+                    }
+                    foreach(string key in ports.Keys)
+                    {
+                        PortModel port = ports[key];
+                        if (!string.IsNullOrEmpty(port.EndPointDevice.Type)) continue;
+                        Dictionary<string, string> ep = new Dictionary<string, string>
+                        {
+                            [LOCAL_PORT] = port.Name,
+                            [CAPABILITIES_ENABLED] = "Unknown",
+                            [SYSTEM_NAME] = string.Join(",", port.MacList)
+                        };
+                        port.EndPointDevice = new EndPointDeviceModel(ep);
+                        port.EndPointDevicesList.Add(port.EndPointDevice);
                     }
                     break;
 
