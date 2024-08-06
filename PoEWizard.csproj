@@ -278,5 +278,8 @@
   <ItemGroup>
     <Resource Include="Resources\danger.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="oui.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

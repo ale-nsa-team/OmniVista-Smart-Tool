@@ -113,12 +113,15 @@ namespace PoEWizard.Device
                 if (Name.Contains(","))
                 {
                     string[] split = Name.Split(',');
-                    tip.Add(string.Join("\n", split));
+                    foreach (string mac in split)
+                    {
+                        tip.Add(GetVendorName(mac));
+                    }
                     if (split.Length >= 10) tip.Add("          . . .");
                 }
                 else
                 {
-                    tip.Add($"Name: {Name}");
+                    tip.Add(GetVendorName(Name));
                 }
             }
             if (!string.IsNullOrEmpty(Description)) tip.Add($"Description: {Description}");
@@ -135,5 +138,13 @@ namespace PoEWizard.Device
             return tip.Count > 0 ? string.Join("\n", tip) : null;
         }
 
+        private string GetVendorName(string mac)
+        {
+            string sName = mac.Trim();
+            string[] macAddr = sName.Split(':');
+            string macMask = macAddr.Length == 6 ? $"{macAddr[0]}{macAddr[1]}{macAddr[2]}" : "-";
+            if (MainWindow.ouiTable.ContainsKey(macMask)) sName = $"{mac} ({MainWindow.ouiTable[macMask]})";
+            return sName;
+        }
     }
 }

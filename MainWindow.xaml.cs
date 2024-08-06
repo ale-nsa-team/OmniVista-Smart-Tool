@@ -56,6 +56,7 @@ namespace PoEWizard
         public static Window Instance;
         public static ThemeType theme;
         public static string dataPath;
+        public static Dictionary<string, string> ouiTable = new Dictionary<string, string>();
 
         #endregion
 
@@ -78,6 +79,7 @@ namespace PoEWizard
             darkDict = Resources.MergedDictionaries[1];
             currentDict = darkDict;
             Instance = this;
+            BuildOuiTable();
 
             // progress report handling
             progress = new Progress<ProgressReport>(report =>
@@ -110,6 +112,31 @@ namespace PoEWizard
                 device.Login = args[2];
                 device.Password = args[3];
                 Connect();
+            }
+        }
+
+        private void BuildOuiTable()
+        {
+            string[] ouiEntries = null;
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "oui.txt");
+            if (File.Exists(filePath))
+            {
+                ouiEntries = File.ReadAllLines(filePath);
+            }
+            else
+            {
+                filePath = Path.Combine(MainWindow.dataPath, "oui.txt");
+                if (File.Exists(filePath)) ouiEntries = File.ReadAllLines(filePath);
+
+            }
+            ouiTable = new Dictionary<string, string>();
+            if (ouiEntries?.Length > 0)
+            {
+                for (int idx = 1; idx < ouiEntries.Length; idx++)
+                {
+                    string[] split = ouiEntries[idx].Split(',');
+                    ouiTable[split[1].ToLower()] = split[2].Trim().Replace("\"", "");
+                }
             }
         }
 
