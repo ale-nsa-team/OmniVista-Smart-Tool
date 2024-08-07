@@ -118,14 +118,14 @@ namespace PoEWizard
         private void BuildOuiTable()
         {
             string[] ouiEntries = null;
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "oui.txt");
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, OUI_FILE);
             if (File.Exists(filePath))
             {
                 ouiEntries = File.ReadAllLines(filePath);
             }
             else
             {
-                filePath = Path.Combine(MainWindow.dataPath, "oui.txt");
+                filePath = Path.Combine(MainWindow.dataPath, OUI_FILE);
                 if (File.Exists(filePath)) ouiEntries = File.ReadAllLines(filePath);
 
             }

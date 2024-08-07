@@ -222,6 +222,8 @@ namespace PoEWizard.Data
         public const string DEBUG_SUB_APP_LANCMMPWR = "LanCmmPwr";
         public const string DEBUG_SUB_APP_LANCMMMIP = "LanCmmMip";
         public const string DEBUG_SUB_APP_LANCMMUTL = "LanCmmUtl";
+        // Used by BuildOuiTable method of MainWindow.xaml.cs class
+        public const string OUI_FILE = "oui.csv";
 
         public const string C = " \u2103";
         public const string F = " \u2109";
