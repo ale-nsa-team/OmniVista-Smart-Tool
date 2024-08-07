@@ -29,6 +29,7 @@ namespace PoEWizard.Comm
         public ResultCallback Callback { get; set; }
         public SwitchModel SwitchModel { get; set; }
         public RestApiClient RestApiClient { get; set; }
+        private AosSshService SshService { get; set; }
 
         public RestApiService(SwitchModel device, IProgress<ProgressReport> progress)
         {
@@ -138,6 +139,7 @@ namespace PoEWizard.Comm
                     SendProgressError("Get Switch Log", $"Couldn't get data for port {port}");
                     return;
                 }
+                ConnectSshService();
                 string debugSelected = _debugSwitchLog.SwitchDebugLevelSelected;
                 SendProgressReport($"Getting lan power information of slot {_wizardSwitchSlot.Name}");
                 // Getting current lan power status
@@ -158,10 +160,36 @@ namespace PoEWizard.Comm
                 SendProgressReport($"Generating tar file");
                 Thread.Sleep(3000);
                 SendRequest(GetRestUrlEntry(CommandType.DEBUG_CREATE_LOG));
+                DisconnectSshService();
             }
             catch (Exception ex)
             {
                 SendSwitchError("Get Switch Log", ex);
+            }
+        }
+
+        private void ConnectSshService()
+        {
+            try
+            {
+                SshService = new AosSshService(SwitchModel);
+                SshService?.ConnectSshClient();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
+        private void DisconnectSshService()
+        {
+            try
+            {
+                SshService?.DisconnectSshClient();
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError("Connect", ex);
             }
         }
 
@@ -170,7 +198,8 @@ namespace PoEWizard.Comm
             CommandType showDbgCmd = cmd == CommandType.DEBUG_UPDATE_LPCMM_LEVEL ? CommandType.DEBUG_SHOW_LPCMM_LEVEL : CommandType.DEBUG_SHOW_LPNI_LEVEL;
             _progress.Report(new ProgressReport($"{progressMsg} ..."));
             DateTime startTime = DateTime.Now;
-            SendRequest(GetRestUrlEntry(cmd, new string[1] { dbgLevel }));
+            SendSshCliCommand(cmd, new string[1] { dbgLevel });
+            // SendRequest(GetRestUrlEntry(cmd, new string[1] { dbgLevel }));
             bool done = false;
             int loopCnt = 1;
             while (!done)
@@ -186,6 +215,19 @@ namespace PoEWizard.Comm
                 loopCnt++;
             }
             Logger.Info($"{(cmd == CommandType.DEBUG_UPDATE_LPCMM_LEVEL ? "\"lpCmm\"" : "\"lpNi\"")} debug level set to \"{dbgLevel}\", Duration: {Utils.CalcStringDuration(startTime)}");
+        }
+
+        private void SendSshCliCommand(CommandType cmd, string[] data)
+        {
+            try
+            {
+                CommandType sshCmd = cmd == CommandType.DEBUG_UPDATE_LPCMM_LEVEL ? CommandType.DEBUG_CLI_UPDATE_LPCMM_LEVEL : CommandType.DEBUG_CLI_UPDATE_LPNI_LEVEL;
+                SshService?.SendCommand(new RestUrlEntry(sshCmd), data);
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError("Connect", ex);
+            }
         }
 
         private string GetAppDebugLevel(CommandType cmd)

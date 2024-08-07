@@ -95,7 +95,9 @@ namespace PoEWizard.Data
             DEBUG_UPDATE_LPNI_LEVEL = 124,
             DEBUG_CREATE_LOG = 125,
             DEBUG_UPDATE_LPCMM_LEVEL = 126,
-            DEBUG_SHOW_LPCMM_LEVEL = 127
+            DEBUG_SHOW_LPCMM_LEVEL = 127,
+            DEBUG_CLI_UPDATE_LPNI_LEVEL = 128,
+            DEBUG_CLI_UPDATE_LPCMM_LEVEL = 129
         }
 
         public readonly static Dictionary<CommandType, string> CMD_TBL = new Dictionary<CommandType, string>
@@ -163,6 +165,8 @@ namespace PoEWizard.Data
             [CommandType.DEBUG_CREATE_LOG] = "show tech-support eng complete",                                  // 125
             [CommandType.DEBUG_UPDATE_LPCMM_LEVEL] = "urn=systemSwitchLogging&setIndexForScalar=true",          // 126
             [CommandType.DEBUG_SHOW_LPCMM_LEVEL] = "urn=systemSwitchLoggingApplicationTable&startIndex=77.3.6&limit=4&mibObject0=systemSwitchLoggingApplicationAppId&mibObject1=systemSwitchLoggingApplicationSubAppId&mibObject2=systemSwitchLoggingApplicationSubAppVrfLevelIndex&mibObject3=systemSwitchLoggingApplicationAppName&mibObject4=systemSwitchLoggingApplicationSubAppName&mibObject6=systemSwitchLoggingApplicationSubAppLevel&ignoreError=true",  // 127
+            [CommandType.DEBUG_CLI_UPDATE_LPNI_LEVEL] = $"swlog appid lpni subapp all level {DATA_0}",          // 128
+            [CommandType.DEBUG_CLI_UPDATE_LPCMM_LEVEL] = $"swlog appid lpcmm subapp all level {DATA_0}"          // 126
         };
 
         public static Dictionary<CommandType, Dictionary<string, string>> CONTENT_TABLE = new Dictionary<CommandType, Dictionary<string, string>>
@@ -250,6 +254,8 @@ namespace PoEWizard.Data
                     case CommandType.CAPACITOR_DETECTION_DISABLE:   //  55
                     // 120 - 139: Switch debug commands
                     case CommandType.DEBUG_SHOW_LAN_POWER_STATUS:   // 120
+                    case CommandType.DEBUG_CLI_UPDATE_LPNI_LEVEL:   // 127
+                    case CommandType.DEBUG_CLI_UPDATE_LPCMM_LEVEL:  // 128
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 
