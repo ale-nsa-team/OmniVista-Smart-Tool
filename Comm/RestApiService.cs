@@ -146,7 +146,6 @@ namespace PoEWizard.Comm
                 string prevLpNiDebugLevel = GetAppDebugLevel(CommandType.DEBUG_SHOW_LPNI_LEVEL);
                 string prevLpCmmDebugLevel = GetAppDebugLevel(CommandType.DEBUG_SHOW_LPCMM_LEVEL);
                 // Setting switch debug level
-                SendProgressReport($"Setting debug level to {_debugSwitchLog.DebugLevelSelected}");
                 SetAppDebugLevel(CommandType.DEBUG_UPDATE_LPNI_LEVEL, _debugSwitchLog.SwitchDebugLevelSelected);
                 SetAppDebugLevel(CommandType.DEBUG_UPDATE_LPCMM_LEVEL, _debugSwitchLog.SwitchDebugLevelSelected);
                 // Recycling power on switch port
@@ -169,22 +168,38 @@ namespace PoEWizard.Comm
 
         private void SetAppDebugLevel(CommandType cmd, string dbgLevel)
         {
+            string progressMsg = $"Setting debug level to {_debugSwitchLog.DebugLevelSelected}";
+            SendProgressReport($"{progressMsg} ...");
+            DateTime startTime = DateTime.Now;
             SendRequest(GetRestUrlEntry(cmd, new string[1] { dbgLevel }));
             bool done = false;
+            int loopCnt = 1;
             while (!done)
             {
-                GetAppDebugLevel(cmd);
-                switch (cmd)
+                Thread.Sleep(1000);
+                SendProgressReport($"{progressMsg} ({loopCnt} sec) ...");
+                if (loopCnt % 5 == 0)
                 {
-                    case CommandType.DEBUG_SHOW_LPCMM_LEVEL:
-                        done = _debugSwitchLog.LpCmmApp.SwitchLogLevel == dbgLevel;
-                        break;
+                    GetAppDebugLevel(cmd);
+                    switch (cmd)
+                    {
+                        case CommandType.DEBUG_UPDATE_LPCMM_LEVEL:
+                            done = _debugSwitchLog.LpCmmApp.SwitchLogLevel == dbgLevel;
+                            break;
 
-                    case CommandType.DEBUG_SHOW_LPNI_LEVEL:
-                        done = _debugSwitchLog.LpNiApp.SwitchLogLevel == dbgLevel;
-                        break;
+                        case CommandType.DEBUG_UPDATE_LPNI_LEVEL:
+                            done = _debugSwitchLog.LpNiApp.SwitchLogLevel == dbgLevel;
+                            break;
+                    }
                 }
+                if (loopCnt >= 30)
+                {
+                    Logger.Error($"Took too long ({Utils.CalcStringDuration(startTime)}) to set \"{cmd}\" to \"{dbgLevel}\"!");
+                    return;
+                }
+                loopCnt++;
             }
+            Logger.Info($"Debug level of \"{cmd}\" set to \"{dbgLevel}\", Duration: {Utils.CalcStringDuration(startTime)}");
         }
 
         private string GetAppDebugLevel(CommandType cmd)
