@@ -93,7 +93,9 @@ namespace PoEWizard.Data
             DEBUG_SHOW_LPNI_LEVEL = 122,
             DEBUG_UPDATE_LLDPNI_LEVEL = 123,
             DEBUG_UPDATE_LPNI_LEVEL = 124,
-            DEBUG_CREATE_LOG = 125
+            DEBUG_CREATE_LOG = 125,
+            DEBUG_UPDATE_LPCMM_LEVEL = 126,
+            DEBUG_SHOW_LPCMM_LEVEL = 127
         }
 
         public readonly static Dictionary<CommandType, string> CMD_TBL = new Dictionary<CommandType, string>
@@ -154,11 +156,13 @@ namespace PoEWizard.Data
             [CommandType.REBOOT_SWITCH] = "reload from working no rollback-timeout",                            //  72
             // 120 - 139: Switch debug commands
             [CommandType.DEBUG_SHOW_LAN_POWER_STATUS] = $"debug show lanpower slot {DATA_0} status ni",         // 120
-            [CommandType.DEBUG_SHOW_LLDPNI_LEVEL] = "urn=systemSwitchLoggingApplicationTable&startIndex=110.1.6&limit=1&mibObject0=systemSwitchLoggingApplicationAppId&mibObject1=systemSwitchLoggingApplicationSubAppId&mibObject2=systemSwitchLoggingApplicationSubAppVrfLevelIndex&mibObject3=systemSwitchLoggingApplicationAppName&mibObject4=systemSwitchLoggingApplicationSubAppName&mibObject6=systemSwitchLoggingApplicationSubAppLevel&ignoreError=true",                                  // 121
-            [CommandType.DEBUG_SHOW_LPNI_LEVEL] = "urn=systemSwitchLoggingApplicationTable&startIndex=122.2.6&limit=3&mibObject0=systemSwitchLoggingApplicationAppId&mibObject1=systemSwitchLoggingApplicationSubAppId&mibObject2=systemSwitchLoggingApplicationSubAppVrfLevelIndex&mibObject3=systemSwitchLoggingApplicationAppName&mibObject4=systemSwitchLoggingApplicationSubAppName&mibObject6=systemSwitchLoggingApplicationSubAppLevel&ignoreError=true",                                      // 122
+            [CommandType.DEBUG_SHOW_LLDPNI_LEVEL] = "urn=systemSwitchLoggingApplicationTable&startIndex=110.1.6&limit=1&mibObject0=systemSwitchLoggingApplicationAppId&mibObject1=systemSwitchLoggingApplicationSubAppId&mibObject2=systemSwitchLoggingApplicationSubAppVrfLevelIndex&mibObject3=systemSwitchLoggingApplicationAppName&mibObject4=systemSwitchLoggingApplicationSubAppName&mibObject6=systemSwitchLoggingApplicationSubAppLevel&ignoreError=true", // 121
+            [CommandType.DEBUG_SHOW_LPNI_LEVEL] = "urn=systemSwitchLoggingApplicationTable&startIndex=122.2.6&limit=3&mibObject0=systemSwitchLoggingApplicationAppId&mibObject1=systemSwitchLoggingApplicationSubAppId&mibObject2=systemSwitchLoggingApplicationSubAppVrfLevelIndex&mibObject3=systemSwitchLoggingApplicationAppName&mibObject4=systemSwitchLoggingApplicationSubAppName&mibObject6=systemSwitchLoggingApplicationSubAppLevel&ignoreError=true",   // 122
             [CommandType.DEBUG_UPDATE_LLDPNI_LEVEL] = "urn=systemSwitchLogging&setIndexForScalar=true",         // 123
             [CommandType.DEBUG_UPDATE_LPNI_LEVEL] = "urn=systemSwitchLogging&setIndexForScalar=true",           // 124
-            [CommandType.DEBUG_CREATE_LOG] = "show tech-support eng complete"                                   // 125
+            [CommandType.DEBUG_CREATE_LOG] = "show tech-support eng complete",                                  // 125
+            [CommandType.DEBUG_UPDATE_LPCMM_LEVEL] = "urn=systemSwitchLogging&setIndexForScalar=true",          // 126
+            [CommandType.DEBUG_SHOW_LPCMM_LEVEL] = "urn=systemSwitchLoggingApplicationTable&startIndex=77.3.6&limit=4&mibObject0=systemSwitchLoggingApplicationAppId&mibObject1=systemSwitchLoggingApplicationSubAppId&mibObject2=systemSwitchLoggingApplicationSubAppVrfLevelIndex&mibObject3=systemSwitchLoggingApplicationAppName&mibObject4=systemSwitchLoggingApplicationSubAppName&mibObject6=systemSwitchLoggingApplicationSubAppLevel&ignoreError=true",  // 127
         };
 
         public static Dictionary<CommandType, Dictionary<string, string>> CONTENT_TABLE = new Dictionary<CommandType, Dictionary<string, string>>
@@ -172,6 +176,12 @@ namespace PoEWizard.Data
             [CommandType.DEBUG_UPDATE_LPNI_LEVEL] = new Dictionary<string, string> {
                 { "mibObject0-T1", "systemSwitchLoggingIndex:|-1" },
                 { "mibObject1-T1", "systemSwitchLoggingAppName:lpNi" },
+                { "mibObject2-T1", $"systemSwitchLoggingLevel:{DATA_0}" },
+                { "mibObject3-T1", "systemSwitchLoggingVrf:" }
+            },
+            [CommandType.DEBUG_UPDATE_LPCMM_LEVEL] = new Dictionary<string, string> {
+                { "mibObject0-T1", "systemSwitchLoggingIndex:|-1" },
+                { "mibObject1-T1", "systemSwitchLoggingAppName:lpCmm" },
                 { "mibObject2-T1", $"systemSwitchLoggingLevel:{DATA_0}" },
                 { "mibObject3-T1", "systemSwitchLoggingVrf:" }
             }
@@ -188,6 +198,8 @@ namespace PoEWizard.Data
                 case CommandType.DEBUG_SHOW_LPNI_LEVEL:         // 122
                 case CommandType.DEBUG_UPDATE_LLDPNI_LEVEL:     // 123
                 case CommandType.DEBUG_UPDATE_LPNI_LEVEL:       // 124
+                case CommandType.DEBUG_UPDATE_LPCMM_LEVEL:      // 126
+                case CommandType.DEBUG_SHOW_LPCMM_LEVEL:        // 127
                 // 0 - 29: Basic commands to gather switch data
                 case CommandType.SHOW_SYSTEM_RUNNING_DIR:       //  21
                     return $"?domain=mib&{req}";
@@ -238,8 +250,6 @@ namespace PoEWizard.Data
                     case CommandType.CAPACITOR_DETECTION_DISABLE:   //  55
                     // 120 - 139: Switch debug commands
                     case CommandType.DEBUG_SHOW_LAN_POWER_STATUS:   // 120
-                    case CommandType.DEBUG_UPDATE_LLDPNI_LEVEL:     // 123
-                    case CommandType.DEBUG_UPDATE_LPNI_LEVEL:       // 124
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 
@@ -277,6 +287,7 @@ namespace PoEWizard.Data
                     // 120 - 139: Switch debug commands
                     case CommandType.DEBUG_UPDATE_LLDPNI_LEVEL:     // 123
                     case CommandType.DEBUG_UPDATE_LPNI_LEVEL:       // 124
+                    case CommandType.DEBUG_UPDATE_LPCMM_LEVEL:      // 126
                         foreach (string key in dict.Keys.ToList())
                         {
                             if (data.Length > 0) dict[key] = dict[key].Replace(DATA_0, data[0] ?? string.Empty);

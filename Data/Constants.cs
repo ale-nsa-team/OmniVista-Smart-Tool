@@ -218,6 +218,10 @@ namespace PoEWizard.Data
         public const string DEBUG_SUB_APP_LANNI = "LanNi";
         public const string DEBUG_SUB_APP_LANXTR = "LanXtr";
         public const string DEBUG_SUB_APP_LANUTIL = "LanNiUtl";
+        public const string DEBUG_SUB_APP_LANCMM = "LanCmm";
+        public const string DEBUG_SUB_APP_LANCMMPWR = "LanCmmPwr";
+        public const string DEBUG_SUB_APP_LANCMMMIP = "LanCmmMip";
+        public const string DEBUG_SUB_APP_LANCMMUTL = "LanCmmUtl";
 
         public const string C = " \u2103";
         public const string F = " \u2109";

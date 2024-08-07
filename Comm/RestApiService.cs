@@ -139,19 +139,24 @@ namespace PoEWizard.Comm
                     return;
                 }
                 SendProgressReport($"Getting tar file");
+                // Getting current lan power status
                 _response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LAN_POWER_STATUS, new string[1] { _wizardSwitchSlot.Name }));
                 if (_response[STRING] != null) _debugSwitchLog.LanPowerStatus = _response[STRING].ToString();
-                _response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LLDPNI_LEVEL));
-                if (_response[DATA] != null) _debugSwitchLog.LoadLldpNiFromDictionary(_response[DATA] as Dictionary<string, string>);
-                _response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LPNI_LEVEL));
-                if (_response[DATA] != null) _debugSwitchLog.LoadLpNiFromDictionary(CliParseUtils.ParseListFromDictionary((Dictionary<string, string>)_response[DATA], DEBUG_SWITCH_LOG));
-                SendProgressReport($"Enabling debug level to {_debugSwitchLog.DebugLevelSelected}");
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LLDPNI_LEVEL, new string[1] { _debugSwitchLog.SwitchDebugLevelSelected }));
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[1] { _debugSwitchLog.SwitchDebugLevelSelected }));
+                // Getting current switch debug level
+                string prevLpNiDebugLevel = GetAppDebugLevel(CommandType.DEBUG_SHOW_LPNI_LEVEL);
+                string prevLpCmmDebugLevel = GetAppDebugLevel(CommandType.DEBUG_SHOW_LPCMM_LEVEL);
+                // Setting switch debug level
+                SendProgressReport($"Setting debug level to {_debugSwitchLog.DebugLevelSelected}");
+                SetAppDebugLevel(CommandType.DEBUG_UPDATE_LPNI_LEVEL, _debugSwitchLog.SwitchDebugLevelSelected);
+                SetAppDebugLevel(CommandType.DEBUG_UPDATE_LPCMM_LEVEL, _debugSwitchLog.SwitchDebugLevelSelected);
+                // Recycling power on switch port
                 RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 5);
-                SendProgressReport($"Resetting debug level back to {_debugSwitchLog.LldpNiApp.DebugLevel}");
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LLDPNI_LEVEL, new string[1] { _debugSwitchLog.LldpNiApp.SwitchLogLevel }));
-                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[1] { _debugSwitchLog.LpNiApp.SwitchLogLevel }));
+                // Setting switch debug level back to the previous values
+                SendProgressReport($"Resetting debug level back to {SwitchDebugModel.ParseDebugLevel(prevLpNiDebugLevel)}");
+                SetAppDebugLevel(CommandType.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebugLevel);
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPNI_LEVEL, new string[1] { prevLpNiDebugLevel }));
+                SendRequest(GetRestUrlEntry(CommandType.DEBUG_UPDATE_LPCMM_LEVEL, new string[1] { prevLpCmmDebugLevel }));
+                // Generating tar file
                 SendProgressReport($"Generating tar file");
                 Thread.Sleep(3000);
                 SendRequest(GetRestUrlEntry(CommandType.DEBUG_CREATE_LOG));
@@ -160,6 +165,50 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError("Get Switch Log", ex);
             }
+        }
+
+        private void SetAppDebugLevel(CommandType cmd, string dbgLevel)
+        {
+            SendRequest(GetRestUrlEntry(cmd, new string[1] { dbgLevel }));
+            bool done = false;
+            while (!done)
+            {
+                GetAppDebugLevel(cmd);
+                switch (cmd)
+                {
+                    case CommandType.DEBUG_SHOW_LPCMM_LEVEL:
+                        done = _debugSwitchLog.LpCmmApp.SwitchLogLevel == dbgLevel;
+                        break;
+
+                    case CommandType.DEBUG_SHOW_LPNI_LEVEL:
+                        done = _debugSwitchLog.LpNiApp.SwitchLogLevel == dbgLevel;
+                        break;
+                }
+            }
+        }
+
+        private string GetAppDebugLevel(CommandType cmd)
+        {
+            string debugLevel = null;
+            _response = SendRequest(GetRestUrlEntry(cmd));
+            List<Dictionary<string, string>> dictList = new List<Dictionary<string, string>>();
+            if (_response[DATA] != null) dictList = CliParseUtils.ParseListFromDictionary((Dictionary<string, string>)_response[DATA], DEBUG_SWITCH_LOG);
+            if (dictList?.Count > 0)
+            {
+                switch (cmd)
+                {
+                    case CommandType.DEBUG_SHOW_LPCMM_LEVEL:
+                        _debugSwitchLog.LoadLpCmmAppFromDictionary(dictList);
+                        debugLevel = _debugSwitchLog.LpCmmApp.SwitchLogLevel;
+                        break;
+
+                    case CommandType.DEBUG_SHOW_LPNI_LEVEL:
+                        _debugSwitchLog.LoadLpNiFromDictionary(dictList);
+                        debugLevel = _debugSwitchLog.LpNiApp.SwitchLogLevel;
+                        break;
+                }
+            }
+            return debugLevel;
         }
 
         public string RebootSwitch(int waitSec)

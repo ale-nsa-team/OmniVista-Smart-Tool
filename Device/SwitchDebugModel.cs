@@ -31,16 +31,15 @@ namespace PoEWizard.Device
         {
             LoadFromDictionary(dict);
         }
-
         public void LoadFromDictionary(Dictionary<string, string> dict)
         {
-            
+
             this.ApplicationId = Utils.GetDictValue(dict, DEBUG_APP_ID);
             this.ApplicationName = Utils.GetDictValue(dict, DEBUG_APP_NAME);
             this.SubApplicationId = Utils.GetDictValue(dict, DEBUG_SUB_APP_ID);
             this.SubApplicationName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
             this.SwitchLogLevel = Utils.GetDictValue(dict, DEBUG_SUB_APP_LEVEL);
-            this.DebugLevel = !string.IsNullOrEmpty(this.SwitchLogLevel) ? (SwitchDebugLogLevel)Enum.Parse(typeof(SwitchDebugLogLevel), this.SwitchLogLevel) : SwitchDebugLogLevel.Info;
+            this.DebugLevel = SwitchDebugModel.ParseDebugLevel(this.SwitchLogLevel);
         }
     }
 
@@ -70,10 +69,47 @@ namespace PoEWizard.Device
         {
             this.LanNiUtl.LoadFromDictionary(dict);
         }
-
         private string GetSwitchDebugLevel()
         {
             return this.LanNi.SwitchLogLevel;
+        }
+    }
+
+    public class LpCmmModel
+    {
+        public DebugAppModel LanCmm { get; set; }
+        public DebugAppModel LanCmmPwr { get; set; }
+        public DebugAppModel LanCmmMip { get; set; }
+        public DebugAppModel LanCmmUtl { get; set; }
+        public string SwitchLogLevel => GetSwitchDebugLevel();
+
+        public LpCmmModel()
+        {
+            this.LanCmm = new DebugAppModel();
+            this.LanCmmPwr = new DebugAppModel();
+            this.LanCmmMip = new DebugAppModel();
+            this.LanCmmUtl = new DebugAppModel();
+        }
+
+        public void LoadLanCmmFromDictionary(Dictionary<string, string> dict)
+        {
+            this.LanCmm.LoadFromDictionary(dict);
+        }
+        public void LoadLanCmmPwrFromDictionary(Dictionary<string, string> dict)
+        {
+            this.LanCmmPwr.LoadFromDictionary(dict);
+        }
+        public void LoadLanCmmMipFromDictionary(Dictionary<string, string> dict)
+        {
+            this.LanCmmMip.LoadFromDictionary(dict);
+        }
+        public void LoadLanCmmUtlFromDictionary(Dictionary<string, string> dict)
+        {
+            this.LanCmmUtl.LoadFromDictionary(dict);
+        }
+        private string GetSwitchDebugLevel()
+        {
+            return this.LanCmm.SwitchLogLevel;
         }
     }
 
@@ -81,6 +117,7 @@ namespace PoEWizard.Device
     {
         public string LanPowerStatus { get; set; }
         public string LocalSavedFilePath { get; set; }
+        public LpCmmModel LpCmmApp { get; set; }
         public DebugAppModel LldpNiApp { get; set; }
         public LpNiModel LpNiApp { get; set; }
         public SwitchDebugLogLevel DebugLevelSelected { get; set; }
@@ -94,6 +131,7 @@ namespace PoEWizard.Device
             this.LanPowerStatus = string.Empty;
             this.LldpNiApp = new DebugAppModel();
             this.LpNiApp = new LpNiModel();
+            this.LpCmmApp = new LpCmmModel();
             this.DebugLevelSelected = logLevel;
             int logDebugLevel = (int)this.DebugLevelSelected;
             this.SwitchDebugLevelSelected = logDebugLevel.ToString();
@@ -103,7 +141,17 @@ namespace PoEWizard.Device
         {
             this.LldpNiApp.LoadFromDictionary(dict);
         }
-
+        public void LoadLpCmmAppFromDictionary(List<Dictionary<string, string>> dictList)
+        {
+            foreach (Dictionary<string, string> dict in dictList)
+            {
+                string appName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
+                if (appName == DEBUG_SUB_APP_LANCMM) this.LpCmmApp.LoadLanCmmFromDictionary(dict);
+                else if (appName == DEBUG_SUB_APP_LANCMMPWR) this.LpCmmApp.LoadLanCmmPwrFromDictionary(dict);
+                else if (appName == DEBUG_SUB_APP_LANCMMMIP) this.LpCmmApp.LoadLanCmmMipFromDictionary(dict);
+                else this.LpCmmApp.LoadLanCmmUtlFromDictionary(dict);
+            }
+        }
         public void LoadLpNiFromDictionary(List<Dictionary<string, string>> dictList)
         {
             foreach (Dictionary<string, string> dict in dictList)
@@ -114,7 +162,6 @@ namespace PoEWizard.Device
                 else this.LpNiApp.LoadLanNiUtlFromDictionary(dict);
             }
         }
-
         public void CreateTacTextFile(DeviceType deviceType, string localTarFilepath, SwitchModel device, PortModel port)
         {
             LocalSavedFilePath = localTarFilepath;
@@ -144,6 +191,10 @@ namespace PoEWizard.Device
             if (WizardReport != null) txt.Append("\nPoE wizard attempts that have failed:").Append(WizardReport.Message);
             txt.Append("\n\n\tThe switch log tech support .tar file is attached.\n\n\t\tThanks.\n");
             Utils.CreateTextFile(filePath, txt);
+        }
+        public static SwitchDebugLogLevel ParseDebugLevel(string logLevel)
+        {
+            return !string.IsNullOrEmpty(logLevel) ? (SwitchDebugLogLevel)Enum.Parse(typeof(SwitchDebugLogLevel), logLevel) : SwitchDebugLogLevel.Info;
         }
 
     }
