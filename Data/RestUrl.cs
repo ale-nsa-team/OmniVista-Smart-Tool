@@ -209,7 +209,7 @@ namespace PoEWizard.Data
             }
         }
 
-        private static string GetReqFromCmdTbl(CommandType cmd, string[] data)
+        public static string GetReqFromCmdTbl(CommandType cmd, string[] data)
         {
             if (CMD_TBL.ContainsKey(cmd))
             {
