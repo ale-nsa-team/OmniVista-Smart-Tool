@@ -1,4 +1,5 @@
 ﻿using PoEWizard.Data;
+using PoEWizard.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -137,6 +138,52 @@ namespace PoEWizard.Device
             this.SwitchDebugLevelSelected = logDebugLevel.ToString();
         }
 
+        public void LoadFromDictionary(List<Dictionary<string, string>> dictList)
+        {
+            if (dictList?.Count > 0)
+            {
+                foreach (Dictionary<string, string> dict in dictList)
+                {
+                    string appName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
+                    switch (appName)
+                    {
+                        case DEBUG_SUB_APP_LANNI:
+                            this.LpNiApp.LoadLanNiFromDictionary(dict);
+                            break;
+
+                        case DEBUG_SUB_APP_LANXTR:
+                            this.LpNiApp.LoadLanXtrFromDictionary(dict);
+                            break;
+
+                        case DEBUG_SUB_APP_LANUTIL:
+                            this.LpNiApp.LoadLanNiUtlFromDictionary(dict);
+                            break;
+
+                        case DEBUG_SUB_APP_LANCMM:
+                            this.LpCmmApp.LoadLanCmmFromDictionary(dict);
+                            break;
+
+                        case DEBUG_SUB_APP_LANCMMPWR:
+                            this.LpCmmApp.LoadLanCmmPwrFromDictionary(dict);
+                            break;
+
+                        case DEBUG_SUB_APP_LANCMMMIP:
+                            this.LpCmmApp.LoadLanCmmMipFromDictionary(dict);
+                            break;
+
+                        case DEBUG_SUB_APP_LANCMMUTL:
+                            this.LpCmmApp.LoadLanCmmUtlFromDictionary(dict);
+                            break;
+
+                        default:
+                            throw new InvalidSwitchCommandResult($"Unexpected application \"{appName}\"");
+
+                    }
+
+                }
+            }
+        }
+
         public void LoadLldpNiFromDictionary(Dictionary<string, string> dict)
         {
             this.LldpNiApp.LoadFromDictionary(dict);
@@ -149,7 +196,8 @@ namespace PoEWizard.Device
                 if (appName == DEBUG_SUB_APP_LANCMM) this.LpCmmApp.LoadLanCmmFromDictionary(dict);
                 else if (appName == DEBUG_SUB_APP_LANCMMPWR) this.LpCmmApp.LoadLanCmmPwrFromDictionary(dict);
                 else if (appName == DEBUG_SUB_APP_LANCMMMIP) this.LpCmmApp.LoadLanCmmMipFromDictionary(dict);
-                else this.LpCmmApp.LoadLanCmmUtlFromDictionary(dict);
+                else if (appName == DEBUG_SUB_APP_LANCMMUTL) this.LpCmmApp.LoadLanCmmUtlFromDictionary(dict);
+                else throw new InvalidSwitchCommandResult($"Unexpected application \"{appName}\"");
             }
         }
         public void LoadLpNiFromDictionary(List<Dictionary<string, string>> dictList)
@@ -159,7 +207,8 @@ namespace PoEWizard.Device
                 string appName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
                 if (appName == DEBUG_SUB_APP_LANNI) this.LpNiApp.LoadLanNiFromDictionary(dict);
                 else if (appName == DEBUG_SUB_APP_LANXTR) this.LpNiApp.LoadLanXtrFromDictionary(dict);
-                else this.LpNiApp.LoadLanNiUtlFromDictionary(dict);
+                else if (appName == DEBUG_SUB_APP_LANUTIL) this.LpNiApp.LoadLanNiUtlFromDictionary(dict);
+                else throw new InvalidSwitchCommandResult($"Unexpected application \"{appName}\"");
             }
         }
         public void CreateTacTextFile(DeviceType deviceType, string localTarFilepath, SwitchModel device, PortModel port)

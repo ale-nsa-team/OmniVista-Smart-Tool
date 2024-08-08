@@ -79,7 +79,7 @@ namespace PoEWizard.Device
             }
             double powerConsumedMetric = 100 * this.Power / this.Budget;
             double nearThreshold = 0.9 * this.Threshold;
-            if (powerConsumedMetric < nearThreshold) this.PoeStatus = SlotPoeStatus.Normal;
+            if (powerConsumedMetric < nearThreshold) this.PoeStatus = SlotPoeStatus.UnderThreshold;
             else if (powerConsumedMetric >= nearThreshold && powerConsumedMetric < Threshold) this.PoeStatus = SlotPoeStatus.NearThreshold;
             else this.PoeStatus = SlotPoeStatus.Critical;
         }

@@ -139,7 +139,7 @@ namespace PoEWizard.Comm
                     SendProgressError("Get Switch Log", $"Couldn't get data for port {port}");
                     return;
                 }
-                ConnectSshService();
+                ConnectSwitchOnSsh();
                 string debugSelected = _debugSwitchLog.SwitchDebugLevelSelected;
                 SendProgressReport($"Getting lan power information of slot {_wizardSwitchSlot.Name}");
                 // Getting current lan power status
@@ -160,7 +160,7 @@ namespace PoEWizard.Comm
                 SendProgressReport($"Generating tar file");
                 Thread.Sleep(3000);
                 SendRequest(GetRestUrlEntry(CommandType.DEBUG_CREATE_LOG));
-                DisconnectSshService();
+                DisconnectSwitchOnSsh();
             }
             catch (Exception ex)
             {
@@ -168,7 +168,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void ConnectSshService()
+        private void ConnectSwitchOnSsh()
         {
             try
             {
@@ -181,7 +181,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void DisconnectSshService()
+        private void DisconnectSwitchOnSsh()
         {
             try
             {
@@ -217,41 +217,60 @@ namespace PoEWizard.Comm
             Logger.Info($"{(cmd == CommandType.DEBUG_UPDATE_LPCMM_LEVEL ? "\"lpCmm\"" : "\"lpNi\"")} debug level set to \"{dbgLevel}\", Duration: {Utils.CalcStringDuration(startTime)}");
         }
 
-        private void SendSshCliCommand(CommandType cmd, string[] data)
+        private string GetAppDebugLevel(CommandType cmd)
         {
             try
             {
-                CommandType sshCmd = cmd == CommandType.DEBUG_UPDATE_LPCMM_LEVEL ? CommandType.DEBUG_CLI_UPDATE_LPCMM_LEVEL : CommandType.DEBUG_CLI_UPDATE_LPNI_LEVEL;
-                SshService?.SendCommand(new RestUrlEntry(sshCmd), data);
+                SendRestApiGetDebugLevel(cmd);
+            }
+            catch (InvalidSwitchCommandResult ex)
+            {
+                Logger.Warn(ex.Message);
+                ParseSSHCommand(cmd);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return cmd == CommandType.DEBUG_SHOW_LPCMM_LEVEL ? _debugSwitchLog.LpCmmApp.SwitchLogLevel : _debugSwitchLog.LpNiApp.SwitchLogLevel;
+        }
+
+        private void ParseSSHCommand(CommandType cmd)
+        {
+            Dictionary<string, string> response = SendSshCliCommand(cmd);
+            if (response != null && response.ContainsKey(OUTPUT) && !string.IsNullOrEmpty(response[OUTPUT]))
+            {
+                _debugSwitchLog.LoadFromDictionary(CliParseUtils.ParseCliSwitchDebugLevel(response[OUTPUT]));
+            }
+        }
+
+        private void SendRestApiGetDebugLevel(CommandType cmd)
+        {
+            _response = SendRequest(GetRestUrlEntry(cmd));
+            if (_response[DATA] != null) _debugSwitchLog.LoadFromDictionary(CliParseUtils.ParseListFromDictionary((Dictionary<string, string>)_response[DATA], DEBUG_SWITCH_LOG));
+        }
+
+        private Dictionary<string, string> SendSshCliCommand(CommandType cmd, string[] data = null)
+        {
+            try
+            {
+                Dictionary<CommandType, CommandType> cmdTranslation = new Dictionary<CommandType, CommandType>
+                {
+                    [CommandType.DEBUG_UPDATE_LPNI_LEVEL] = CommandType.DEBUG_CLI_UPDATE_LPNI_LEVEL,
+                    [CommandType.DEBUG_UPDATE_LPCMM_LEVEL] = CommandType.DEBUG_CLI_UPDATE_LPCMM_LEVEL,
+                    [CommandType.DEBUG_SHOW_LPNI_LEVEL] = CommandType.DEBUG_CLI_SHOW_LPNI_LEVEL,
+                    [CommandType.DEBUG_SHOW_LPCMM_LEVEL] = CommandType.DEBUG_CLI_SHOW_LPCMM_LEVEL
+                };
+                if (cmdTranslation.ContainsKey(cmd))
+                {
+                    return SshService?.SendCommand(new RestUrlEntry(cmdTranslation[cmd]), data);
+                }
             }
             catch (Exception ex)
             {
                 SendSwitchError("Connect", ex);
             }
-        }
-
-        private string GetAppDebugLevel(CommandType cmd)
-        {
-            string debugLevel = null;
-            _response = SendRequest(GetRestUrlEntry(cmd));
-            List<Dictionary<string, string>> dictList = new List<Dictionary<string, string>>();
-            if (_response[DATA] != null) dictList = CliParseUtils.ParseListFromDictionary((Dictionary<string, string>)_response[DATA], DEBUG_SWITCH_LOG);
-            if (dictList?.Count > 0)
-            {
-                switch (cmd)
-                {
-                    case CommandType.DEBUG_SHOW_LPCMM_LEVEL:
-                        _debugSwitchLog.LoadLpCmmAppFromDictionary(dictList);
-                        debugLevel = _debugSwitchLog.LpCmmApp.SwitchLogLevel;
-                        break;
-
-                    case CommandType.DEBUG_SHOW_LPNI_LEVEL:
-                        _debugSwitchLog.LoadLpNiFromDictionary(dictList);
-                        debugLevel = _debugSwitchLog.LpNiApp.SwitchLogLevel;
-                        break;
-                }
-            }
-            return debugLevel;
+            return null;
         }
 
         public string RebootSwitch(int waitSec)
@@ -578,7 +597,10 @@ namespace PoEWizard.Comm
                 else if (_wizardSwitchPort.Poe == PoeStatus.Fault || _wizardSwitchPort.Poe == PoeStatus.Deny || _wizardSwitchPort.Poe == PoeStatus.PoweredOff)
                     _wizardCommand = CommandType.CAPACITOR_DETECTION_DISABLE;
                 else
-                    _wizardCommand = CommandType.NO_COMMAND;
+                {
+                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed);
+                    return;
+                }
                 string wizardAction = _wizardCommand == CommandType.CAPACITOR_DETECTION_ENABLE ? "Enabling" : "Disabling";
                 wizardAction += $" capacitor detection on port {_wizardSwitchPort.Name}";
                 _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);

@@ -79,4 +79,12 @@ namespace PoEWizard.Exceptions
         { }
     }
 
+    [Serializable]
+    public class InvalidSwitchCommandResult : Exception
+    {
+        public InvalidSwitchCommandResult(string message)
+            : base(message)
+        { }
+    }
+
 }

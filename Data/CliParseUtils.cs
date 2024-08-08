@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -180,6 +181,54 @@ namespace PoEWizard.Data
                 }
             }
             return dictList;
+        }
+
+        public static List<Dictionary<string, string>> ParseCliSwitchDebugLevel(string data)
+        {
+            List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();
+            using (StringReader reader = new StringReader(data))
+            {
+                string appName = string.Empty;
+                string appId = string.Empty;
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.Trim().Length == 0) continue;
+                    if (line.Contains(DEBUG_CLI_APP_NAME))
+                    {
+                        string[] split = line.Trim().Split(':');
+                        if (split.Length == 2)
+                        {
+                            appName = split[1].Trim().Replace(",", "");
+                            split = appName.Split('(');
+                            if (split.Length == 2)
+                            {
+                                appName = split[0].Trim();
+                                appId = split[1].Replace(")", "").Trim();
+                            }
+                        }
+                        break;
+                    }
+                }
+                List<Dictionary<string, string>> subAppList = ParseHTable(data, 1);
+                foreach(Dictionary<string, string> dict in subAppList)
+                {
+                    Dictionary<string, string> logDbgList = new Dictionary<string, string>();
+                    logDbgList[DEBUG_APP_NAME] = appName;
+                    logDbgList[DEBUG_APP_ID] = appId;
+                    if (dict.ContainsKey(DEBUG_CLI_SUB_APP_NAME)) logDbgList[DEBUG_SUB_APP_NAME] = dict[DEBUG_CLI_SUB_APP_NAME];
+                    if (dict.ContainsKey(DEBUG_CLI_SUB_APP_ID)) logDbgList[DEBUG_SUB_APP_ID] = dict[DEBUG_CLI_SUB_APP_ID];
+                    if (dict.ContainsKey(DEBUG_CLI_SUB_APP_LEVEL))
+                    {
+                        string logLevel = Utils.ToPascalCase(dict[DEBUG_CLI_SUB_APP_LEVEL]);
+                        SwitchDebugLogLevel level = !string.IsNullOrEmpty(logLevel) ? (SwitchDebugLogLevel)Enum.Parse(typeof(SwitchDebugLogLevel), logLevel) : SwitchDebugLogLevel.Info;
+                        int iLevel = (int)level;
+                        logDbgList[DEBUG_SUB_APP_LEVEL] = iLevel.ToString();
+                    }
+                    table.Add(logDbgList);
+                }
+            }
+            return table;
         }
 
         private static Dictionary<string, string> ParseTable(string data, Regex regex)

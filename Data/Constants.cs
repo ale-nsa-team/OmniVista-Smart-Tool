@@ -18,7 +18,7 @@ namespace PoEWizard.Data
         public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
         public enum PortStatus { Unknown, Up, Down }
         public enum PoeStatus { On, Off, Searching, Fault, Deny, Conflict, PoweredOff, NoPoe }
-        public enum SlotPoeStatus { Normal, NearThreshold, Critical, Off }
+        public enum SlotPoeStatus { UnderThreshold, NearThreshold, Critical, Off }
         public enum EType { Fiber, Copper, Unknown }
         public enum PriorityLevelType { Low, High, Critical }
         public enum PowerSupplyState { Up, Down, Unknown }
@@ -224,6 +224,10 @@ namespace PoEWizard.Data
         public const string DEBUG_SUB_APP_LANCMMPWR = "LanCmmPwr";
         public const string DEBUG_SUB_APP_LANCMMMIP = "LanCmmMip";
         public const string DEBUG_SUB_APP_LANCMMUTL = "LanCmmUtl";
+        public const string DEBUG_CLI_APP_NAME = "Application Name";
+        public const string DEBUG_CLI_SUB_APP_ID = "SubAppl ID";
+        public const string DEBUG_CLI_SUB_APP_NAME = "Sub Application Name";
+        public const string DEBUG_CLI_SUB_APP_LEVEL = "Level";
         // Used by BuildOuiTable method of MainWindow.xaml.cs class
         public const string OUI_FILE = "oui.csv";
 

@@ -603,7 +603,7 @@ namespace PoEWizard.Comm
                 Dictionary<string, string> result = new Dictionary<string, string>
                 {
                     [CMD] = cmd,
-                    [RestUrl.RESULT] = response,
+                    [RestUrl.OUTPUT] = response,
                     [PROMPT] = this.SessionPrompt
                 };
                 return result;
