@@ -15,6 +15,7 @@ namespace PoEWizard.Device
         public double Power { get; set; }
         public double MaxPower { get; set; }
         public PortStatus Status { get; set; }
+        public bool IsPoeON { get; set; }
         public PriorityLevelType PriorityLevel { get; set; }
         public bool IsUplink { get; set; } = false;
         public bool IsLldpMdi { get; set; } = false;
@@ -39,6 +40,7 @@ namespace PoEWizard.Device
             UpdatePortStatus(dict);
             Power = 0;
             Poe = PoeStatus.NoPoe;
+            IsPoeON = false;
             MaxPower = 0;
             PriorityLevel = PriorityLevelType.Low;
             IsUplink = false;
@@ -58,6 +60,8 @@ namespace PoEWizard.Device
         {
             MaxPower = ParseNumber(Utils.GetDictValue(dict, MAXIMUM))/1000;
             Power = ParseNumber(Utils.GetDictValue(dict, USED))/1000;
+            string onOff = Utils.GetDictValue(dict, ON_OFF);
+            IsPoeON = onOff == "ON";
             switch (Utils.GetDictValue(dict, STATUS))
             {
                 case POWERED_ON:
@@ -67,7 +71,7 @@ namespace PoEWizard.Device
                     Poe = PoeStatus.Searching;
                     break;
                 case POWERED_OFF:
-                    Poe = PoeStatus.Off;
+                    if (IsPoeON) Poe = PoeStatus.PoweredOff; else Poe = PoeStatus.Off;
                     break;
                 case FAULT:
                     Poe = PoeStatus.Fault;

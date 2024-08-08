@@ -575,7 +575,7 @@ namespace PoEWizard
                 RefreshSlotAndPortsView();
                 if (result == WizardResult.Fail)
                 {
-                    bool res = ShowMessageBox("Wizard", "It looks like the wizard was unable to fix the problem.\nDo you want to collect information to send to TAC?",
+                    bool res = ShowMessageBox("Wizard", "It looks like the wizard was unable to fix the problem.\nDo you want to collect information to send to technical support?",
                                               MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
                     if (!res) return;
                     ShowInfoBox("Cleaning up current log...");
@@ -753,7 +753,6 @@ namespace PoEWizard
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable2PairPower();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
-            await EnableCapacitorDetection();
         }
 
         private async Task RunWizardTelephone()
@@ -766,7 +765,6 @@ namespace PoEWizard
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable823BT();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
-            await EnableCapacitorDetection();
         }
 
         private async Task RunWizardWirelessLan()
@@ -790,7 +788,6 @@ namespace PoEWizard
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable2PairPower();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
-            await EnableCapacitorDetection();
         }
 
         private async Task Enable823BT()
@@ -813,12 +810,6 @@ namespace PoEWizard
         {
             await RunPoeWizard(new List<CommandType>() { CommandType.POWER_2PAIR_PORT }, 30);
             Logger.Debug($"Enable 2-Pair Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-        }
-
-        private async Task EnableCapacitorDetection()
-        {
-            await RunPoeWizard(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE });
-            Logger.Debug($"Enable Capacitor Detection on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task ChangePriority()
@@ -851,14 +842,9 @@ namespace PoEWizard
         private async Task RunLastWizardActions()
         {
             bool reset = false;
-            if (reportResult.GetReportResult(selectedPort.Name) == WizardResult.NothingToDo) reportResult.RemoveLastWizardReport(selectedPort.Name);
-            if (selectedPort.Poe == PoeStatus.Searching)
-            {
-                await RunWizardCommands(new List<CommandType>() { CommandType.CAPACITOR_DETECTION_ENABLE }, 45);
-                WizardResult result = reportResult.GetReportResult(selectedPort.Name);
-                if (result != WizardResult.Ok && result != WizardResult.Fail) reportResult.RemoveLastWizardReport(selectedPort.Name);
-                reset = true;
-            }
+            await RunWizardCommands(new List<CommandType>() { CommandType.CHECK_CAPACITOR_DETECTION }, 45);
+            WizardResult result = reportResult.GetReportResult(selectedPort.Name);
+            if (result != WizardResult.Ok && result != WizardResult.Fail) reportResult.RemoveLastWizardReport(selectedPort.Name); else reset = true;
             await CheckDefaultMaxPower();
             if (selectedPort.Poe == PoeStatus.Off && (ShowMessageBox("Port PoE turned Off", $"The PoE on port {selectedPort.Name} is turned Off!\n Do you want to turn it On?",
                                                                      MsgBoxIcons.Warning, MsgBoxButtons.OkCancel)))

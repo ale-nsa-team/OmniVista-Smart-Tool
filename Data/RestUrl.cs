@@ -87,6 +87,7 @@ namespace PoEWizard.Data
             CHECK_823BT = 102,
             CHECK_MAX_POWER = 103,
             CHANGE_MAX_POWER = 104,
+            CHECK_CAPACITOR_DETECTION = 105,
             // 120 - 139: Switch debug commands
             DEBUG_SHOW_LAN_POWER_STATUS = 120,
             DEBUG_SHOW_LLDPNI_LEVEL = 121,

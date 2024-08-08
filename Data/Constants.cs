@@ -17,7 +17,7 @@ namespace PoEWizard.Data
         public enum AosVersion { V6, V8 };
         public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
         public enum PortStatus { Unknown, Up, Down }
-        public enum PoeStatus { On, Off, Searching, Fault, Deny, Conflict, NoPoe }
+        public enum PoeStatus { On, Off, Searching, Fault, Deny, Conflict, PoweredOff, NoPoe }
         public enum SlotPoeStatus { Normal, NearThreshold, Critical, Off }
         public enum EType { Fiber, Copper, Unknown }
         public enum PriorityLevelType { Low, High, Critical }
@@ -125,12 +125,14 @@ namespace PoEWizard.Data
         public const string CLASS = "Class";
         public const string TYPE = "Type";
         public const string PRIO_DISCONNECT = "Priority Disconnect";
+        // Used by "SHOW_LAN_POWER"
         public const string POWERED_ON = "Powered On";
         public const string POWERED_OFF = "Powered Off";
         public const string SEARCHING = "Searching";
         public const string FAULT = "Fault";
         public const string DENY = "Deny";
         public const string BAD_VOLTAGE_INJECTION = "Bad!VoltInj";
+        public const string ON_OFF= "On/Off";
         // Used by "SHOW_CHASSIS"
         public const string ID = "ID";
         public const string MODULE_TYPE = "Module Type";
