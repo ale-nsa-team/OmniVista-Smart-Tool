@@ -139,7 +139,7 @@ namespace PoEWizard.Comm
                     SendProgressError("Get Switch Log", $"Couldn't get data for port {port}");
                     return;
                 }
-                ConnectSwitchOnSsh();
+                ConnectAosSsh();
                 string debugSelected = _debugSwitchLog.SwitchDebugLevelSelected;
                 SendProgressReport($"Getting lan power information of slot {_wizardSwitchSlot.Name}");
                 // Getting current lan power status
@@ -154,13 +154,13 @@ namespace PoEWizard.Comm
                 // Recycling power on switch port
                 RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 5);
                 // Setting switch debug level back to the previous values
-                SetAppDebugLevel($"Resetting \"lpNi\" debug level back to {SwitchDebugModel.ParseDebugLevel(prevLpNiDebug)}", CommandType.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
-                SetAppDebugLevel($"Resetting \"lpCmm\" debug level back to {SwitchDebugModel.ParseDebugLevel(prevLpCmmDebug)}", CommandType.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
+                SetAppDebugLevel($"Resetting \"lpNi\" debug level back to {CliParseUtils.ParseDebugLevel(prevLpNiDebug)}", CommandType.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
+                SetAppDebugLevel($"Resetting \"lpCmm\" debug level back to {CliParseUtils.ParseDebugLevel(prevLpCmmDebug)}", CommandType.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
                 // Generating tar file
                 SendProgressReport($"Generating tar file");
                 Thread.Sleep(3000);
                 SendRequest(GetRestUrlEntry(CommandType.DEBUG_CREATE_LOG));
-                DisconnectSwitchOnSsh();
+                DisconnectAosSsh();
             }
             catch (Exception ex)
             {
@@ -168,12 +168,12 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void ConnectSwitchOnSsh()
+        private void ConnectAosSsh()
         {
             try
             {
                 SshService = new AosSshService(SwitchModel);
-                SshService?.ConnectSshClient();
+                SshService.ConnectSshClient();
             }
             catch (Exception ex)
             {
@@ -181,7 +181,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void DisconnectSwitchOnSsh()
+        private void DisconnectAosSsh()
         {
             try
             {

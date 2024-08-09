@@ -211,24 +211,28 @@ namespace PoEWizard.Data
                     }
                 }
                 List<Dictionary<string, string>> subAppList = ParseHTable(data, 1);
-                foreach(Dictionary<string, string> dict in subAppList)
+                if (subAppList?.Count > 0)
                 {
-                    Dictionary<string, string> logDbgList = new Dictionary<string, string>();
-                    logDbgList[DEBUG_APP_NAME] = appName;
-                    logDbgList[DEBUG_APP_ID] = appId;
-                    if (dict.ContainsKey(DEBUG_CLI_SUB_APP_NAME)) logDbgList[DEBUG_SUB_APP_NAME] = dict[DEBUG_CLI_SUB_APP_NAME];
-                    if (dict.ContainsKey(DEBUG_CLI_SUB_APP_ID)) logDbgList[DEBUG_SUB_APP_ID] = dict[DEBUG_CLI_SUB_APP_ID];
-                    if (dict.ContainsKey(DEBUG_CLI_SUB_APP_LEVEL))
+                    foreach (Dictionary<string, string> dict in subAppList)
                     {
-                        string logLevel = Utils.ToPascalCase(dict[DEBUG_CLI_SUB_APP_LEVEL]);
-                        SwitchDebugLogLevel level = !string.IsNullOrEmpty(logLevel) ? (SwitchDebugLogLevel)Enum.Parse(typeof(SwitchDebugLogLevel), logLevel) : SwitchDebugLogLevel.Info;
-                        int iLevel = (int)level;
-                        logDbgList[DEBUG_SUB_APP_LEVEL] = iLevel.ToString();
+                        Dictionary<string, string> dbgDict = new Dictionary<string, string> { [DEBUG_APP_NAME] = appName, [DEBUG_APP_ID] = appId };
+                        if (dict.ContainsKey(DEBUG_CLI_SUB_APP_NAME)) dbgDict[DEBUG_SUB_APP_NAME] = dict[DEBUG_CLI_SUB_APP_NAME];
+                        if (dict.ContainsKey(DEBUG_CLI_SUB_APP_ID)) dbgDict[DEBUG_SUB_APP_ID] = dict[DEBUG_CLI_SUB_APP_ID];
+                        if (dict.ContainsKey(DEBUG_CLI_SUB_APP_LEVEL))
+                        {
+                            int iLogLevel = (int)ParseDebugLevel(Utils.ToPascalCase(dict[DEBUG_CLI_SUB_APP_LEVEL]));
+                            dbgDict[DEBUG_SUB_APP_LEVEL] = iLogLevel.ToString();
+                        }
+                        table.Add(dbgDict);
                     }
-                    table.Add(logDbgList);
                 }
             }
             return table;
+        }
+
+        public static SwitchDebugLogLevel ParseDebugLevel(string logLevel)
+        {
+            return !string.IsNullOrEmpty(logLevel) ? (SwitchDebugLogLevel)Enum.Parse(typeof(SwitchDebugLogLevel), logLevel) : SwitchDebugLogLevel.Info;
         }
 
         private static Dictionary<string, string> ParseTable(string data, Regex regex)

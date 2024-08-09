@@ -1,6 +1,5 @@
 ﻿using PoEWizard.Data;
 using PoEWizard.Exceptions;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -34,13 +33,12 @@ namespace PoEWizard.Device
         }
         public void LoadFromDictionary(Dictionary<string, string> dict)
         {
-
             this.ApplicationId = Utils.GetDictValue(dict, DEBUG_APP_ID);
             this.ApplicationName = Utils.GetDictValue(dict, DEBUG_APP_NAME);
             this.SubApplicationId = Utils.GetDictValue(dict, DEBUG_SUB_APP_ID);
             this.SubApplicationName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
             this.SwitchLogLevel = Utils.GetDictValue(dict, DEBUG_SUB_APP_LEVEL);
-            this.DebugLevel = SwitchDebugModel.ParseDebugLevel(this.SwitchLogLevel);
+            this.DebugLevel = CliParseUtils.ParseDebugLevel(this.SwitchLogLevel);
         }
     }
 
@@ -119,7 +117,6 @@ namespace PoEWizard.Device
         public string LanPowerStatus { get; set; }
         public string LocalSavedFilePath { get; set; }
         public LpCmmModel LpCmmApp { get; set; }
-        public DebugAppModel LldpNiApp { get; set; }
         public LpNiModel LpNiApp { get; set; }
         public SwitchDebugLogLevel DebugLevelSelected { get; set; }
         public string SwitchDebugLevelSelected { get; set; }
@@ -130,7 +127,6 @@ namespace PoEWizard.Device
             this.WizardReport = wizardReport;
             this.LocalSavedFilePath = Path.Combine(MainWindow.dataPath, Path.GetFileName(SWLOG_PATH));
             this.LanPowerStatus = string.Empty;
-            this.LldpNiApp = new DebugAppModel();
             this.LpNiApp = new LpNiModel();
             this.LpCmmApp = new LpCmmModel();
             this.DebugLevelSelected = logLevel;
@@ -144,71 +140,47 @@ namespace PoEWizard.Device
             {
                 foreach (Dictionary<string, string> dict in dictList)
                 {
-                    string appName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
-                    switch (appName)
+                    string appName = Utils.GetDictValue(dict, DEBUG_APP_NAME);
+                    if (!string.IsNullOrEmpty(appName) && (appName == LPNI || appName== LPCMM))
                     {
-                        case DEBUG_SUB_APP_LANNI:
-                            this.LpNiApp.LoadLanNiFromDictionary(dict);
-                            break;
+                        string subAppName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
+                        switch (subAppName)
+                        {
+                            case DEBUG_SUB_APP_LANNI:
+                                this.LpNiApp.LoadLanNiFromDictionary(dict);
+                                break;
 
-                        case DEBUG_SUB_APP_LANXTR:
-                            this.LpNiApp.LoadLanXtrFromDictionary(dict);
-                            break;
+                            case DEBUG_SUB_APP_LANXTR:
+                                this.LpNiApp.LoadLanXtrFromDictionary(dict);
+                                break;
 
-                        case DEBUG_SUB_APP_LANUTIL:
-                            this.LpNiApp.LoadLanNiUtlFromDictionary(dict);
-                            break;
+                            case DEBUG_SUB_APP_LANUTIL:
+                                this.LpNiApp.LoadLanNiUtlFromDictionary(dict);
+                                break;
 
-                        case DEBUG_SUB_APP_LANCMM:
-                            this.LpCmmApp.LoadLanCmmFromDictionary(dict);
-                            break;
+                            case DEBUG_SUB_APP_LANCMM:
+                                this.LpCmmApp.LoadLanCmmFromDictionary(dict);
+                                break;
 
-                        case DEBUG_SUB_APP_LANCMMPWR:
-                            this.LpCmmApp.LoadLanCmmPwrFromDictionary(dict);
-                            break;
+                            case DEBUG_SUB_APP_LANCMMPWR:
+                                this.LpCmmApp.LoadLanCmmPwrFromDictionary(dict);
+                                break;
 
-                        case DEBUG_SUB_APP_LANCMMMIP:
-                            this.LpCmmApp.LoadLanCmmMipFromDictionary(dict);
-                            break;
+                            case DEBUG_SUB_APP_LANCMMMIP:
+                                this.LpCmmApp.LoadLanCmmMipFromDictionary(dict);
+                                break;
 
-                        case DEBUG_SUB_APP_LANCMMUTL:
-                            this.LpCmmApp.LoadLanCmmUtlFromDictionary(dict);
-                            break;
+                            case DEBUG_SUB_APP_LANCMMUTL:
+                                this.LpCmmApp.LoadLanCmmUtlFromDictionary(dict);
+                                break;
 
-                        default:
-                            throw new InvalidSwitchCommandResult($"Unexpected application \"{appName}\"");
-
+                        }
                     }
-
+                    else
+                    {
+                        throw new InvalidSwitchCommandResult($"Unexpected switch debug application \"{appName}\"");
+                    }
                 }
-            }
-        }
-
-        public void LoadLldpNiFromDictionary(Dictionary<string, string> dict)
-        {
-            this.LldpNiApp.LoadFromDictionary(dict);
-        }
-        public void LoadLpCmmAppFromDictionary(List<Dictionary<string, string>> dictList)
-        {
-            foreach (Dictionary<string, string> dict in dictList)
-            {
-                string appName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
-                if (appName == DEBUG_SUB_APP_LANCMM) this.LpCmmApp.LoadLanCmmFromDictionary(dict);
-                else if (appName == DEBUG_SUB_APP_LANCMMPWR) this.LpCmmApp.LoadLanCmmPwrFromDictionary(dict);
-                else if (appName == DEBUG_SUB_APP_LANCMMMIP) this.LpCmmApp.LoadLanCmmMipFromDictionary(dict);
-                else if (appName == DEBUG_SUB_APP_LANCMMUTL) this.LpCmmApp.LoadLanCmmUtlFromDictionary(dict);
-                else throw new InvalidSwitchCommandResult($"Unexpected application \"{appName}\"");
-            }
-        }
-        public void LoadLpNiFromDictionary(List<Dictionary<string, string>> dictList)
-        {
-            foreach (Dictionary<string, string> dict in dictList)
-            {
-                string appName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
-                if (appName == DEBUG_SUB_APP_LANNI) this.LpNiApp.LoadLanNiFromDictionary(dict);
-                else if (appName == DEBUG_SUB_APP_LANXTR) this.LpNiApp.LoadLanXtrFromDictionary(dict);
-                else if (appName == DEBUG_SUB_APP_LANUTIL) this.LpNiApp.LoadLanNiUtlFromDictionary(dict);
-                else throw new InvalidSwitchCommandResult($"Unexpected application \"{appName}\"");
             }
         }
         public void CreateTacTextFile(DeviceType deviceType, string localTarFilepath, SwitchModel device, PortModel port)
@@ -240,10 +212,6 @@ namespace PoEWizard.Device
             if (WizardReport != null) txt.Append("\nPoE wizard attempts that have failed:").Append(WizardReport.Message);
             txt.Append("\n\n\tThe switch log tech support .tar file is attached.\n\n\t\tThanks.\n");
             Utils.CreateTextFile(filePath, txt);
-        }
-        public static SwitchDebugLogLevel ParseDebugLevel(string logLevel)
-        {
-            return !string.IsNullOrEmpty(logLevel) ? (SwitchDebugLogLevel)Enum.Parse(typeof(SwitchDebugLogLevel), logLevel) : SwitchDebugLogLevel.Info;
         }
 
     }

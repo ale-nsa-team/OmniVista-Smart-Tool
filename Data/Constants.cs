@@ -228,6 +228,8 @@ namespace PoEWizard.Data
         public const string DEBUG_CLI_SUB_APP_ID = "SubAppl ID";
         public const string DEBUG_CLI_SUB_APP_NAME = "Sub Application Name";
         public const string DEBUG_CLI_SUB_APP_LEVEL = "Level";
+        public const string LPNI = "lpNi";
+        public const string LPCMM = "lpCmm";
         // Used by BuildOuiTable method of MainWindow.xaml.cs class
         public const string OUI_FILE = "oui.csv";
 
