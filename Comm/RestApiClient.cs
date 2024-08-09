@@ -49,6 +49,7 @@ namespace PoEWizard.Comm
             {
                 this._httpClient.BaseAddress = new Uri($"https://{this._ip_address}");
                 this._httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.alcatellucentaos+xml");
+                this._httpClient.DefaultRequestHeaders.Add("Alu_context", "vrf=default");
                 this._httpClient.Timeout = TimeSpan.FromSeconds(this._cnx_timeout);
             }
             System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;

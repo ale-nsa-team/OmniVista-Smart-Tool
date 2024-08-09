@@ -81,7 +81,7 @@ namespace PoEWizard.Components
                                 return Colors.Disable;
                         }
                     case "PoeStatus":
-                        return val == "Normal" ? Colors.Clear : val == "NearThreshold" ? Colors.Warn : Colors.Danger;
+                        return val == "UnderThreshold" ? Colors.Clear : val == "NearThreshold" ? Colors.Warn : Colors.Danger;
                     case "PortStatus":
                         return val == "Up" ? Colors.Clear : val == "Down" ? Colors.Danger : Colors.Unknown;
                     case "PowerSupply":

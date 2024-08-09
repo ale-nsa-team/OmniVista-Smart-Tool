@@ -18,7 +18,16 @@ namespace PoEWizard.Data
         public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
         public enum PortStatus { Unknown, Up, Down }
         public enum PoeStatus { On, Off, Searching, Fault, Deny, Conflict, PoweredOff, NoPoe }
-        public enum SlotPoeStatus { UnderThreshold, NearThreshold, Critical, Off }
+        public enum SlotPoeStatus {
+            [Description("Under Threshold")]
+            UnderThreshold,
+            [Description("Near Threshold")]
+            NearThreshold,
+            [Description("Critical")]
+            Critical,
+            [Description("Off")]
+            Off
+        }
         public enum EType { Fiber, Copper, Unknown }
         public enum PriorityLevelType { Low, High, Critical }
         public enum PowerSupplyState { Up, Down, Unknown }

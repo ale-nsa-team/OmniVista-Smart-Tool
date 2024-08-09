@@ -245,7 +245,7 @@
                     <DataGridTemplateColumn Header="PoE Status" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=PoeStatus}" 
+                                <TextBlock Text="{Binding Path=PoeStatusLabel}" 
                                         Foreground="{Binding Path=PoeStatus,
                                             Converter={StaticResource ValueToColorConverter},
                                             ConverterParameter=PoeStatus}"/>
