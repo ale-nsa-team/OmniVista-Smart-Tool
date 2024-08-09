@@ -171,7 +171,7 @@ namespace PoEWizard.Device
                         {
                             [LOCAL_PORT] = port.Name,
                             [CAPABILITIES_ENABLED] = "Unknown",
-                            [SYSTEM_NAME] = string.Join(",", port.MacList)
+                            [MAC_NAME] = string.Join(",", port.MacList)
                         };
                         port.EndPointDevice = new EndPointDeviceModel(ep);
                         port.EndPointDevicesList.Add(port.EndPointDevice);
