@@ -138,6 +138,7 @@
     <Compile Include="Data\Activity.cs" />
     <Compile Include="Data\ChassisSlotPort.cs" />
     <Compile Include="Data\CliParseUtils.cs" />
+    <Compile Include="Data\SwitchDebugApp.cs" />
     <Compile Include="Data\WizardReport.cs" />
     <Compile Include="Data\Constants.cs" />
     <Compile Include="Data\Logger.cs" />

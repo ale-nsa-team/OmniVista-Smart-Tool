@@ -14,7 +14,7 @@ namespace PoEWizard.Device
         public int NbPorts { get; set; }
         public int NbPoePorts { get; set; }
         public SlotPoeStatus PoeStatus { get; set; }
-        public string PoeStatusLabel { get; set; }
+        public string PoeStatusLabel => GetLabelPoeStatus();
         public double Power { get; set; }
         public double Budget { get; set; }
         public List<PortModel> Ports { get; set; }
@@ -38,7 +38,6 @@ namespace PoEWizard.Device
             this.Name = slotString.Substring(0, slotString.Length - 2);
             this.Ports = new List<PortModel>();
             this.SupportsPoE = true;
-            this.PoeStatusLabel = string.Empty;
         }
 
         public void LoadFromDictionary(Dictionary<string, string> dict)
@@ -84,7 +83,6 @@ namespace PoEWizard.Device
             if (powerConsumedMetric < nearThreshold) this.PoeStatus = SlotPoeStatus.UnderThreshold;
             else if (powerConsumedMetric >= nearThreshold && powerConsumedMetric < Threshold) this.PoeStatus = SlotPoeStatus.NearThreshold;
             else this.PoeStatus = SlotPoeStatus.Critical;
-            this.PoeStatusLabel = Utils.GetEnumDescription(this.PoeStatus);
         }
 
         public PortModel GetPort(string portNumber)
@@ -101,6 +99,11 @@ namespace PoEWizard.Device
         private double ParseDouble(string val)
         {
             return double.TryParse(val, out double d) ? d : 0;
+        }
+
+        private string GetLabelPoeStatus()
+        {
+            return Utils.GetEnumDescription(this.PoeStatus);
         }
     }
 }

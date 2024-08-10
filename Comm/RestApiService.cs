@@ -55,6 +55,9 @@ namespace PoEWizard.Comm
                 if (_response[STRING] != null) SwitchModel.LoadFromDictionary(CliParseUtils.ParseHTable(_response[STRING].ToString())[0], DictionaryType.MicroCode);
                 _response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CMM));
                 if (_response[STRING] != null) SwitchModel.LoadFromDictionary(CliParseUtils.ParseVTable(_response[STRING].ToString()), DictionaryType.Cmm);
+                _response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_APP_LIST));
+                if (_response[DATA] != null) SwitchModel.LoadFromList(CliParseUtils.ParseSwitchDebugAppTable((Dictionary<string, string>)_response[DATA],
+                                                                      new string[2] { LPNI, LPCMM }), DictionaryType.SwitchDebugAppList);
                 ScanSwitch($"Connect to switch {SwitchModel.IpAddress}", reportResult);
             }
             catch (Exception ex)
@@ -67,6 +70,7 @@ namespace PoEWizard.Comm
         {
             try
             {
+                GetCurrentSwitchDebugLevel();
                 GetSnapshot();
                 this._wizardReportResult = reportResult;
                 GetSystemInfo();
@@ -140,31 +144,35 @@ namespace PoEWizard.Comm
                     return;
                 }
                 ConnectAosSsh();
-                string debugSelected = _debugSwitchLog.SwitchDebugLevelSelected;
+                int debugSelected = _debugSwitchLog.IntDebugLevelSelected;
                 SendProgressReport($"Getting lan power information of slot {_wizardSwitchSlot.Name}");
                 // Getting current lan power status
                 _response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LAN_POWER_STATUS, new string[1] { _wizardSwitchSlot.Name }));
                 if (_response[STRING] != null) _debugSwitchLog.LanPowerStatus = _response[STRING].ToString();
                 // Getting current switch debug level
-                string prevLpNiDebug = GetAppDebugLevel(CommandType.DEBUG_SHOW_LPNI_LEVEL);
-                string prevLpCmmDebug = GetAppDebugLevel(CommandType.DEBUG_SHOW_LPCMM_LEVEL);
+                GetCurrentSwitchDebugLevel();
+                int prevLpNiDebug = SwitchModel.LpNiDebugLevel;
+                int prevLpCmmDebug = SwitchModel.LpCmmDebugLevel;
                 // Setting switch debug level
                 SetAppDebugLevel($"Setting \"lpNi\" debug log level to {debugSelected}", CommandType.DEBUG_UPDATE_LPNI_LEVEL, debugSelected);
                 SetAppDebugLevel($"Setting \"lpCmm\" debug log level to {debugSelected}", CommandType.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
                 // Recycling power on switch port
                 RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 5);
                 // Setting switch debug level back to the previous values
-                SetAppDebugLevel($"Resetting \"lpNi\" debug level back to {CliParseUtils.ParseDebugLevel(prevLpNiDebug)}", CommandType.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
-                SetAppDebugLevel($"Resetting \"lpCmm\" debug level back to {CliParseUtils.ParseDebugLevel(prevLpCmmDebug)}", CommandType.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
+                SetAppDebugLevel($"Resetting \"lpNi\" debug level back to {Utils.IntToSwitchDebugLevel(prevLpNiDebug)}", CommandType.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
+                SetAppDebugLevel($"Resetting \"lpCmm\" debug level back to {Utils.IntToSwitchDebugLevel(prevLpCmmDebug)}", CommandType.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
                 // Generating tar file
                 SendProgressReport($"Generating tar file");
                 Thread.Sleep(3000);
                 SendRequest(GetRestUrlEntry(CommandType.DEBUG_CREATE_LOG));
-                DisconnectAosSsh();
             }
             catch (Exception ex)
             {
                 SendSwitchError("Get Switch Log", ex);
+            }
+            finally
+            {
+                DisconnectAosSsh();
             }
         }
 
@@ -193,12 +201,12 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void SetAppDebugLevel(string progressMsg, CommandType cmd, string dbgLevel)
+        private void SetAppDebugLevel(string progressMsg, CommandType cmd, int dbgLevel)
         {
             CommandType showDbgCmd = cmd == CommandType.DEBUG_UPDATE_LPCMM_LEVEL ? CommandType.DEBUG_SHOW_LPCMM_LEVEL : CommandType.DEBUG_SHOW_LPNI_LEVEL;
             _progress.Report(new ProgressReport($"{progressMsg} ..."));
             DateTime startTime = DateTime.Now;
-            SendSshCliCommand(cmd, new string[1] { dbgLevel });
+            SendSshCliCommand(cmd, new string[1] { dbgLevel.ToString() });
             // SendRequest(GetRestUrlEntry(cmd, new string[1] { dbgLevel }));
             bool done = false;
             int loopCnt = 1;
@@ -217,37 +225,38 @@ namespace PoEWizard.Comm
             Logger.Info($"{(cmd == CommandType.DEBUG_UPDATE_LPCMM_LEVEL ? "\"lpCmm\"" : "\"lpNi\"")} debug level set to \"{dbgLevel}\", Duration: {Utils.CalcStringDuration(startTime)}");
         }
 
-        private string GetAppDebugLevel(CommandType cmd)
+        private void GetCurrentSwitchDebugLevel()
+        {
+            SendProgressReport($"Getting current log levels");
+            if (_debugSwitchLog == null) _debugSwitchLog = new SwitchDebugModel();
+            GetAppDebugLevel(CommandType.DEBUG_SHOW_LPNI_LEVEL);
+            SwitchModel.SetAppLogLevel(LPNI, _debugSwitchLog.LpNiLogLevel);
+            GetAppDebugLevel(CommandType.DEBUG_SHOW_LPCMM_LEVEL);
+            SwitchModel.SetAppLogLevel(LPCMM, _debugSwitchLog.LpCmmLogLevel);
+        }
+
+        private int GetAppDebugLevel(CommandType cmd)
         {
             try
             {
-                SendRestApiGetDebugLevel(cmd);
-            }
-            catch (InvalidSwitchCommandResult ex)
-            {
-                Logger.Warn(ex.Message);
-                ParseSSHCommand(cmd);
+                string appName = cmd == CommandType.DEBUG_SHOW_LPNI_LEVEL ? LPNI : LPCMM;
+                if (SwitchModel.DebugApp.ContainsKey(appName))
+                {
+                    _response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_LEVEL, new string[2] { SwitchModel.DebugApp[appName].Index, SwitchModel.DebugApp[appName].NbSubApp }));
+                    List<Dictionary<string, string>> list = CliParseUtils.ParseListFromDictionary((Dictionary<string, string>)_response[DATA], DEBUG_SWITCH_LOG);
+                    if (_response[DATA] != null) _debugSwitchLog.LoadFromDictionary(list);
+                }
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
+                Dictionary<string, string> response = SendSshCliCommand(cmd);
+                if (response != null && response.ContainsKey(OUTPUT) && !string.IsNullOrEmpty(response[OUTPUT]))
+                {
+                    _debugSwitchLog.LoadFromDictionary(CliParseUtils.ParseCliSwitchDebugLevel(response[OUTPUT]));
+                }
             }
-            return cmd == CommandType.DEBUG_SHOW_LPCMM_LEVEL ? _debugSwitchLog.LpCmmApp.SwitchLogLevel : _debugSwitchLog.LpNiApp.SwitchLogLevel;
-        }
-
-        private void ParseSSHCommand(CommandType cmd)
-        {
-            Dictionary<string, string> response = SendSshCliCommand(cmd);
-            if (response != null && response.ContainsKey(OUTPUT) && !string.IsNullOrEmpty(response[OUTPUT]))
-            {
-                _debugSwitchLog.LoadFromDictionary(CliParseUtils.ParseCliSwitchDebugLevel(response[OUTPUT]));
-            }
-        }
-
-        private void SendRestApiGetDebugLevel(CommandType cmd)
-        {
-            _response = SendRequest(GetRestUrlEntry(cmd));
-            if (_response[DATA] != null) _debugSwitchLog.LoadFromDictionary(CliParseUtils.ParseListFromDictionary((Dictionary<string, string>)_response[DATA], DEBUG_SWITCH_LOG));
+            return cmd == CommandType.DEBUG_SHOW_LPCMM_LEVEL ? _debugSwitchLog.LpCmmLogLevel : _debugSwitchLog.LpNiLogLevel;
         }
 
         private Dictionary<string, string> SendSshCliCommand(CommandType cmd, string[] data = null)
@@ -1303,10 +1312,7 @@ namespace PoEWizard.Comm
 
         private Dictionary<string, object> SendRequest(RestUrlEntry entry)
         {
-            Dictionary<string, object> response = new Dictionary<string, object>
-            {
-                [STRING] = null, [DATA] = null
-            };
+            Dictionary<string, object> response = new Dictionary<string, object> { [STRING] = null, [DATA] = null };
             Dictionary<string, string> respReq = this.RestApiClient.SendRequest(entry);
             if (respReq == null) return null;
             if (respReq.ContainsKey(ERROR) && !string.IsNullOrEmpty(respReq[ERROR]))

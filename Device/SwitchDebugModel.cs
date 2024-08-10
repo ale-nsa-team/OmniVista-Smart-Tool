@@ -10,22 +10,18 @@ namespace PoEWizard.Device
 
     public class DebugAppModel
     {
-        public string ApplicationId { get; set; }
-        public string ApplicationName { get; set; }
-        public string SubApplicationId { get; set; }
-        public string SubApplicationName { get; set; }
+        public string ApplicationId { get; set; } = string.Empty;
+        public string ApplicationName { get; set; } = string.Empty;
+        public string SubApplicationId { get; set; } = string.Empty;
+        public string SubApplicationName { get; set; } = string.Empty;
         public SwitchDebugLogLevel DebugLevel { get; set; }
-        public string SwitchLogLevel { get; set; }
+        public int SwitchLogLevel { get; set; }
 
         public DebugAppModel()
         {
-            this.ApplicationId = string.Empty;
-            this.ApplicationName = string.Empty;
-            this.SubApplicationId = string.Empty;
-            this.SubApplicationName = string.Empty;
-            this.DebugLevel = SwitchDebugLogLevel.Info;
+            this.DebugLevel = SwitchDebugLogLevel.Unknown;
             int logLevel = (int)this.DebugLevel;
-            SwitchLogLevel = logLevel.ToString();
+            SwitchLogLevel = logLevel;
         }
         public DebugAppModel(Dictionary<string, string> dict)
         {
@@ -37,8 +33,8 @@ namespace PoEWizard.Device
             this.ApplicationName = Utils.GetDictValue(dict, DEBUG_APP_NAME);
             this.SubApplicationId = Utils.GetDictValue(dict, DEBUG_SUB_APP_ID);
             this.SubApplicationName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
-            this.SwitchLogLevel = Utils.GetDictValue(dict, DEBUG_SUB_APP_LEVEL);
-            this.DebugLevel = CliParseUtils.ParseDebugLevel(this.SwitchLogLevel);
+            this.SwitchLogLevel = Utils.StringToInt(Utils.GetDictValue(dict, DEBUG_SUB_APP_LEVEL));
+            this.DebugLevel = Utils.StringToSwitchDebugLevel(this.SwitchLogLevel.ToString());
         }
     }
 
@@ -47,7 +43,7 @@ namespace PoEWizard.Device
         public DebugAppModel LanNi { get; set; }
         public DebugAppModel LanXtr { get; set; }
         public DebugAppModel LanNiUtl { get; set; }
-        public string SwitchLogLevel => GetSwitchDebugLevel();
+        public int SwitchLogLevel => GetSwitchDebugLevel();
 
         public LpNiModel()
         {
@@ -68,7 +64,7 @@ namespace PoEWizard.Device
         {
             this.LanNiUtl.LoadFromDictionary(dict);
         }
-        private string GetSwitchDebugLevel()
+        private int GetSwitchDebugLevel()
         {
             return this.LanNi.SwitchLogLevel;
         }
@@ -80,7 +76,7 @@ namespace PoEWizard.Device
         public DebugAppModel LanCmmPwr { get; set; }
         public DebugAppModel LanCmmMip { get; set; }
         public DebugAppModel LanCmmUtl { get; set; }
-        public string SwitchLogLevel => GetSwitchDebugLevel();
+        public int SwitchLogLevel => GetSwitchDebugLevel();
 
         public LpCmmModel()
         {
@@ -106,7 +102,7 @@ namespace PoEWizard.Device
         {
             this.LanCmmUtl.LoadFromDictionary(dict);
         }
-        private string GetSwitchDebugLevel()
+        private int GetSwitchDebugLevel()
         {
             return this.LanCmm.SwitchLogLevel;
         }
@@ -119,8 +115,20 @@ namespace PoEWizard.Device
         public LpCmmModel LpCmmApp { get; set; }
         public LpNiModel LpNiApp { get; set; }
         public SwitchDebugLogLevel DebugLevelSelected { get; set; }
-        public string SwitchDebugLevelSelected { get; set; }
+        public int IntDebugLevelSelected => GetDebugLevelSelected();
         public WizardReport WizardReport { get; set; }
+        public int LpNiLogLevel => GetAppDebugLevel(LPNI);
+        public int LpCmmLogLevel => GetAppDebugLevel(LPCMM);
+
+        public SwitchDebugModel()
+        {
+            this.WizardReport = new WizardReport();
+            this.LocalSavedFilePath = Path.Combine(MainWindow.dataPath, Path.GetFileName(SWLOG_PATH));
+            this.LanPowerStatus = string.Empty;
+            this.LpNiApp = new LpNiModel();
+            this.LpCmmApp = new LpCmmModel();
+            this.DebugLevelSelected = SwitchDebugLogLevel.Off;
+        }
 
         public SwitchDebugModel(WizardReport wizardReport, SwitchDebugLogLevel logLevel)
         {
@@ -130,19 +138,19 @@ namespace PoEWizard.Device
             this.LpNiApp = new LpNiModel();
             this.LpCmmApp = new LpCmmModel();
             this.DebugLevelSelected = logLevel;
-            int logDebugLevel = (int)this.DebugLevelSelected;
-            this.SwitchDebugLevelSelected = logDebugLevel.ToString();
         }
 
         public void LoadFromDictionary(List<Dictionary<string, string>> dictList)
         {
             if (dictList?.Count > 0)
             {
+                bool found = false;
                 foreach (Dictionary<string, string> dict in dictList)
                 {
                     string appName = Utils.GetDictValue(dict, DEBUG_APP_NAME);
                     if (!string.IsNullOrEmpty(appName) && (appName == LPNI || appName== LPCMM))
                     {
+                        found = true;
                         string subAppName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
                         switch (subAppName)
                         {
@@ -176,10 +184,10 @@ namespace PoEWizard.Device
 
                         }
                     }
-                    else
-                    {
-                        throw new InvalidSwitchCommandResult($"Unexpected switch debug application \"{appName}\"");
-                    }
+                }
+                if (!found)
+                {
+                    throw new InvalidSwitchCommandResult($"Couldn't find the switch debug application");
                 }
             }
         }
@@ -212,6 +220,27 @@ namespace PoEWizard.Device
             if (WizardReport != null) txt.Append("\nPoE wizard attempts that have failed:").Append(WizardReport.Message);
             txt.Append("\n\n\tThe switch log tech support .tar file is attached.\n\n\t\tThanks.\n");
             Utils.CreateTextFile(filePath, txt);
+        }
+
+        private int GetDebugLevelSelected()
+        {
+            return (int)this.DebugLevelSelected;
+        }
+
+        private int GetAppDebugLevel(string app)
+        {
+            if (!string.IsNullOrEmpty(app))
+            {
+                switch (app)
+                {
+                    case LPNI:
+                        return this.LpNiApp.SwitchLogLevel;
+
+                    case LPCMM:
+                        return this.LpCmmApp.SwitchLogLevel;
+                }
+            }
+            return (int)SwitchDebugLogLevel.Unknown;
         }
 
     }

@@ -54,6 +54,11 @@ namespace PoEWizard.Data
                     keyName = element.Name.LocalName + "_" + keyInt++;
                 }
                 dict.Add(keyName, element.Value);
+                if (element.Parent?.FirstAttribute?.Value != null)
+                {
+                    string nodeName = element.Parent.FirstAttribute.Value;
+                    if (!dict.ContainsKey("node_" + nodeName)) dict.Add("node_" + nodeName, nodeName);
+                }
             }
             return dict;
         }
@@ -183,6 +188,59 @@ namespace PoEWizard.Data
             return dictList;
         }
 
+        public static List<Dictionary<string, string>> ParseSwitchDebugAppTable(Dictionary<string, string> dataList, string[] appNameList)
+        {
+            List<Dictionary<string, string>> dictList = ParseListFromDictionary(dataList);
+            List<Dictionary<string, string>> appList = new List<Dictionary<string, string>>();
+            if (dictList?.Count > 0)
+            {
+                string appIndex = null;
+                string appId = null;
+                string appName = null;
+                int appCnt = 0;
+                foreach (Dictionary<string, string> dict in dictList)
+                {
+                    foreach (KeyValuePair<string, string> keyVal in dict)
+                    {
+                        if (keyVal.Key != DEBUG_APP_ID && keyVal.Key != DEBUG_APP_NAME && !keyVal.Key.Contains("node_")) continue;
+                        string val = Utils.GetDictValue(dict, DEBUG_APP_ID);
+                        if (string.IsNullOrEmpty(appId) && !string.IsNullOrEmpty(val)) appId = val;
+                        val = Utils.GetDictValue(dict, DEBUG_APP_NAME);
+                        if (string.IsNullOrEmpty(appName) && !string.IsNullOrEmpty(val)) appName = val;
+                        if (string.IsNullOrEmpty(appIndex) && keyVal.Key.Contains("node_")) appIndex = keyVal.Value;
+                        if (!string.IsNullOrEmpty(appId) && !string.IsNullOrEmpty(appName) && !string.IsNullOrEmpty(appIndex))
+                        {
+                            bool appFound = true;
+                            if (appNameList?.Length > 0)
+                            {
+                                appFound = false;
+                                foreach (string name in appNameList)
+                                {
+                                    if (appName == name)
+                                    {
+                                        appFound = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (appFound)
+                            {
+                                Dictionary<string, string> app = new Dictionary<string, string> { [DEBUG_APP_ID] = appId, [DEBUG_APP_NAME] = appName, [DEBUG_APP_INDEX] = appIndex };
+                                appList.Add(app);
+                                appCnt++;
+                            }
+                            appIndex = null;
+                            appId = null;
+                            appName = null;
+                            break;
+                        }
+                        if (appCnt >= appNameList.Length) break;
+                    }
+                }
+            }
+            return appList;
+        }
+
         public static List<Dictionary<string, string>> ParseCliSwitchDebugLevel(string data)
         {
             List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();
@@ -220,7 +278,7 @@ namespace PoEWizard.Data
                         if (dict.ContainsKey(DEBUG_CLI_SUB_APP_ID)) dbgDict[DEBUG_SUB_APP_ID] = dict[DEBUG_CLI_SUB_APP_ID];
                         if (dict.ContainsKey(DEBUG_CLI_SUB_APP_LEVEL))
                         {
-                            int iLogLevel = (int)ParseDebugLevel(Utils.ToPascalCase(dict[DEBUG_CLI_SUB_APP_LEVEL]));
+                            int iLogLevel = (int)Utils.StringToSwitchDebugLevel(Utils.ToPascalCase(dict[DEBUG_CLI_SUB_APP_LEVEL]));
                             dbgDict[DEBUG_SUB_APP_LEVEL] = iLogLevel.ToString();
                         }
                         table.Add(dbgDict);
@@ -228,11 +286,6 @@ namespace PoEWizard.Data
                 }
             }
             return table;
-        }
-
-        public static SwitchDebugLogLevel ParseDebugLevel(string logLevel)
-        {
-            return !string.IsNullOrEmpty(logLevel) ? (SwitchDebugLogLevel)Enum.Parse(typeof(SwitchDebugLogLevel), logLevel) : SwitchDebugLogLevel.Info;
         }
 
         private static Dictionary<string, string> ParseTable(string data, Regex regex)

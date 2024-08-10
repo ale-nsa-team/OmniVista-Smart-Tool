@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml;
 using System.Xml.Linq;
+using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Data
 {
@@ -439,6 +440,19 @@ namespace PoEWizard.Data
             if (File.Exists(filePath)) File.Delete(filePath);
             File.WriteAllText(filePath, txt.ToString());
         }
+
+        public static SwitchDebugLogLevel IntToSwitchDebugLevel(int logLevel)
+        {
+            if (Enum.TryParse(logLevel.ToString(), true, out SwitchDebugLogLevel parsedLogLevel)) return parsedLogLevel;
+            return SwitchDebugLogLevel.Unknown;
+        }
+
+        public static SwitchDebugLogLevel StringToSwitchDebugLevel(string logLevel)
+        {
+            if (!string.IsNullOrEmpty(logLevel) && Enum.TryParse(logLevel, true, out SwitchDebugLogLevel parsedLogLevel)) return parsedLogLevel;
+            return SwitchDebugLogLevel.Unknown;
+        }
+
     }
 }
 

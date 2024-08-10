@@ -34,8 +34,8 @@ namespace PoEWizard.Data
         public enum ChassisStatus { Unknown, Up, Down }
         public enum DictionaryType
         {
-            SystemRunningDir, Chassis, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, 
-            LldpRemoteList, MacAddressList, TemperatureList, CpuTrafficList, LldpInventoryList
+            SystemRunningDir, Chassis, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList,
+            MacAddressList, TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList
         }
         public enum ConfigType { Enable, Disable, Unavailable }
         public enum DeviceType
@@ -65,7 +65,7 @@ namespace PoEWizard.Data
             [Description("Synchronized (Certified Unknown)")]
             SynchronizedUnknownCertified = 4
         }
-        public enum SwitchDebugLogLevel { Off = 0, Alarm = 1, Error = 2, Alert = 3, Warn = 4, Event = 5, Info = 6, Debug1 = 7, Debug2 = 8, Debug3 = 9 }
+        public enum SwitchDebugLogLevel { Off = 0, Alarm = 1, Error = 2, Alert = 3, Warn = 4, Event = 5, Info = 6, Debug1 = 7, Debug2 = 8, Debug3 = 9, Unknown = -1 }
         #endregion
 
         #region dictionaries
@@ -240,6 +240,7 @@ namespace PoEWizard.Data
         public const string DEBUG_CLI_SUB_APP_LEVEL = "Level";
         public const string LPNI = "lpNi";
         public const string LPCMM = "lpCmm";
+        public const string DEBUG_APP_INDEX = "systemSwitchLoggingApplicationIndex";
         // Used by BuildOuiTable method of MainWindow.xaml.cs class
         public const string OUI_FILE = "oui.csv";
 

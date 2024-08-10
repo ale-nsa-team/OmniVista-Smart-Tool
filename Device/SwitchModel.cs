@@ -24,7 +24,7 @@ namespace PoEWizard.Device
         public string Cpld { get; set; }
         public string RunningDir { get; set; }
         public SyncStatusType SyncStatus { get; set; }
-        public string SyncStatusLabel { get; set; }
+        public string SyncStatusLabel => GetLabelSyncStatus();
         public string Location { get; set; }
         public string Description { get; set; }
         public string SerialNumber { get; set; }
@@ -41,6 +41,11 @@ namespace PoEWizard.Device
         public int Cpu { get; set; }
         public int CpuThreshold { get; set; }
         public bool SupportsPoE { get; set; }
+        public Dictionary<string, SwitchDebugApp> DebugApp { get; set; }
+        public int LpNiDebugLevel => GetAppLogLevel(LPNI);
+        public string LpNiLabelDebugLevel => GetLabelAppLogLevel(LPNI);
+        public int LpCmmDebugLevel => GetAppLogLevel(LPCMM);
+        public string LpCmmLabelDebugLevel => GetLabelAppLogLevel(LPCMM);
 
         public SwitchModel() : this("", DEFAULT_USERNAME, DEFAULT_PASSWORD, 5) { }
 
@@ -52,7 +57,7 @@ namespace PoEWizard.Device
             CnxTimeout = cnxTimeout;
             IsConnected = false;
             SyncStatus = SyncStatusType.Unknown;
-            SyncStatusLabel = string.Empty;
+            DebugApp = new Dictionary<string, SwitchDebugApp>();
         }
 
         public void LoadFromDictionary(Dictionary<string, string> dict, DictionaryType dt)
@@ -68,10 +73,9 @@ namespace PoEWizard.Device
                     UpTime = $"{dur.Days} days, {dur.Hours} hours, {dur.Minutes} minutes and {dur.Seconds} seconds";
                     string sync = Utils.GetDictValue(dict, CONFIG_CHANGE_STATUS);
                     string cert = Utils.GetDictValue(dict, CHAS_CONTROL_CERTIFY);
-                    SyncStatus = sync == "1" ? cert == "3" ? SyncStatusType.Synchronized : 
+                    SyncStatus = sync == "1" ? cert == "3" ? SyncStatusType.Synchronized :
                                  cert == "2" ? SyncStatusType.SynchronizedNeedCertified : SyncStatusType.SynchronizedUnknownCertified :
                                  SyncStatusType.NotSynchronized;
-                    SyncStatusLabel = Utils.GetEnumDescription(SyncStatus);
                     RunningDir = Utils.GetDictValue(dict, SYS_RUNNING_CONFIGURATION);
                     break;
 
@@ -204,6 +208,30 @@ namespace PoEWizard.Device
                     }
                     Cpu = cpu;
                     break;
+
+                case DictionaryType.SwitchDebugAppList:
+                    foreach (Dictionary<string, string> dict in list)
+                    {
+                        string appId = Utils.GetDictValue(dict, DEBUG_APP_ID);
+                        string appName = Utils.GetDictValue(dict, DEBUG_APP_NAME);
+                        string appIndex = Utils.GetDictValue(dict, DEBUG_APP_INDEX);
+                        if (!string.IsNullOrEmpty(appId) && !string.IsNullOrEmpty(appName) && !string.IsNullOrEmpty(appIndex))
+                        {
+                            string nbSubApp = string.Empty;
+                            switch (appName)
+                            {
+                                case LPNI:
+                                    nbSubApp = "3";
+                                    break;
+
+                                case LPCMM:
+                                    nbSubApp = "4";
+                                    break;
+                            }
+                            DebugApp[appName] = new SwitchDebugApp(appName, appId, appIndex, nbSubApp);
+                        }
+                    }
+                    break;
             }
         }
 
@@ -297,6 +325,12 @@ namespace PoEWizard.Device
             });
         }
 
+        public void SetAppLogLevel(string app, int logLevel)
+        {
+            if (!string.IsNullOrEmpty(app) && DebugApp.ContainsKey(app)) this.DebugApp[app].DebugLevel = logLevel;
+            else this.DebugApp[app].DebugLevel = (int)SwitchDebugLogLevel.Unknown;
+        }
+
         public PortModel GetPort(string slotPortNr)
         {
             ChassisSlotPort slotPort = new ChassisSlotPort(slotPortNr);
@@ -330,6 +364,21 @@ namespace PoEWizard.Device
         {
             string[] parts = chSlotPort.Split('/');
             return parts.Length > index ? (int.TryParse(parts[index], out int i) ? i : 0) : 0;
+        }
+
+        private int GetAppLogLevel(string app)
+        {
+            return !string.IsNullOrEmpty(app) && DebugApp.ContainsKey(app) ? DebugApp[app].DebugLevel : (int)SwitchDebugLogLevel.Unknown;
+        }
+
+        private string GetLabelAppLogLevel(string app)
+        {
+            return !string.IsNullOrEmpty(app) && DebugApp.ContainsKey(app) ? Utils.IntToSwitchDebugLevel(DebugApp[app].DebugLevel).ToString() : SwitchDebugLogLevel.Unknown.ToString();
+        }
+
+        private string GetLabelSyncStatus()
+        {
+            return Utils.GetEnumDescription(SyncStatus);
         }
     }
 }
