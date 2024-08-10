@@ -154,8 +154,8 @@ namespace PoEWizard.Comm
                 int prevLpNiDebug = SwitchModel.LpNiDebugLevel;
                 int prevLpCmmDebug = SwitchModel.LpCmmDebugLevel;
                 // Setting switch debug level
-                SetAppDebugLevel($"Setting \"lpNi\" debug log level to {debugSelected}", CommandType.DEBUG_UPDATE_LPNI_LEVEL, debugSelected);
-                SetAppDebugLevel($"Setting \"lpCmm\" debug log level to {debugSelected}", CommandType.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
+                SetAppDebugLevel($"Setting \"lpNi\" debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", CommandType.DEBUG_UPDATE_LPNI_LEVEL, debugSelected);
+                SetAppDebugLevel($"Setting \"lpCmm\" debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", CommandType.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
                 // Recycling power on switch port
                 RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 5);
                 // Setting switch debug level back to the previous values

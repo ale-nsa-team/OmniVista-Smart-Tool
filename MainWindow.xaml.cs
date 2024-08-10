@@ -595,6 +595,8 @@ namespace PoEWizard
             {
                 HideProgress();
                 HideInfoBox();
+                sftpService.Disconnect();
+                debugSwitchLog = null;
             }
         }
 
@@ -672,6 +674,7 @@ namespace PoEWizard
                 HideInfoBox();
                 HideProgress();
                 sftpService.Disconnect();
+                debugSwitchLog = null;
             }
         }
 
