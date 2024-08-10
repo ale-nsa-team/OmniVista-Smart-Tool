@@ -272,6 +272,11 @@ namespace PoEWizard
             RefreshSwitch();
         }
 
+        private void WriteMemory_Click(object sender, RoutedEventArgs e)
+        {
+            WriteMemory();
+        }
+
         private void Help_Click(object sender, RoutedEventArgs e)
         {
 
@@ -508,6 +513,7 @@ namespace PoEWizard
                         {
                             _btnRunWiz.IsEnabled = false;
                             _refreshSwitch.IsEnabled = false;
+                            _writeMemory.IsEnabled = false;
                             _comImg.Visibility = Visibility.Collapsed;
                             await Task.Run(() => restApiService.WriteMemory());
                             _comImg.Visibility = Visibility.Visible;
@@ -706,6 +712,29 @@ namespace PoEWizard
             }
             HideProgress();
             HideInfoBox();
+        }
+
+        private async void WriteMemory()
+        {
+            try
+            {
+                await Task.Run(() => restApiService.GetSystemInfo());
+                if (device.SyncStatus != SyncStatusType.NotSynchronized) return;
+                await Task.Run(() => restApiService.WriteMemory());
+                await Task.Run(() => restApiService.GetSystemInfo());
+                DataContext = null;
+                DataContext = device;
+                ReselectPort();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
+            }
         }
 
         private async Task CheckSwitchScanResult(string title, DateTime startTime)
@@ -993,6 +1022,7 @@ namespace PoEWizard
                 _snapshotMenuItem.IsEnabled = true;
                 _vcbootMenuItem.IsEnabled = true;
                 _refreshSwitch.IsEnabled = true;
+                _writeMemory.IsEnabled = true;
                 _psMenuItem.IsEnabled = true;
                 _disconnectMenuItem.Visibility = Visibility.Visible;
                 _tempStatus.Visibility = Visibility.Visible;
@@ -1040,6 +1070,7 @@ namespace PoEWizard
             _snapshotMenuItem.IsEnabled = false;
             _vcbootMenuItem.IsEnabled = false;
             _refreshSwitch.IsEnabled = false;
+            _writeMemory.IsEnabled = false;
             _psMenuItem.IsEnabled = false;
             _comImg.ToolTip = "Click to reconnect";
             _disconnectMenuItem.Visibility = Visibility.Collapsed;

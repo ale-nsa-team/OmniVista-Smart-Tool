@@ -105,7 +105,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void GetSystemInfo()
+        public void GetSystemInfo()
         {
             SendProgressReport("Reading system information");
             _response = SendRequest(GetRestUrlEntry(CommandType.SHOW_SYSTEM_RUNNING_DIR));

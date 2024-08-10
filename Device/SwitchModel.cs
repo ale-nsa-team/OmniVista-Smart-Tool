@@ -373,12 +373,12 @@ namespace PoEWizard.Device
 
         private string GetLabelAppLogLevel(string app)
         {
-            return !string.IsNullOrEmpty(app) && DebugApp.ContainsKey(app) ? Utils.IntToSwitchDebugLevel(DebugApp[app].DebugLevel).ToString() : SwitchDebugLogLevel.Unknown.ToString();
+            return !string.IsNullOrEmpty(app) && DebugApp.ContainsKey(app) ? Utils.IntToSwitchDebugLevel(DebugApp[app].DebugLevel).ToString() : string.Empty;
         }
 
         private string GetLabelSyncStatus()
         {
-            return Utils.GetEnumDescription(SyncStatus);
+            return SyncStatus != SyncStatusType.Unknown ? Utils.GetEnumDescription(SyncStatus) : string.Empty;
         }
     }
 }

@@ -96,6 +96,13 @@ namespace PoEWizard.Components
                         return val == SyncStatusType.Synchronized.ToString() ? Colors.Clear :
                                val == SyncStatusType.NotSynchronized.ToString() ? Colors.Danger :
                                val == SyncStatusType.Unknown.ToString() ? Colors.Unknown : Colors.Warn;
+                    case "LpCmmDebugLevel":
+                    case "LpNiDebugLevel":
+                        SwitchDebugLogLevel level = Utils.StringToSwitchDebugLevel(val);
+                        return level == SwitchDebugLogLevel.Info ? Colors.Clear :
+                               level <= SwitchDebugLogLevel.Warn ? Colors.Problem :
+                               level > SwitchDebugLogLevel.Warn && level < SwitchDebugLogLevel.Info ? Colors.Warn :
+                               level >= SwitchDebugLogLevel.Debug1 ? Colors.Danger : Colors.Problem;
                     default:
                         return Colors.Unknown;
                 }
