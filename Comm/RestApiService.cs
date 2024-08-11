@@ -154,13 +154,13 @@ namespace PoEWizard.Comm
                 int prevLpNiDebug = SwitchModel.LpNiDebugLevel;
                 int prevLpCmmDebug = SwitchModel.LpCmmDebugLevel;
                 // Setting switch debug level
-                SetAppDebugLevel($"Setting \"lpNi\" debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", CommandType.DEBUG_UPDATE_LPNI_LEVEL, debugSelected);
-                SetAppDebugLevel($"Setting \"lpCmm\" debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", CommandType.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
+                SetAppDebugLevel($"Setting PoE debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", CommandType.DEBUG_UPDATE_LPNI_LEVEL, debugSelected);
+                SetAppDebugLevel($"Setting CMM debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", CommandType.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
                 // Recycling power on switch port
                 RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 5);
                 // Setting switch debug level back to the previous values
-                SetAppDebugLevel($"Resetting \"lpNi\" debug level back to {Utils.IntToSwitchDebugLevel(prevLpNiDebug)}", CommandType.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
-                SetAppDebugLevel($"Resetting \"lpCmm\" debug level back to {Utils.IntToSwitchDebugLevel(prevLpCmmDebug)}", CommandType.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
+                SetAppDebugLevel($"Resetting PoE debug level back to {Utils.IntToSwitchDebugLevel(prevLpNiDebug)}", CommandType.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
+                SetAppDebugLevel($"Resetting CMM debug level back to {Utils.IntToSwitchDebugLevel(prevLpCmmDebug)}", CommandType.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
                 // Generating tar file
                 SendProgressReport($"Generating tar file");
                 Thread.Sleep(3000);
@@ -316,7 +316,7 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                 }
-                Logger.Info($"Switch {SwitchModel.IpAddress} rebooted after {Utils.CalcStringDuration(startTime, true)}");
+                Logger.Activity($"Switch {SwitchModel.IpAddress} rebooted after {Utils.CalcStringDuration(startTime, true)}");
             }
             catch (Exception ex)
             {
@@ -344,7 +344,7 @@ namespace PoEWizard.Comm
                 }
                 catch { }
             }
-            Logger.Info($"Write memory on switch {SwitchModel.IpAddress} completed (Duration: {dur} sec)");
+            Logger.Activity($"Write memory on switch {SwitchModel.IpAddress} completed (Duration: {dur} sec)");
         }
 
         public bool SetPerpetualOrFastPoe(SlotModel slot, CommandType cmd)
@@ -368,7 +368,7 @@ namespace PoEWizard.Comm
                 //if (!string.IsNullOrEmpty(result)) Thread.Sleep(5000);
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
                 _progress.Report(progressReport);
-                Logger.Info($"{action} on Slot {_wizardSwitchSlot.Name}\n{progressReport.Message}");
+                Logger.Activity($"{action} on Slot {_wizardSwitchSlot.Name}\n{progressReport.Message}");
                 return true;
             }
             catch (Exception ex)
@@ -399,7 +399,7 @@ namespace PoEWizard.Comm
                 progressReport.Message += $"\n - Priority on port {port} set to {priority}";
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
                 _progress.Report(progressReport);
-                Logger.Info($"Changed priority to {priority} on port {port}\n{progressReport.Message}");
+                Logger.Activity($"Changed priority to {priority} on port {port}\n{progressReport.Message}");
                 return true;
             }
             catch (Exception ex)

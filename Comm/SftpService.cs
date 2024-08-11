@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using PoEWizard.Data;
 using Renci.SshNet;
 using Renci.SshNet.Sftp;
@@ -36,6 +37,21 @@ namespace PoEWizard.Comm
             catch (Exception ex) 
             {
                 Logger.Error("Error connecting to switch.", ex);
+            }
+        }
+
+        public void ResetConnection()
+        {
+            try
+            {
+                _sftpClient?.Disconnect();
+                Thread.Sleep(1000);
+                _sftpClient = new SftpClient(Host, Port, Username, Password);
+                _sftpClient.Connect();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error reset connecting to switch.", ex);
             }
         }
 

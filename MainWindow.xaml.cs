@@ -612,29 +612,44 @@ namespace PoEWizard
             {
                 long fsize = 0;
                 long previousSize = -1;
-                int waitCnt = 0;
                 DateTime startTime = DateTime.Now;
                 string strDur = string.Empty;
                 string msg;
+                int loopWaitSec = 0;
+                int waitCnt = 0;
                 while (waitCnt < 2)
                 {
                     strDur = Utils.CalcStringDuration(startTime, true);
                     msg = !string.IsNullOrEmpty(strDur) ? $"Waiting for tar file ready ({strDur}) ..." : "Waiting for tar file ready ...";
                     if (fsize > 0) msg += $"\nFile size: {Utils.PrintNumberBytes(fsize)}";
                     ShowInfoBox(msg);
-                    await Task.Run(() =>
+                    if (loopWaitSec % 2 == 0)
                     {
-                        previousSize = fsize;
-                        fsize = sftpService.GetFileSize(SWLOG_PATH);
-                    });
-                    Thread.Sleep(2000);
-                    if (fsize > 0 && fsize == previousSize) waitCnt++; else waitCnt = 0;
-                    if ((fsize == 0 && Utils.GetTimeDuration(startTime) >= 60) || Utils.GetTimeDuration(startTime) >= 180)
+                        await Task.Run(() =>
+                        {
+                            previousSize = fsize;
+                            fsize = sftpService.GetFileSize(SWLOG_PATH);
+                        });
+                        if (fsize > 0 && fsize == previousSize) waitCnt++; else waitCnt = 0;
+                    }
+                    Thread.Sleep(1000);
+                    loopWaitSec++;
+                    if (fsize == 0)
                     {
-                        msg = $"Failed to create \"{SWLOG_PATH}\" file by the switch {device.IpAddress}!\nWaited too long for tar file ({Utils.CalcStringDuration(startTime, true)})\nFile size: ";
-                        msg += fsize == 0 ? "0 Bytes" : Utils.PrintNumberBytes(fsize);
-                        Logger.Error(msg);
-                        ShowMessageBox("Waiting for tar file ready", msg, MsgBoxIcons.Error, MsgBoxButtons.Ok);
+                        if (loopWaitSec >= 30 && loopWaitSec < 60)
+                        {
+                            sftpService.ResetConnection();
+                            Logger.Error($"Waited too long ({Utils.CalcStringDuration(startTime, true)}) for the switch {device.IpAddress} to start creating the tar file!");
+                        }
+                        else if (loopWaitSec >= 60)
+                        {
+                            ShowWaitTarFileError(fsize, startTime);
+                            return;
+                        }
+                    }
+                    if (Utils.GetTimeDuration(startTime) >= 180)
+                    {
+                        ShowWaitTarFileError(fsize, startTime);
                         return;
                     }
                 }
@@ -682,6 +697,16 @@ namespace PoEWizard
                 sftpService.Disconnect();
                 debugSwitchLog = null;
             }
+        }
+
+        private void ShowWaitTarFileError(long fsize, DateTime startTime)
+        {
+            StringBuilder msg = new StringBuilder();
+            msg.Append($"Failed to create \"").Append(SWLOG_PATH).Append("\" file by the switch ").Append(device.IpAddress).Append("!\nWaited too long for tar file (");
+            msg.Append(Utils.CalcStringDuration(startTime, true)).Append(")\nFile size: ");
+            if (fsize == 0) msg.Append("0 Bytes"); else msg.Append(Utils.PrintNumberBytes(fsize));
+            Logger.Error(msg.ToString());
+            ShowMessageBox("Waiting for tar file ready", msg.ToString(), MsgBoxIcons.Error, MsgBoxButtons.Ok);
         }
 
         private void RefreshSlotAndPortsView()

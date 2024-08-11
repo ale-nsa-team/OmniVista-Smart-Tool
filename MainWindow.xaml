@@ -195,10 +195,10 @@
                 <Label Grid.Row="12" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_syncStatus" Content="{Binding SyncStatusLabel}"
                        Foreground="{Binding Path=SyncStatus, Converter={StaticResource ValueToColorConverter}, ConverterParameter=SyncStatus}"/>
 
-                <Label Grid.Row="13" Grid.Column="0" Style="{DynamicResource keyLabel}">LpNi Debug Level:</Label>
+                <Label Grid.Row="13" Grid.Column="0" Style="{DynamicResource keyLabel}">PoE Debug Level:</Label>
                 <Label Grid.Row="13" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_ilpni" Content="{Binding LpNiLabelDebugLevel}"
                        Foreground="{Binding Path=LpNiDebugLevel, Converter={StaticResource ValueToColorConverter}, ConverterParameter=LpNiDebugLevel}"/>
-                <Label Grid.Row="14" Grid.Column="0" Style="{DynamicResource keyLabel}">LpCmm Debug Level:</Label>
+                <Label Grid.Row="14" Grid.Column="0" Style="{DynamicResource keyLabel}">CMM Debug Level:</Label>
                 <Label Grid.Row="14" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_lpcmm" Content="{Binding LpCmmLabelDebugLevel}"
                        Foreground="{Binding Path=LpCmmDebugLevel, Converter={StaticResource ValueToColorConverter}, ConverterParameter=LpCmmDebugLevel}"/>
 
