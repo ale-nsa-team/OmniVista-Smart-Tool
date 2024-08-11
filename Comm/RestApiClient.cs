@@ -249,7 +249,7 @@ namespace PoEWizard.Comm
                         if (errorList.ContainsKey(RestUrl.HTTP_RESPONSE) && !string.IsNullOrEmpty(errorList[RestUrl.HTTP_RESPONSE]))
                         {
                             HttpStatusCode code = Utils.ConvertToHttpStatusCode(errorList);
-                            string errorMsg = $"Requested URL: {url}\r\n{code} ({errorList[RestUrl.HTTP_RESPONSE]})\r\n{error}";
+                            string errorMsg = $"Requested URL: {url}\r\nHTTP Response: {code} ({errorList[RestUrl.HTTP_RESPONSE]})\r\nError: {error}";
                             if (errMsg.Contains("power range supported")) return null;
                             if (errMsg.Contains("not supported")) Logger.Warn(errorMsg); else Logger.Error(errorMsg);
                         }

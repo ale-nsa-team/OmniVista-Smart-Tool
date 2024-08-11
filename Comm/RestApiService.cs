@@ -327,24 +327,31 @@ namespace PoEWizard.Comm
 
         public void WriteMemory(int waitSec = 40)
         {
-            if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized) return;
-            SendProgressReport("Writing memory");
-            SendRequest(GetRestUrlEntry(CommandType.WRITE_MEMORY));
-            DateTime startTime = DateTime.Now;
-            int dur = 0;
-            while (dur < waitSec)
+            try
             {
-                Thread.Sleep(1000);
-                dur = (int)Utils.GetTimeDuration(startTime);
-                if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
-                _progress.Report(new ProgressReport($"Writing memory on switch {SwitchModel.IpAddress} ({dur} sec) ..."));
-                try
+                if (SwitchModel.SyncStatus == SyncStatusType.Synchronized) return;
+                SendProgressReport("Writing memory");
+                SendRequest(GetRestUrlEntry(CommandType.WRITE_MEMORY));
+                DateTime startTime = DateTime.Now;
+                int dur = 0;
+                while (dur < waitSec)
                 {
-                    if (dur > 15 && dur % 5 == 0) GetSystemInfo();
+                    Thread.Sleep(1000);
+                    dur = (int)Utils.GetTimeDuration(startTime);
+                    if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
+                    _progress.Report(new ProgressReport($"Writing memory on switch {SwitchModel.IpAddress} ({dur} sec) ..."));
+                    try
+                    {
+                        if (dur > 15 && dur % 5 == 0) GetSystemInfo();
+                    }
+                    catch { }
                 }
-                catch { }
+                Logger.Activity($"Write memory on switch {SwitchModel.IpAddress} completed (Duration: {dur} sec)");
             }
-            Logger.Activity($"Write memory on switch {SwitchModel.IpAddress} completed (Duration: {dur} sec)");
+            catch (Exception ex)
+            {
+                SendSwitchError("Write memory", ex);
+            }
         }
 
         public bool SetPerpetualOrFastPoe(SlotModel slot, CommandType cmd)

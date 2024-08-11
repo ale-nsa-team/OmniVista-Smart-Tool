@@ -205,40 +205,54 @@ namespace PoEWizard
 
         private async void ViewVcBoot_Click(object sender, RoutedEventArgs e)
         {
-            ShowProgress("Loading vcboot.cfg file...");
-            Logger.Debug($"Loading vcboot.cfg file from switch {device.Name}");
-            string res = string.Empty;
-            await Task.Run(() =>
+            try
             {
-                if (sftpService == null)
+                ShowProgress("Loading vcboot.cfg file...");
+                Logger.Debug($"Loading vcboot.cfg file from switch {device.Name}");
+                string res = string.Empty;
+                await Task.Run(() =>
                 {
-                    sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
-                }
-                sftpService.Connect();
-                res = sftpService.DownloadToMemory(VCBOOT_PATH);
-            });
-            HideProgress();
-            TextViewer tv = new TextViewer("VCBoot config file", res)
+                    if (sftpService == null)
+                    {
+                        sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
+                    }
+                    sftpService.Connect();
+                    res = sftpService.DownloadToMemory(VCBOOT_PATH);
+                });
+                HideProgress();
+                TextViewer tv = new TextViewer("VCBoot config file", res)
+                {
+                    Owner = this,
+                    SaveFilename = device.Name + "-vcboot.cfg"
+                };
+                Logger.Debug("Displaying vcboot file.");
+                tv.Show();
+            }
+            catch (Exception ex)
             {
-                Owner = this,
-                SaveFilename = device.Name + "-vcboot.cfg"
-            };
-            Logger.Debug("Displaying vcboot file.");
-            tv.Show();
+                Logger.Error(ex);
+            }
         }
 
         private async void ViewSnapshot_Click(object sender, RoutedEventArgs e)
         {
-            ShowProgress("Reading configuration snapshot...");
-            await Task.Run(() => restApiService.GetSnapshot());
-            HideInfoBox();
-            HideProgress();
-            TextViewer tv = new TextViewer("Configuration Snapshot", device.ConfigSnapshot)
+            try
             {
-                Owner = this,
-                SaveFilename = device.Name + "-snapshot.txt"
-            };
-            tv.Show();
+                ShowProgress("Reading configuration snapshot...");
+                await Task.Run(() => restApiService.GetSnapshot());
+                HideInfoBox();
+                HideProgress();
+                TextViewer tv = new TextViewer("Configuration Snapshot", device.ConfigSnapshot)
+                {
+                    Owner = this,
+                    SaveFilename = device.Name + "-snapshot.txt"
+                };
+                tv.Show();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         private void ViewPS_Click(object sender, RoutedEventArgs e)
@@ -360,92 +374,96 @@ namespace PoEWizard
 
         private async void Priority_Changed(object sender, SelectionChangedEventArgs e)
         {
-            var cb = sender as ComboBox;
-            PortModel port = _portList.CurrentItem as PortModel;
-            if (cb.SelectedValue.ToString() != port.PriorityLevel.ToString())
+            try
             {
-                ShowMessageBox("Priority", $"Selected priority: {cb.SelectedValue}");
-                PriorityLevelType prevPriority = port.PriorityLevel;
-                port.PriorityLevel = (PriorityLevelType)Enum.Parse(typeof(PriorityLevelType), cb.SelectedValue.ToString());
-                await SetPoePriority(port, prevPriority);
+                var cb = sender as ComboBox;
+                PortModel port = _portList.CurrentItem as PortModel;
+                if (cb.SelectedValue.ToString() != port.PriorityLevel.ToString())
+                {
+                    ShowMessageBox("Priority", $"Selected priority: {cb.SelectedValue}");
+                    PriorityLevelType prevPriority = port.PriorityLevel;
+                    port.PriorityLevel = (PriorityLevelType)Enum.Parse(typeof(PriorityLevelType), cb.SelectedValue.ToString());
+                    if (port == null) return;
+                    string txt = $"Changing Priority to {port.PriorityLevel} on port {port.Name}";
+                    ShowProgress($"{txt}...");
+                    bool ok = false;
+                    await Task.Run(() => ok = restApiService.ChangePowerPriority(port.Name, port.PriorityLevel));
+                    if (ok)
+                    {
+                        Logger.Activity($"{txt} completed on Switch {device.Name}, S/N {device.SerialNumber}, Model {device.Model}");
+                        await WaitAckProgress();
+                    }
+                    else
+                    {
+                        port.PriorityLevel = prevPriority;
+                        Logger.Error($"Couldn't change the Priority to {port.PriorityLevel} on port {port.Name} of Switch {device.IpAddress}");
+                    }
+                    await RefreshChanges();
+                }
             }
-        }
-
-        private async Task SetPoePriority(PortModel port, PriorityLevelType prevPriority)
-        {
-            if (port == null) return;
-            string txt = $"Changing Priority to {port.PriorityLevel} on port {port.Name}";
-            ShowProgress($"{txt}...");
-            bool ok = false;
-            await Task.Run(() => ok = restApiService.ChangePowerPriority(port.Name, port.PriorityLevel));
-            if (ok)
+            catch (Exception ex)
             {
-                Logger.Activity($"{txt} completed on Switch {device.Name}, S/N {device.SerialNumber}, Model {device.Model}");
-                await WaitAckProgress();
+                Logger.Error(ex);
             }
-            else
+            finally
             {
-                port.PriorityLevel = prevPriority;
-                Logger.Error($"Couldn't change the Priority to {port.PriorityLevel} on port {port.Name} of Switch {device.IpAddress}");
+                HideInfoBox();
+                HideProgress();
             }
-            HideInfoBox();
-            HideProgress();
-            RefreshSlotAndPortsView();
         }
 
         private async void FPoE_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                CheckBox cb = sender as CheckBox;
-                if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
-                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(cb), null);
-                Keyboard.ClearFocus();
-                CommandType cmd = (cb.IsChecked == true) ? CommandType.POE_FAST_ENABLE : CommandType.POE_FAST_DISABLE;
-                bool res = await SetPerpetualOrFastPoe(cmd);
-                if (!res) cb.IsChecked = !cb.IsChecked;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-            HideProgress();
-            HideInfoBox();
-            RefreshSlotAndPortsView();
+            CheckBox cb = sender as CheckBox;
+            if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
+            FocusManager.SetFocusedElement(FocusManager.GetFocusScope(cb), null);
+            Keyboard.ClearFocus();
+            CommandType cmd = (cb.IsChecked == true) ? CommandType.POE_FAST_ENABLE : CommandType.POE_FAST_DISABLE;
+            bool res = await SetPerpetualOrFastPoe(cmd);
+            if (!res) cb.IsChecked = !cb.IsChecked;
         }
 
         private async void PPoE_Click(Object sender, RoutedEventArgs e)
         {
+            CheckBox cb = sender as CheckBox;
+            if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
+            FocusManager.SetFocusedElement(FocusManager.GetFocusScope(cb), null);
+            Keyboard.ClearFocus();
+            CommandType cmd = (cb.IsChecked == true) ? CommandType.POE_PERPETUAL_ENABLE : CommandType.POE_PERPETUAL_DISABLE;
+            bool res = await SetPerpetualOrFastPoe(cmd);
+            if (!res) cb.IsChecked = !cb.IsChecked;
+        }
+
+        private async Task<bool> SetPerpetualOrFastPoe(CommandType cmd)
+        {
             try
             {
-                CheckBox cb = sender as CheckBox;
-                if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
-                FocusManager.SetFocusedElement(FocusManager.GetFocusScope(cb), null);
-                Keyboard.ClearFocus();
-                CommandType cmd = (cb.IsChecked == true) ? CommandType.POE_PERPETUAL_ENABLE : CommandType.POE_PERPETUAL_DISABLE;
-                bool res = await SetPerpetualOrFastPoe(cmd);
-                if (!res) cb.IsChecked = !cb.IsChecked;
+                string action = cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_FAST_ENABLE ? "Enabling" : "Disabling";
+                string poeType = (cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
+                ShowProgress($"{action} {poeType} PoE on slot {selectedSlot.Name}...");
+                bool ok = false;
+                await Task.Run(() => ok = restApiService.SetPerpetualOrFastPoe(selectedSlot, cmd));
+                Logger.Activity($"{action} {poeType} PoE on slot {selectedSlot.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                await WaitAckProgress();
+                await RefreshChanges();
+                return ok;
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
             }
-            HideProgress();
-            HideInfoBox();
-            RefreshSlotAndPortsView();
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
+            }
+            return false;
         }
 
-        private async Task<bool> SetPerpetualOrFastPoe(CommandType cmd)
+        private async Task RefreshChanges()
         {
-            string action = cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_FAST_ENABLE ? "Enabling" : "Disabling";
-            string poeType = (cmd == CommandType.POE_PERPETUAL_ENABLE || cmd == CommandType.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
-            ShowProgress($"{action} {poeType} PoE on slot {selectedSlot.Name}...");
-            bool ok = false;
-            await Task.Run(() => ok = restApiService.SetPerpetualOrFastPoe(selectedSlot, cmd));
-            Logger.Activity($"{action} {poeType} PoE on slot {selectedSlot.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-            await WaitAckProgress();
+            await Task.Run(() => restApiService.GetSystemInfo());
             RefreshSlotAndPortsView();
-            return ok;
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)
@@ -494,8 +512,11 @@ namespace PoEWizard
             {
                 Logger.Error(ex);
             }
-            HideProgress();
-            HideInfoBox();
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
+            }
         }
 
         private async Task CloseRestApiService()
@@ -527,8 +548,11 @@ namespace PoEWizard
             {
                 Logger.Error(ex);
             }
-            HideProgress();
-            HideInfoBox();
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
+            }
         }
 
         private async void LaunchPoeWizard()
@@ -601,7 +625,7 @@ namespace PoEWizard
             {
                 HideProgress();
                 HideInfoBox();
-                sftpService.Disconnect();
+                sftpService?.Disconnect();
                 debugSwitchLog = null;
             }
         }
@@ -694,7 +718,7 @@ namespace PoEWizard
             {
                 HideInfoBox();
                 HideProgress();
-                sftpService.Disconnect();
+                sftpService?.Disconnect();
                 debugSwitchLog = null;
             }
         }
@@ -735,8 +759,11 @@ namespace PoEWizard
             {
                 Logger.Error(ex);
             }
-            HideProgress();
-            HideInfoBox();
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
+            }
         }
 
         private async void WriteMemory()
@@ -744,7 +771,7 @@ namespace PoEWizard
             try
             {
                 await Task.Run(() => restApiService.GetSystemInfo());
-                if (device.SyncStatus != SyncStatusType.NotSynchronized) return;
+                if (device.SyncStatus == SyncStatusType.Synchronized) return;
                 await Task.Run(() => restApiService.WriteMemory());
                 await Task.Run(() => restApiService.GetSystemInfo());
                 DataContext = null;
@@ -764,40 +791,47 @@ namespace PoEWizard
 
         private async Task CheckSwitchScanResult(string title, DateTime startTime)
         {
-            string duration = Utils.CalcStringDuration(startTime, true);
-            if (reportResult.Result?.Count < 1) return;
-            WizardResult result = reportResult.GetReportResult(SWITCH);
-            if (result == WizardResult.Fail || result == WizardResult.Warning)
+            try
             {
-                progress.Report(new ProgressReport(title) { Title = title, Type = ReportType.Error, Message = $"{reportResult.Message}" });
-                await WaitAckProgress();
-            }
-            else if (reportResult.Result?.Count > 0)
-            {
-                int resetSlotCnt = 0;
-                foreach (var reports in reportResult.Result)
+                string duration = Utils.CalcStringDuration(startTime, true);
+                if (reportResult.Result?.Count < 1) return;
+                WizardResult result = reportResult.GetReportResult(SWITCH);
+                if (result == WizardResult.Fail || result == WizardResult.Warning)
                 {
-                    List<ReportResult> reportList = reports.Value as List<ReportResult>;
-                    if (reportList?.Count > 0)
+                    progress.Report(new ProgressReport(title) { Title = title, Type = ReportType.Error, Message = $"{reportResult.Message}" });
+                    await WaitAckProgress();
+                }
+                else if (reportResult.Result?.Count > 0)
+                {
+                    int resetSlotCnt = 0;
+                    foreach (var reports in reportResult.Result)
                     {
-                        ReportResult report = reportList[reportList.Count - 1];
-                        string alertMsg = $"{report.AlertDescription}\nDo you want to turn it On?";
-                        if (report?.Result == WizardResult.Warning && ShowMessageBox($"Slot {report.ID} warning", alertMsg, MsgBoxIcons.Question, MsgBoxButtons.OkCancel))
+                        List<ReportResult> reportList = reports.Value as List<ReportResult>;
+                        if (reportList?.Count > 0)
                         {
-                            await Task.Run(() => restApiService.RunPowerUpSlot(report.ID));
-                            resetSlotCnt++;
-                            Logger.Debug($"{report}\nSlot {report.ID} turned On");
+                            ReportResult report = reportList[reportList.Count - 1];
+                            string alertMsg = $"{report.AlertDescription}\nDo you want to turn it On?";
+                            if (report?.Result == WizardResult.Warning && ShowMessageBox($"Slot {report.ID} warning", alertMsg, MsgBoxIcons.Question, MsgBoxButtons.OkCancel))
+                            {
+                                await Task.Run(() => restApiService.RunPowerUpSlot(report.ID));
+                                resetSlotCnt++;
+                                Logger.Debug($"{report}\nSlot {report.ID} turned On");
+                            }
                         }
                     }
+                    if (resetSlotCnt > 0)
+                    {
+                        await Task.Run(() => WaitTask(20, $"Waiting Ports to come UP on Switch {device.IpAddress}"));
+                        await Task.Run(() => restApiService.RefreshSwitchPorts());
+                        RefreshSlotAndPortsView();
+                    }
                 }
-                if (resetSlotCnt > 0)
-                {
-                    await Task.Run(() => WaitTask(20, $"Waiting Ports to come UP on Switch {device.IpAddress}"));
-                    await Task.Run(() => restApiService.RefreshSwitchPorts());
-                    RefreshSlotAndPortsView();
-                }
+                Logger.Debug($"{title} completed (duration: {duration})");
             }
-            Logger.Debug($"{title} completed (duration: {duration})");
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         private async Task RunWizardCamera()
@@ -1123,11 +1157,18 @@ namespace PoEWizard
 
         private async Task RebootSwitch(int waitSec)
         {
-            string duration = "";
-            await Task.Run(() => duration = restApiService.RebootSwitch(waitSec));
-            string txt = $"Switch {device.IpAddress} ready to connect";
-            if (!string.IsNullOrEmpty(duration)) txt += $"\nReboot duration: {duration}";
-            ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
+            try
+            {
+                string duration = "";
+                await Task.Run(() => duration = restApiService.RebootSwitch(waitSec));
+                string txt = $"Switch {device.IpAddress} ready to connect";
+                if (!string.IsNullOrEmpty(duration)) txt += $"\nReboot duration: {duration}";
+                ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         #endregion private methods
