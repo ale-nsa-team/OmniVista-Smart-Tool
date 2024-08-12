@@ -381,7 +381,7 @@
                         Click="WriteMemory_Click">
                     <StackPanel Orientation="Horizontal">
                         <Label Style="{DynamicResource valLabel}">Write Memory</Label>
-                        <Image Source="Resources/wand.png" Height="16" Width="40" />
+                        <Image Source="{DynamicResource write_memory}" Height="16" Width="16" />
                     </StackPanel>
                 </Button>
             </StackPanel>

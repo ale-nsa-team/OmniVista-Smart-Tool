@@ -27,6 +27,7 @@
     <BitmapImage x:Key="eye_open" UriSource="../Resources/eye-open-dark.png" />
     <BitmapImage x:Key="eye_closed" UriSource="../Resources/eye-closed-dark.png" />
     <BitmapImage x:Key="refresh" UriSource="../Resources/refresh-dark.png" />
+    <BitmapImage x:Key="write_memory" UriSource="../Resources/save-dark.png" />
 
     <SolidColorBrush x:Key="fontColor" Color="White" />
     <SolidColorBrush x:Key="linkColor" Color="#92caf4" />
@@ -659,7 +660,7 @@
     </Style>
 
     <Style TargetType="Button" x:Key="largeButton" BasedOn="{StaticResource defaultButton}">
-        <Setter Property="Width" Value="100" />
+        <Setter Property="Width" Value="112" />
         <Setter Property="Height" Value="28" />
     </Style>
 
