@@ -496,6 +496,7 @@ namespace PoEWizard
                 restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
+                    Logger.Activity($"Disconnected switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
                     ShowProgress($"Disconnecting from switch {device.IpAddress}...");
                     await CloseRestApiService();
                     SetDisconnectedState();
@@ -508,6 +509,7 @@ namespace PoEWizard
                 await Task.Run(() => restApiService.Connect(reportResult));
                 UpdateConnectedState(true);
                 await CheckSwitchScanResult($"Connect to switch {device.IpAddress}...", startTime);
+                Logger.Activity($"Connected to switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
             }
             catch (Exception ex)
             {
@@ -1048,16 +1050,7 @@ namespace PoEWizard
 
         private void UpdateConnectedState(bool checkCertified)
         {
-            if (device.IsConnected)
-            {
-                Logger.Activity($"Connected to switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                SetConnectedState(checkCertified);
-            }
-            else
-            {
-                Logger.Activity($"Switch S/N {device.SerialNumber}, model {device.Model} Disconnected");
-                SetDisconnectedState();
-            }
+            if (device.IsConnected) SetConnectedState(checkCertified); else SetDisconnectedState();
         }
 
         private async void SetConnectedState(bool checkCertified)
