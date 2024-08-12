@@ -289,6 +289,11 @@ namespace PoEWizard
             WriteMemory();
         }
 
+        private void Reboot_Click(object sender, RoutedEventArgs e)
+        {
+            LaunchRebootSwitch();
+        }
+
         private void Help_Click(object sender, RoutedEventArgs e)
         {
 
@@ -535,6 +540,7 @@ namespace PoEWizard
                             _btnRunWiz.IsEnabled = false;
                             _refreshSwitch.IsEnabled = false;
                             _writeMemory.IsEnabled = false;
+                            _reboot.IsEnabled = false;
                             _comImg.Visibility = Visibility.Collapsed;
                             await Task.Run(() => restApiService.WriteMemory());
                             _comImg.Visibility = Visibility.Visible;
@@ -1064,8 +1070,7 @@ namespace PoEWizard
                     bool res = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                     if (res)
                     {
-                        await RebootSwitch(600);
-                        SetDisconnectedState();
+                        await RebootSwitch();
                         return;
                     }
                 }
@@ -1077,6 +1082,7 @@ namespace PoEWizard
                 _vcbootMenuItem.IsEnabled = true;
                 _refreshSwitch.IsEnabled = true;
                 _writeMemory.IsEnabled = true;
+                _reboot.IsEnabled = true;
                 _psMenuItem.IsEnabled = true;
                 _disconnectMenuItem.Visibility = Visibility.Visible;
                 _tempStatus.Visibility = Visibility.Visible;
@@ -1111,6 +1117,33 @@ namespace PoEWizard
             }
         }
 
+        private async void LaunchRebootSwitch()
+        {
+            bool res = ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.IpAddress}?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+            if (res)
+            {
+                Logger.Activity($"Rebooting switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
+                await RebootSwitch();
+            }
+        }
+
+        private async Task RebootSwitch()
+        {
+            try
+            {
+                string duration = "";
+                await Task.Run(() => duration = restApiService.RebootSwitch(600));
+                string txt = $"Switch {device.IpAddress} ready to connect";
+                if (!string.IsNullOrEmpty(duration)) txt += $"\nReboot duration: {duration}";
+                ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
+                SetDisconnectedState();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
         private void SetDisconnectedState()
         {
             _comImg.Source = (ImageSource)currentDict["disconnected"];
@@ -1125,6 +1158,7 @@ namespace PoEWizard
             _vcbootMenuItem.IsEnabled = false;
             _refreshSwitch.IsEnabled = false;
             _writeMemory.IsEnabled = false;
+            _reboot.IsEnabled = false;
             _psMenuItem.IsEnabled = false;
             _comImg.ToolTip = "Click to reconnect";
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
@@ -1147,22 +1181,6 @@ namespace PoEWizard
                 _portList.SelectionChanged -= PortSelection_Changed;
                 _portList.SelectedItem = _portList.Items[selectedPortIndex];
                 _portList.SelectionChanged += PortSelection_Changed;
-            }
-        }
-
-        private async Task RebootSwitch(int waitSec)
-        {
-            try
-            {
-                string duration = "";
-                await Task.Run(() => duration = restApiService.RebootSwitch(waitSec));
-                string txt = $"Switch {device.IpAddress} ready to connect";
-                if (!string.IsNullOrEmpty(duration)) txt += $"\nReboot duration: {duration}";
-                ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
             }
         }
 

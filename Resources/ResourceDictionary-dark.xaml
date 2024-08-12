@@ -28,6 +28,7 @@
     <BitmapImage x:Key="eye_closed" UriSource="../Resources/eye-closed-dark.png" />
     <BitmapImage x:Key="refresh" UriSource="../Resources/refresh-dark.png" />
     <BitmapImage x:Key="write_memory" UriSource="../Resources/save-dark.png" />
+    <BitmapImage x:Key="reboot" UriSource="../Resources/reboot-dark.png" />
 
     <SolidColorBrush x:Key="fontColor" Color="White" />
     <SolidColorBrush x:Key="linkColor" Color="#92caf4" />

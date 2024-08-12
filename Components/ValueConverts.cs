@@ -421,6 +421,7 @@ namespace PoEWizard.Components
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            const int MAX_NB_DEVICES = 5;
             try
             {
                 if (Utils.IsInvalid(value)) return null;

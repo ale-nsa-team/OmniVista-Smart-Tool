@@ -287,5 +287,11 @@
   <ItemGroup>
     <Resource Include="Resources\save-light.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\reboot-dark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\reboot-light.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
