@@ -428,11 +428,11 @@ namespace PoEWizard.Components
                 if (value is List<EndPointDeviceModel> edmList)
                 {
                     if (edmList.Count < 1) return null;
-                    bool hasmore = edmList.Count > 5;
-                    List<EndPointDeviceModel> displayList = hasmore ? edmList.GetRange(0, 5) : edmList;
+                    bool hasmore = edmList.Count > MAX_NB_DEVICES;
+                    List<EndPointDeviceModel> displayList = hasmore ? edmList.GetRange(0, MAX_NB_DEVICES) : edmList;
                     List<string> tooltip = displayList.Select(x => x.ToTooltip()).ToList();
                     int maxlen = tooltip.Max(t => MaxLineLen(t));
-                    if (hasmore) tooltip.Add($"\t({edmList.Count - 5} more...)");
+                    if (hasmore) tooltip.Add($"\t({edmList.Count - MAX_NB_DEVICES} more...)");
                     string separator = $"\n{new string('-', maxlen)}\n";
                     return string.Join(separator, tooltip);
                 }
