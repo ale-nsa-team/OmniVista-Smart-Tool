@@ -432,7 +432,7 @@ namespace PoEWizard.Components
                     List<EndPointDeviceModel> displayList = hasmore ? edmList.GetRange(0, MAX_NB_DEVICES) : edmList;
                     List<string> tooltip = displayList.Select(x => x.ToTooltip()).ToList();
                     int maxlen = tooltip.Max(t => MaxLineLen(t));
-                    if (hasmore) tooltip.Add($"\t({edmList.Count - MAX_NB_DEVICES} more...)");
+                    if (hasmore) tooltip.Add($"{new string(' ', maxlen/2 -6)}({edmList.Count - MAX_NB_DEVICES} more...)");
                     string separator = $"\n{new string('-', maxlen)}\n";
                     return string.Join(separator, tooltip);
                 }
@@ -453,7 +453,7 @@ namespace PoEWizard.Components
 
         private int MaxLineLen(string s)
         {
-            return s.Split('\n').Max(l => l.Length) + 10;
+            return s.Split('\n').Max(l => l.Length);
         }
     }
 }

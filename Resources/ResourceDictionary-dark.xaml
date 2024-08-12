@@ -620,6 +620,7 @@
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
         <Style.Resources>
             <Style TargetType="ToolTip">
+                <Setter Property="FontFamily" Value="Courier New" />
                 <Setter Property="Foreground" Value="{StaticResource fontColor}" />
                 <Setter Property="Background" Value="{StaticResource barBackground}" />
             </Style>
