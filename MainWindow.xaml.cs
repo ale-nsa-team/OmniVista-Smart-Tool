@@ -213,10 +213,7 @@ namespace PoEWizard
                 string res = string.Empty;
                 await Task.Run(() =>
                 {
-                    if (sftpService == null)
-                    {
-                        sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
-                    }
+                    sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
                     sftpService.Connect();
                     res = sftpService.DownloadToMemory(VCBOOT_PATH);
                 });
