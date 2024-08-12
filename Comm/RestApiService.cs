@@ -652,14 +652,18 @@ namespace PoEWizard.Comm
                 SendRequest(GetRestUrlEntry(_wizardCommand, new string[1] { _wizardSwitchPort.Name }));
                 Thread.Sleep(3000);
                 RestartDeviceOnPort(wizardAction);
-                WaitPortUp(waitSec, wizardAction);
+                CheckPortUp(waitSec, wizardAction);
                 string txt = string.Empty;
                 if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok)
                     txt = $"{wizardAction} solved the problem";
                 else
                 {
                     txt = $"{wizardAction} didn't solve the problem\nDisabling capacitor detection on port {_wizardSwitchPort.Name} to restore the previous config";
-                    SendRequest(GetRestUrlEntry(CommandType.CAPACITOR_DETECTION_DISABLE, new string[1] { _wizardSwitchPort.Name }));
+                    _wizardCommand = CommandType.CAPACITOR_DETECTION_DISABLE;
+                    SendRequest(GetRestUrlEntry(_wizardCommand, new string[1] { _wizardSwitchPort.Name }));
+                    wizardAction = $"Disabling capacitor detection on port {_wizardSwitchPort.Name}";
+                    RestartDeviceOnPort(wizardAction);
+                    WaitPortUp(waitSec, wizardAction);
                 }
                 Logger.Info(txt);
             }
@@ -819,7 +823,7 @@ namespace PoEWizard.Comm
                 _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
                 SendRequest(GetRestUrlEntry(_wizardCommand, new string[1] { _wizardSwitchPort.Name }));
                 Thread.Sleep(3000);
-                WaitPortUp(waitSec, txt.ToString());
+                CheckPortUp(waitSec, txt.ToString());
                 _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
                 if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok) return;
                 if (restoreCmd != _wizardCommand) SendRequest(GetRestUrlEntry(restoreCmd, new string[1] { _wizardSwitchPort.Name }));
@@ -870,7 +874,7 @@ namespace PoEWizard.Comm
                 }
                 CheckFPOEand823BT(CommandType.POWER_823BT_ENABLE);
                 Change823BT(CommandType.POWER_823BT_ENABLE);
-                WaitPortUp(waitSec, wizardAction);
+                CheckPortUp(waitSec, wizardAction);
                 _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
                 if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok) return;
                 Change823BT(CommandType.POWER_823BT_DISABLE);
@@ -932,7 +936,7 @@ namespace PoEWizard.Comm
                 StringBuilder txt = new StringBuilder(wizardAction);
                 _progress.Report(new ProgressReport(txt.ToString()));
                 SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, priority.ToString() }));
-                WaitPortUp(waitSec, txt.ToString());
+                CheckPortUp(waitSec, txt.ToString());
                 _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.CalcStringDuration(startTime, true));
                 if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok) return;
                 SendRequest(GetRestUrlEntry(CommandType.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, prevPriority.ToString() }));
@@ -953,7 +957,7 @@ namespace PoEWizard.Comm
                 DateTime startTime = DateTime.Now;
                 _progress.Report(new ProgressReport(wizardAction));
                 RestartDeviceOnPort(wizardAction);
-                WaitPortUp(waitSec, wizardAction);
+                CheckPortUp(waitSec, wizardAction);
                 _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
                 _wizardReportResult.UpdateWizardReport(_wizardSwitchPort.Name, WizardResult.Proceed);
             }
@@ -974,10 +978,20 @@ namespace PoEWizard.Comm
             Thread.Sleep(5000);
         }
 
-        private void WaitPortUp(int waitSec, string progressMessage)
+        private void CheckPortUp(int waitSec, string progressMessage)
         {
-            string msg = !string.IsNullOrEmpty(progressMessage) ? progressMessage: "";
-            msg += $"\nWaiting port {_wizardSwitchPort.Name} to come UP";
+            DateTime startTime = WaitPortUp(waitSec, !string.IsNullOrEmpty(progressMessage) ? progressMessage : string.Empty);
+            UpdateProgressReport();
+            StringBuilder text = new StringBuilder("Port ").Append(_wizardSwitchPort.Name).Append(" Status: ").Append(_wizardSwitchPort.Status).Append(", PoE Status: ");
+            text.Append(_wizardSwitchPort.Poe).Append(", Power: ").Append(_wizardSwitchPort.Power).Append(" (Duration: ").Append(Utils.CalcStringDuration(startTime));
+            text.Append(", MAC List: ").Append(String.Join(",", _wizardSwitchPort.MacList)).Append(")");
+            Logger.Info(text.ToString());
+        }
+
+        private DateTime WaitPortUp(int waitSec, string progressMessage = null)
+        {
+            string msg = !string.IsNullOrEmpty(progressMessage) ? $"{progressMessage}\n" : string.Empty;
+            msg += $"Waiting port {_wizardSwitchPort.Name} to come UP";
             _progress.Report(new ProgressReport($"{msg} ...{PrintPortStatus()}"));
             DateTime startTime = DateTime.Now;
             UpdatePortData();
@@ -990,11 +1004,7 @@ namespace PoEWizard.Comm
                 if (IsPortUp()) break;
                 if (dur % 5 == 0) UpdatePortData();
             }
-            UpdateProgressReport();
-            StringBuilder text = new StringBuilder("Port ").Append(_wizardSwitchPort.Name).Append(" Status: ").Append(_wizardSwitchPort.Status).Append(", PoE Status: ");
-            text.Append(_wizardSwitchPort.Poe).Append(", Power: ").Append(_wizardSwitchPort.Power).Append(" (Duration: ").Append(Utils.CalcStringDuration(startTime));
-            text.Append(", MAC List: ").Append(String.Join(",", _wizardSwitchPort.MacList)).Append(")");
-            Logger.Info(text.ToString());
+            return startTime;
         }
 
         private bool IsPortUp()
