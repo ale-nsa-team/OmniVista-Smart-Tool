@@ -48,6 +48,7 @@ namespace PoEWizard.Comm
                 Thread.Sleep(1000);
                 _sftpClient = new SftpClient(Host, Port, Username, Password);
                 _sftpClient.Connect();
+                Logger.Warn($"Resetting SFTP connection with {Host}");
             }
             catch (Exception ex)
             {

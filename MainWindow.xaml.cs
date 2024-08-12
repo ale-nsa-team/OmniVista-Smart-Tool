@@ -633,6 +633,9 @@ namespace PoEWizard
 
         private async Task DownloadSwitchLogFile()
         {
+            const double MAX_WAIT_SFTP_RECONNECT_SEC = 60;
+            const double MAX_WAIT_TAR_FILE_SEC = 180;
+            const double PERIOD_SFTP_RECONNECT_SEC = 30;
             try
             {
                 long fsize = 0;
@@ -640,39 +643,37 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 string strDur = string.Empty;
                 string msg;
-                int loopWaitSec = 0;
                 int waitCnt = 0;
+                DateTime resetSftpConnectionTime = DateTime.Now;
                 while (waitCnt < 2)
                 {
                     strDur = Utils.CalcStringDuration(startTime, true);
                     msg = !string.IsNullOrEmpty(strDur) ? $"Waiting for tar file ready ({strDur}) ..." : "Waiting for tar file ready ...";
                     if (fsize > 0) msg += $"\nFile size: {Utils.PrintNumberBytes(fsize)}";
                     ShowInfoBox(msg);
-                    if (loopWaitSec % 2 == 0)
+                    await Task.Run(() =>
                     {
-                        await Task.Run(() =>
-                        {
-                            previousSize = fsize;
-                            fsize = sftpService.GetFileSize(SWLOG_PATH);
-                        });
-                        if (fsize > 0 && fsize == previousSize) waitCnt++; else waitCnt = 0;
-                    }
-                    Thread.Sleep(1000);
-                    loopWaitSec++;
+                        previousSize = fsize;
+                        fsize = sftpService.GetFileSize(SWLOG_PATH);
+                    });
+                    if (fsize > 0 && fsize == previousSize) waitCnt++; else waitCnt = 0;
+                    Thread.Sleep(2000);
+                    double duration = Utils.GetTimeDuration(startTime);
                     if (fsize == 0)
                     {
-                        if (loopWaitSec >= 30 && loopWaitSec < 60)
+                        if (Utils.GetTimeDuration(resetSftpConnectionTime) >= PERIOD_SFTP_RECONNECT_SEC)
                         {
                             sftpService.ResetConnection();
-                            Logger.Error($"Waited too long ({Utils.CalcStringDuration(startTime, true)}) for the switch {device.IpAddress} to start creating the tar file!");
+                            Logger.Warn($"Waited too long ({Utils.CalcStringDuration(startTime, true)}) for the switch {device.IpAddress} to start creating the tar file!");
+                            resetSftpConnectionTime = DateTime.Now;
                         }
-                        else if (loopWaitSec >= 60)
+                        if (duration >= MAX_WAIT_SFTP_RECONNECT_SEC)
                         {
                             ShowWaitTarFileError(fsize, startTime);
                             return;
                         }
                     }
-                    if (Utils.GetTimeDuration(startTime) >= 180)
+                    if (duration >= MAX_WAIT_TAR_FILE_SEC)
                     {
                         ShowWaitTarFileError(fsize, startTime);
                         return;
