@@ -120,19 +120,11 @@ namespace PoEWizard.Device
         public int LpNiLogLevel => GetAppDebugLevel(LPNI);
         public int LpCmmLogLevel => GetAppDebugLevel(LPCMM);
 
-        public SwitchDebugModel()
-        {
-            this.WizardReport = new WizardReport();
-            this.LocalSavedFilePath = Path.Combine(MainWindow.dataPath, Path.GetFileName(SWLOG_PATH));
-            this.LanPowerStatus = string.Empty;
-            this.LpNiApp = new LpNiModel();
-            this.LpCmmApp = new LpCmmModel();
-            this.DebugLevelSelected = SwitchDebugLogLevel.Off;
-        }
+        public SwitchDebugModel() : this(null, SwitchDebugLogLevel.Unknown) { }
 
         public SwitchDebugModel(WizardReport wizardReport, SwitchDebugLogLevel logLevel)
         {
-            this.WizardReport = wizardReport;
+            this.WizardReport = wizardReport ?? new WizardReport();
             this.LocalSavedFilePath = Path.Combine(MainWindow.dataPath, Path.GetFileName(SWLOG_PATH));
             this.LanPowerStatus = string.Empty;
             this.LpNiApp = new LpNiModel();
@@ -194,7 +186,7 @@ namespace PoEWizard.Device
         public void CreateTacTextFile(DeviceType deviceType, string localTarFilepath, SwitchModel device, PortModel port)
         {
             LocalSavedFilePath = localTarFilepath;
-            string filePath = Path.Combine(Path.GetDirectoryName(LocalSavedFilePath), Constants.TAC_TEXT_FILE_NAME);
+            string filePath = Path.Combine(Path.GetDirectoryName(LocalSavedFilePath), $"{Path.GetFileNameWithoutExtension(localTarFilepath)}.txt");
             StringBuilder txt = new StringBuilder("Hello tech support,\n\n\tI am having problems with a PoE device");
             if (port != null)
             {
