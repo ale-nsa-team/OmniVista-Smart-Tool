@@ -420,6 +420,7 @@ namespace PoEWizard.Components
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            const int MAX_NB_DEVICES = 5;
             try
             {
                 string header = new string('-', 50);
@@ -428,8 +429,15 @@ namespace PoEWizard.Components
                 {
                     if (edmList.Count < 1) return null;
                     string toolTip = "";
+                    int nbDevices = 0;
                     foreach (var edm in edmList)
                     {
+                        nbDevices++;
+                        if (nbDevices > MAX_NB_DEVICES)
+                        {
+                            toolTip += $"\n{new string(' ', 35)}. . .";
+                            break;
+                        }
                         if (!string.IsNullOrEmpty(toolTip)) toolTip += "\n";
                         toolTip += $"{header}\n{edm.ToTooltip()}";
                     }
