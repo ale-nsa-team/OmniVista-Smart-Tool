@@ -3,6 +3,7 @@ using PoEWizard.Device;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -422,19 +423,17 @@ namespace PoEWizard.Components
         {
             try
             {
-                string header = new string('-', 50);
                 if (Utils.IsInvalid(value)) return null;
                 if (value is List<EndPointDeviceModel> edmList)
                 {
                     if (edmList.Count < 1) return null;
-                    string toolTip = "";
-                    foreach (var edm in edmList)
-                    {
-                        if (!string.IsNullOrEmpty(toolTip)) toolTip += "\n";
-                        toolTip += $"{header}\n{edm.ToTooltip()}";
-                    }
-                    toolTip += $"\n{header}";
-                    return toolTip;
+                    bool hasmore = edmList.Count > 5;
+                    List<EndPointDeviceModel> displayList = hasmore ? edmList.GetRange(0, 5) : edmList;
+                    List<string> tooltip = displayList.Select(x => x.ToTooltip()).ToList();
+                    int maxlen = tooltip.Max(t => MaxLineLen(t));
+                    if (hasmore) tooltip.Add($"\t({edmList.Count - 5} more...)");
+                    string separator = $"\n{new string('-', maxlen)}\n";
+                    return string.Join(separator, tooltip);
                 }
                 return null;
             }
@@ -449,6 +448,11 @@ namespace PoEWizard.Components
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return DependencyProperty.UnsetValue;
+        }
+
+        private int MaxLineLen(string s)
+        {
+            return s.Split('\n').Max(l => l.Length) + 10;
         }
     }
 }
