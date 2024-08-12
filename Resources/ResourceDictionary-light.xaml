@@ -92,9 +92,9 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsSelected" Value="True">
-                <Setter Property="Background" Value="#ddd" />
+                <Setter Property="Background" Value="#bbd" />
                 <Setter Property="Foreground" Value="Blue" />
-                <Setter Property="BorderBrush" Value="#ddd" />
+                <Setter Property="BorderBrush" Value="#bbd" />
             </Trigger>
         </Style.Triggers>
     </Style>
