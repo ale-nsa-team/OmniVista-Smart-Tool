@@ -616,6 +616,7 @@ namespace PoEWizard
                     await RunGetSwitchLog(SwitchDebugLogLevel.Debug3);
                     await DownloadSwitchLogFile();
                 }
+                await Task.Run(() => restApiService.GetSystemInfo());
             }
             catch (Exception ex)
             {
