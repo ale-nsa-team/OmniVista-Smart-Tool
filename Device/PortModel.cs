@@ -114,8 +114,15 @@ namespace PoEWizard.Device
         {
             if (dictList?.Count > 0)
             {
-                EndPointDevice.LoadLldpRemoteTable(dictList[0]);
-                if (dictList.Count > 1) EndPointDevice.Type += " (Multiple)";
+                if (dictList.Count > 1)
+                {
+                    EndPointDevice.Type = "Multiple devices";
+                    EndPointDevice.Name = "Multiple devices";
+                }
+                else
+                {
+                    EndPointDevice.LoadLldpRemoteTable(dictList[0]);
+                }
                 foreach (Dictionary<string, string> dict in dictList)
                 {
                     EndPointDevicesList.Add(new EndPointDeviceModel(dict));
