@@ -152,6 +152,7 @@ namespace PoEWizard
             {
                 e.Cancel = true;
                 sftpService?.Disconnect();
+                sftpService = null;
                 await CloseRestApiService();
                 this.Closing -= OnWindowClosing;
                 this.Close();
@@ -609,7 +610,7 @@ namespace PoEWizard
                                               MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
                     if (!res) return;
                     ShowInfoBox("Cleaning up current log...");
-                    if (sftpService == null) sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
+                    sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
                     await Task.Run(() => sftpService.Connect());
                     await Task.Run(() => sftpService.DeleteFile(SWLOG_PATH));
                     ShowProgress("Collecting switch logs...");
@@ -627,6 +628,7 @@ namespace PoEWizard
                 HideProgress();
                 HideInfoBox();
                 sftpService?.Disconnect();
+                sftpService = null;
                 debugSwitchLog = null;
             }
         }
@@ -721,6 +723,7 @@ namespace PoEWizard
                 HideInfoBox();
                 HideProgress();
                 sftpService?.Disconnect();
+                sftpService = null;
                 debugSwitchLog = null;
             }
         }
