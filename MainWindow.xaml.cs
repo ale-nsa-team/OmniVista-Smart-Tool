@@ -294,6 +294,11 @@ namespace PoEWizard
             LaunchRebootSwitch();
         }
 
+        private void Traffic_Click(object sender, RoutedEventArgs e)
+        {
+            TrafficAnalysis();
+        }
+
         private void Help_Click(object sender, RoutedEventArgs e)
         {
 
@@ -541,6 +546,7 @@ namespace PoEWizard
                             _refreshSwitch.IsEnabled = false;
                             _writeMemory.IsEnabled = false;
                             _reboot.IsEnabled = false;
+                            _traffic.IsEnabled = false;
                             _comImg.Visibility = Visibility.Collapsed;
                             await Task.Run(() => restApiService.WriteMemory());
                             _comImg.Visibility = Visibility.Visible;
@@ -987,6 +993,25 @@ namespace PoEWizard
             await Task.Run(() => restApiService.RunGetSwitchLog(selectedPort.Name, debugSwitchLog));
         }
 
+        private async void TrafficAnalysis()
+        {
+            try
+            {
+                string report = string.Empty;
+                await Task.Run(() => report = restApiService.RunTrafficAnalysis(30, 5));
+                TextViewer tv = new TextViewer("Traffic Analysis", report)
+                {
+                    Owner = this,
+                    SaveFilename = $"{device.Name}-{DateTime.Now.ToString("MM-dd-yyyy_hh_mm_ss")}-traffic-analysis.txt"
+                };
+                tv.Show();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
         private void WaitTask(int waitTime, string txt)
         {
             DateTime startTime = DateTime.Now;
@@ -1083,6 +1108,7 @@ namespace PoEWizard
                 _refreshSwitch.IsEnabled = true;
                 _writeMemory.IsEnabled = true;
                 _reboot.IsEnabled = true;
+                _traffic.IsEnabled = true;
                 _psMenuItem.IsEnabled = true;
                 _disconnectMenuItem.Visibility = Visibility.Visible;
                 _tempStatus.Visibility = Visibility.Visible;
@@ -1159,6 +1185,7 @@ namespace PoEWizard
             _refreshSwitch.IsEnabled = false;
             _writeMemory.IsEnabled = false;
             _reboot.IsEnabled = false;
+            _traffic.IsEnabled = false;
             _psMenuItem.IsEnabled = false;
             _comImg.ToolTip = "Click to reconnect";
             _disconnectMenuItem.Visibility = Visibility.Collapsed;

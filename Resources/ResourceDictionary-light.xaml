@@ -29,6 +29,7 @@
     <BitmapImage x:Key="refresh" UriSource="../Resources/refresh-light.png" />
     <BitmapImage x:Key="write_memory" UriSource="../Resources/save-light.png" />
     <BitmapImage x:Key="reboot" UriSource="../Resources/reboot-light.png" />
+    <BitmapImage x:Key="traffic" UriSource="../Resources/traffic-light.png" />
 
     <SolidColorBrush x:Key="fontColor" Color="Black" />
     <SolidColorBrush x:Key="linkColor" Color="Blue" />
@@ -237,6 +238,7 @@
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
         <Style.Resources>
             <Style TargetType="ToolTip">
+                <Setter Property="FontFamily" Value="Courier New" />
                 <Setter Property="Foreground" Value="{StaticResource fontColor}" />
                 <Setter Property="Background" Value="{StaticResource barBackground}" />
             </Style>
