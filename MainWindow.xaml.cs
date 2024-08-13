@@ -765,6 +765,7 @@ namespace PoEWizard
         {
             try
             {
+                ShowProgress($"Scanning switch {device.IpAddress}...");
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.IpAddress}", reportResult));
@@ -786,6 +787,7 @@ namespace PoEWizard
         {
             try
             {
+                ShowProgress($"Writing memory on switch {device.IpAddress}...");
                 await Task.Run(() => restApiService.GetSystemInfo());
                 if (device.SyncStatus == SyncStatusType.Synchronized) return;
                 await Task.Run(() => restApiService.WriteMemory());
@@ -997,6 +999,7 @@ namespace PoEWizard
         {
             try
             {
+                ShowProgress($"Running traffic analysis on switch {device.IpAddress}...");
                 string report = string.Empty;
                 await Task.Run(() => report = restApiService.RunTrafficAnalysis(30, 5));
                 TextViewer tv = new TextViewer("Traffic Analysis", report)
@@ -1009,6 +1012,11 @@ namespace PoEWizard
             catch (Exception ex)
             {
                 Logger.Error(ex);
+            }
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
             }
         }
 
@@ -1157,6 +1165,7 @@ namespace PoEWizard
         {
             try
             {
+                ShowProgress($"Rebooting switch {device.IpAddress}...");
                 string duration = "";
                 await Task.Run(() => duration = restApiService.RebootSwitch(600));
                 string txt = $"Switch {device.IpAddress} ready to connect";
@@ -1167,6 +1176,11 @@ namespace PoEWizard
             catch (Exception ex)
             {
                 Logger.Error(ex);
+            }
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
             }
         }
 
