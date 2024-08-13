@@ -369,9 +369,20 @@ namespace PoEWizard.Comm
             return report;
         }
 
-        private static void GetPortsTrafficInformation()
+        private void GetPortsTrafficInformation()
         {
-            Thread.Sleep(2000);
+            try
+            {
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_INTERFACES));
+                if (_response[STRING] != null)
+                {
+                    string output = _response[STRING].ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError($"Traffic analysis on switch {SwitchModel.IpAddress}", ex);
+            }
         }
 
         public void WriteMemory(int waitSec = 40)
