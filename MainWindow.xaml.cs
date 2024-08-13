@@ -1001,7 +1001,7 @@ namespace PoEWizard
             {
                 ShowProgress($"Running traffic analysis on switch {device.IpAddress}...");
                 string report = string.Empty;
-                await Task.Run(() => report = restApiService.RunTrafficAnalysis(30, 5));
+                await Task.Run(() => report = restApiService.RunTrafficAnalysis(5, 15));
                 TextViewer tv = new TextViewer("Traffic Analysis", report)
                 {
                     Owner = this,
@@ -1103,7 +1103,8 @@ namespace PoEWizard
                     bool res = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                     if (res)
                     {
-                        await RebootSwitch();
+                        string txt = await RebootSwitch();
+                        ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
                         return;
                     }
                 }
@@ -1157,25 +1158,32 @@ namespace PoEWizard
             if (res)
             {
                 Logger.Activity($"Rebooting switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
-                await RebootSwitch();
+                string txt = await RebootSwitch();
+                res = ShowMessageBox("Reboot Switch", $"{txt}\nDo you want to reconnect to the switch {device.IpAddress}?", MsgBoxIcons.Info, MsgBoxButtons.OkCancel);
+                if (res)
+                {
+                    Connect();
+                    return;
+                }
             }
         }
 
-        private async Task RebootSwitch()
+        private async Task<string> RebootSwitch()
         {
             try
             {
                 ShowProgress($"Rebooting switch {device.IpAddress}...");
                 string duration = "";
                 await Task.Run(() => duration = restApiService.RebootSwitch(600));
+                SetDisconnectedState();
                 string txt = $"Switch {device.IpAddress} ready to connect";
                 if (!string.IsNullOrEmpty(duration)) txt += $"\nReboot duration: {duration}";
-                ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
-                SetDisconnectedState();
+                return txt;
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
+                return ex.Message;
             }
             finally
             {
