@@ -52,6 +52,7 @@ namespace PoEWizard
         private string lastPwd;
         private SwitchDebugModel debugSwitchLog;
         #endregion
+
         #region public variables
         public static Window Instance;
         public static ThemeType theme;
@@ -112,31 +113,6 @@ namespace PoEWizard
                 device.Login = args[2];
                 device.Password = args[3];
                 Connect();
-            }
-        }
-
-        private void BuildOuiTable()
-        {
-            string[] ouiEntries = null;
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, OUI_FILE);
-            if (File.Exists(filePath))
-            {
-                ouiEntries = File.ReadAllLines(filePath);
-            }
-            else
-            {
-                filePath = Path.Combine(MainWindow.dataPath, OUI_FILE);
-                if (File.Exists(filePath)) ouiEntries = File.ReadAllLines(filePath);
-
-            }
-            ouiTable = new Dictionary<string, string>();
-            if (ouiEntries?.Length > 0)
-            {
-                for (int idx = 1; idx < ouiEntries.Length; idx++)
-                {
-                    string[] split = ouiEntries[idx].Split(',');
-                    ouiTable[split[1].ToLower()] = split[2].Trim().Replace("\"", "");
-                }
             }
         }
 
@@ -261,6 +237,32 @@ namespace PoEWizard
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             ps.Show();
+        }
+
+        private void LaunchConfigWizard(object sender, RoutedEventArgs e)
+        {
+            _status.Text = "Running wizard...";
+
+            ConfigWiz wiz = new ConfigWiz(device)
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            bool wasApplyed = (bool)wiz.ShowDialog();
+            if (!wasApplyed) return;
+            if (wiz.Errors.Count > 0)
+            {
+                string errMsg = $"The following {(wiz.Errors.Count > 1 ? "errors where" : "error was")} reported:";
+                ShowMessageBox("Wizard", $"{errMsg}\n\n\u2022 {string.Join("\n\u2022 ", wiz.Errors)}", MsgBoxIcons.Error, MsgBoxButtons.Ok);
+                Logger.Warn($"Configuration from Wizard applyed with errors:\n\t{string.Join("\n\t", wiz.Errors)}");
+                Activity.Log($"Switch S/N {device.SerialNumber} Model {device.Model}: Wizard applied with errors");
+            }
+            else
+            {
+                Activity.Log($"Switch S/N {device.SerialNumber} Model {device.Model}: Wizard applied");
+            }
+            if (wiz.IsRebootSwitch) LaunchRebootSwitch();
+            _status.Text = DEFAULT_APP_STATUS;
         }
 
         private void RunWiz_Click(object sender, RoutedEventArgs e)
@@ -521,6 +523,31 @@ namespace PoEWizard
             {
                 HideProgress();
                 HideInfoBox();
+            }
+        }
+
+        private void BuildOuiTable()
+        {
+            string[] ouiEntries = null;
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, OUI_FILE);
+            if (File.Exists(filePath))
+            {
+                ouiEntries = File.ReadAllLines(filePath);
+            }
+            else
+            {
+                filePath = Path.Combine(MainWindow.dataPath, OUI_FILE);
+                if (File.Exists(filePath)) ouiEntries = File.ReadAllLines(filePath);
+
+            }
+            ouiTable = new Dictionary<string, string>();
+            if (ouiEntries?.Length > 0)
+            {
+                for (int idx = 1; idx < ouiEntries.Length; idx++)
+                {
+                    string[] split = ouiEntries[idx].Split(',');
+                    ouiTable[split[1].ToLower()] = split[2].Trim().Replace("\"", "");
+                }
             }
         }
 
@@ -1084,6 +1111,7 @@ namespace PoEWizard
                 _writeMemory.IsEnabled = true;
                 _reboot.IsEnabled = true;
                 _psMenuItem.IsEnabled = true;
+                _cfgMenuItem.IsEnabled = true;
                 _disconnectMenuItem.Visibility = Visibility.Visible;
                 _tempStatus.Visibility = Visibility.Visible;
                 _cpu.Visibility = Visibility.Visible;
@@ -1160,6 +1188,7 @@ namespace PoEWizard
             _writeMemory.IsEnabled = false;
             _reboot.IsEnabled = false;
             _psMenuItem.IsEnabled = false;
+            _cfgMenuItem.IsEnabled = false;
             _comImg.ToolTip = "Click to reconnect";
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
             _tempStatus.Visibility = Visibility.Hidden;

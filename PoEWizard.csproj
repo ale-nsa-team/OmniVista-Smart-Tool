@@ -118,6 +118,21 @@
     <Compile Include="Components\AboutBox.xaml.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\CfgWizPage1.xaml.cs">
+      <DependentUpon>CfgWizPage1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CfgWizPage2.xaml.cs">
+      <DependentUpon>CfgWizPage2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CfgWizPage3.xaml.cs">
+      <DependentUpon>CfgWizPage3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\CfgWizPage4.xaml.cs">
+      <DependentUpon>CfgWizPage4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ConfigWiz.xaml.cs">
+      <DependentUpon>ConfigWiz.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\CustomMsgBox.xaml.cs">
       <DependentUpon>CustomMsgBox.xaml</DependentUpon>
     </Compile>
@@ -138,6 +153,7 @@
     <Compile Include="Data\Activity.cs" />
     <Compile Include="Data\ChassisSlotPort.cs" />
     <Compile Include="Data\CliParseUtils.cs" />
+    <Compile Include="Data\Props.cs" />
     <Compile Include="Data\SwitchDebugApp.cs" />
     <Compile Include="Data\WizardReport.cs" />
     <Compile Include="Data\Constants.cs" />
@@ -151,13 +167,18 @@
     <Compile Include="Components\ValueConverts.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Device\Commands.cs" />
     <Compile Include="Device\EndPointDeviceModel.cs" />
+    <Compile Include="Device\FeatureModel.cs" />
     <Compile Include="Device\PowerSupplyModel.cs" />
+    <Compile Include="Device\ServerModel.cs" />
     <Compile Include="Device\SlotModel.cs" />
     <Compile Include="Device\SlotView.cs" />
+    <Compile Include="Device\SnmpModel.cs" />
     <Compile Include="Device\SwitchDebugModel.cs" />
     <Compile Include="Device\SwitchModel.cs" />
     <Compile Include="Device\PortModel.cs" />
+    <Compile Include="Device\SystemModel.cs" />
     <Compile Include="Exceptions\CustomExceptions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -191,6 +212,26 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Components\AboutBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CfgWizPage1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CfgWizPage2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CfgWizPage3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\CfgWizPage4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\ConfigWiz.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

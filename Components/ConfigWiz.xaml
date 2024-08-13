@@ -1,0 +1,45 @@
+﻿<Window x:Class="PoEWizard.Components.ConfigWiz"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PoEWizard.Components"
+        mc:Ignorable="d"
+        Title="Basic Config" Height="560" Width="500" ShowInTaskbar="False" WindowStyle="None">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
+                <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Style="{DynamicResource popupWindow}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Style="{DynamicResource cfgTitle}">
+            <TextBlock x:Name="_cfgTitle" Text="Network Configuration" Style="{DynamicResource cfgHeader}" />
+        </Border>
+        <Frame Grid.Row="1" x:Name="_cfgFrame" NavigationUIVisibility="Hidden"/>
+        <Border Grid.Row="1" x:Name="_infoBox" Style="{DynamicResource infoBorder}" Visibility="Hidden">
+            <TextBlock x:Name="_infoBlock" />
+        </Border>
+        <DockPanel Grid.Row="2" Margin="5,20,10,0" LastChildFill="False" >
+            <StackPanel Orientation="Horizontal">
+                <Label Style="{DynamicResource leftJustifLabel}" FontSize="10">Reboot When Finished:</Label>
+                <CheckBox x:Name="_reboot" Style="{DynamicResource toggleSwitch}" Margin="0,5,0,0" IsChecked="{Binding IsRebootSwitch}" />
+            </StackPanel>
+            <Button Click="CfgCancel_Click" Style="{DynamicResource smallButton}" Margin="20,0,0,0">Close</Button>
+            <Button x:Name="_btnSubmit" Click="CfgSubmit_Click" Style="{DynamicResource smallButton}" Margin="10,0,0,0">Submit</Button>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                <Button Style="{DynamicResource smallButton}" x:Name="_btnCfgBack" Click="CfgBack_Click">&lt; Back</Button>
+                <Button Style="{DynamicResource smallButton}" x:Name="_btnCfgNext" Click="CfgNext_Click" Margin="2,0,0,0">Next &gt;</Button>
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+
+</Window>
+

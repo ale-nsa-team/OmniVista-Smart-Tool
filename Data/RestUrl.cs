@@ -104,6 +104,24 @@ namespace PoEWizard.Data
             DEBUG_CLI_UPDATE_LPCMM_LEVEL = 151,
             DEBUG_CLI_SHOW_LPNI_LEVEL = 152,
             DEBUG_CLI_SHOW_LPCMM_LEVEL = 153,
+            // 190 - 219 Config Wizard commands
+            DISABLE_AUTO_FABRIC = 190,
+            ENABLE_DDM = 191,
+            ENABLE_MULTICAST = 192,
+            ENABLE_QUERYING = 193,
+            ENABLE_QUERIER_FWD = 194,
+            ENABLE_DHCP_RELAY = 195,
+            DHCP_RELAY_DEST = 196,
+            DISABLE_FTP = 197,
+            DISABLE_TELNET = 198,
+            ENABLE_SSH = 199,
+            SSH_AUTH_LOCAL = 200,
+            SET_SYSTEM_TIMEZONE = 201,
+            SET_SYSTEM_DATE = 202,
+            SET_MNGT_INTERFACE = 203,
+            SET_PASSWORD = 204,
+            SET_CONTACT = 205,
+            SHOW_IP_SERVICE = 206
         }
 
         public readonly static Dictionary<CommandType, string> CMD_TBL = new Dictionary<CommandType, string>
@@ -178,6 +196,25 @@ namespace PoEWizard.Data
             [CommandType.DEBUG_CLI_UPDATE_LPCMM_LEVEL] = $"swlog appid lpcmm subapp all level {DATA_0}",        // 151
             [CommandType.DEBUG_CLI_SHOW_LPNI_LEVEL] = "show swlog appid lpni",                                  // 152
             [CommandType.DEBUG_CLI_SHOW_LPCMM_LEVEL] = "show swlog appid lpcmm",                                // 153
+            // 190 - : Config Wizard commands
+            [CommandType.DISABLE_AUTO_FABRIC] = "auto-fabric admin-state disable",
+            [CommandType.ENABLE_DDM] = "interfaces ddm enable",
+            [CommandType.ENABLE_MULTICAST] = "ip multicast admin-state enable",
+            [CommandType.ENABLE_QUERYING] = "ip multicast querying enable",
+            [CommandType.ENABLE_QUERIER_FWD] = "ip multicast querier-forwarding enable",
+            [CommandType.ENABLE_DHCP_RELAY] = "ip dhcp relay admin-state enable",
+            [CommandType.DHCP_RELAY_DEST] = $"ip dhcp relay destination {DATA_0}",
+            [CommandType.DISABLE_FTP] = "ip service ftp admin-state disable",
+            [CommandType.DISABLE_TELNET] = "ip service telnet admin-state disable",
+            [CommandType.ENABLE_SSH] = "ip service ssh admin-state enable",
+            [CommandType.SSH_AUTH_LOCAL] = "aaa authentication ssh local",
+            [CommandType.SET_SYSTEM_TIMEZONE] = $"system timezone {DATA_0}",
+            [CommandType.SET_SYSTEM_DATE] = $"system date {DATA_0}",
+            [CommandType.SET_MNGT_INTERFACE] = $"ip interface \"MGT\" address {DATA_0} mask {DATA_1} vlan 1",
+            [CommandType.SET_PASSWORD] = $"user {DATA_0} password \"{DATA_1}\"",
+            [CommandType.SET_CONTACT] = $"system contact \"{DATA_0}\"",
+            [CommandType.SHOW_IP_SERVICE] = "show ip service"
+
         };
 
         public static Dictionary<CommandType, Dictionary<string, string>> CONTENT_TABLE = new Dictionary<CommandType, Dictionary<string, string>>

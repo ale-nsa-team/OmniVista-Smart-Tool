@@ -46,6 +46,21 @@ namespace PoEWizard.Components
         }
     }
 
+    public class BoolToVisibilityConvertter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Visibility v = bool.Parse(parameter?.ToString() ?? "true") ? Visibility.Visible : Visibility.Collapsed;
+            Visibility notv = v == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            return bool.Parse(value.ToString()) ? v : notv;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
     public class ValueToColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -414,6 +429,42 @@ namespace PoEWizard.Components
         {
             string[] splitValues = (value?.ToString() ?? string.Empty).Split(' ');
             return splitValues;
+        }
+    }
+
+    public class SnmpV2ToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value != null)
+            {
+                string item = value as string;
+                return item.Contains("v2") ? Visibility.Visible : Visibility.Collapsed;
+            }
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class SnmpV3ToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value != null)
+            {
+                string item = value as string;
+                return item.Contains("v3") ? Visibility.Visible : Visibility.Collapsed;
+            }
+            return Visibility.Visible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
         }
     }
 

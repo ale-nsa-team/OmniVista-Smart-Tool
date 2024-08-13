@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using static PoEWizard.Data.Constants;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PoEWizard.Device
 {

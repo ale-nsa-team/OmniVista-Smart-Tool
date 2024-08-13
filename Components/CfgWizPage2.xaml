@@ -1,0 +1,132 @@
+﻿<Page x:Class="PoEWizard.Components.CfgWizPage2"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:validators="clr-namespace:PoEWizard.Components"
+      xmlns:dev="clr-namespace:PoEWizard.Device"
+      mc:Ignorable="d" 
+      Loaded="OnPageLoaded"
+      d:DesignHeight="550" d:DesignWidth="500"
+      Title="Servers">
+    <Page.DataContext>
+        <dev:ServerModel/>
+    </Page.DataContext>
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
+                <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <StackPanel Style="{DynamicResource cfgWindow}">
+        <Label>Default Gateway</Label>
+        <TextBox x:Name="_defaultGwy" Validation.ErrorTemplate="{DynamicResource validationTemplate}" LostFocus="Text_Changed">
+            <TextBox.Text>
+                <Binding Path="Gateway" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <validators:IpAddressRule />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+            <Label>DNS Servers</Label>
+            <CheckBox x:Name="_dns" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsDns}" Checked="Option_Changed" Unchecked="Option_Changed"/>
+        </StackPanel>
+        <StackPanel x:Name="_dnsServers" Margin="90,0,0,0" Visibility="{Binding IsDns, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel Orientation="Horizontal">
+                <Label>Server 1:</Label>
+                <TextBox x:Name="_dnsSrv1" Width="250" Validation.ErrorTemplate="{DynamicResource validationTemplate}" LostFocus="Text_Changed">
+                    <TextBox.Text>
+                        <Binding Path="Dns1" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <validators:IpAddressRule />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Server 2:</Label>
+                <TextBox x:Name="_dnsSrv2" Width="250" Validation.ErrorTemplate="{DynamicResource validationTemplate}" LostFocus="Text_Changed">
+                    <TextBox.Text>
+                        <Binding Path="Dns2" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <validators:IpAddressRule />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Server 3:</Label>
+                <TextBox x:Name="_dnsSrv3" Width="250" Validation.ErrorTemplate="{DynamicResource validationTemplate}" LostFocus="Text_Changed">
+                    <TextBox.Text>
+                        <Binding Path="Dns3" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <validators:IpAddressRule />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Domain Name:</Label>
+                <TextBox x:Name="_dnsDomain" Width="216" Validation.ErrorTemplate="{DynamicResource validationTemplate}" LostFocus="Text_Changed">
+                    <TextBox.Text>
+                        <Binding Path="DnsDomain" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <validators:DomainNameRule />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="2,10,0,0">
+            <Label>NTP Servers</Label>
+            <CheckBox x:Name="_ntp" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsNtp}" Checked="Option_Changed" Unchecked="Option_Changed" />
+        </StackPanel>
+        <StackPanel x:Name="_ntpServers"  Margin="90,0,0,0" Visibility="{Binding IsNtp, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel Orientation="Horizontal">
+                <Label>Server 1:</Label>
+                <TextBox x:Name="_ntpSrv1" Width="250" Validation.ErrorTemplate="{DynamicResource validationTemplate}" LostFocus="Text_Changed">
+                    <TextBox.Text>
+                        <Binding Path="Ntp1" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <validators:HostnameRule />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Server 2:</Label>
+                <TextBox x:Name="_ntpSrv2" Width="250" Validation.ErrorTemplate="{DynamicResource validationTemplate}" LostFocus="Text_Changed">
+                    <TextBox.Text>
+                        <Binding Path="Ntp2" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <validators:HostnameRule />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Server 3:</Label>
+                <TextBox x:Name="_ntpSrv3" Width="250" Validation.ErrorTemplate="{DynamicResource validationTemplate}" LostFocus="Text_Changed">
+                    <TextBox.Text>
+                        <Binding Path="Ntp3" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <validators:HostnameRule />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            </StackPanel>
+        </StackPanel>
+    </StackPanel>
+</Page>

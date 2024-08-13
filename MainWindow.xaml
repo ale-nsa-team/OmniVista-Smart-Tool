@@ -57,6 +57,9 @@
                 <MenuItem Header="Help" Click="Help_Click"/>
                 <MenuItem Header="About" Click="About_Click"/>
             </MenuItem>
+            <MenuItem Header="Configuration">
+                <MenuItem Header="Basic Config Wizard..." x:Name="_cfgMenuItem" IsEnabled="False" Click="LaunchConfigWizard"/>
+            </MenuItem>
         </Menu>
         <StackPanel Grid.Row="1" x:Name="_switchInfo" Margin="0,2,0,0">
             <Grid>

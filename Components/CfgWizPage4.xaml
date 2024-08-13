@@ -1,0 +1,196 @@
+﻿<Page x:Class="PoEWizard.Components.CfgWizPage4"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:PoEWizard.Components"
+      xmlns:dev="clr-namespace:PoEWizard.Device"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Loaded="OnPageLoaded"
+      Title="SNMP Settings">
+    <Page.DataContext>
+        <dev:SnmpModel/>
+    </Page.DataContext>
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml"/>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <StackPanel Style="{DynamicResource cfgWindow}">
+        <StackPanel Orientation="Horizontal">
+            <Label>Version</Label>
+            <ComboBox x:Name="_snmpVersion" Style="{DynamicResource defaultCombo}"
+                      SelectedValue="{Binding Version}"
+                      SelectedValuePath="Content"
+                      IsSynchronizedWithCurrentItem="True"
+                      SelectionChanged="SelectionChanged">
+                <ComboBoxItem IsSelected="True" Content="v2"/>
+                <ComboBoxItem Content="v3"/>
+            </ComboBox>
+        </StackPanel>
+        <Label>User</Label>
+        <TextBox x:Name="_snmpUser" 
+                 Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                 LostFocus="TextChanged">
+            <TextBox.Text>
+                <Binding Path="User" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <local:NameRule PropertyName="Username"/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0">Password</Label>
+            <PasswordBox Grid.Row="1" Grid.Column="0" x:Name="_maskedSnmpPwd" 
+                    Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                    local:PasswordBoxAssistant.BindPassword="True"
+                    PreviewMouseDown="MaskedPwdEnter"
+                    LostFocus="MaskedPasswordChanged">
+                <local:PasswordBoxAssistant.BoundPassword>
+                    <Binding Path="Password" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local:PasswordRule />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </local:PasswordBoxAssistant.BoundPassword>
+            </PasswordBox>
+            <TextBox Grid.Row="1" Grid.Column="0" x:Name="_clearSnmpPwd" Visibility="Hidden"
+                    Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                    PreviewMouseDown="PasswordEnter"
+                    LostFocus="ClearPasswordChanged">
+                <TextBox.Text>
+                    <Binding Path="Password" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local:PasswordRule PropertyName="Password"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <Button Grid.Row="1" Grid.Column="1" x:Name="_btnViewSnmpPwd" Style="{DynamicResource eyeButton}" Click="ShowPassword">
+                <Image x:Name="_viewSnmpPwd" Source="{DynamicResource eye_open}" />
+            </Button>
+        </Grid>
+        <StackPanel Visibility="{Binding Version, Converter={StaticResource SnmpV2ToVisibilityConverter}}">
+            <Label >Community</Label>
+            <TextBox x:Name="_snmpCommunity" 
+                     Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                     LostFocus="TextChanged">
+                <TextBox.Text>
+                    <Binding Path="Community" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local:NameRule />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Visibility="{Binding Version, Converter={StaticResource SnmpV3ToVisibilityConverter}}">
+            <Label>Security Protocols</Label>
+            <ComboBox x:Name="_snmpProtos" Style="{DynamicResource defaultCombo}"
+                      SelectedValue="{Binding Protocols}"
+                      SelectedValuePath="Content"
+                      IsSynchronizedWithCurrentItem="True"
+                      SelectionChanged="SelectionChanged">
+                <ComboBoxItem IsSelected="True" Content="MD5 + DES"/>
+                <ComboBoxItem Content="SHA + AES"/>
+                <ComboBoxItem Content="SHA + DES"/>
+            </ComboBox>
+        </StackPanel>
+        <Grid Visibility="{Binding Version, Converter={StaticResource SnmpV3ToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0">Private Key</Label>
+            <PasswordBox Grid.Row="1" Grid.Column="0" x:Name="_maskedPrivKey"
+			Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+			local:PasswordBoxAssistant.BindPassword="True"
+			PreviewMouseDown="MaskedPwdEnter"
+            LostFocus="MaskedPasswordChanged">
+                <local:PasswordBoxAssistant.BoundPassword>
+                    <Binding Path="PrivateKey" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local:PasswordRule />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </local:PasswordBoxAssistant.BoundPassword>
+            </PasswordBox>
+            <TextBox Grid.Row="1" Grid.Column="0" x:Name="_clearPrivKey" Visibility="Hidden"
+			Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+			PreviewMouseDown="PasswordEnter"
+			LostFocus="ClearPasswordChanged">
+                <TextBox.Text>
+                    <Binding Path="PrivateKey" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local:PasswordRule />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <Button Grid.Row="1" Grid.Column="1" x:Name="_btnViewPrivKey" Style="{DynamicResource eyeButton}" Click="ShowPrivKey">
+                <Image x:Name="_viewPrivKey" Source="{DynamicResource eye_open}" />
+            </Button>
+            <Label Grid.Row="2" Grid.Column="0">Authorization Key</Label>
+            <PasswordBox Grid.Row="3" Grid.Column="0" x:Name="_maskedAuthKey"
+			Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+			local:PasswordBoxAssistant.BindPassword="True"
+			PreviewMouseDown="MaskedPwdEnter"
+            LostFocus="MaskedPasswordChanged">
+                <local:PasswordBoxAssistant.BoundPassword>
+                    <Binding Path="AuthKey" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local:PasswordRule />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </local:PasswordBoxAssistant.BoundPassword>
+            </PasswordBox>
+            <TextBox Grid.Row="3" Grid.Column="0" x:Name="_clearAuthKey" Visibility="Hidden"
+			Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+			PreviewMouseDown="PasswordEnter"
+			LostFocus="ClearPasswordChanged">
+                <TextBox.Text>
+                    <Binding Path="AuthKey" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local:PasswordRule />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <Button Grid.Row="3" Grid.Column="1" x:Name="_btnViewAuthKey" Style="{DynamicResource eyeButton}" Click="ShowAuthKey">
+                <Image x:Name="_viewAuthKey" Source="{DynamicResource eye_open}" />
+            </Button>
+        </Grid>
+        <Label Margin="0,15,0,0" >SNMP Trap Receiver</Label>
+        <TextBox x:Name="_snmpTrapRec" 
+                 Validation.ErrorTemplate="{DynamicResource validationTemplate}" 
+                 LostFocus="TextChanged">
+            <TextBox.Text>
+                <Binding Path="TrapReceiver" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <local:HostnameRule />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+    </StackPanel>
+</Page>
