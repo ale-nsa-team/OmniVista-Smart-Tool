@@ -46,7 +46,7 @@ namespace PoEWizard.Comm
             {
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
-                _progress.Report(new ProgressReport("Connecting to switch..."));
+                _progress.Report(new ProgressReport("Connecting to switch ..."));
                 RestApiClient.Login();
                 if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to switch {SwitchModel.IpAddress}!");
                 SwitchModel.IsConnected = true;
@@ -291,20 +291,21 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport($"Rebooting switch {SwitchModel.IpAddress}"));
                 SendRequest(GetRestUrlEntry(CommandType.REBOOT_SWITCH));
                 if (waitSec <= 0) return "";
-                _progress.Report(new ProgressReport($"Waiting switch {SwitchModel.IpAddress} reboot..."));
+                string msg = $"Waiting switch {SwitchModel.IpAddress} reboot ";
+                _progress.Report(new ProgressReport($"{msg}..."));
                 int dur = 0;
                 while (dur <= 60)
                 {
                     Thread.Sleep(1000);
                     dur = (int)Utils.GetTimeDuration(startTime);
-                    _progress.Report(new ProgressReport($"Waiting switch {SwitchModel.IpAddress} reboot ({Utils.CalcStringDuration(startTime, true)}) ..."));
+                    _progress.Report(new ProgressReport($"{msg}({Utils.CalcStringDuration(startTime, true)}) ..."));
                 }
                 while (dur < waitSec)
                 {
                     Thread.Sleep(1000);
                     dur = (int)Utils.GetTimeDuration(startTime);
                     if (dur >= waitSec) break;
-                    _progress.Report(new ProgressReport($"Waiting switch {SwitchModel.IpAddress} reboot ({Utils.CalcStringDuration(startTime, true)}) ..."));
+                    _progress.Report(new ProgressReport($"{msg}({Utils.CalcStringDuration(startTime, true)}) ..."));
                     if (!Utils.IsReachable(SwitchModel.IpAddress)) continue;
                     try
                     {
@@ -323,6 +324,65 @@ namespace PoEWizard.Comm
                 SendSwitchError($"Reboot switch {SwitchModel.IpAddress}", ex);
             }
             return Utils.CalcStringDuration(startTime, true);
+        }
+
+        public string RunTrafficAnalysis(int nbMaxSamples, int samplePeriodSec)
+        {
+            if (samplePeriodSec < 5) samplePeriodSec = 5;
+            string report = string.Empty;
+            try
+            {
+                Logger.Info($"Starting traffic analysis on switch {SwitchModel.IpAddress}");
+                string msg = $"Waiting traffic analysis on {SwitchModel.IpAddress} ";
+                _progress.Report(new ProgressReport($"{msg}..."));
+                GetPortsTrafficInformation();
+                DateTime startTime = DateTime.Now;
+                DateTime sampleTime = DateTime.Now;
+                int nbSamples = 1;
+                Logger.Activity($"Getting traffic information, #Sample: {nbSamples}");
+                while (nbSamples < nbMaxSamples)
+                {
+                    Thread.Sleep(1000);
+                    _progress.Report(new ProgressReport($"{msg}({Utils.CalcStringDuration(startTime, true)}) ..."));
+                    if (!Utils.IsReachable(SwitchModel.IpAddress)) continue;
+                    try
+                    {
+                        if (Utils.GetTimeDuration(sampleTime) >= samplePeriodSec)
+                        {
+                            GetPortsTrafficInformation();
+                            nbSamples++;
+                            Logger.Activity($"Getting traffic information ({Utils.CalcStringDuration(startTime)}), #Sample: {nbSamples}");
+                            sampleTime = DateTime.Now;
+                        }
+                    }
+                    catch { }
+                }
+                report = $"Traffic analysis on switch {SwitchModel.Name} ({SwitchModel.IpAddress}) report:\n";
+                report += $"\nNo traffic anomalies detected.";
+                report += $"\n\nDuration: {Utils.CalcStringDuration(startTime, true)}";
+                Logger.Activity(report);
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError($"Traffic analysis on switch {SwitchModel.IpAddress}", ex);
+            }
+            return report;
+        }
+
+        private void GetPortsTrafficInformation()
+        {
+            try
+            {
+                this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_INTERFACES));
+                if (_response[STRING] != null)
+                {
+                    string output = _response[STRING].ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError($"Traffic analysis on switch {SwitchModel.IpAddress}", ex);
+            }
         }
 
         public void WriteMemory(int waitSec = 40)

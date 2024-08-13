@@ -50,6 +50,7 @@ namespace PoEWizard.Data
             SHOW_HEALTH_CONFIG = 19,
             SHOW_LLDP_INVENTORY = 20,
             SHOW_SYSTEM_RUNNING_DIR = 21,
+            SHOW_INTERFACES = 22,
             // 30 - 69: Commands related to actions on port
             POWER_DOWN_PORT = 30,
             POWER_UP_PORT = 31,
@@ -149,6 +150,7 @@ namespace PoEWizard.Data
             [CommandType.SHOW_HEALTH_CONFIG] = "show health configuration",                                     //  19
             [CommandType.SHOW_LLDP_INVENTORY] = "show lldp remote-system med inventory",                        //  20
             [CommandType.SHOW_SYSTEM_RUNNING_DIR] = "urn=chasControlModuleTable&mibObject0=sysName&mibObject1=sysLocation&mibObject2=sysContact&mibObject3=sysUpTime&mibObject4=sysDescr&mibObject5=configChangeStatus&mibObject6=chasControlCurrentRunningVersion&mibObject7=chasControlCertifyStatus", //  21
+            [CommandType.SHOW_INTERFACES] = "show interfaces",                                                  //  22
             // 30 - 69: Commands related to actions on port
             [CommandType.POWER_DOWN_PORT] = $"lanpower port {DATA_0} admin-state disable",                      //  30
             [CommandType.POWER_UP_PORT] = $"lanpower port {DATA_0} admin-state enable",                         //  31

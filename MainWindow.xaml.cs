@@ -296,6 +296,11 @@ namespace PoEWizard
             LaunchRebootSwitch();
         }
 
+        private void Traffic_Click(object sender, RoutedEventArgs e)
+        {
+            TrafficAnalysis();
+        }
+
         private void Help_Click(object sender, RoutedEventArgs e)
         {
 
@@ -568,6 +573,7 @@ namespace PoEWizard
                             _refreshSwitch.IsEnabled = false;
                             _writeMemory.IsEnabled = false;
                             _reboot.IsEnabled = false;
+                            _traffic.IsEnabled = false;
                             _comImg.Visibility = Visibility.Collapsed;
                             await Task.Run(() => restApiService.WriteMemory());
                             _comImg.Visibility = Visibility.Visible;
@@ -786,6 +792,7 @@ namespace PoEWizard
         {
             try
             {
+                ShowProgress($"Scanning switch {device.IpAddress}...");
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.IpAddress}", reportResult));
@@ -807,6 +814,7 @@ namespace PoEWizard
         {
             try
             {
+                ShowProgress($"Writing memory on switch {device.IpAddress}...");
                 await Task.Run(() => restApiService.GetSystemInfo());
                 if (device.SyncStatus == SyncStatusType.Synchronized) return;
                 await Task.Run(() => restApiService.WriteMemory());
@@ -1014,6 +1022,31 @@ namespace PoEWizard
             await Task.Run(() => restApiService.RunGetSwitchLog(selectedPort.Name, debugSwitchLog));
         }
 
+        private async void TrafficAnalysis()
+        {
+            try
+            {
+                ShowProgress($"Running traffic analysis on switch {device.IpAddress}...");
+                string report = string.Empty;
+                await Task.Run(() => report = restApiService.RunTrafficAnalysis(5, 15));
+                TextViewer tv = new TextViewer("Traffic Analysis", report)
+                {
+                    Owner = this,
+                    SaveFilename = $"{device.Name}-{DateTime.Now.ToString("MM-dd-yyyy_hh_mm_ss")}-traffic-analysis.txt"
+                };
+                tv.Show();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
+            }
+        }
+
         private void WaitTask(int waitTime, string txt)
         {
             DateTime startTime = DateTime.Now;
@@ -1097,7 +1130,8 @@ namespace PoEWizard
                     bool res = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                     if (res)
                     {
-                        await RebootSwitch();
+                        string txt = await RebootSwitch();
+                        ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
                         return;
                     }
                 }
@@ -1110,6 +1144,7 @@ namespace PoEWizard
                 _refreshSwitch.IsEnabled = true;
                 _writeMemory.IsEnabled = true;
                 _reboot.IsEnabled = true;
+                _traffic.IsEnabled = true;
                 _psMenuItem.IsEnabled = true;
                 _cfgMenuItem.IsEnabled = true;
                 _disconnectMenuItem.Visibility = Visibility.Visible;
@@ -1151,24 +1186,37 @@ namespace PoEWizard
             if (res)
             {
                 Logger.Activity($"Rebooting switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
-                await RebootSwitch();
+                string txt = await RebootSwitch();
+                res = ShowMessageBox("Reboot Switch", $"{txt}\nDo you want to reconnect to the switch {device.IpAddress}?", MsgBoxIcons.Info, MsgBoxButtons.OkCancel);
+                if (res)
+                {
+                    Connect();
+                    return;
+                }
             }
         }
 
-        private async Task RebootSwitch()
+        private async Task<string> RebootSwitch()
         {
             try
             {
+                ShowProgress($"Rebooting switch {device.IpAddress}...");
                 string duration = "";
                 await Task.Run(() => duration = restApiService.RebootSwitch(600));
+                SetDisconnectedState();
                 string txt = $"Switch {device.IpAddress} ready to connect";
                 if (!string.IsNullOrEmpty(duration)) txt += $"\nReboot duration: {duration}";
-                ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
-                SetDisconnectedState();
+                return txt;
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
+                return ex.Message;
+            }
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
             }
         }
 
@@ -1187,6 +1235,7 @@ namespace PoEWizard
             _refreshSwitch.IsEnabled = false;
             _writeMemory.IsEnabled = false;
             _reboot.IsEnabled = false;
+            _traffic.IsEnabled = false;
             _psMenuItem.IsEnabled = false;
             _cfgMenuItem.IsEnabled = false;
             _comImg.ToolTip = "Click to reconnect";

@@ -334,5 +334,11 @@
   <ItemGroup>
     <Resource Include="Resources\reboot-light.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\traffic-dark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\traffic-light.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
