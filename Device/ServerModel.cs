@@ -1,6 +1,9 @@
 ﻿using PoEWizard.Data;
 using System.Collections.Generic;
+using System.Data;
 using System.Reflection;
+using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.RestUrl;
 
 namespace PoEWizard.Device
 {
@@ -38,24 +41,24 @@ namespace PoEWizard.Device
             config = cfg;
         }
 
-        public List<string> ToCommandList()
+        public List<CmdRequest> ToCommandList()
         {
-            List<string> cmdList = new List<string>();
+            List<CmdRequest> cmdList = new List<CmdRequest>();
             if (IsDns)
             {
                 string dns = $"{Dns1} {Dns2} {Dns3}".Trim();
                 if (!string.IsNullOrEmpty(dns))
                 {
-                    cmdList.Add(Commands.DnsLookup);
-                    cmdList.Add(Commands.DnsServer(dns));
-                    if (!string.IsNullOrEmpty(DnsDomain)) cmdList.Add(Commands.DnsDomain(DnsDomain));
-                }
-                if (IsNtp)
-                {
-                    if (!string.IsNullOrEmpty(Ntp1)) cmdList.Add(Commands.NtpServer(Ntp1));
-                    if (!string.IsNullOrEmpty(Ntp2)) cmdList.Add(Commands.NtpServer(Ntp2));
-                    if (!string.IsNullOrEmpty(Ntp3)) cmdList.Add(Commands.NtpServer(Ntp3));
-                    cmdList.Add(Commands.NtpEnable);
+                //    cmdList.Add(Command.DNS_LOOKUP, ParseType.Text);
+                //    cmdList.Add(Commands.DnsServer(dns));
+                //    if (!string.IsNullOrEmpty(DnsDomain)) cmdList.Add(Commands.DnsDomain(DnsDomain));
+                //}
+                //if (IsNtp)
+                //{
+                //    if (!string.IsNullOrEmpty(Ntp1)) cmdList.Add(Commands.NtpServer(Ntp1));
+                //    if (!string.IsNullOrEmpty(Ntp2)) cmdList.Add(Commands.NtpServer(Ntp2));
+                //    if (!string.IsNullOrEmpty(Ntp3)) cmdList.Add(Commands.NtpServer(Ntp3));
+                //    cmdList.Add(Commands.NtpEnable);
                 }
             }
             return cmdList;
