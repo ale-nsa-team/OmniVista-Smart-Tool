@@ -240,6 +240,29 @@ namespace PoEWizard.Data
         public const string LPNI = "lpNi";
         public const string LPCMM = "lpCmm";
         public const string DEBUG_APP_INDEX = "systemSwitchLoggingApplicationIndex";
+        // Used by "SHOW_INTERFACES"
+        public const string TRAF_SLOT_PORT = "Chassis/Slot/Port";
+        public const string TRAF_STATUS = "Operational Status";
+        public const string TRAF_LINK_QUALITY = "Link-Quality";
+        public const string TRAF_MAC_ADDRESS = "MAC address";
+        public const string TRAF_BANDWIDTH = "BandWidth (Megabits)";
+        public const string TRAF_LONG_FRAME_SIZE = "Long Frame Size(Bytes)";
+        public const string TRAF_INTER_FRAME_GAP = "Inter Frame Gap(Bytes)";
+        public const string TRAF_RX_BYTES = "Bytes Received";
+        public const string TRAF_TX_BYTES = "Bytes Xmitted";
+        public const string TRAF_UNICAST_FRAMES = "Unicast Frames";
+        public const string TRAF_BROADCAST_FRAMES = "Broadcast Frames";
+        public const string TRAF_MULTICAST_FRAMES = "M-cast Frames";
+        public const string TRAF_UNDERSIZE_FRAMES = "UnderSize Frames";
+        public const string TRAF_OVERSIZE_FRAMES = "OverSize Frames";
+        public const string TRAF_LOST_FRAMES = "Lost Frames";
+        public const string TRAF_ERROR_FRAMES = "Error Frames";
+        public const string TRAF_CRC_ERROR_FRAMES = "CRC Error Frames";
+        public const string TRAF_ALIGNEMENTS_ERROR = "Alignments Err";
+        public const string TRAF_COLLIDED_FRAMES = "Collided Frames";
+        public const string TRAF_COLLISIONS = "Collisions";
+        public const string TRAF_LATE_COLLISIONS = "Late collisions";
+        public const string TRAF_EXC_COLLISIONS = "Exc-Collisions";
         // Used by BuildOuiTable method of MainWindow.xaml.cs class
         public const string OUI_FILE = "oui.csv";
 

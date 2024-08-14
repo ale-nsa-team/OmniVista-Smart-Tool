@@ -170,6 +170,7 @@
     <Compile Include="Device\Commands.cs" />
     <Compile Include="Device\EndPointDeviceModel.cs" />
     <Compile Include="Device\FeatureModel.cs" />
+    <Compile Include="Device\PortTrafficModel.cs" />
     <Compile Include="Device\PowerSupplyModel.cs" />
     <Compile Include="Device\ServerModel.cs" />
     <Compile Include="Device\SlotModel.cs" />
@@ -178,6 +179,7 @@
     <Compile Include="Device\SwitchDebugModel.cs" />
     <Compile Include="Device\SwitchModel.cs" />
     <Compile Include="Device\PortModel.cs" />
+    <Compile Include="Device\SwitchTrafficModel.cs" />
     <Compile Include="Device\SystemModel.cs" />
     <Compile Include="Exceptions\CustomExceptions.cs" />
     <Compile Include="MainWindow.xaml.cs">

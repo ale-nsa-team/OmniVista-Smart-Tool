@@ -23,6 +23,7 @@ namespace PoEWizard.Comm
         private CommandType _wizardCommand = CommandType.SHOW_SYSTEM;
         private WizardReport _wizardReportResult;
         private SwitchDebugModel _debugSwitchLog;
+        private SwitchTrafficModel _switchTraffic;
 
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
@@ -335,6 +336,7 @@ namespace PoEWizard.Comm
                 Logger.Info($"Starting traffic analysis on switch {SwitchModel.IpAddress}");
                 string msg = $"Waiting traffic analysis on {SwitchModel.IpAddress} ";
                 _progress.Report(new ProgressReport($"{msg}..."));
+                _switchTraffic = null;
                 GetPortsTrafficInformation();
                 DateTime startTime = DateTime.Now;
                 DateTime sampleTime = DateTime.Now;
@@ -376,7 +378,15 @@ namespace PoEWizard.Comm
                 this._response = SendRequest(GetRestUrlEntry(CommandType.SHOW_INTERFACES));
                 if (_response[STRING] != null)
                 {
-                    string output = _response[STRING].ToString();
+                    List<Dictionary<string, string>> dictList = CliParseUtils.ParseTrafficTable(_response[STRING].ToString());
+                    if (_switchTraffic == null)
+                    {
+                        _switchTraffic = new SwitchTrafficModel(SwitchModel.Name, SwitchModel.IpAddress, SwitchModel.SerialNumber, dictList);
+                    }
+                    else
+                    {
+                        _switchTraffic.UpdateTraffic(dictList);
+                    }
                 }
             }
             catch (Exception ex)

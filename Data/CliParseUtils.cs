@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -282,6 +281,57 @@ namespace PoEWizard.Data
                             dbgDict[DEBUG_SUB_APP_LEVEL] = iLogLevel.ToString();
                         }
                         table.Add(dbgDict);
+                    }
+                }
+            }
+            return table;
+        }
+
+        public static List<Dictionary<string, string>> ParseTrafficTable(string inputData)
+        {
+            List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();
+            string data = inputData.Replace(", ", "\n");
+            string[] split;
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            using (StringReader reader = new StringReader(data))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.Trim().Length == 0) continue;
+                    if (line.Contains(TRAF_SLOT_PORT))
+                    {
+                        split = line.Trim().Split(':');
+                        if (split.Length == 2) dict = new Dictionary<string, string> { [PORT] = split[1].Trim() };
+                    }
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        Match match = vtableRegex.Match(line);
+                        string value = null;
+                        string key = null;
+                        if (match.Success)
+                        {
+                            key = match.Groups[1].Value.Trim();
+                            if (key.StartsWith(FPGA)) key = FPGA;
+                            value = match.Groups[2].Value.Trim();
+                            value = value.EndsWith(",") ? value.Substring(0, value.Length - 1) : value;
+                            if (value.Contains(":"))
+                            {
+                                split = value.Split(':');
+                                if (split.Length == 2)
+                                {
+                                    key = split[0].Trim();
+                                    value = split[1].Trim();
+                                }
+                            }
+                        }
+                        if (line.Contains(TRAF_SLOT_PORT))
+                        {
+                            table.Add(dict);
+                            split = line.Trim().Split(':');
+                            if (split.Length == 2) dict = new Dictionary<string, string> { [PORT] = split[1].Trim() };
+                        }
+                        if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(key) && !dict.ContainsKey(key)) dict.Add(key, value);
                     }
                 }
             }
