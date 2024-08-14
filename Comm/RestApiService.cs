@@ -132,10 +132,10 @@ namespace PoEWizard.Comm
             }
         }
 
-        public object RunSwichCommand(Command cmd, ParseType parseType = ParseType.Text, int nbHeaders = 1)
+        public object RunSwichCommand(CmdRequest cmdReq)
         {
             string mibReq = null;
-            switch (cmd)
+            switch (cmdReq.Command)
             {
                 case Command.SHOW_DNS_CONFIG:       // 207
                     mibReq = SWITCH_CFG_DNS;
@@ -151,18 +151,18 @@ namespace PoEWizard.Comm
                     break;
 
             }
-            Dictionary<string, object> resp = SendRequest(GetRestUrlEntry(cmd));
+            Dictionary<string, object> resp = SendRequest(GetRestUrlEntry(cmdReq.Command));
             if (!string.IsNullOrEmpty(mibReq))
             {
                 return CliParseUtils.ParseListFromDictionary((Dictionary<string, string>)resp[DATA], mibReq);
             }
             else if (resp.ContainsKey(STRING))
             {
-                switch (parseType)
+                switch (cmdReq.ParseType)
                 {
 
                     case ParseType.Htable:
-                        return CliParseUtils.ParseHTable(resp[STRING].ToString(), nbHeaders);
+                        return CliParseUtils.ParseHTable(resp[STRING].ToString(), cmdReq.NbHeaders);
 
                     case ParseType.Vtable:
                         return CliParseUtils.ParseVTable(resp[STRING].ToString());
