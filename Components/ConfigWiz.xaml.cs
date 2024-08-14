@@ -2,6 +2,7 @@
 using PoEWizard.Device;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -76,12 +77,11 @@ namespace PoEWizard.Components
         {
             await Task.Run(() =>
             {
-                //ApplyCommands(sysData.ToCommandList(), "Applying System parameters...");
+                ApplyCommands(sysData.ToCommandList(), "Applying System parameters...");
                 ApplyCommands(srvData.ToCommandList(), "Applying DNS and NPT parameters...");
                 //ApplyCommands(features.ToCommandList(), "Applying Features...");
                 //ApplyCommands(snmpData.ToCommandList(), "Applying SNMP configuration...");
             });
-   
             HideInfoBox();
             DialogResult = true;
             Close();
@@ -128,7 +128,16 @@ namespace PoEWizard.Components
 
             foreach (CmdRequest cmd in cmds)
             {
-                MainWindow.restApiService.RunSwichCommand(cmd);
+                try
+                {
+                    MainWindow.restApiService.RunSwichCommand(cmd);
+                }
+                catch (Exception ex)
+                {
+                    if (!Regex.IsMatch(ex.Message, MATCH_POE_RUNNING))
+                        Errors.Add(ex.Message);
+                }
+
             }
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Xml.Linq;
 
 namespace PoEWizard.Data
 {
@@ -119,20 +120,23 @@ namespace PoEWizard.Data
             SSH_AUTH_LOCAL = 200,
             SET_SYSTEM_TIMEZONE = 201,
             SET_SYSTEM_DATE = 202,
-            SET_MNGT_INTERFACE = 203,
-            SET_PASSWORD = 204,
-            SET_CONTACT = 205,
-            SHOW_IP_SERVICE = 206,
-            SHOW_DNS_CONFIG = 207,
-            SHOW_DHCP_CONFIG = 208,
-            SHOW_DHCP_RELAY = 209,
-            SHOW_NTP_CONFIG = 210,
-            SHOW_IP_ROUTES = 211,
-            DNS_LOOKUP = 212,
-            DNS_SERVER = 213,
-            DNS_DOMAIN = 214,
-            ENABLE_NTP = 215,
-            NTP_SERVER = 216
+            SET_SYSTEM_TIME = 203,
+            SET_SYSTEM_NAME = 218,
+            SET_LOCATION = 219,
+            SET_MNGT_INTERFACE = 204,
+            SET_PASSWORD = 205,
+            SET_CONTACT = 206,
+            SHOW_IP_SERVICE = 207,
+            SHOW_DNS_CONFIG = 208,
+            SHOW_DHCP_CONFIG = 209,
+            SHOW_DHCP_RELAY = 210,
+            SHOW_NTP_CONFIG = 211,
+            SHOW_IP_ROUTES = 212,
+            DNS_LOOKUP = 213,
+            DNS_SERVER = 214,
+            DNS_DOMAIN = 215,
+            ENABLE_NTP = 216,
+            NTP_SERVER = 217
         }
 
         public readonly static Dictionary<Command, string> CMD_TBL = new Dictionary<Command, string>
@@ -222,9 +226,12 @@ namespace PoEWizard.Data
             [Command.SSH_AUTH_LOCAL] = "aaa authentication ssh local",
             [Command.SET_SYSTEM_TIMEZONE] = $"system timezone {DATA_0}",
             [Command.SET_SYSTEM_DATE] = $"system date {DATA_0}",
+            [Command.SET_SYSTEM_TIME] = $"set system time {DATA_0}",
+            [Command.SET_SYSTEM_NAME] = $"system name \"{DATA_0}\"",
             [Command.SET_MNGT_INTERFACE] = $"ip interface \"MGT\" address {DATA_0} mask {DATA_1} vlan 1",
             [Command.SET_PASSWORD] = $"user {DATA_0} password \"{DATA_1}\"",
             [Command.SET_CONTACT] = $"system contact \"{DATA_0}\"",
+            [Command.SET_LOCATION] = $"system location \"{DATA_0}\"",
             [Command.SHOW_IP_SERVICE] = "show ip service",
             [Command.SHOW_DNS_CONFIG] = "urn=systemDNS&mibObject0=systemDNSEnableDnsResolver&mibObject1=systemDNSDomainName&mibObject2=systemDNSNsAddr1&mibObject3=systemDNSNsAddr2&mibObject4=systemDNSNsAddr3",   // 207
             [Command.SHOW_DHCP_CONFIG] = "urn=alaDhcpRelayGlobalConfig&mibObject0=alaDhcpRelayAdminStatus&mibObject1=alaDhcpRelayForwardDelay&mibObject2=alaDhcpRelayMaximumHops&mibObject3=alaDhcpRelayPxeSupport&mibObject4=alaDhcpRelayInsertAgentInformation&mibObject5=alaDhcpRelayInsertAgentInformationPolicy&mibObject6=alaDhcpRelayPerInterfaceMode", // 208

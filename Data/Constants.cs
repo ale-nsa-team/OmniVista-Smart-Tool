@@ -283,6 +283,7 @@ namespace PoEWizard.Data
         public const string MATCH_TABLE_SEP = @"(-+\++)+";
         public const string MATCH_CHASSIS = @"([Local|Remote] Chassis ID )(\d+) \((.+)\)";
         public const string MATCH_AOS_VERSION = @"(\d+)\.(\d+)([\.\d +]+)(\.R)(\d+)";
+        public const string MATCH_POE_RUNNING =@"Lanpower chassis \d slot \d service running ...";
         #endregion
     }
 }
