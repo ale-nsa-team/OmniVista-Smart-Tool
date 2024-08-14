@@ -31,12 +31,13 @@ namespace PoEWizard.Device
         {
             PrevTimeUpdated = LastTimeUpdated;
             LastTimeUpdated = DateTime.Now;
+            double duration = LastTimeUpdated.Subtract(PrevTimeUpdated).TotalSeconds;
             foreach (Dictionary<string, string> dict in dictList)
             {
                 string port = Utils.GetDictValue(dict, Constants.PORT);
                 if (!string.IsNullOrEmpty(port))
                 {
-                    if (!dict.ContainsKey(port)) Ports[port] = new PortTrafficModel(dict); else Ports[port].UpdateTraffic(dict);
+                    if (!dict.ContainsKey(port)) Ports[port] = new PortTrafficModel(dict, duration); else Ports[port].UpdateTraffic(dict, duration);
                 }
             }
         }

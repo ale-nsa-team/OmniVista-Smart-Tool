@@ -1,4 +1,5 @@
 ﻿using PoEWizard.Data;
+using System;
 using System.Collections.Generic;
 
 namespace PoEWizard.Device
@@ -12,8 +13,10 @@ namespace PoEWizard.Device
         public double BandWidth { get; set; }
         public double LongFrameSize { get; set; }
         public double InterFrameGap { get; set; }
-        public double RxBytes { get; set; }
-        public double TxBytes { get; set; }
+        public double CurrRxBytes { get; set; }
+        public double PrevRxBytes { get; set; }
+        public double CurrTxBytes { get; set; }
+        public double PrevTxBytes { get; set; }
         public double UnicastFrames { get; set; }
         public double BroadcastFrames { get; set; }
         public double MulticastFrames { get; set; }
@@ -27,28 +30,31 @@ namespace PoEWizard.Device
         public double Collisions { get; set; }
         public double LateCollisions { get; set; }
         public double ExcCollisions { get; set; }
+        public double SamplePeriod { get; set; }
+        public double RxRate { get; set; }
+        public double TxRate { get; set; }
 
-        public PortTrafficModel() { }
-        public PortTrafficModel(Dictionary<string, string> dict)
+        public PortTrafficModel(Dictionary<string, string> dict, double duration)
         {
-            UpdateTraffic(dict);
+            UpdateTraffic(dict, duration);
         }
 
-        public void UpdateTraffic(Dictionary<string, string> dict)
+        public void UpdateTraffic(Dictionary<string, string> dict, double duration)
         {
+            SamplePeriod = duration;
             Port = Utils.GetDictValue(dict, Constants.PORT);
             MacAddress = Utils.GetDictValue(dict, Constants.TRAF_MAC_ADDRESS);
-            RxBytes = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_RX_BYTES));
-            TxBytes = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_TX_BYTES));
-            LinkQuality = Utils.GetDictValue(dict, Constants.TRAF_LINK_QUALITY);
+            PrevRxBytes = CurrRxBytes;
+            CurrRxBytes = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_RX_BYTES));
+            RxRate = CalculateTraffic(CurrRxBytes, PrevRxBytes);
+            PrevTxBytes = CurrTxBytes;
+            CurrTxBytes = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_TX_BYTES));
+            TxRate = CalculateTraffic(CurrTxBytes, PrevTxBytes);
+
             BandWidth = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_BANDWIDTH));
-            LongFrameSize = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_LONG_FRAME_SIZE));
-            InterFrameGap = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_INTER_FRAME_GAP));
             UnicastFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_UNICAST_FRAMES));
             BroadcastFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_BROADCAST_FRAMES));
             MulticastFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_MULTICAST_FRAMES));
-            UnderSizeFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_UNDERSIZE_FRAMES));
-            OverSizeFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_OVERSIZE_FRAMES));
             LostFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_LOST_FRAMES));
             ErrorFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_ERROR_FRAMES));
             CrcErrorFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_CRC_ERROR_FRAMES));
@@ -57,6 +63,20 @@ namespace PoEWizard.Device
             Collisions = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_COLLISIONS));
             LateCollisions = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_LATE_COLLISIONS));
             Collisions = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_EXC_COLLISIONS));
+            // Unused properties
+            LinkQuality = Utils.GetDictValue(dict, Constants.TRAF_LINK_QUALITY);
+            LongFrameSize = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_LONG_FRAME_SIZE));
+            InterFrameGap = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_INTER_FRAME_GAP));
+            UnderSizeFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_UNDERSIZE_FRAMES));
+            OverSizeFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_OVERSIZE_FRAMES));
+        }
+
+        private double CalculateTraffic(double currBytes, double prevBytes)
+        {
+            if (SamplePeriod < 5) return 0;
+            if (prevBytes == 0) prevBytes = currBytes;
+            double dVal = (currBytes - prevBytes) / SamplePeriod * 8 / 1048576;
+            return Math.Round(dVal, 0, MidpointRounding.ToEven);
         }
 
     }
