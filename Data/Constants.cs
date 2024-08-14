@@ -263,6 +263,10 @@ namespace PoEWizard.Data
         public const string TRAF_COLLISIONS = "Collisions";
         public const string TRAF_LATE_COLLISIONS = "Late collisions";
         public const string TRAF_EXC_COLLISIONS = "Exc-Collisions";
+        // Used by Config Wizard commands
+        public const string SWITCH_CFG_DNS = "systemDNS";
+        public const string SWITCH_CFG_DHCP = "alaDhcpRelay";
+        public const string SWITCH_CFG_NTP = "alaNtpPeer";
         // Used by BuildOuiTable method of MainWindow.xaml.cs class
         public const string OUI_FILE = "oui.csv";
 

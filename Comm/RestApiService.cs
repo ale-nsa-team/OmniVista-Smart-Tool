@@ -57,8 +57,7 @@ namespace PoEWizard.Comm
                 _response = SendRequest(GetRestUrlEntry(CommandType.SHOW_CMM));
                 if (_response[STRING] != null) SwitchModel.LoadFromDictionary(CliParseUtils.ParseVTable(_response[STRING].ToString()), DictionaryType.Cmm);
                 _response = SendRequest(GetRestUrlEntry(CommandType.DEBUG_SHOW_APP_LIST));
-                if (_response[DATA] != null) SwitchModel.LoadFromList(CliParseUtils.ParseSwitchDebugAppTable((Dictionary<string, string>)_response[DATA],
-                                                                      new string[2] { LPNI, LPCMM }), DictionaryType.SwitchDebugAppList);
+                if (_response[DATA] != null) SwitchModel.LoadFromList(CliParseUtils.ParseSwitchDebugAppTable((Dictionary<string, string>)_response[DATA], new string[2] { LPNI, LPCMM }), DictionaryType.SwitchDebugAppList);
                 ScanSwitch($"Connect to switch {SwitchModel.IpAddress}", reportResult);
             }
             catch (Exception ex)
@@ -131,6 +130,29 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError("Get Snapshot", ex);
             }
+        }
+
+        public object RunSwichCommand(CommandType cmd)
+        {
+            string mibReq = null;
+            switch (cmd)
+            {
+                case CommandType.SHOW_DNS_CONFIG:       // 207
+                    mibReq = SWITCH_CFG_DNS;
+                    break;
+
+                case CommandType.SHOW_DHCP_CONFIG:      // 208
+                case CommandType.SHOW_DHCP_RELAY:       // 209
+                    mibReq = SWITCH_CFG_DHCP;
+                    break;
+
+                case CommandType.SHOW_NTP_CONFIG:       // 210
+                    mibReq = SWITCH_CFG_NTP;
+                    break;
+
+            }
+            Dictionary<string, object> resp = SendRequest(GetRestUrlEntry(cmd));
+            if (!string.IsNullOrEmpty(mibReq)) return CliParseUtils.ParseListFromDictionary((Dictionary<string, string>)resp[DATA], mibReq); else return resp;
         }
 
         public void RunGetSwitchLog(string port, SwitchDebugModel debugLog)

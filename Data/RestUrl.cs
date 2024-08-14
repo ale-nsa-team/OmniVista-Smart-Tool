@@ -105,7 +105,7 @@ namespace PoEWizard.Data
             DEBUG_CLI_UPDATE_LPCMM_LEVEL = 151,
             DEBUG_CLI_SHOW_LPNI_LEVEL = 152,
             DEBUG_CLI_SHOW_LPCMM_LEVEL = 153,
-            // 190 - 219 Config Wizard commands
+            // 190 - 229 Config Wizard commands
             DISABLE_AUTO_FABRIC = 190,
             ENABLE_DDM = 191,
             ENABLE_MULTICAST = 192,
@@ -122,7 +122,11 @@ namespace PoEWizard.Data
             SET_MNGT_INTERFACE = 203,
             SET_PASSWORD = 204,
             SET_CONTACT = 205,
-            SHOW_IP_SERVICE = 206
+            SHOW_IP_SERVICE = 206,
+            SHOW_DNS_CONFIG = 207,
+            SHOW_DHCP_CONFIG = 208,
+            SHOW_DHCP_RELAY = 209,
+            SHOW_NTP_CONFIG = 210,
         }
 
         public readonly static Dictionary<CommandType, string> CMD_TBL = new Dictionary<CommandType, string>
@@ -198,7 +202,7 @@ namespace PoEWizard.Data
             [CommandType.DEBUG_CLI_UPDATE_LPCMM_LEVEL] = $"swlog appid lpcmm subapp all level {DATA_0}",        // 151
             [CommandType.DEBUG_CLI_SHOW_LPNI_LEVEL] = "show swlog appid lpni",                                  // 152
             [CommandType.DEBUG_CLI_SHOW_LPCMM_LEVEL] = "show swlog appid lpcmm",                                // 153
-            // 190 - : Config Wizard commands
+            // 190 - 229 Config Wizard commands
             [CommandType.DISABLE_AUTO_FABRIC] = "auto-fabric admin-state disable",
             [CommandType.ENABLE_DDM] = "interfaces ddm enable",
             [CommandType.ENABLE_MULTICAST] = "ip multicast admin-state enable",
@@ -215,8 +219,11 @@ namespace PoEWizard.Data
             [CommandType.SET_MNGT_INTERFACE] = $"ip interface \"MGT\" address {DATA_0} mask {DATA_1} vlan 1",
             [CommandType.SET_PASSWORD] = $"user {DATA_0} password \"{DATA_1}\"",
             [CommandType.SET_CONTACT] = $"system contact \"{DATA_0}\"",
-            [CommandType.SHOW_IP_SERVICE] = "show ip service"
-
+            [CommandType.SHOW_IP_SERVICE] = "show ip service",
+            [CommandType.SHOW_DNS_CONFIG] = "urn=systemDNS&mibObject0=systemDNSEnableDnsResolver&mibObject1=systemDNSDomainName&mibObject2=systemDNSNsAddr1&mibObject3=systemDNSNsAddr2&mibObject4=systemDNSNsAddr3",   // 207
+            [CommandType.SHOW_DHCP_CONFIG] = "urn=alaDhcpRelayGlobalConfig&mibObject0=alaDhcpRelayAdminStatus&mibObject1=alaDhcpRelayForwardDelay&mibObject2=alaDhcpRelayMaximumHops&mibObject3=alaDhcpRelayPxeSupport&mibObject4=alaDhcpRelayInsertAgentInformation&mibObject5=alaDhcpRelayInsertAgentInformationPolicy&mibObject6=alaDhcpRelayPerInterfaceMode", // 208
+            [CommandType.SHOW_DHCP_RELAY] = "urn=alaDhcpRelayServerDestinationTable&mibObject0=alaDhcpRelayServerDestinationAddressType&mibObject1=alaDhcpRelayServerDestinationAddress&limit=200&ignoreError=true",    // 209
+            [CommandType.SHOW_NTP_CONFIG] = "urn=alaNtpPeerTable&mibObject0=alaNtpPeerAddressType&mibObject1=alaNtpPeerAddress&mibObject2=alaNtpPeerInetAddress&mibObject3=alaNtpPeerInetAddressType&mibObject4=alaNtpPeerType&mibObject5=alaNtpPeerAuth&mibObject6=alaNtpPeerVersion&mibObject7=alaNtpPeerMinpoll&mibObject8=alaNtpPeerMaxpoll&mibObject9=alaNtpPeerPrefer&mibObject10=alaNtpPeerName&mibObject11=alaNtpPeerPreempt&mibObject12=alaNtpPeerBurst&mibObject13=alaNtpPeerIBurst&mibObject14=alaNtpPeerAdmin&limit=200&ignoreError=true"  // 210
         };
 
         public static Dictionary<CommandType, Dictionary<string, string>> CONTENT_TABLE = new Dictionary<CommandType, Dictionary<string, string>>
@@ -247,6 +254,11 @@ namespace PoEWizard.Data
             if (string.IsNullOrEmpty(req)) return null;
             switch (entry.RestUrl)
             {
+                // 190 - 229 Config Wizard commands
+                case CommandType.SHOW_DNS_CONFIG:               // 207
+                case CommandType.SHOW_DHCP_CONFIG:              // 208
+                case CommandType.SHOW_DHCP_RELAY:               // 209
+                case CommandType.SHOW_NTP_CONFIG:               // 210
                 // 130 - 149: Switch debug MIB commands
                 case CommandType.DEBUG_SHOW_APP_LIST:           // 130
                 case CommandType.DEBUG_SHOW_LEVEL:              // 131

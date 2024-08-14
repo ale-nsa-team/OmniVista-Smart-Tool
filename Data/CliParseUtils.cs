@@ -23,6 +23,7 @@ namespace PoEWizard.Data
             foreach (var keyVal in inputDict)
             {
                 string key = keyVal.Key;
+                if (!string.IsNullOrEmpty(match) && !key.Contains(match)) continue;
                 if (key.Contains($"_"))
                 {
                     string id = Utils.ExtractNumber(key);
@@ -34,7 +35,6 @@ namespace PoEWizard.Data
                     }
                     if (!string.IsNullOrEmpty(id)) key = key.Replace($"_{id}", "");
                 }
-                if (!string.IsNullOrEmpty(match) && !key.Contains(match)) continue;
                 dictList[idx][key] = keyVal.Value;
             }
             return dictList;
