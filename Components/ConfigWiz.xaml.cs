@@ -76,10 +76,10 @@ namespace PoEWizard.Components
         {
             await Task.Run(() =>
             {
-                ApplyCommands(sysData.ToCommandList(), "Applying System parameters...");
-                ApplyCommands(srvData.ToCommandList(), "Applying DNS and NPT parameters...");
-                ApplyCommands(features.ToCommandList(), "Applying Features...");
-                ApplyCommands(snmpData.ToCommandList(), "Applying SNMP configuration...");
+                //ApplyCommands(sysData.ToCommandList(), "Applying System parameters...");
+                //ApplyCommands(srvData.ToCommandList(), "Applying DNS and NPT parameters...");
+                //ApplyCommands(features.ToCommandList(), "Applying Features...");
+                //ApplyCommands(snmpData.ToCommandList(), "Applying SNMP configuration...");
             });
    
             HideInfoBox();

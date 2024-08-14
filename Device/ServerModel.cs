@@ -1,9 +1,6 @@
 ﻿using PoEWizard.Data;
 using System.Collections.Generic;
-using System.Data;
 using System.Reflection;
-using static PoEWizard.Data.Constants;
-using static PoEWizard.Data.RestUrl;
 
 namespace PoEWizard.Device
 {
