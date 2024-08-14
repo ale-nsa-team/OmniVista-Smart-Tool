@@ -154,7 +154,7 @@
     <Compile Include="Data\ChassisSlotPort.cs" />
     <Compile Include="Data\CliParseUtils.cs" />
     <Compile Include="Data\Props.cs" />
-    <Compile Include="Data\Structs.cs" />
+    <Compile Include="Data\CmdRequest.cs" />
     <Compile Include="Data\SwitchDebugApp.cs" />
     <Compile Include="Data\WizardReport.cs" />
     <Compile Include="Data\Constants.cs" />
