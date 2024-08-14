@@ -15,24 +15,9 @@ using System.Windows;
 using System.Xml;
 using System.Xml.Linq;
 using static PoEWizard.Data.Constants;
-using static PoEWizard.Data.RestUrl;
 
 namespace PoEWizard.Data
 {
-    
-    public struct CmdRequest
-    {
-        public CmdRequest(Command command, CommandType type, string[] data)
-        {
-            Command = command;
-            Type = type;
-            Data = data;
-        }
-        public Command Command { get; }
-        public CommandType Type { get; }
-        public string[] Data { get; }
-    }
-
     public static class Utils
     {
         private const string ENCRYPT_KEY = "a9cd76210f6e0bb4fdbd23a9cda9831a";
