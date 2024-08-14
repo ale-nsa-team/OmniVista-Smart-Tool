@@ -8,11 +8,8 @@ namespace PoEWizard.Device
     {
         public string Port { get; set; }
         public string Status { get; set; }
-        public string LinkQuality { get; set; }
         public string MacAddress { get; set; }
         public double BandWidth { get; set; }
-        public double LongFrameSize { get; set; }
-        public double InterFrameGap { get; set; }
         public double CurrRxBytes { get; set; }
         public double PrevRxBytes { get; set; }
         public double CurrTxBytes { get; set; }
@@ -20,10 +17,7 @@ namespace PoEWizard.Device
         public double UnicastFrames { get; set; }
         public double BroadcastFrames { get; set; }
         public double MulticastFrames { get; set; }
-        public double UnderSizeFrames { get; set; }
-        public double OverSizeFrames { get; set; }
         public double LostFrames { get; set; }
-        public double ErrorFrames { get; set; }
         public double CrcErrorFrames { get; set; }
         public double AlignmentsError { get; set; }
         public double CollidedFrames { get; set; }
@@ -33,6 +27,15 @@ namespace PoEWizard.Device
         public double SamplePeriod { get; set; }
         public double RxRate { get; set; }
         public double TxRate { get; set; }
+
+        #region Unused properties
+        public string LinkQuality { get; set; }
+        public double LongFrameSize { get; set; }
+        public double InterFrameGap { get; set; }
+        public double UnderSizeFrames { get; set; }
+        public double OverSizeFrames { get; set; }
+        public double ErrorFrames { get; set; }
+        #endregion
 
         public PortTrafficModel(Dictionary<string, string> dict, double duration)
         {
@@ -50,25 +53,25 @@ namespace PoEWizard.Device
             PrevTxBytes = CurrTxBytes;
             CurrTxBytes = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_TX_BYTES));
             TxRate = CalculateTraffic(CurrTxBytes, PrevTxBytes);
-
             BandWidth = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_BANDWIDTH));
             UnicastFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_UNICAST_FRAMES));
             BroadcastFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_BROADCAST_FRAMES));
             MulticastFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_MULTICAST_FRAMES));
             LostFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_LOST_FRAMES));
-            ErrorFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_ERROR_FRAMES));
             CrcErrorFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_CRC_ERROR_FRAMES));
             AlignmentsError = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_ALIGNEMENTS_ERROR));
             CollidedFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_COLLIDED_FRAMES));
             Collisions = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_COLLISIONS));
             LateCollisions = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_LATE_COLLISIONS));
             Collisions = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_EXC_COLLISIONS));
-            // Unused properties
+            #region Unused properties
             LinkQuality = Utils.GetDictValue(dict, Constants.TRAF_LINK_QUALITY);
             LongFrameSize = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_LONG_FRAME_SIZE));
             InterFrameGap = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_INTER_FRAME_GAP));
             UnderSizeFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_UNDERSIZE_FRAMES));
             OverSizeFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_OVERSIZE_FRAMES));
+            ErrorFrames = Utils.StringToDouble(Utils.GetDictValue(dict, Constants.TRAF_ERROR_FRAMES));
+            #endregion
         }
 
         private double CalculateTraffic(double currBytes, double prevBytes)
