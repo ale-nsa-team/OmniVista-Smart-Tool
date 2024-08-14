@@ -38,7 +38,6 @@ namespace PoEWizard
         private readonly string appVersion;
         private readonly IProgress<ProgressReport> progress;
         private bool reportAck;
-        private RestApiService restApiService;
         private SftpService sftpService;
         private SwitchModel device;
         private SlotView slotView;
@@ -57,6 +56,7 @@ namespace PoEWizard
         public static Window Instance;
         public static ThemeType theme;
         public static string dataPath;
+        public static RestApiService restApiService;
         public static Dictionary<string, string> ouiTable = new Dictionary<string, string>();
 
         #endregion
