@@ -335,7 +335,7 @@ namespace PoEWizard.Comm
                 Logger.Info($"Rebooting switch {SwitchModel.IpAddress}");
                 _progress.Report(new ProgressReport($"Rebooting switch {SwitchModel.IpAddress}"));
                 SendRequest(GetRestUrlEntry(Command.REBOOT_SWITCH));
-                if (waitSec <= 0) return "";
+                if (waitSec <= 0) return string.Empty;
                 string msg = $"Waiting switch {SwitchModel.IpAddress} reboot ";
                 _progress.Report(new ProgressReport($"{msg}..."));
                 int dur = 0;
