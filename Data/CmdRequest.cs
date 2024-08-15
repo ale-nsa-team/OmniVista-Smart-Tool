@@ -109,6 +109,7 @@ namespace PoEWizard.Data
         SHOW_DNS_CONFIG = 208,
         SHOW_DHCP_CONFIG = 209,
         SHOW_DHCP_RELAY = 210,
+        SHOW_NTP_STATUS = 232,
         SHOW_NTP_CONFIG = 211,
         SHOW_IP_ROUTES = 212,
         DNS_LOOKUP = 213,

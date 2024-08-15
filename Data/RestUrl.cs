@@ -124,6 +124,8 @@ namespace PoEWizard.Data
             [Command.SHOW_DHCP_CONFIG] = "urn=alaDhcpRelayGlobalConfig&mibObject0=alaDhcpRelayAdminStatus&mibObject1=alaDhcpRelayForwardDelay&mibObject2=alaDhcpRelayMaximumHops&mibObject3=alaDhcpRelayPxeSupport&mibObject4=alaDhcpRelayInsertAgentInformation&mibObject5=alaDhcpRelayInsertAgentInformationPolicy&mibObject6=alaDhcpRelayPerInterfaceMode", // 208
             [Command.SHOW_DHCP_RELAY] = "urn=alaDhcpRelayServerDestinationTable&mibObject0=alaDhcpRelayServerDestinationAddressType&mibObject1=alaDhcpRelayServerDestinationAddress&limit=200&ignoreError=true",    // 209
             [Command.SHOW_NTP_CONFIG] = "urn=alaNtpPeerTable&mibObject0=alaNtpPeerAddressType&mibObject1=alaNtpPeerAddress&mibObject2=alaNtpPeerInetAddress&mibObject3=alaNtpPeerInetAddressType&mibObject4=alaNtpPeerType&mibObject5=alaNtpPeerAuth&mibObject6=alaNtpPeerVersion&mibObject7=alaNtpPeerMinpoll&mibObject8=alaNtpPeerMaxpoll&mibObject9=alaNtpPeerPrefer&mibObject10=alaNtpPeerName&mibObject11=alaNtpPeerPreempt&mibObject12=alaNtpPeerBurst&mibObject13=alaNtpPeerIBurst&mibObject14=alaNtpPeerAdmin&limit=200&ignoreError=true",  // 210
+            [Command.SHOW_NTP_STATUS] = "show ntp status",
+            [Command.SHOW_IP_INTERFACE] = "show ip interface",
             [Command.SHOW_IP_ROUTES] = "show ip routes",
             [Command.DNS_LOOKUP] = "ip domain-lookup",
             [Command.DNS_DOMAIN] = $"ip domain-name {DATA_0}",

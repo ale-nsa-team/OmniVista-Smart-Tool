@@ -110,6 +110,8 @@ namespace PoEWizard.Data
         public const string MIN_AOS_VERSION = "8.9 R1";
         public const string VCBOOT_PATH = "/flash/working/vcboot.cfg";
         public const string SWLOG_PATH = "/flash/tech_support_complete.tar";
+        public const string C = " \u2103";
+        public const string F = " \u2109";
         // Used by "Utils" class
         public const string P_CHASSIS = "CHASSIS_ID";
         public const string P_SLOT = "SLOT_ID";
@@ -270,9 +272,20 @@ namespace PoEWizard.Data
         public const string SWITCH_CFG_NTP = "alaNtpPeer";
         // Used by BuildOuiTable method of MainWindow.xaml.cs class
         public const string OUI_FILE = "oui.csv";
-
-        public const string C = " \u2103";
-        public const string F = " \u2109";
+        // Used by Config Wizard
+        public const string IP_ADDR = "IP Address";
+        public const string SUBNET_MASK = "Subnet Mask";
+        public const string GATEWAY = "Gateway Addr";
+        public const string DNS_ENABLE = "systemDNSEnableDnsResolver";
+        public const string DNS_DOMAIN = "systemDNSDomainName";
+        public const string DNS_DEST = "Dest Address";
+        public const string DNS1 = "systemDNSNsAddr1";
+        public const string DNS2 = "systemDNSNsAddr2";
+        public const string DNS3 = "systemDNSNsAddr3";
+        public const string DHCP_ENABLE = "alaDhcpRelayAdminStatus";
+        public const string DHCP_DEST = "alaDhcpRelayServerDestinationAddress";
+        public const string NTP_SERVER = "alaNtpPeerAddress";
+        public const string NTP_ENABLE = "Client mode";
         #endregion
 
         #region regex patterns

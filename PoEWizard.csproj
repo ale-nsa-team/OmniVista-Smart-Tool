@@ -168,7 +168,6 @@
     <Compile Include="Components\ValueConverts.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Device\Commands.cs" />
     <Compile Include="Device\EndPointDeviceModel.cs" />
     <Compile Include="Device\FeatureModel.cs" />
     <Compile Include="Device\PortTrafficModel.cs" />

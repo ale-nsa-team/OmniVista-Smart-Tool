@@ -65,12 +65,46 @@ namespace PoEWizard.Components
             await Task.Run(() => 
             {
                 List<Dictionary<string, string>> dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
-                Dictionary<string, string> dict = dicList.FirstOrDefault(d => d["IP Address"] == device.IpAddress);
-                if (dict != null) sysData.NetMask = dict["Subnet Mask"];
+                Dictionary<string, string> dict = dicList.FirstOrDefault(d => d[IP_ADDR] == device.IpAddress);
+                if (dict != null) sysData.NetMask = dict[SUBNET_MASK];
                 dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
-                dict = dicList.FirstOrDefault(d => d["Dest Address"] == "0.0.0.0/0");
-                if (dict != null) srvData.Gateway = dict["Gateway Addr"];
+                dict = dicList.FirstOrDefault(d => d[DNS_DEST] == "0.0.0.0/0");
+                if (dict != null) srvData.Gateway = dict[GATEWAY];
+                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DNS_CONFIG, ParseType.Htable))as List<Dictionary<string, string>>;
+                if (dicList.Count > 0)
+                {
+                    srvData.IsDns = dicList[0][DNS_ENABLE] == "1";
+                    srvData.DnsDomain = dicList[0][DNS_DOMAIN];
+                    srvData.Dns1 = dicList[0][DNS1];
+                    srvData.Dns2 = dicList[0][DNS2];
+                    srvData.Dns3 = dicList[0][DNS3];
+                }
+                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DHCP_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
+                if ( dicList.Count > 0) features.IsDhcpRelay = dicList[0][DHCP_ENABLE] == "1";
+
+                if (features.IsDhcpRelay)
+                {
+                    dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DHCP_RELAY, ParseType.Htable)) as List<Dictionary<string, string>>;
+                    if (dicList.Count > 0 && dicList[0].Count > 0) features.DhcpSrv = dicList[0][DHCP_DEST];
+                }
+
+                dict = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_NTP_STATUS, ParseType.Vtable)) as Dictionary<string, string>;
+                if ( dict != null) srvData.IsNtp = dict[NTP_ENABLE] == "enabled";
+
+                if (srvData.IsNtp)
+                {
+                    dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_NTP_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
+                    int n = Math.Min(dicList.Count, 3);
+                    for (int i = 0; i < n; i++)
+                    {
+                        if (i == 0) srvData.Ntp1 = dicList[i][NTP_SERVER];
+                        if (i == 1) srvData.Ntp2 = dicList[i][NTP_SERVER];
+                        if (i == 2) srvData.Ntp3 = dicList[i][NTP_SERVER];
+                    }
+                }
             });
+
+            HideInfoBox();
         }
 
         private void CfgBack_Click(object sender, RoutedEventArgs e)

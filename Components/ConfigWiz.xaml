@@ -37,7 +37,7 @@
             <Button x:Name="_btnSubmit" Click="CfgSubmit_Click" Style="{DynamicResource smallButton}" Margin="10,0,0,0">Submit</Button>
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                 <Button Style="{DynamicResource smallButton}" x:Name="_btnCfgBack" Click="CfgBack_Click">&lt; Back</Button>
-                <Button Style="{DynamicResource smallButton}" x:Name="_btnCfgNext" Click="CfgNext_Click" Margin="2,0,0,0">Next &gt;</Button>
+                <Button Style="{DynamicResource smallButton}" x:Name="_btnCfgNext" Click="CfgNext_Click" Margin="2,5,0,0">Next &gt;</Button>
             </StackPanel>
         </DockPanel>
     </Grid>
