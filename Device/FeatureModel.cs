@@ -1,13 +1,11 @@
 ﻿using PoEWizard.Data;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace PoEWizard.Device
 {
     public class FeatureModel
     {
-        //public bool IsPoe { get; set; } = true;
-        //public bool IsFastPoe { get; set; } = false;
+        public bool IsPoe { get; set; } = true;
         public bool IsLldp { get; set; } = false;
         public bool IsInsecureProtos { get; set; } = false;
         public bool IsSsh { get; set; } = true;
@@ -15,16 +13,19 @@ namespace PoEWizard.Device
         public bool IsDhcpRelay { get; set; } = false;
         public string DhcpSrv { get; set; }
 
-        public FeatureModel()
+        public FeatureModel(SwitchModel device)
         {
-            PropertyInfo[] props = GetType().GetProperties();
+            
         }
 
         public List<string> ToCommandList()
         {
             List<string> cmdList = new List<string>();
-            //if (IsPoe) cmdList.Add(Commands.StartPoE);
-            //if (IsFastPoe) cmdList.Add(Commands.EnableFastPoe);
+            if (IsPoe)
+            {
+
+            }
+
             if (IsLldp) cmdList.Add(Commands.EnhanceLldp);
             if (IsInsecureProtos)
             {

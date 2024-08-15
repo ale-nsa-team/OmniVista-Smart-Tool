@@ -1,6 +1,8 @@
-﻿using PoEWizard.Device;
+﻿using PoEWizard.Data;
+using PoEWizard.Device;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -75,12 +77,11 @@ namespace PoEWizard.Components
         {
             await Task.Run(() =>
             {
-                //ApplyCommands(sysData.ToCommandList(), "Applying System parameters...");
-                //ApplyCommands(srvData.ToCommandList(), "Applying DNS and NPT parameters...");
+                ApplyCommands(sysData.ToCommandList(), "Applying System parameters...");
+                ApplyCommands(srvData.ToCommandList(), "Applying DNS and NPT parameters...");
                 //ApplyCommands(features.ToCommandList(), "Applying Features...");
                 //ApplyCommands(snmpData.ToCommandList(), "Applying SNMP configuration...");
             });
-   
             HideInfoBox();
             DialogResult = true;
             Close();
@@ -120,14 +121,23 @@ namespace PoEWizard.Components
             _cfgFrame.Navigate(page);
         }
 
-        private void ApplyCommands(List<string> cmds, string message)
+        private void ApplyCommands(List<CmdRequest> cmds, string message)
         {
             if (cmds.Count == 0) return;
             ShowInfoBox(message);
 
-            foreach (string cmd in cmds)
+            foreach (CmdRequest cmd in cmds)
             {
-  
+                try
+                {
+                    MainWindow.restApiService.RunSwichCommand(cmd);
+                }
+                catch (Exception ex)
+                {
+                    if (!Regex.IsMatch(ex.Message, MATCH_POE_RUNNING))
+                        Errors.Add(ex.Message);
+                }
+
             }
         }
 

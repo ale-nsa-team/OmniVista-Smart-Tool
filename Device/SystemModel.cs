@@ -1,4 +1,5 @@
 ﻿using PoEWizard.Data;
+using static PoEWizard.Data.RestUrl;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -26,24 +27,24 @@ namespace PoEWizard.Device
             Location = device.Location;
         }
 
-        public List<string> ToCommandList()
+        public List<CmdRequest> ToCommandList()
         {
-            List<string> cmdList = new List<string>();
+            List<CmdRequest> cmdList = new List<CmdRequest>();
             string tz = TimeZoneInfo.Local.StandardName;
             string tzabv = Regex.Replace(tz, "[^A-Z]", "");
             string date = DateTime.Now.ToString("MM/dd/yyy");
             string time = DateTime.Now.ToString("HH:mm:ss");
 
-            cmdList.Add(Commands.DisableAutoFabric);
-            cmdList.Add(Commands.SetSystemTimezone(tzabv));
-            cmdList.Add(Commands.SetSystemDate(date));
-            cmdList.Add(Commands.SetSystemTime(time));
-            cmdList.Add(Commands.DdmEnable);
-            if (!string.IsNullOrEmpty(MgtIpAddr)) cmdList.Add(Commands.SetMgtInterface(MgtIpAddr, NetMask));
-            if (!string.IsNullOrEmpty(AdminPwd) && AdminPwd != Constants.DEFAULT_PASSWORD) cmdList.Add(Commands.SetPassword("admin", AdminPwd));
-            if (!string.IsNullOrEmpty(Name)) cmdList.Add(Commands.SystemName(Name));
-            if (!string.IsNullOrEmpty(Contact)) cmdList.Add(Commands.SystemContact(Contact));
-            if (!string.IsNullOrEmpty(Location)) cmdList.Add(Commands.SystemLocation(Location));
+            cmdList.Add(new CmdRequest(Command.DISABLE_AUTO_FABRIC));
+            cmdList.Add(new CmdRequest(Command.SET_SYSTEM_TIMEZONE, new string[] { tzabv }));
+            cmdList.Add(new CmdRequest(Command.SET_SYSTEM_DATE, new string[] { date }));
+            cmdList.Add(new CmdRequest(Command.SET_SYSTEM_TIME, new string[] { time }));
+            cmdList.Add(new CmdRequest(Command.ENABLE_DDM));
+            if (!string.IsNullOrEmpty(MgtIpAddr)) cmdList.Add(new CmdRequest(Command.SET_MNGT_INTERFACE, new string[] { MgtIpAddr, NetMask }));
+            if (!string.IsNullOrEmpty(AdminPwd) && AdminPwd != Constants.DEFAULT_PASSWORD) cmdList.Add(new CmdRequest(Command.SET_PASSWORD, new string[] { "admin", AdminPwd }));
+            if (!string.IsNullOrEmpty(Name)) cmdList.Add(new CmdRequest(Command.SET_SYSTEM_NAME));
+            if (!string.IsNullOrEmpty(Contact)) cmdList.Add(new CmdRequest(Command.SET_CONTACT, new string[] { Contact }));
+            if (!string.IsNullOrEmpty(Location)) cmdList.Add(new CmdRequest(Command.SET_LOCATION, new string[] { Location }));
             return cmdList;
         }
     }
