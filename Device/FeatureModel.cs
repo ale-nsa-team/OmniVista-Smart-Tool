@@ -51,19 +51,19 @@ namespace PoEWizard.Device
             if (IsLldp) cmdList.Add(new CmdRequest(Command.LLDP_SYSTEM_DESCRIPTION_ENABLE));
             if (IsInsecureProtos)
             {
-                cmdList.Add(Commands.DisableTelnet);
-                cmdList.Add(Commands.DisableFtp);
-            }
-            if (IsSsh)
-            {
-                cmdList.Add(Commands.SshEnable);
-                cmdList.Add(Commands.SshAuthenticationLocal);
-            }
-            if (IsMulticast) cmdList.AddRange(Commands.EnableMulticast);
-            if (IsDhcpRelay)
-            {
-                if (!string.IsNullOrEmpty(DhcpSrv)) cmdList.Add(Commands.DhcpRelayDest(DhcpSrv));
-                cmdList.Add(Commands.DhcpRelayEnable);
+            //    cmdList.Add(Commands.DisableTelnet);
+            //    cmdList.Add(Commands.DisableFtp);
+            //}
+            //if (IsSsh)
+            //{
+            //    cmdList.Add(Commands.SshEnable);
+            //    cmdList.Add(Commands.SshAuthenticationLocal);
+            //}
+            //if (IsMulticast) cmdList.AddRange(Commands.EnableMulticast);
+            //if (IsDhcpRelay)
+            //{
+            //    if (!string.IsNullOrEmpty(DhcpSrv)) cmdList.Add(Commands.DhcpRelayDest(DhcpSrv));
+            //    cmdList.Add(Commands.DhcpRelayEnable);
             }
             return cmdList;
         }
