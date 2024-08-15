@@ -1,4 +1,5 @@
-﻿using static PoEWizard.Data.Constants;
+﻿using System.Linq;
+using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Data
 {
@@ -83,12 +84,13 @@ namespace PoEWizard.Data
         DEBUG_CLI_UPDATE_LPCMM_LEVEL = 151,
         DEBUG_CLI_SHOW_LPNI_LEVEL = 152,
         DEBUG_CLI_SHOW_LPCMM_LEVEL = 153,
-        // 190 - 229 Config Wizard commands
+        // 190 - 239 Config Wizard commands
         DISABLE_AUTO_FABRIC = 190,
         ENABLE_DDM = 191,
         ENABLE_MULTICAST = 192,
         ENABLE_QUERYING = 193,
         ENABLE_QUERIER_FWD = 194,
+        ENABLE_MULTICAST_VLAN1 = 222,
         ENABLE_DHCP_RELAY = 195,
         DHCP_RELAY_DEST = 196,
         DISABLE_FTP = 197,
@@ -115,7 +117,15 @@ namespace PoEWizard.Data
         ENABLE_NTP = 216,
         NTP_SERVER = 217,
         START_POE = 220,
-        STOP_POE = 221
+        STOP_POE = 221,
+        SNMP_AUTH_LOCAL = 222,
+        SNMP_COMMUNITY_MODE = 223,
+        SNMP_COMMUNITY_MAP = 224,
+        SNMP_NO_SECURITY = 225,
+        SNMP_STATION = 226,
+        SNMP_TRAP_AUTH = 227,
+        SNMP_V2_USER = 229,
+        SNMP_V3_USER = 230
     }
 
     public class CmdRequest
@@ -123,18 +133,25 @@ namespace PoEWizard.Data
         public Command Command { get; }
         public ParseType ParseType { get; }
         public string[] Data { get; }
-        public int NbHeaders { get; }
 
-        public CmdRequest(Command command) : this(command, ParseType.Text, null, 1) { }
-        public CmdRequest(Command command, string[] data) : this(command, ParseType.Text, data, 1) { }
-        public CmdRequest(Command command, ParseType type) : this(command, type, null, 1) { }
-        public CmdRequest(Command command, ParseType type, int nbHeaders) : this(command, type, null, nbHeaders) { }
-        public CmdRequest(Command command, ParseType type, string[] data, int nbHeaders)
+        public CmdRequest(Command command) : this(command, ParseType.Text, null) { }
+        public CmdRequest(Command command, params string[] data) : this(command, ParseType.Text, data) { }
+        public CmdRequest(Command command, ParseType type) : this(command, type, null) { }
+        public CmdRequest(Command command, ParseType type, params string[] data)
         {
             Command = command;
             ParseType = type;
-            Data = data;
-            NbHeaders = nbHeaders;
+            Data = GetParams(data);
+        }
+
+        private string[] GetParams(params string[] args)
+        {
+            string[] result = new string[args.Length];
+            foreach (string arg in args)
+            {
+                result.Append(arg);
+            }
+            return result;
         }
     }
 }

@@ -15,6 +15,8 @@ namespace PoEWizard.Device
         public bool IsDhcpRelay { get; set; } = false;
         public string DhcpSrv { get; set; }
 
+        public FeatureModel() { }
+
         public FeatureModel(SwitchModel device)
         {
             this.device = device;
@@ -43,7 +45,7 @@ namespace PoEWizard.Device
                 {
                     if (chas != null)
                     {
-                        cmdList.Add(new CmdRequest(Command.START_POE, new string[] { chas.Number.ToString() }));
+                        cmdList.Add(new CmdRequest(Command.START_POE, chas.Number.ToString()));
                     }
                 }
             }
@@ -51,19 +53,24 @@ namespace PoEWizard.Device
             if (IsLldp) cmdList.Add(new CmdRequest(Command.LLDP_SYSTEM_DESCRIPTION_ENABLE));
             if (IsInsecureProtos)
             {
-            //    cmdList.Add(Commands.DisableTelnet);
-            //    cmdList.Add(Commands.DisableFtp);
-            //}
-            //if (IsSsh)
-            //{
-            //    cmdList.Add(Commands.SshEnable);
-            //    cmdList.Add(Commands.SshAuthenticationLocal);
-            //}
-            //if (IsMulticast) cmdList.AddRange(Commands.EnableMulticast);
-            //if (IsDhcpRelay)
-            //{
-            //    if (!string.IsNullOrEmpty(DhcpSrv)) cmdList.Add(Commands.DhcpRelayDest(DhcpSrv));
-            //    cmdList.Add(Commands.DhcpRelayEnable);
+                cmdList.Add(new CmdRequest(Command.DISABLE_TELNET));
+                cmdList.Add(new CmdRequest(Command.DISABLE_FTP));
+            }
+            if (IsSsh)
+            {
+                cmdList.Add(new CmdRequest(Command.ENABLE_SSH));
+                cmdList.Add(new CmdRequest(Command.SSH_AUTH_LOCAL));
+            }
+            if (IsMulticast)
+            {
+                cmdList.Add(new CmdRequest(Command.ENABLE_MULTICAST));
+                cmdList.Add(new CmdRequest(Command.ENABLE_QUERYING));
+                cmdList.Add(new CmdRequest(Command.ENABLE_MULTICAST_VLAN1));
+            }
+            if (IsDhcpRelay)
+            {
+                if (!string.IsNullOrEmpty(DhcpSrv)) cmdList.Add(new CmdRequest(Command.DHCP_RELAY_DEST, DhcpSrv));
+                cmdList.Add(new CmdRequest(Command.ENABLE_DHCP_RELAY));
             }
             return cmdList;
         }

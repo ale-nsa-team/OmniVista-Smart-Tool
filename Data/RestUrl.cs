@@ -1,4 +1,5 @@
 ﻿using PoEWizard.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -103,6 +104,7 @@ namespace PoEWizard.Data
             [Command.ENABLE_MULTICAST] = "ip multicast admin-state enable",
             [Command.ENABLE_QUERYING] = "ip multicast querying enable",
             [Command.ENABLE_QUERIER_FWD] = "ip multicast querier-forwarding enable",
+            [Command.ENABLE_MULTICAST_VLAN1] = "ip multicast vlan 1 admin-state enable",
             [Command.ENABLE_DHCP_RELAY] = "ip dhcp relay admin-state enable",
             [Command.DHCP_RELAY_DEST] = $"ip dhcp relay destination {DATA_0}",
             [Command.DISABLE_FTP] = "ip service ftp admin-state disable",
@@ -129,7 +131,15 @@ namespace PoEWizard.Data
             [Command.ENABLE_NTP] = "ntp client admin-state enable",
             [Command.NTP_SERVER] = $"ntp server {DATA_0}",
             [Command.START_POE] = $"lanpower chassis {DATA_0} service start",
-            [Command.STOP_POE] = $"lanpower chassis {DATA_0} service stop"
+            [Command.STOP_POE] = $"lanpower chassis {DATA_0} service stop",
+            [Command.SNMP_AUTH_LOCAL] = "aaa authentication snmp local",
+            [Command.SNMP_COMMUNITY_MODE] = "snmp community mode enable",
+            [Command.SNMP_COMMUNITY_MAP] = $"snmp community-map {DATA_0} user {DATA_1} enable",
+            [Command.SNMP_NO_SECURITY] = "snmp security no-security",
+            [Command.SNMP_STATION] = $"snmp station {DATA_0} {DATA_1} {DATA_2} {DATA_3} enable",
+            [Command.SNMP_TRAP_AUTH] = "snmp authentication-trap enable",
+            [Command.SNMP_V2_USER] = $"user {DATA_0} password {DATA_1} read-write all {DATA_2}",
+            [Command.SNMP_V3_USER] = $"user {DATA_0} password {DATA_1} read-write all {DATA_2} priv-password {DATA_3}"
         };
 
         public static Dictionary<Command, Dictionary<string, string>> CONTENT_TABLE = new Dictionary<Command, Dictionary<string, string>>

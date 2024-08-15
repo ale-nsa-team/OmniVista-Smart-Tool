@@ -162,14 +162,13 @@ namespace PoEWizard.Comm
                 {
 
                     case ParseType.Htable:
-                        return CliParseUtils.ParseHTable(resp[STRING].ToString(), cmdReq.NbHeaders);
-
+                        return CliParseUtils.ParseHTable(resp[STRING].ToString(), 1);
+                    case ParseType.Htable2:
+                        return CliParseUtils.ParseHTable(resp[STRING].ToString(), 2);
                     case ParseType.Vtable:
                         return CliParseUtils.ParseVTable(resp[STRING].ToString());
-
                     case ParseType.Etable:
                         return CliParseUtils.ParseETable(resp[STRING].ToString());
-
                     default:
                         return resp;
                 }
