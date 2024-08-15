@@ -20,7 +20,6 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static PoEWizard.Data.Constants;
-using static PoEWizard.Data.RestUrl;
 
 namespace PoEWizard
 {
@@ -1197,8 +1196,15 @@ namespace PoEWizard
             bool res = ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.IpAddress}?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
             if (res)
             {
+                await Task.Run(() => restApiService.GetSystemInfo());
+                if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
+                {
+                    ShowMessageBox("Reboot Switch", $"Cannot reboot the switch {device.IpAddress} because it's not certified!", MsgBoxIcons.Error, MsgBoxButtons.Ok);
+                    return;
+                }
                 Logger.Activity($"Rebooting switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
                 string txt = await RebootSwitch();
+                if (string.IsNullOrEmpty(txt)) return;
                 res = ShowMessageBox("Reboot Switch", $"{txt}\nDo you want to reconnect to the switch {device.IpAddress}?", MsgBoxIcons.Info, MsgBoxButtons.OkCancel);
                 if (res)
                 {
