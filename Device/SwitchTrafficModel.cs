@@ -9,7 +9,7 @@ namespace PoEWizard.Device
     public class TrafficReport
     {
 
-        const string HEADER = "Port,Rx Rate (Kbps),Tx Rate (Kbps),#Broadcast Frames,#Unicast Frames,#Multicast Frames,#Lost Frames,#CRC Error,#Collisions,#Alignments";
+        const string HEADER = "Port,Rx Rate (Kbps),Tx Rate (Kbps),#Broadcast Frames,#Unicast Frames,Broadcast/Unicast (%),#Multicast Frames,#Lost Frames,#CRC Error,#Collisions,#Alignments";
         const double MAX_PERCENT_BROADCAST = 0.5;
         const double MAX_PERCENT_RATE = 70;
         const double MAX_PERCENT_WARNING_LOST_FRAMES = 3;
@@ -49,7 +49,8 @@ namespace PoEWizard.Device
                 this.Data.Append(",").Append(broadCast);
                 double uniCast = GetAvgTrafficSamples(this._trafficPort.UnicastFrames);
                 this.Data.Append(",").Append(uniCast);
-                AddAlertPercent(slotPortNr, broadCast, "#Broadcast Frames", uniCast, "#Unicast Frames", MAX_PERCENT_BROADCAST);
+                this.Data.Append(",").Append(Utils.CalcPercent(broadCast, uniCast, 2));
+                if (broadCast > 500) AddAlertPercent(slotPortNr, broadCast, "#Broadcast Frames", uniCast, "#Unicast Frames", MAX_PERCENT_BROADCAST);
                 double multiCast = GetAvgTrafficSamples(this._trafficPort.MulticastFrames);
                 this.Data.Append(",").Append(multiCast);
                 double lostFrames = GetAvgTrafficSamples(this._trafficPort.LostFrames);
