@@ -371,10 +371,10 @@ namespace PoEWizard.Comm
             return Utils.CalcStringDuration(startTime, true);
         }
 
-        public string RunTrafficAnalysis(int nbMaxSamples, int samplePeriodSec)
+        public TrafficReport RunTrafficAnalysis(int nbMaxSamples, int samplePeriodSec)
         {
             if (samplePeriodSec < 5) samplePeriodSec = 5;
-            string report = string.Empty;
+            TrafficReport report = new TrafficReport();
             try
             {
                 Logger.Info($"Starting traffic analysis on switch {SwitchModel.IpAddress}");
@@ -403,10 +403,11 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                 }
-                report = $"Traffic analysis on switch {SwitchModel.Name} ({SwitchModel.IpAddress}) report:\n";
-                report += $"\nNo traffic anomalies detected.";
-                report += $"\n\nDuration: {Utils.CalcStringDuration(startTime, true)}";
-                Logger.Activity(report);
+                if (_switchTraffic != null)
+                {
+                    report.BuildReportData(_switchTraffic);
+                    Logger.Activity(report.Summary);
+                }
             }
             catch (Exception ex)
             {
