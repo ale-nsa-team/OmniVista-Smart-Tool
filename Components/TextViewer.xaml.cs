@@ -21,6 +21,7 @@ namespace PoEWizard.Components
 
         public string Filename { get; set; }
         public string SaveFilename { get; set; }
+        public string CsvData { get; set; }
 
         public TextViewer(string title, string content = "", bool canClear = false)
         {
@@ -36,6 +37,7 @@ namespace PoEWizard.Components
             }
             this.title = title;
             this.content = content;
+            this.CsvData = null;
             Title = title;
             _content.FontFamily = new FontFamily("Courier New");
             _content.FontSize = 14;
@@ -85,6 +87,11 @@ namespace PoEWizard.Components
             {
                 string txt = new TextRange(_content.Document.ContentStart, _content.Document.ContentEnd).Text;
                 File.WriteAllText(sfd.FileName, txt);
+                if (!string.IsNullOrEmpty(this.CsvData))
+                {
+                    string csvFileName = Path.Combine(Path.GetDirectoryName(sfd.FileName), $"{Path.GetFileNameWithoutExtension(sfd.FileName)}.csv");
+                    File.WriteAllText(csvFileName, this.CsvData);
+                }
             }
         }
 

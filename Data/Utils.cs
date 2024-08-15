@@ -246,9 +246,9 @@ namespace PoEWizard.Data
             return $"{RoundUp(GetTimeDuration(startTime))} sec";
         }
 
-        public static double RoundUp(double input)
+        public static double RoundUp(double input, int dec = 0)
         {
-            double multiplier = Math.Pow(10, 0);
+            double multiplier = Math.Pow(10, dec);
             double multiplication = input * multiplier;
             double result = Math.Round(multiplication) / multiplier;
             return result;
@@ -502,6 +502,51 @@ namespace PoEWizard.Data
                     }
                 }
             }
+        }
+
+        public static double CalculateTraffic(double currBytes, double prevBytes, double period)
+        {
+            if (period < 5 || prevBytes == 0) return 0;
+            double dVal = (((currBytes - prevBytes) / period) * 8) / 1024;
+            return Math.Round(dVal, 0, MidpointRounding.ToEven);
+        }
+
+        public static string CalcPercentTotal(double lowerVal, double higherVal, int dec)
+        {
+            try
+            {
+                string format = "{0:0.";
+                for (int idx = 0; idx < dec; idx++) { format += "0"; }
+                format += "}";
+                double remaining = lowerVal;
+                double total = higherVal;
+                if (lowerVal > higherVal)
+                {
+                    total = lowerVal;
+                    remaining = higherVal;
+                }
+                string percent = string.Format(format, CalcPercent((total - remaining), total, dec));
+                return percent;
+            }
+            catch { }
+            return "0";
+        }
+
+        public static double CalcPercent(double val1, double val2, int dec)
+        {
+            try
+            {
+                double lowerVal = val1;
+                double higherVal = val2;
+                if (higherVal < val1)
+                {
+                    lowerVal = val2;
+                    higherVal = val1;
+                }
+                return RoundUp((lowerVal / higherVal) * 100, dec);
+            }
+            catch { }
+            return 0;
         }
 
     }

@@ -1027,14 +1027,18 @@ namespace PoEWizard
             try
             {
                 ShowProgress($"Running traffic analysis on switch {device.IpAddress}...");
-                string report = string.Empty;
+                TrafficReport report = null;
                 await Task.Run(() => report = restApiService.RunTrafficAnalysis(5, 15));
-                TextViewer tv = new TextViewer("Traffic Analysis", report)
+                if (report != null)
                 {
-                    Owner = this,
-                    SaveFilename = $"{device.Name}-{DateTime.Now.ToString("MM-dd-yyyy_hh_mm_ss")}-traffic-analysis.txt"
-                };
-                tv.Show();
+                    TextViewer tv = new TextViewer("Traffic Analysis", report.Summary)
+                    {
+                        Owner = this,
+                        SaveFilename = $"{device.Name}-{DateTime.Now.ToString("MM-dd-yyyy_hh_mm_ss")}-traffic-analysis.txt",
+                        CsvData = report.Data.ToString()
+                    };
+                    tv.Show();
+                }
             }
             catch (Exception ex)
             {
