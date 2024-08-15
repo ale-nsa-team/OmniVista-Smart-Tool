@@ -94,9 +94,7 @@ namespace PoEWizard.Comm
                 if (_response[STRING] != null) SwitchModel.LoadLldpFromList(CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString()), DictionaryType.LldpRemoteList);
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_LLDP_INVENTORY));
                 if (_response[STRING] != null) SwitchModel.LoadLldpFromList(CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString()), DictionaryType.LldpInventoryList);
-                SendProgressReport("Reading MAC address information");
-                _response = SendRequest(GetRestUrlEntry(Command.SHOW_MAC_LEARNING));
-                if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 1), DictionaryType.MacAddressList);
+                GetMacAddressList();
                 string title = string.IsNullOrEmpty(source) ? $"Refresh switch {SwitchModel.IpAddress}" : source;
             }
             catch (Exception ex)
@@ -404,7 +402,8 @@ namespace PoEWizard.Comm
                 }
                 if (_switchTraffic != null)
                 {
-                    report.BuildReportData(_switchTraffic);
+                    GetMacAddressList();
+                    report.BuildReportData(_switchTraffic, SwitchModel.ChassisList);
                     Logger.Activity(report.Summary);
                 }
             }
@@ -413,6 +412,13 @@ namespace PoEWizard.Comm
                 SendSwitchError($"Traffic analysis on switch {SwitchModel.IpAddress}", ex);
             }
             return report;
+        }
+
+        private void GetMacAddressList()
+        {
+            SendProgressReport("Reading MAC address information");
+            _response = SendRequest(GetRestUrlEntry(Command.SHOW_MAC_LEARNING));
+            if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 1), DictionaryType.MacAddressList);
         }
 
         private void GetPortsTrafficInformation()

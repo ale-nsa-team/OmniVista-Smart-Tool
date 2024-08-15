@@ -16,7 +16,7 @@ namespace PoEWizard.Device
         const double MAX_PERCENT_CRITICAL_LOST_FRAMES = 6;
 
         private PortTrafficModel _trafficPort;
-        private Dictionary<string, string> _alertReport { get; set; }
+        private Dictionary<string, string> _alertReport;
 
         public string Summary {  get; set; }
         public StringBuilder Data { get; set; }
@@ -30,7 +30,7 @@ namespace PoEWizard.Device
             _alertReport = new Dictionary<string, string>();
         }
 
-        public void BuildReportData(SwitchTrafficModel switchTraffic)
+        public void BuildReportData(SwitchTrafficModel switchTraffic, List<ChassisModel> chassisList)
         {
             this.TrafficStartTime = switchTraffic.StartTime;
             this.Summary = $"Traffic analysis completed on switch {switchTraffic.Name} ({switchTraffic.IpAddress}), Serial Number: {switchTraffic.SerialNumber}:";
