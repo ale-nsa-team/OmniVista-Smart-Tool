@@ -1,6 +1,8 @@
-﻿using PoEWizard.Data;
+﻿using PoEWizard.Comm;
+using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -15,6 +17,8 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class ConfigWiz : Window
     {
+        private RestApiService restSrv;
+        private SwitchModel device;
         private int pageNo;
         private const int pageCount = 4;
         private readonly SystemModel sysData;
@@ -40,6 +44,8 @@ namespace PoEWizard.Components
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
             DataContext = this;
+            this.device = device;
+            restSrv = MainWindow.restApiService;
             Errors = new List<string>();
             sysData = new SystemModel(device);
             srvData = new ServerModel();
@@ -53,6 +59,20 @@ namespace PoEWizard.Components
         #endregion
 
         #region Event Handlers
+        private async void OnWindowLoaded(object sender, RoutedEventArgs e)
+        {
+            ShowInfoBox("Loading current paramaeters...");
+            await Task.Run(() => 
+            {
+                List<Dictionary<string, string>> dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
+                Dictionary<string, string> dict = dicList.FirstOrDefault(d => d["IP Address"] == device.IpAddress);
+                if (dict != null) sysData.NetMask = dict["Subnet Mask"];
+                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
+                dict = dicList.FirstOrDefault(d => d["Dest Address"] == "0.0.0.0/0");
+                if (dict != null) srvData.Gateway = dict["Gateway Addr"];
+            });
+        }
+
         private void CfgBack_Click(object sender, RoutedEventArgs e)
         {
             pageNo = Math.Max(1, pageNo - 1);
@@ -79,8 +99,8 @@ namespace PoEWizard.Components
             {
                 ApplyCommands(sysData.ToCommandList(), "Applying System parameters...");
                 ApplyCommands(srvData.ToCommandList(), "Applying DNS and NPT parameters...");
-                //ApplyCommands(features.ToCommandList(), "Applying Features...");
-                //ApplyCommands(snmpData.ToCommandList(), "Applying SNMP configuration...");
+                ApplyCommands(features.ToCommandList(), "Applying Features...");
+                ApplyCommands(snmpData.ToCommandList(), "Applying SNMP configuration...");
             });
             HideInfoBox();
             DialogResult = true;
@@ -130,7 +150,7 @@ namespace PoEWizard.Components
             {
                 try
                 {
-                    MainWindow.restApiService.RunSwichCommand(cmd);
+                    restSrv.RunSwichCommand(cmd);
                 }
                 catch (Exception ex)
                 {

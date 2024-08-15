@@ -8,7 +8,7 @@ namespace PoEWizard.Data
         #region enums
         public enum ThemeType { Dark, Light }
         public enum LogLevel { Error, Warn, Activity, Info, Debug, Trace }
-        public enum ReportType { Error, Warning, Info, Status }
+        public enum ReportType { Error, Warning, Info, Status, Value }
         public enum MatchOperation { EndsWith, Equals, StartsWith, Contains, Regex }
         public enum DeviceFunction { Edge, Core };
         public enum MsgBoxButtons { Ok, Cancel, OkCancel, None };

@@ -125,7 +125,8 @@ namespace PoEWizard.Data
         SNMP_STATION = 226,
         SNMP_TRAP_AUTH = 227,
         SNMP_V2_USER = 229,
-        SNMP_V3_USER = 230
+        SNMP_V3_USER = 230,
+        SHOW_IP_INTERFACE = 231
     }
 
     public class CmdRequest
@@ -141,17 +142,7 @@ namespace PoEWizard.Data
         {
             Command = command;
             ParseType = type;
-            Data = GetParams(data);
-        }
-
-        private string[] GetParams(params string[] args)
-        {
-            string[] result = new string[args.Length];
-            foreach (string arg in args)
-            {
-                result.Append(arg);
-            }
-            return result;
+            Data = data?.ToArray();
         }
     }
 }

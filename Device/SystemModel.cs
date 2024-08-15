@@ -1,5 +1,4 @@
 ﻿using PoEWizard.Data;
-using static PoEWizard.Data.RestUrl;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
