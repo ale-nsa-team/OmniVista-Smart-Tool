@@ -5,7 +5,9 @@ namespace PoEWizard.Device
 {
     public class FeatureModel
     {
-        public bool IsPoe { get; set; } = true;
+        private readonly SwitchModel device;
+        
+        public bool IsPoe { get; set; } = false;
         public bool IsLldp { get; set; } = false;
         public bool IsInsecureProtos { get; set; } = false;
         public bool IsSsh { get; set; } = true;
@@ -15,18 +17,38 @@ namespace PoEWizard.Device
 
         public FeatureModel(SwitchModel device)
         {
-            
+            this.device = device;
+            foreach (var chas in device.ChassisList)
+            {
+                if (chas != null)
+                {
+                    foreach (var slot in chas.Slots)
+                    {
+                        if (slot?.IsInitialized == true)
+                        {
+                            IsPoe = true;
+                            return;
+                        }
+                    }
+                }
+            }
         }
 
-        public List<string> ToCommandList()
+        public List<CmdRequest> ToCommandList()
         {
-            List<string> cmdList = new List<string>();
+            List<CmdRequest> cmdList = new List<CmdRequest>();
             if (IsPoe)
             {
-
+                foreach (var chas in device.ChassisList)
+                {
+                    if (chas != null)
+                    {
+                        cmdList.Add(new CmdRequest(Command.START_POE, new string[] { chas.Number.ToString() }));
+                    }
+                }
             }
 
-            if (IsLldp) cmdList.Add(Commands.EnhanceLldp);
+            if (IsLldp) cmdList.Add(new CmdRequest(Command.LLDP_SYSTEM_DESCRIPTION_ENABLE));
             if (IsInsecureProtos)
             {
                 cmdList.Add(Commands.DisableTelnet);

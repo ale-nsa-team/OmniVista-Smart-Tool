@@ -43,7 +43,7 @@ namespace PoEWizard.Components
             Errors = new List<string>();
             sysData = new SystemModel(device);
             srvData = new ServerModel();
-            features = new FeatureModel();
+            features = new FeatureModel(device);
             snmpData = new SnmpModel();
             pageNo = 1;
             _btnCfgBack.IsEnabled = false;

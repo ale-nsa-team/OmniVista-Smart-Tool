@@ -128,8 +128,8 @@ namespace PoEWizard.Data
             [Command.DNS_SERVER] = $"ip name-server {DATA_0}",
             [Command.ENABLE_NTP] = "ntp client admin-state enable",
             [Command.NTP_SERVER] = $"ntp server {DATA_0}",
-            [Command.START_POE] = $"lanpower slot {DATA_0} service start",
-            [Command.STOP_POE] = $"lanpower slot {DATA_0} service stop"
+            [Command.START_POE] = $"lanpower chassis {DATA_0} service start",
+            [Command.STOP_POE] = $"lanpower chassis {DATA_0} service stop"
         };
 
         public static Dictionary<Command, Dictionary<string, string>> CONTENT_TABLE = new Dictionary<Command, Dictionary<string, string>>
