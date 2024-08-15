@@ -9,7 +9,7 @@ namespace PoEWizard.Device
     public class TrafficReport
     {
 
-        const string HEADER = "Port,Max. Rx Rate,Avg. Rx Rate,Max. Tx Rate,Avg. Tx Rate,#Broadcast Frames,#Unicast Frames,#Multicast Frames,#Lost Frames,#CRC Error,#Collisions,#Alignments";
+        const string HEADER = "Port,Rx Rate (Kbps),Tx Rate (Kbps),#Broadcast Frames,#Unicast Frames,#Multicast Frames,#Lost Frames,#CRC Error,#Collisions,#Alignments";
         const double MAX_PERCENT_BROADCAST = 0.5;
         const double MAX_PERCENT_RATE = 70;
         const double MAX_PERCENT_WARNING_LOST_FRAMES = 3;
@@ -34,7 +34,7 @@ namespace PoEWizard.Device
         {
             this.TrafficStartTime = switchTraffic.StartTime;
             this.Summary = $"Traffic analysis completed on switch {switchTraffic.Name} ({switchTraffic.IpAddress}), Serial Number: {switchTraffic.SerialNumber}:";
-            this.Summary += $"\nDuration: {Utils.CalcStringDuration(TrafficStartTime, true)}";
+            this.Summary += $"\nDuration: {Utils.CalcStringDuration(TrafficStartTime, true)}\n\nTraffic Alert:\n";
             this.TrafficDuration = DateTime.Now.Subtract(switchTraffic.StartTime).TotalSeconds;
             this.Data = new StringBuilder(HEADER);
             this._alertReport = new Dictionary<string, string>();
@@ -42,9 +42,9 @@ namespace PoEWizard.Device
             {
                 string slotPortNr = keyVal.Key;
                 this._trafficPort = keyVal.Value;
-                this.Data.Append("\r\n").Append(this._trafficPort.Port);
-                ParseTrafficRateAlert("Rx Rate", slotPortNr, AddTrafficRate(this._trafficPort.RxBytes));
-                ParseTrafficRateAlert("Tx Rate", slotPortNr, AddTrafficRate(this._trafficPort.TxBytes));
+                this.Data.Append("\r\n ").Append(this._trafficPort.Port);
+                ParseTrafficRate("Rx Rate", slotPortNr, this._trafficPort.RxBytes);
+                ParseTrafficRate("Tx Rate", slotPortNr, this._trafficPort.TxBytes);
                 double broadCast = GetAvgTrafficSamples(this._trafficPort.BroadcastFrames);
                 this.Data.Append(",").Append(broadCast);
                 double uniCast = GetAvgTrafficSamples(this._trafficPort.UnicastFrames);
@@ -58,7 +58,7 @@ namespace PoEWizard.Device
                 {
                     AddAlertPercent(slotPortNr, lostFrames, "Warning #Lost Frames", uniCast + multiCast, "#Unicast and #Multicast Frames", MAX_PERCENT_WARNING_LOST_FRAMES);
                 }
-                double crcError = GetMaxTrafficSamples(this._trafficPort.MulticastFrames);
+                double crcError = GetMaxTrafficSamples(this._trafficPort.CrcErrorFrames);
                 this.Data.Append(",").Append(crcError);
                 if (crcError > 1) AddAlert(slotPortNr, $"#Rx CRC Error detected: {crcError}");
                 double collisions = GetMaxTrafficSamples(this._trafficPort.CollidedFrames) + GetMaxTrafficSamples(this._trafficPort.Collisions) +
@@ -73,10 +73,13 @@ namespace PoEWizard.Device
             else this.Summary += $"\nNo traffic anomalies detected.";
         }
 
-        private void ParseTrafficRateAlert(string title, string slotPortNr, double traffRate)
+        private void ParseTrafficRate(string title, string slotPortNr, List<double> samples)
         {
+            double traffRate = AddTrafficRate(samples);
+            this.Data.Append(",");
             if (traffRate > 0)
             {
+                this.Data.Append(traffRate);
                 traffRate /= 1024;
                 double percent = Utils.CalcPercent(traffRate, this._trafficPort.BandWidth, 2);
                 if (percent >= MAX_PERCENT_RATE)
@@ -101,7 +104,7 @@ namespace PoEWizard.Device
         {
             string txt = string.Empty;
             if (this._alertReport.ContainsKey(slotPortNr)) txt = this._alertReport[slotPortNr];
-            txt += $"\nPort {slotPortNr} {alertMsg}";
+            txt += $"\nPort {slotPortNr}:\n\t{alertMsg}";
             this._alertReport[slotPortNr] = txt;
         }
 
@@ -126,7 +129,10 @@ namespace PoEWizard.Device
                 List<double> traffDiff = BuildDiffSample(list);
                 if (traffDiff?.Count > 1)
                 {
-                    return traffDiff.Max();
+                    double maxValue = traffDiff.Max();
+                    double avg = GetAvgTrafficSamples(list);
+                    if (maxValue < avg) maxValue = avg;
+                    return maxValue;
                 }
             }
             return 0;
