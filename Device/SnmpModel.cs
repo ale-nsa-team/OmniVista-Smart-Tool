@@ -1,5 +1,6 @@
 ﻿using PoEWizard.Data;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace PoEWizard.Device
@@ -47,37 +48,37 @@ namespace PoEWizard.Device
 
         }
 
-        public List<string> ToCommandList()
+        public List<CmdRequest> ToCommandList()
         {
-            List<string> cmdList = new List<string>();
+            List<CmdRequest> cmdList = new List<CmdRequest>();
 
             string protos = Protocols.Replace(" ", "").ToLower();
             switch (Version)
             {
                 case "v2":
-                    if (NotEmpty(User)) cmdList.Add(Commands.SnmpV2User(User, Password, protos));
+                    if (NotEmpty(User)) cmdList.Add(new CmdRequest(Command.SNMP_V2_USER, User, Password, protos));
                     if (NotEmpty(Community))
                     {
-                        cmdList.Add(Commands.SnmpCommunityMode);
-                        cmdList.Add(Commands.SnmpCommunityMap(Community, User));
+                        cmdList.Add(new CmdRequest(Command.SNMP_COMMUNITY_MODE));
+                        cmdList.Add(new CmdRequest(Command.SNMP_COMMUNITY_MAP, Community, User));
                     }
                     break;
                 case "v3":
                     if (NotEmpty(User))
                     {
-                        cmdList.Add(Commands.SnmpV3User(User, Password, PrivateKey, protos));
+                        cmdList.Add(new CmdRequest(Command.SNMP_V3_USER, User, Password, PrivateKey, protos));
                     }
                     break;
             }
             if (NotEmpty(TrapReceiver) && NotEmpty(User))
             {
-                cmdList.Add(Commands.SnmpTrapAuth);
-                cmdList.Add(Commands.SnmpStation(TrapReceiver, "162", User, Version));
+                cmdList.Add(new CmdRequest(Command.SNMP_TRAP_AUTH));
+                cmdList.Add(new CmdRequest(Command.SNMP_STATION, TrapReceiver, "162", User, Version));
             }
             if (cmdList.Count > 0)
             {
-                cmdList.Insert(0, Commands.SnmpAuthLocal);
-                cmdList.Insert(1, Commands.SnmpNoSecurity);
+                cmdList.Insert(0, new CmdRequest(Command.SNMP_AUTH_LOCAL));
+                cmdList.Insert(1, new CmdRequest(Command.SNMP_NO_SECURITY));
             }
             return cmdList;
         }

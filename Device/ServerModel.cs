@@ -1,7 +1,6 @@
 ﻿using PoEWizard.Data;
 using System.Collections.Generic;
 using System.Reflection;
-using static PoEWizard.Data.RestUrl;
 
 namespace PoEWizard.Device
 {
@@ -48,14 +47,14 @@ namespace PoEWizard.Device
                 if (!string.IsNullOrEmpty(dns))
                 {
                     cmdList.Add(new CmdRequest(Command.DNS_LOOKUP));
-                    cmdList.Add(new CmdRequest(Command.DNS_SERVER, new string[] { dns }));
-                    if (!string.IsNullOrEmpty(DnsDomain)) cmdList.Add(new CmdRequest(Command.DNS_DOMAIN, new string[] { DnsDomain }));
+                    cmdList.Add(new CmdRequest(Command.DNS_SERVER, dns));
+                    if (!string.IsNullOrEmpty(DnsDomain)) cmdList.Add(new CmdRequest(Command.DNS_DOMAIN, DnsDomain));
                 }
                 if (IsNtp)
                 {
-                    if (!string.IsNullOrEmpty(Ntp1)) cmdList.Add(new CmdRequest(Command.NTP_SERVER, new string[] { Ntp1 }));
-                    if (!string.IsNullOrEmpty(Ntp2)) cmdList.Add(new CmdRequest(Command.NTP_SERVER, new string[] { Ntp2 }));
-                    if (!string.IsNullOrEmpty(Ntp3)) cmdList.Add(new CmdRequest(Command.NTP_SERVER, new string[] { Ntp3 }));
+                    if (!string.IsNullOrEmpty(Ntp1)) cmdList.Add(new CmdRequest(Command.NTP_SERVER, Ntp1));
+                    if (!string.IsNullOrEmpty(Ntp2)) cmdList.Add(new CmdRequest(Command.NTP_SERVER, Ntp2));
+                    if (!string.IsNullOrEmpty(Ntp3)) cmdList.Add(new CmdRequest(Command.NTP_SERVER, Ntp3));
                     cmdList.Add(new CmdRequest(Command.ENABLE_NTP));
 
                 }

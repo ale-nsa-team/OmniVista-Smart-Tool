@@ -36,15 +36,15 @@ namespace PoEWizard.Device
             string time = DateTime.Now.ToString("HH:mm:ss");
 
             cmdList.Add(new CmdRequest(Command.DISABLE_AUTO_FABRIC));
-            cmdList.Add(new CmdRequest(Command.SET_SYSTEM_TIMEZONE, new string[] { tzabv }));
-            cmdList.Add(new CmdRequest(Command.SET_SYSTEM_DATE, new string[] { date }));
-            cmdList.Add(new CmdRequest(Command.SET_SYSTEM_TIME, new string[] { time }));
+            cmdList.Add(new CmdRequest(Command.SET_SYSTEM_TIMEZONE, tzabv));
+            cmdList.Add(new CmdRequest(Command.SET_SYSTEM_DATE,date));
+            cmdList.Add(new CmdRequest(Command.SET_SYSTEM_TIME, time));
             cmdList.Add(new CmdRequest(Command.ENABLE_DDM));
-            if (!string.IsNullOrEmpty(MgtIpAddr)) cmdList.Add(new CmdRequest(Command.SET_MNGT_INTERFACE, new string[] { MgtIpAddr, NetMask }));
-            if (!string.IsNullOrEmpty(AdminPwd) && AdminPwd != Constants.DEFAULT_PASSWORD) cmdList.Add(new CmdRequest(Command.SET_PASSWORD, new string[] { "admin", AdminPwd }));
+            if (!string.IsNullOrEmpty(MgtIpAddr)) cmdList.Add(new CmdRequest(Command.SET_MNGT_INTERFACE, MgtIpAddr, NetMask));
+            if (!string.IsNullOrEmpty(AdminPwd) && AdminPwd != Constants.DEFAULT_PASSWORD) cmdList.Add(new CmdRequest(Command.SET_PASSWORD, "admin", AdminPwd));
             if (!string.IsNullOrEmpty(Name)) cmdList.Add(new CmdRequest(Command.SET_SYSTEM_NAME));
-            if (!string.IsNullOrEmpty(Contact)) cmdList.Add(new CmdRequest(Command.SET_CONTACT, new string[] { Contact }));
-            if (!string.IsNullOrEmpty(Location)) cmdList.Add(new CmdRequest(Command.SET_LOCATION, new string[] { Location }));
+            if (!string.IsNullOrEmpty(Contact)) cmdList.Add(new CmdRequest(Command.SET_CONTACT, Contact));
+            if (!string.IsNullOrEmpty(Location)) cmdList.Add(new CmdRequest(Command.SET_LOCATION,Location));
             return cmdList;
         }
     }
