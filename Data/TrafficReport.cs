@@ -14,7 +14,7 @@ namespace PoEWizard.Data
         const double MAX_PERCENT_RATE = 70;
         const double MAX_PERCENT_WARNING_LOST_FRAMES = 3;
         const double MAX_PERCENT_CRITICAL_LOST_FRAMES = 6;
-        const double MIN_NB_UNICAST_FRAMES = 300;
+        const double MIN_NB_BROADCAST_FRAMES = 300;
 
         private PortTrafficModel trafficPort;
         private Dictionary<string, string> alertReport;
@@ -51,12 +51,11 @@ namespace PoEWizard.Data
             this.alertReport = new Dictionary<string, string>();
             foreach (KeyValuePair<string, PortTrafficModel> keyVal in switchTraffic.Ports)
             {
-                string slotPortNr = keyVal.Key;
                 this.trafficPort = keyVal.Value;
-                if (this.portsMacList.ContainsKey(slotPortNr)) this.trafficPort.MacList = this.portsMacList[slotPortNr];
+                if (this.portsMacList.ContainsKey(this.trafficPort.Port)) this.trafficPort.MacList = this.portsMacList[this.trafficPort.Port];
                 this.Data.Append("\r\n ").Append(this.trafficPort.Port);
-                ParseTrafficRate("Rx Rate", slotPortNr, this.trafficPort.RxBytes);
-                ParseTrafficRate("Tx Rate", slotPortNr, this.trafficPort.TxBytes);
+                ParseTrafficRate("Rx Rate", this.trafficPort.RxBytes);
+                ParseTrafficRate("Tx Rate", this.trafficPort.TxBytes);
                 this.broadCast = GetAvgTrafficSamples(this.trafficPort.BroadcastFrames);
                 this.Data.Append(",").Append(this.broadCast);
                 this.uniCast = GetAvgTrafficSamples(this.trafficPort.UnicastFrames);
@@ -73,63 +72,92 @@ namespace PoEWizard.Data
                 this.Data.Append(",").Append(this.collisions);
                 this.alignments = GetMaxTrafficSamples(this.trafficPort.AlignmentsError);
                 this.Data.Append(",").Append(this.alignments);
-                this.Data.Append(",\"");
-                if (this.trafficPort.MacList.Count > 1) this.Data.Append(string.Join(",", this.trafficPort.MacList)); else this.Data.Append(this.trafficPort.MacList[0]);
-                this.Data.Append("\"");
-                ParseAlertConditions(slotPortNr);
+                this.Data.Append(",\"").Append(PrintMacAdresses()).Append("\"");
+                ParseAlertConditions();
             }
             if (this.alertReport?.Count > 0) foreach (KeyValuePair<string, string> keyVal in this.alertReport) this.Summary += keyVal.Value;
             else this.Summary += $"\nNo traffic anomalies detected.";
         }
 
-        private void ParseAlertConditions(string slotPortNr)
+        private void ParseAlertConditions()
         {
-            if (uniCast > MIN_NB_UNICAST_FRAMES && this.trafficPort.MacList.Count > 1)
+            if (this.broadCast > MIN_NB_BROADCAST_FRAMES && this.trafficPort.MacList.Count > 1)
             {
-                AddAlertPercent(slotPortNr, this.broadCast, "#Broadcast Frames", this.uniCast, "#Unicast Frames", MAX_PERCENT_BROADCAST);
+                AddAlertPercent(this.broadCast, "#Broadcast Frames", this.uniCast, "#Unicast Frames", MAX_PERCENT_BROADCAST);
             }
-            if (!AddAlertPercent(slotPortNr, this.lostFrames, "Critical #Lost Frames", this.uniCast + this.multiCast, "#Unicast and #Multicast Frames", MAX_PERCENT_CRITICAL_LOST_FRAMES))
+            if (!AddAlertPercent(this.lostFrames, "Critical #Lost Frames", this.uniCast + this.multiCast, "#Unicast and #Multicast Frames", MAX_PERCENT_CRITICAL_LOST_FRAMES))
             {
-                AddAlertPercent(slotPortNr, this.lostFrames, "Warning #Lost Frames", this.uniCast + this.multiCast, "#Unicast and #Multicast Frames", MAX_PERCENT_WARNING_LOST_FRAMES);
+                AddAlertPercent(this.lostFrames, "Warning #Lost Frames", this.uniCast + this.multiCast, "#Unicast and #Multicast Frames", MAX_PERCENT_WARNING_LOST_FRAMES);
             }
-            if (crcError > 1) AddAlert(slotPortNr, $"#Rx CRC Error detected: {crcError}");
-            if (collisions > 0) AddAlert(slotPortNr, $"#Collisions detected: {collisions}");
-            if (alignments > 1) AddAlert(slotPortNr, $"#Alignments Error detected: {alignments}");
+            if (this.crcError > 1) AddPortAlert($"#Rx CRC Error detected: {this.crcError}");
+            if (this.collisions > 0) AddPortAlert($"#Collisions detected: {this.collisions}");
+            if (this.alignments > 1) AddPortAlert($"#Alignments Error detected: {this.alignments}");
+            if (this.alertReport?.Count > 0 && this.alertReport.ContainsKey(this.trafficPort.Port)) AddPortAlert(PrintMacAdresses("MAC Address"));
         }
 
-        private void ParseTrafficRate(string title, string slotPortNr, List<double> samples)
+        private string PrintMacAdresses(string title = null)
+        {
+            string txt = string.IsNullOrEmpty(title) ? string.Empty : title;
+            if (this.trafficPort.MacList?.Count > 1)
+            {
+                if (!string.IsNullOrEmpty(title)) txt += "es: ";
+                txt += string.Join(",", this.trafficPort.MacList);
+                if (this.trafficPort.MacList.Count > 9) txt += " ...";
+            }
+            else if (this.trafficPort.MacList?.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(title)) txt += ": ";
+                txt += this.trafficPort.MacList[0];
+            }
+            return txt;
+        }
+
+        private void ParseTrafficRate(string title, List<double> samples)
         {
             double traffRate = AddTrafficRate(samples);
             this.Data.Append(",");
             if (traffRate > 0)
             {
                 this.Data.Append(traffRate);
+                double origTraffRate = traffRate;
                 traffRate /= 1024;
                 double percent = Utils.CalcPercent(traffRate, this.trafficPort.BandWidth, 2);
                 if (percent >= MAX_PERCENT_RATE)
                 {
-                    AddAlert(slotPortNr, $"{title} ({traffRate} Mbps) > {MAX_PERCENT_RATE}% of Bandwidth ({this.trafficPort.BandWidth} Mbps), Percentage: {percent}%");
+                    string txt1 = $"{origTraffRate} Kbps";
+                    string txt2 = $"{this.trafficPort.BandWidth * 1000} Kbps";
+                    if (origTraffRate >= 1024)
+                    {
+                        txt1 = $"{Utils.RoundUp(origTraffRate / 1024, 2)} Mbps";
+                        txt2 = $"{this.trafficPort.BandWidth} Mbps";
+                    }
+                    AddPortAlert($"{title} ({txt1}) > {MAX_PERCENT_RATE}% of Bandwidth ({txt2}), Percentage: {percent}%");
                 }
             }
         }
 
-        private bool AddAlertPercent(string slotPortNr, double val1, string label1, double val2, string label2, double maxPercent)
+        private bool AddAlertPercent(double val1, string label1, double val2, string label2, double maxPercent)
         {
             double percent = Utils.CalcPercent(val1, val2, 2);
             if (percent >= maxPercent)
             {
-                AddAlert(slotPortNr, $"{label1} ({val1}) > {maxPercent}% of {label2} ({val2}), Percentage: {percent}%");
+                AddPortAlert($"{label1} ({val1}) > {maxPercent}% of {label2} ({val2}), Percentage: {percent}%");
                 return true;
             }
             return false;
         }
 
-        private void AddAlert(string slotPortNr, string alertMsg)
+        private void AddPortAlert(string alertMsg)
+        {
+            if (!this.alertReport.ContainsKey(this.trafficPort.Port)) AddAlert($"\n  Port {this.trafficPort.Port}:\n\t{alertMsg}"); else AddAlert($"\n\t{alertMsg}");
+        }
+
+        private void AddAlert(string alertMsg)
         {
             string txt = string.Empty;
-            if (this.alertReport.ContainsKey(slotPortNr)) txt = this.alertReport[slotPortNr];
-            txt += $"\n  Port {slotPortNr}:\n\t{alertMsg}";
-            this.alertReport[slotPortNr] = txt;
+            if (this.alertReport.ContainsKey(this.trafficPort.Port)) txt = this.alertReport[this.trafficPort.Port];
+            txt += $"{alertMsg}";
+            this.alertReport[this.trafficPort.Port] = txt;
         }
 
         private double AddTrafficRate(List<double> nbBytes)
