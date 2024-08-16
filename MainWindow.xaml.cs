@@ -567,9 +567,7 @@ namespace PoEWizard
                     isClosing = true;
                     if (device.SyncStatus == SyncStatusType.NotSynchronized)
                     {
-                        if (ShowMessageBox("Write Memory required",
-                                "Flash memory is not synchronized\nDo you want to save it now?\nIt may take up to 30 sec to execute Write Memory.",
-                                MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
+                        if (AuthorizeWriteMemory("Write Memory required"))
                         {
                             _btnRunWiz.IsEnabled = false;
                             _refreshSwitch.IsEnabled = false;
@@ -1193,31 +1191,55 @@ namespace PoEWizard
 
         private async void LaunchRebootSwitch()
         {
-            bool res = ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.IpAddress}?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
-            if (res)
+            try
             {
-                await Task.Run(() => restApiService.GetSystemInfo());
-                if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
+                if (ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.IpAddress}?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
                 {
-                    ShowMessageBox("Reboot Switch", $"Cannot reboot the switch {device.IpAddress} because it's not certified!", MsgBoxIcons.Error, MsgBoxButtons.Ok);
-                    return;
-                }
-                Logger.Activity($"Rebooting switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
-                string txt = await RebootSwitch();
-                if (string.IsNullOrEmpty(txt)) return;
-                res = ShowMessageBox("Reboot Switch", $"{txt}\nDo you want to reconnect to the switch {device.IpAddress}?", MsgBoxIcons.Info, MsgBoxButtons.OkCancel);
-                if (res)
-                {
-                    Connect();
-                    return;
+                    await Task.Run(() => restApiService.GetSystemInfo());
+                    if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
+                    {
+                        ShowMessageBox("Reboot Switch", $"Cannot reboot the switch {device.IpAddress} because it's not certified!", MsgBoxIcons.Error, MsgBoxButtons.Ok);
+                        return;
+                    }
+                    if (device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory("Reboot Switch"))
+                    {
+                        await Task.Run(() => restApiService.WriteMemory());
+                    }
+                    Logger.Activity($"Rebooting switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
+                    string txt = await RebootSwitch();
+                    if (string.IsNullOrEmpty(txt)) return;
+                    if (ShowMessageBox("Reboot Switch", $"{txt}\nDo you want to reconnect to the switch {device.IpAddress}?", MsgBoxIcons.Info, MsgBoxButtons.OkCancel))
+                    {
+                        Connect();
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            finally
+            {
+                HideInfoBox();
+                HideProgress();
+            }
+        }
+
+        private bool AuthorizeWriteMemory(string title)
+        {
+            return ShowMessageBox(title, "Flash memory is not synchronized\nDo you want to save it now?\nIt may take up to 30 sec to execute Write Memory.",
+                                  MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
         }
 
         private async Task<string> RebootSwitch()
         {
             try
             {
+                _btnRunWiz.IsEnabled = false;
+                _refreshSwitch.IsEnabled = false;
+                _writeMemory.IsEnabled = false;
+                _reboot.IsEnabled = false;
+                _traffic.IsEnabled = false;
                 ShowProgress($"Rebooting switch {device.IpAddress}...");
                 string duration = "";
                 await Task.Run(() => duration = restApiService.RebootSwitch(600));

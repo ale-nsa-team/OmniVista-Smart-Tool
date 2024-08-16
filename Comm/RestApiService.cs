@@ -403,7 +403,18 @@ namespace PoEWizard.Comm
                 if (_switchTraffic != null)
                 {
                     GetMacAddressList();
-                    report.BuildReportData(_switchTraffic, SwitchModel.ChassisList);
+                    Dictionary<string, List<string>> portMacList = new Dictionary<string, List<string>>();
+                    foreach (ChassisModel chassis in SwitchModel.ChassisList)
+                    {
+                        foreach (SlotModel slot in chassis.Slots)
+                        {
+                            foreach (PortModel port in slot.Ports)
+                            {
+                                if (port.MacList?.Count > 0) portMacList[port.Name] = port.MacList;
+                            }
+                        }
+                    }
+                    report.BuildReportData(_switchTraffic, portMacList);
                     Logger.Activity(report.Summary);
                 }
             }
