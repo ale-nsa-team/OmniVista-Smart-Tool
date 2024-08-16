@@ -87,4 +87,12 @@ namespace PoEWizard.Exceptions
         { }
     }
 
+    [Serializable]
+    public class TaskCanceled : Exception
+    {
+        public TaskCanceled(string message)
+            : base(message)
+        { }
+    }
+
 }

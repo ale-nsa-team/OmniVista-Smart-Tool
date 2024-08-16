@@ -399,7 +399,7 @@
                         IsEnabled="False" 
                         Click="Traffic_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label Style="{DynamicResource valLabel}">Traffic Analysis</Label>
+                        <Label x:Name="_trafficLabel" Style="{DynamicResource valLabel}">Traffic Analysis</Label>
                         <Image Source="{DynamicResource traffic}" Height="16" Width="16" />
                     </StackPanel>
                 </Button>

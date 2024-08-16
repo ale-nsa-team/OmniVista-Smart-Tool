@@ -24,6 +24,7 @@ namespace PoEWizard.Comm
         private WizardReport _wizardReportResult;
         private SwitchDebugModel _debugSwitchLog;
         private SwitchTrafficModel _switchTraffic;
+        private static bool stopTrafficAnalysis;
 
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
@@ -368,25 +369,28 @@ namespace PoEWizard.Comm
             return Utils.CalcStringDuration(startTime, true);
         }
 
+        public void StopTrafficAnalysis()
+        {
+            stopTrafficAnalysis = true;
+        }
+
         public TrafficReport RunTrafficAnalysis(int nbMaxSamples, int samplePeriodSec)
         {
             if (samplePeriodSec < 5) samplePeriodSec = 5;
             TrafficReport report = new TrafficReport();
             try
             {
-                Logger.Info($"Starting traffic analysis on switch {SwitchModel.IpAddress}");
-                string msg = $"Waiting traffic analysis on {SwitchModel.IpAddress} ";
-                _progress.Report(new ProgressReport($"{msg}..."));
+                stopTrafficAnalysis = false;
                 _switchTraffic = null;
                 GetPortsTrafficInformation();
                 DateTime startTime = DateTime.Now;
                 DateTime sampleTime = DateTime.Now;
                 int nbSamples = 1;
-                Logger.Activity($"Getting traffic information, #Sample: {nbSamples}");
+                Logger.Info($"Getting traffic information, #Sample: {nbSamples}");
                 while (nbSamples < nbMaxSamples)
                 {
-                    Thread.Sleep(1000);
-                    _progress.Report(new ProgressReport($"{msg}({Utils.CalcStringDuration(startTime, true)}) ..."));
+                    if (stopTrafficAnalysis) throw new TaskCanceled($"Traffic analysis on switch {SwitchModel.IpAddress} was canceled!");
+                    Thread.Sleep(500);
                     if (!Utils.IsReachable(SwitchModel.IpAddress)) continue;
                     try
                     {
@@ -394,7 +398,7 @@ namespace PoEWizard.Comm
                         {
                             GetPortsTrafficInformation();
                             nbSamples++;
-                            Logger.Activity($"Getting traffic information ({Utils.CalcStringDuration(startTime)}), #Sample: {nbSamples}");
+                            Logger.Info($"Getting traffic information ({Utils.CalcStringDuration(startTime)}), #Sample: {nbSamples}");
                             sampleTime = DateTime.Now;
                         }
                     }
@@ -403,6 +407,7 @@ namespace PoEWizard.Comm
                 if (_switchTraffic != null)
                 {
                     GetMacAddressList();
+                    if (stopTrafficAnalysis) throw new TaskCanceled($"Traffic analysis on switch {SwitchModel.IpAddress} was canceled!");
                     Dictionary<string, List<string>> portMacList = new Dictionary<string, List<string>>();
                     foreach (ChassisModel chassis in SwitchModel.ChassisList)
                     {
@@ -415,8 +420,14 @@ namespace PoEWizard.Comm
                         }
                     }
                     report.BuildReportData(_switchTraffic, portMacList);
-                    Logger.Activity(report.Summary);
                 }
+                if (stopTrafficAnalysis) throw new TaskCanceled($"Traffic analysis on switch {SwitchModel.IpAddress} was canceled!");
+                Logger.Activity(report.Summary);
+            }
+            catch (TaskCanceled ex)
+            {
+                Logger.Warn(ex.Message);
+                return null;
             }
             catch (Exception ex)
             {

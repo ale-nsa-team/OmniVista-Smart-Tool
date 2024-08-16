@@ -507,6 +507,7 @@ namespace PoEWizard
                 restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
+                    StopTrafficAnalysis();
                     Logger.Activity($"Disconnected switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
                     ShowProgress($"Disconnecting from switch {device.IpAddress}...");
                     await CloseRestApiService();
@@ -519,6 +520,7 @@ namespace PoEWizard
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.Connect(reportResult));
                 UpdateConnectedState(true);
+                _traffic.IsEnabled = true;
                 await CheckSwitchScanResult($"Connect to switch {device.IpAddress}...", startTime);
                 Logger.Activity($"Connected to switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
             }
@@ -562,6 +564,7 @@ namespace PoEWizard
         {
             try
             {
+                StopTrafficAnalysis();
                 if (restApiService != null && !isClosing)
                 {
                     isClosing = true;
@@ -1026,9 +1029,9 @@ namespace PoEWizard
         {
             try
             {
-                ShowProgress($"Running traffic analysis on switch {device.IpAddress}...");
-                TrafficReport report = null;
-                await Task.Run(() => report = restApiService.RunTrafficAnalysis(5, 15));
+                _traffic.IsEnabled = false;
+                _trafficLabel.Content = "Running ...";
+                TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(5, 15));
                 if (report != null)
                 {
                     TextViewer tv = new TextViewer("Traffic Analysis", report.Summary)
@@ -1046,6 +1049,8 @@ namespace PoEWizard
             }
             finally
             {
+                if (device.IsConnected) _traffic.IsEnabled = true; else _traffic.IsEnabled = false;
+                _trafficLabel.Content = "Traffic Analysis";
                 HideProgress();
                 HideInfoBox();
             }
@@ -1153,7 +1158,6 @@ namespace PoEWizard
                 _refreshSwitch.IsEnabled = true;
                 _writeMemory.IsEnabled = true;
                 _reboot.IsEnabled = true;
-                _traffic.IsEnabled = true;
                 _psMenuItem.IsEnabled = true;
                 _cfgMenuItem.IsEnabled = true;
                 _disconnectMenuItem.Visibility = Visibility.Visible;
@@ -1235,14 +1239,14 @@ namespace PoEWizard
         {
             try
             {
+                StopTrafficAnalysis();
+                ShowProgress($"Rebooting switch {device.IpAddress}...");
                 _btnRunWiz.IsEnabled = false;
                 _refreshSwitch.IsEnabled = false;
                 _writeMemory.IsEnabled = false;
                 _reboot.IsEnabled = false;
                 _traffic.IsEnabled = false;
-                ShowProgress($"Rebooting switch {device.IpAddress}...");
-                string duration = "";
-                await Task.Run(() => duration = restApiService.RebootSwitch(600));
+                string duration = await Task.Run(() => restApiService.RebootSwitch(600));
                 SetDisconnectedState();
                 string txt = $"Switch {device.IpAddress} ready to connect";
                 if (!string.IsNullOrEmpty(duration)) txt += $"\nReboot duration: {duration}";
@@ -1290,6 +1294,20 @@ namespace PoEWizard
             selectedPortIndex = -1;
             DataContext = device;
             restApiService = null;
+        }
+
+        private void StopTrafficAnalysis()
+        {
+            try
+            {
+                device.IsConnected = false;
+                _traffic.IsEnabled = false;
+                restApiService?.StopTrafficAnalysis();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         private void ReselectPort()
