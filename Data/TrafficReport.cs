@@ -124,7 +124,7 @@ namespace PoEWizard.Data
                 double percent = Utils.CalcPercent(traffRate, this.trafficPort.BandWidth, 2);
                 if (percent >= MAX_PERCENT_RATE)
                 {
-                    string txt1 = $"{traffRate} Kbps";
+                    string txt1 = $"{origTraffRate} Kbps";
                     string txt2 = $"{this.trafficPort.BandWidth * 1000} Kbps";
                     if (origTraffRate >= 1024)
                     {
