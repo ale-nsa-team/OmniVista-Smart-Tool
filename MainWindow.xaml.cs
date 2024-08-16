@@ -1239,13 +1239,17 @@ namespace PoEWizard
         {
             try
             {
-                StopTrafficAnalysis();
-                ShowProgress($"Rebooting switch {device.IpAddress}...");
                 _btnRunWiz.IsEnabled = false;
                 _refreshSwitch.IsEnabled = false;
                 _writeMemory.IsEnabled = false;
                 _reboot.IsEnabled = false;
                 _traffic.IsEnabled = false;
+                _switchMenuItem.IsEnabled = false;
+                _snapshotMenuItem.IsEnabled = false;
+                _vcbootMenuItem.IsEnabled = false;
+                _cfgMenuItem.IsEnabled = false;
+                StopTrafficAnalysis();
+                ShowProgress($"Rebooting switch {device.IpAddress}...");
                 string duration = await Task.Run(() => restApiService.RebootSwitch(600));
                 SetDisconnectedState();
                 string txt = $"Switch {device.IpAddress} ready to connect";

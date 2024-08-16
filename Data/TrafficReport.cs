@@ -12,8 +12,8 @@ namespace PoEWizard.Data
         const string HEADER = "Port,Rx Rate (Kbps),Tx Rate (Kbps),#Broadcast Frames,#Unicast Frames,Broadcast/Unicast (%),#Multicast Frames,#Lost Frames,#CRC Error,#Collisions,#Alignments,MAC Address List";
         const double MAX_PERCENT_BROADCAST = 0.5;
         const double MAX_PERCENT_RATE = 70;
-        const double MAX_PERCENT_WARNING_LOST_FRAMES = 3;
-        const double MAX_PERCENT_CRITICAL_LOST_FRAMES = 6;
+        const double MAX_PERCENT_WARNING_LOST_FRAMES = 5;
+        const double MAX_PERCENT_CRITICAL_LOST_FRAMES = 8;
         const double MIN_NB_BROADCAST_FRAMES = 300;
 
         private PortTrafficModel trafficPort;
