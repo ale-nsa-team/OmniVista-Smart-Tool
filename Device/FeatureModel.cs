@@ -1,9 +1,10 @@
 ﻿using PoEWizard.Data;
+using System;
 using System.Collections.Generic;
 
 namespace PoEWizard.Device
 {
-    public class FeatureModel
+    public class FeatureModel : ICloneable
     {
         private readonly SwitchModel device;
         
@@ -34,6 +35,11 @@ namespace PoEWizard.Device
                     }
                 }
             }
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
 
         public List<CmdRequest> ToCommandList()

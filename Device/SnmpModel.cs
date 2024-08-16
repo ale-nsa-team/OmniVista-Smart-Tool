@@ -1,11 +1,11 @@
 ﻿using PoEWizard.Data;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace PoEWizard.Device
 {
-    public class SnmpModel
+    public class SnmpModel : ICloneable
     {
         private readonly Props config;
 
@@ -46,6 +46,11 @@ namespace PoEWizard.Device
             }
             config = cfg;
 
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
 
         public List<CmdRequest> ToCommandList()
