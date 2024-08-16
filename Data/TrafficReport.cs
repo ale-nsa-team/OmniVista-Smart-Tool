@@ -14,7 +14,7 @@ namespace PoEWizard.Data
         const double MAX_PERCENT_RATE = 70;
         const double MAX_PERCENT_WARNING_LOST_FRAMES = 3;
         const double MAX_PERCENT_CRITICAL_LOST_FRAMES = 6;
-        const double MIN_NB_UNICAST_FRAMES = 300;
+        const double MIN_NB_BROADCAST_FRAMES = 300;
 
         private PortTrafficModel trafficPort;
         private Dictionary<string, string> alertReport;
@@ -81,7 +81,7 @@ namespace PoEWizard.Data
 
         private void ParseAlertConditions()
         {
-            if (uniCast > MIN_NB_UNICAST_FRAMES && this.trafficPort.MacList.Count > 1)
+            if (this.broadCast > MIN_NB_BROADCAST_FRAMES && this.trafficPort.MacList.Count > 1)
             {
                 AddAlertPercent(this.broadCast, "#Broadcast Frames", this.uniCast, "#Unicast Frames", MAX_PERCENT_BROADCAST);
             }
@@ -89,9 +89,9 @@ namespace PoEWizard.Data
             {
                 AddAlertPercent(this.lostFrames, "Warning #Lost Frames", this.uniCast + this.multiCast, "#Unicast and #Multicast Frames", MAX_PERCENT_WARNING_LOST_FRAMES);
             }
-            if (crcError > 1) AddPortAlert($"#Rx CRC Error detected: {crcError}");
-            if (collisions > 0) AddPortAlert("#Collisions detected: {collisions}");
-            if (alignments > 1) AddPortAlert($"#Alignments Error detected: {alignments}");
+            if (this.crcError > 1) AddPortAlert($"#Rx CRC Error detected: {this.crcError}");
+            if (this.collisions > 0) AddPortAlert($"#Collisions detected: {this.collisions}");
+            if (this.alignments > 1) AddPortAlert($"#Alignments Error detected: {this.alignments}");
             if (this.alertReport?.Count > 0 && this.alertReport.ContainsKey(this.trafficPort.Port)) AddPortAlert(PrintMacAdresses("MAC Address"));
         }
 
