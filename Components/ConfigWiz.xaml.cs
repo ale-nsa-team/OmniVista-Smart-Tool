@@ -25,6 +25,7 @@ namespace PoEWizard.Components
         private readonly ServerModel srvData;
         private readonly FeatureModel features;
         private readonly SnmpModel snmpData;
+        private ServerModel srvOrig;
 
         public bool IsRebootSwitch { get; set; } = false;
 
@@ -79,18 +80,9 @@ namespace PoEWizard.Components
                     srvData.Dns2 = dicList[0][DNS2];
                     srvData.Dns3 = dicList[0][DNS3];
                 }
-                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DHCP_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
-                if ( dicList.Count > 0) features.IsDhcpRelay = dicList[0][DHCP_ENABLE] == "1";
-
-                if (features.IsDhcpRelay)
-                {
-                    dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DHCP_RELAY, ParseType.Htable)) as List<Dictionary<string, string>>;
-                    if (dicList.Count > 0 && dicList[0].Count > 0) features.DhcpSrv = dicList[0][DHCP_DEST];
-                }
 
                 dict = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_NTP_STATUS, ParseType.Vtable)) as Dictionary<string, string>;
                 if ( dict != null) srvData.IsNtp = dict[NTP_ENABLE] == "enabled";
-
                 if (srvData.IsNtp)
                 {
                     dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_NTP_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
@@ -102,7 +94,31 @@ namespace PoEWizard.Components
                         if (i == 2) srvData.Ntp3 = dicList[i][NTP_SERVER];
                     }
                 }
+
+                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DHCP_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
+                if (dicList.Count > 0) features.IsDhcpRelay = dicList[0][DHCP_ENABLE] == "1";
+                if (features.IsDhcpRelay)
+                {
+                    dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DHCP_RELAY, ParseType.Htable)) as List<Dictionary<string, string>>;
+                    if (dicList.Count > 0 && dicList[0].Count > 0) features.DhcpSrv = dicList[0][DHCP_DEST];
+                }
+
+                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_IP_SERVICE, ParseType.Htable)) as List<Dictionary<string, string>>;
+                if (dicList.Count > 0)
+                {
+                    dict = dicList.FirstOrDefault(d => d["Name"] == "ftp");
+                    bool isftp = dict != null ? dict["Status"] == "enabled" : false;
+                    dict = dicList.FirstOrDefault(d => d["Name"] == "telnet");
+                    bool istelnet = dict != null ? dict["Status"] == "enabled" : false;
+                    features.IsInsecureProtos = isftp || istelnet;
+                    dict = dict = dicList.FirstOrDefault(d => d["Name"] == "ssh");
+                    features.IsSsh = dict != null ? dict["Status"] == "enabled" : false;
+                }
+                dict = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_MULTICAST, ParseType.Etable)) as Dictionary<string, string>;
+                if (dict != null) features.IsMulticast = dict["Status"] == "enabled";
             });
+
+            srvOrig = srvData.Clone() as ServerModel;
 
             HideInfoBox();
         }
@@ -131,10 +147,10 @@ namespace PoEWizard.Components
         {
             await Task.Run(() =>
             {
-                ApplyCommands(sysData.ToCommandList(), "Applying System parameters...");
-                ApplyCommands(srvData.ToCommandList(), "Applying DNS and NPT parameters...");
-                ApplyCommands(features.ToCommandList(), "Applying Features...");
-                ApplyCommands(snmpData.ToCommandList(), "Applying SNMP configuration...");
+                //ApplyCommands(sysData.ToCommandList(), "Applying System parameters...");
+                ApplyCommands(srvData.ToCommandList(srvOrig), "Applying DNS and NPT parameters...");
+                //ApplyCommands(features.ToCommandList(), "Applying Features...");
+                //ApplyCommands(snmpData.ToCommandList(), "Applying SNMP configuration...");
             });
             HideInfoBox();
             DialogResult = true;

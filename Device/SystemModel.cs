@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace PoEWizard.Device
 {
-    public class SystemModel
+    public class SystemModel : ICloneable
     {
         public string MgtIpAddr { get; set; }
         public string NetMask { get; set; }
@@ -24,6 +24,11 @@ namespace PoEWizard.Device
             Name = device.Name;
             Contact = device.Contact;
             Location = device.Location;
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
 
         public List<CmdRequest> ToCommandList()

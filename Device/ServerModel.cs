@@ -1,10 +1,11 @@
 ﻿using PoEWizard.Data;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
 namespace PoEWizard.Device
 {
-    public class ServerModel
+    public class ServerModel : ICloneable
     {
         private readonly Props config;
 
@@ -38,28 +39,53 @@ namespace PoEWizard.Device
             config = cfg;
         }
 
-        public List<CmdRequest> ToCommandList()
+        public object Clone()
         {
-            List<CmdRequest> cmdList = new List<CmdRequest>();
-            if (IsDns)
-            {
-                string dns = $"{Dns1} {Dns2} {Dns3}".Trim();
-                if (!string.IsNullOrEmpty(dns))
-                {
-                    cmdList.Add(new CmdRequest(Command.DNS_LOOKUP));
-                    cmdList.Add(new CmdRequest(Command.DNS_SERVER, dns));
-                    if (!string.IsNullOrEmpty(DnsDomain)) cmdList.Add(new CmdRequest(Command.DNS_DOMAIN, DnsDomain));
-                }
-                if (IsNtp)
-                {
-                    if (!string.IsNullOrEmpty(Ntp1)) cmdList.Add(new CmdRequest(Command.NTP_SERVER, Ntp1));
-                    if (!string.IsNullOrEmpty(Ntp2)) cmdList.Add(new CmdRequest(Command.NTP_SERVER, Ntp2));
-                    if (!string.IsNullOrEmpty(Ntp3)) cmdList.Add(new CmdRequest(Command.NTP_SERVER, Ntp3));
-                    cmdList.Add(new CmdRequest(Command.ENABLE_NTP));
+            return this.MemberwiseClone();
+        }
 
+        public List<CmdRequest> ToCommandList(ServerModel orig)
+        {
+            List<PropertyInfo> changes = GetChanges(orig);
+            List<CmdRequest> cmdList = new List<CmdRequest>();
+            List<string> dns = new List<string>();
+            foreach (var prop in changes)
+            {
+                if (prop.Name.StartsWith("Dns") && IsDns) dns.Add((string)prop.GetValue(this, null));
+                if (prop.Name == "DnsDomain" && IsDns) cmdList.Add(new CmdRequest(Command.DNS_DOMAIN, DnsDomain));
+                if (prop.Name.StartsWith("Ntp") && IsNtp) cmdList.Add(new CmdRequest(Command.NTP_SERVER, (string)prop.GetValue(this, null)));
+                if (prop.Name == "IsDns")
+                {
+                    if (IsDns) cmdList.Add(new CmdRequest(Command.DNS_LOOKUP));
+                    else cmdList.Add(new CmdRequest(Command.NO_DNS_LOOKUP));
+                }
+                if (prop.Name == "IsNtp")
+                {
+                    if (IsNtp) cmdList.Add(new CmdRequest(Command.ENABLE_NTP));
+                    else cmdList.Add(new CmdRequest(Command.DISABLE_NTP));
                 }
             }
+            if (dns.Count > 0 && IsDns)
+            {
+                cmdList.Add(new CmdRequest(Command.DNS_SERVER, string.Join(" ", dns)));
+            }
             return cmdList;
+        }
+
+        private List<PropertyInfo> GetChanges(ServerModel orig)
+        {
+            List<PropertyInfo> changes = new List<PropertyInfo>();
+            var props = this.GetType().GetProperties();
+            foreach ( var prop in props )
+            {
+                object val = prop.GetValue(this, null);
+                if (val?.GetType() == typeof(Boolean))
+                {
+                    if ((bool)val != (bool)prop.GetValue(orig, null)) changes.Add(prop);
+                }
+                else if (val != prop.GetValue(orig, null)) changes.Add(prop);
+            }
+            return changes;
         }
     }
 }
