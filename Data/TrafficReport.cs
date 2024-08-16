@@ -92,7 +92,7 @@ namespace PoEWizard.Data
             if (crcError > 1) AddPortAlert($"#Rx CRC Error detected: {crcError}");
             if (collisions > 0) AddPortAlert("#Collisions detected: {collisions}");
             if (alignments > 1) AddPortAlert($"#Alignments Error detected: {alignments}");
-            AddPortAlert(PrintMacAdresses("MAC Address"));
+            if (this.alertReport?.Count > 0 && this.alertReport.ContainsKey(this.trafficPort.Port)) AddPortAlert(PrintMacAdresses("MAC Address"));
         }
 
         private string PrintMacAdresses(string title = null)
@@ -119,11 +119,19 @@ namespace PoEWizard.Data
             if (traffRate > 0)
             {
                 this.Data.Append(traffRate);
+                double origTraffRate = traffRate;
                 traffRate /= 1024;
                 double percent = Utils.CalcPercent(traffRate, this.trafficPort.BandWidth, 2);
                 if (percent >= MAX_PERCENT_RATE)
                 {
-                    AddPortAlert($"{title} ({traffRate} Mbps) > {MAX_PERCENT_RATE}% of Bandwidth ({this.trafficPort.BandWidth} Mbps), Percentage: {percent}%");
+                    string txt1 = $"{traffRate} Kbps";
+                    string txt2 = $"{this.trafficPort.BandWidth * 1000} Kbps";
+                    if (origTraffRate >= 1024)
+                    {
+                        txt1 = $"{Utils.RoundUp(origTraffRate / 1024, 2)} Mbps";
+                        txt2 = $"{this.trafficPort.BandWidth} Mbps";
+                    }
+                    AddPortAlert($"{title} ({txt1}) > {MAX_PERCENT_RATE}% of Bandwidth ({txt2}), Percentage: {percent}%");
                 }
             }
         }
