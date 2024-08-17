@@ -51,6 +51,11 @@ namespace PoEWizard
         private SwitchDebugModel debugSwitchLog;
         #endregion
 
+        #region Local constants
+        const string TRAFFIC_ANALYSIS_RUNNING = "Running ...";
+        const string TRAFFIC_ANALYSIS_IDLE = "Traffic Analysis";
+        #endregion
+
         #region public variables
         public static Window Instance;
         public static ThemeType theme;
@@ -300,6 +305,7 @@ namespace PoEWizard
 
         private void Traffic_Click(object sender, RoutedEventArgs e)
         {
+            _trafficLabel.Content = TRAFFIC_ANALYSIS_IDLE;
             var ds = new TrafficAnalysis()
             {
                 Owner = this,
@@ -515,7 +521,7 @@ namespace PoEWizard
                 restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
-                    StopTrafficAnalysis();
+                    StopTrafficAnalysis(AbortType.Disconnect);
                     Logger.Activity($"Disconnected switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
                     ShowProgress($"Disconnecting from switch {device.IpAddress}...");
                     await CloseRestApiService();
@@ -572,7 +578,7 @@ namespace PoEWizard
         {
             try
             {
-                StopTrafficAnalysis();
+                StopTrafficAnalysis(AbortType.Disconnect);
                 if (restApiService != null && !isClosing)
                 {
                     isClosing = true;
@@ -1038,11 +1044,11 @@ namespace PoEWizard
             try
             {
                 _traffic.IsEnabled = false;
-                _trafficLabel.Content = "Running ...";
+                _trafficLabel.Content = TRAFFIC_ANALYSIS_RUNNING;
                 TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(selectedNbSamples, selectedSampleInterval));
                 if (report != null)
                 {
-                    TextViewer tv = new TextViewer("Traffic Analysis", report.Summary)
+                    TextViewer tv = new TextViewer(TRAFFIC_ANALYSIS_IDLE, report.Summary)
                     {
                         Owner = this,
                         SaveFilename = $"{device.Name}-{DateTime.Now.ToString("MM-dd-yyyy_hh_mm_ss")}-traffic-analysis.txt",
@@ -1058,7 +1064,7 @@ namespace PoEWizard
             finally
             {
                 if (device.IsConnected) _traffic.IsEnabled = true; else _traffic.IsEnabled = false;
-                _trafficLabel.Content = "Traffic Analysis";
+                _trafficLabel.Content = TRAFFIC_ANALYSIS_IDLE;
                 HideProgress();
                 HideInfoBox();
             }
@@ -1256,7 +1262,7 @@ namespace PoEWizard
                 _snapshotMenuItem.IsEnabled = false;
                 _vcbootMenuItem.IsEnabled = false;
                 _cfgMenuItem.IsEnabled = false;
-                StopTrafficAnalysis();
+                StopTrafficAnalysis(AbortType.Disconnect);
                 ShowProgress($"Rebooting switch {device.IpAddress}...");
                 string duration = await Task.Run(() => restApiService.RebootSwitch(600));
                 SetDisconnectedState();
@@ -1308,13 +1314,16 @@ namespace PoEWizard
             restApiService = null;
         }
 
-        private void StopTrafficAnalysis()
+        private void StopTrafficAnalysis(AbortType abortType)
         {
             try
             {
-                device.IsConnected = false;
-                _traffic.IsEnabled = false;
-                restApiService?.StopTrafficAnalysis();
+                if (abortType == AbortType.Disconnect)
+                {
+                    device.IsConnected = false;
+                    _traffic.IsEnabled = false;
+                }
+                restApiService?.StopTrafficAnalysis(abortType);
             }
             catch (Exception ex)
             {

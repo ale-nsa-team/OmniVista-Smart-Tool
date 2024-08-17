@@ -18,7 +18,7 @@ namespace PoEWizard.Data
 
         private PortTrafficModel trafficPort;
         private Dictionary<string, string> alertReport;
-        private Dictionary<string, List<string>> portsMacList = new Dictionary<string, List<string>>();
+        private readonly Dictionary<string, List<string>> portsMacList = new Dictionary<string, List<string>>();
         private double broadCast =0;
         private double uniCast = 0;
         private double multiCast = 0;
@@ -30,26 +30,29 @@ namespace PoEWizard.Data
         public string Summary { get; set; }
         public StringBuilder Data { get; set; }
         public DateTime TrafficStartTime { get; set; }
+        public SwitchTrafficModel SwitchTraffic { get; set; }
 
         public double TrafficDuration { get; set; }
-        public TrafficReport()
+        public TrafficReport(SwitchTrafficModel switchTraffic, Dictionary<string, List<string>> portsMacList)
         {
             this.Summary = string.Empty;
             this.Data = null;
             this.alertReport = new Dictionary<string, string>();
-        }
-
-        public void BuildReportData(SwitchTrafficModel switchTraffic, Dictionary<string, List<string>> portsMacList)
-        {
+            this.SwitchTraffic = switchTraffic;
             this.TrafficStartTime = switchTraffic.StartTime;
             if (portsMacList?.Count > 0) this.portsMacList = portsMacList;
-            this.Summary = $"Traffic analysis completed on switch {switchTraffic.Name} ({switchTraffic.IpAddress}), Serial Number: {switchTraffic.SerialNumber}:";
+            this.Summary = $"Traffic analysis completed on switch {this.SwitchTraffic.Name} ({this.SwitchTraffic.IpAddress}), Serial Number: {this.SwitchTraffic.SerialNumber}:";
             this.Summary += $"\nDate: {this.TrafficStartTime.ToString("MM/dd/yyyy hh:mm:ss tt")}";
             this.Summary += $"\nDuration: {Utils.CalcStringDuration(TrafficStartTime, true)}\n\nTraffic Alert:\n";
-            this.TrafficDuration = DateTime.Now.Subtract(switchTraffic.StartTime).TotalSeconds;
+            this.TrafficDuration = DateTime.Now.Subtract(this.SwitchTraffic.StartTime).TotalSeconds;
+            BuildReportData();
+        }
+
+        private void BuildReportData()
+        {
             this.Data = new StringBuilder(HEADER);
             this.alertReport = new Dictionary<string, string>();
-            foreach (KeyValuePair<string, PortTrafficModel> keyVal in switchTraffic.Ports)
+            foreach (KeyValuePair<string, PortTrafficModel> keyVal in this.SwitchTraffic.Ports)
             {
                 this.trafficPort = keyVal.Value;
                 if (this.portsMacList.ContainsKey(this.trafficPort.Port)) this.trafficPort.MacList = this.portsMacList[this.trafficPort.Port];
