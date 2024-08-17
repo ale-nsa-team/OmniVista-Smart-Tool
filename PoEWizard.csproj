@@ -149,6 +149,9 @@
     <Compile Include="Components\TextViewer.xaml.cs">
       <DependentUpon>TextViewer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\TrafficAnalysis.xaml.cs">
+      <DependentUpon>TrafficAnalysis.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Validators.cs" />
     <Compile Include="Data\Activity.cs" />
     <Compile Include="Data\ChassisSlotPort.cs" />
@@ -255,6 +258,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\TextViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\TrafficAnalysis.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

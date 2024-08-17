@@ -300,7 +300,15 @@ namespace PoEWizard
 
         private void Traffic_Click(object sender, RoutedEventArgs e)
         {
-            TrafficAnalysis();
+            var ds = new TrafficAnalysis()
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            if (ds.ShowDialog() == true)
+            {
+                TrafficAnalysis((ds.TrafficDurationSec / ds.SampleInterval) + 1, ds.SampleInterval);
+            }
         }
 
         private void Help_Click(object sender, RoutedEventArgs e)
@@ -1025,13 +1033,13 @@ namespace PoEWizard
             await Task.Run(() => restApiService.RunGetSwitchLog(selectedPort.Name, debugSwitchLog));
         }
 
-        private async void TrafficAnalysis()
+        private async void TrafficAnalysis(int selectedNbSamples, int selectedSampleInterval)
         {
             try
             {
                 _traffic.IsEnabled = false;
                 _trafficLabel.Content = "Running ...";
-                TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(5, 15));
+                TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(selectedNbSamples, selectedSampleInterval));
                 if (report != null)
                 {
                     TextViewer tv = new TextViewer("Traffic Analysis", report.Summary)
