@@ -305,15 +305,42 @@ namespace PoEWizard
 
         private void Traffic_Click(object sender, RoutedEventArgs e)
         {
-            _trafficLabel.Content = TRAFFIC_ANALYSIS_IDLE;
-            var ds = new TrafficAnalysis()
+            if (_trafficLabel.Content.ToString() == TRAFFIC_ANALYSIS_IDLE)
             {
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
+                LaunchTrafficAnalysis();
+            }
+            else
+            {
+                bool res = ShowMessageBox("Connection", $"The traffic analysis is still running.\nAre you sure you want to stop it?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                if (res) StopTrafficAnalysis(AbortType.CanceledByUser);
+
+            }
+        }
+
+        private void LaunchTrafficAnalysis()
+        {
+            _trafficLabel.Content = TRAFFIC_ANALYSIS_IDLE;
+            var ds = new TrafficAnalysis() { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
             if (ds.ShowDialog() == true)
             {
-                TrafficAnalysis((ds.TrafficDurationSec / ds.SampleInterval) + 1, ds.SampleInterval);
+                TrafficAnalysis(ds.TrafficDurationSec);
+            }
+        }
+
+        private void StopTrafficAnalysis(AbortType abortType)
+        {
+            try
+            {
+                if (abortType == AbortType.Disconnect)
+                {
+                    device.IsConnected = false;
+                    _traffic.IsEnabled = false;
+                }
+                restApiService?.StopTrafficAnalysis(abortType);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
             }
         }
 
@@ -1039,13 +1066,12 @@ namespace PoEWizard
             await Task.Run(() => restApiService.RunGetSwitchLog(selectedPort.Name, debugSwitchLog));
         }
 
-        private async void TrafficAnalysis(int selectedNbSamples, int selectedSampleInterval)
+        private async void TrafficAnalysis(int duration)
         {
             try
             {
-                _traffic.IsEnabled = false;
                 _trafficLabel.Content = TRAFFIC_ANALYSIS_RUNNING;
-                TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(selectedNbSamples, selectedSampleInterval));
+                TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(duration));
                 if (report != null)
                 {
                     TextViewer tv = new TextViewer(TRAFFIC_ANALYSIS_IDLE, report.Summary)
@@ -1312,23 +1338,6 @@ namespace PoEWizard
             selectedPortIndex = -1;
             DataContext = device;
             restApiService = null;
-        }
-
-        private void StopTrafficAnalysis(AbortType abortType)
-        {
-            try
-            {
-                if (abortType == AbortType.Disconnect)
-                {
-                    device.IsConnected = false;
-                    _traffic.IsEnabled = false;
-                }
-                restApiService?.StopTrafficAnalysis(abortType);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
         }
 
         private void ReselectPort()

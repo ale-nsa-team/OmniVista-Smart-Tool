@@ -33,7 +33,7 @@ namespace PoEWizard.Data
         public SwitchTrafficModel SwitchTraffic { get; set; }
 
         public double TrafficDuration { get; set; }
-        public TrafficReport(SwitchTrafficModel switchTraffic, Dictionary<string, List<string>> portsMacList)
+        public TrafficReport(SwitchTrafficModel switchTraffic, Dictionary<string, List<string>> portsMacList, string completion)
         {
             this.Summary = string.Empty;
             this.Data = null;
@@ -41,9 +41,10 @@ namespace PoEWizard.Data
             this.SwitchTraffic = switchTraffic;
             this.TrafficStartTime = switchTraffic.StartTime;
             if (portsMacList?.Count > 0) this.portsMacList = portsMacList;
-            this.Summary = $"Traffic analysis completed on switch {this.SwitchTraffic.Name} ({this.SwitchTraffic.IpAddress}), Serial Number: {this.SwitchTraffic.SerialNumber}:";
-            this.Summary += $"\nDate: {this.TrafficStartTime.ToString("MM/dd/yyyy hh:mm:ss tt")}";
-            this.Summary += $"\nDuration: {Utils.CalcStringDuration(TrafficStartTime, true)}\n\nTraffic Alert:\n";
+            this.Summary = $"Traffic analysis {completion}:";
+            this.Summary += $"\n  Switch {this.SwitchTraffic.Name} ({this.SwitchTraffic.IpAddress}), Serial Number: {this.SwitchTraffic.SerialNumber}";
+            this.Summary += $"\n  Date: {this.TrafficStartTime:MM/dd/yyyy hh:mm:ss tt}";
+            this.Summary += $"\n  Duration: {Utils.CalcStringDuration(TrafficStartTime, true)}\n\nTraffic Alert:\n";
             this.TrafficDuration = DateTime.Now.Subtract(this.SwitchTraffic.StartTime).TotalSeconds;
             BuildReportData();
         }

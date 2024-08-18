@@ -374,9 +374,8 @@ namespace PoEWizard.Comm
             stopTrafficAnalysis = abortType;
         }
 
-        public TrafficReport RunTrafficAnalysis(int nbMaxSamples, int samplePeriodSec)
+        public TrafficReport RunTrafficAnalysis(int duration)
         {
-            if (samplePeriodSec < 5) samplePeriodSec = 5;
             TrafficReport report = null;
             try
             {
@@ -385,30 +384,18 @@ namespace PoEWizard.Comm
                 GetPortsTrafficInformation();
                 DateTime startTime = DateTime.Now;
                 DateTime sampleTime = DateTime.Now;
-                int nbSamples = 1;
-                Logger.Info($"Getting traffic information, #Sample: {nbSamples}");
-                while (nbSamples < nbMaxSamples)
+                Logger.Info($"Getting traffic information, traffic analysis duration: {duration} sec");
+                while (Utils.GetTimeDuration(startTime) <= duration)
                 {
                     if (stopTrafficAnalysis != AbortType.Running) break;
                     Thread.Sleep(250);
-                    if (!Utils.IsReachable(SwitchModel.IpAddress)) continue;
-                    try
-                    {
-                        if (Utils.GetTimeDuration(sampleTime) >= samplePeriodSec)
-                        {
-                            GetPortsTrafficInformation();
-                            nbSamples++;
-                            Logger.Info($"Getting traffic information ({Utils.CalcStringDuration(startTime)}), #Sample: {nbSamples}");
-                            sampleTime = DateTime.Now;
-                        }
-                    }
-                    catch { }
                 }
                 if (stopTrafficAnalysis == AbortType.Disconnect)
                 {
                     Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was canceled because the switch is disconnected!");
                     return null;
                 }
+                GetPortsTrafficInformation();
                 if (_switchTraffic != null)
                 {
                     GetMacAddressList();
@@ -423,9 +410,19 @@ namespace PoEWizard.Comm
                             }
                         }
                     }
-                    report = new TrafficReport(_switchTraffic, portMacList);
+                    string completion = "completed";
+                    if (stopTrafficAnalysis != AbortType.Running)
+                    {
+                        int initDuration = duration / 60;
+                        completion = $"interrupted by the user before {duration / 60} minute";
+                        if (initDuration > 1) completion += "s";
+                    }
+                    report = new TrafficReport(_switchTraffic, portMacList, completion);
                 }
-                if (stopTrafficAnalysis == AbortType.CanceledByUser) Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was canceled by the user!");
+                if (stopTrafficAnalysis == AbortType.CanceledByUser)
+                {
+                    Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was interrupted by the user before {duration / 60} minutes!");
+                }
                 Logger.Activity(report.Summary);
             }
             catch (Exception ex)
