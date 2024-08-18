@@ -49,6 +49,7 @@ namespace PoEWizard
         private string lastIpAddr;
         private string lastPwd;
         private SwitchDebugModel debugSwitchLog;
+        private static bool isTrafficRunning = false;
         #endregion
 
         #region Local constants
@@ -305,28 +306,29 @@ namespace PoEWizard
 
         private void Traffic_Click(object sender, RoutedEventArgs e)
         {
-            if (_trafficLabel.Content.ToString() == TRAFFIC_ANALYSIS_IDLE)
+            try
             {
-                LaunchTrafficAnalysis();
+                isTrafficRunning = _trafficLabel.Content.ToString() != TRAFFIC_ANALYSIS_IDLE;
+                if (!isTrafficRunning)
+                {
+                    var ds = new TrafficAnalysis() { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
+                    if (ds.ShowDialog() == true)
+                    {
+                        TrafficAnalysis(ds.TrafficDurationSec);
+                    }
+                }
+                else
+                {
+                    StopTrafficAnalysis(AbortType.CanceledByUser, "Traffic Analysis", "Are you sure you want to stop it");
+                }
             }
-            else
+            catch (Exception ex)
             {
-               StopTrafficAnalysis(AbortType.CanceledByUser, "Traffic Analysis");
-
+                Logger.Error(ex);
             }
         }
 
-        private void LaunchTrafficAnalysis()
-        {
-            _trafficLabel.Content = TRAFFIC_ANALYSIS_IDLE;
-            var ds = new TrafficAnalysis() { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
-            if (ds.ShowDialog() == true)
-            {
-                TrafficAnalysis(ds.TrafficDurationSec);
-            }
-        }
-
-        private void StopTrafficAnalysis(AbortType abortType, string title)
+        private async void StopTrafficAnalysis(AbortType abortType, string title, string question)
         {
             try
             {
@@ -335,14 +337,32 @@ namespace PoEWizard
                     device.IsConnected = false;
                     _traffic.IsEnabled = false;
                 }
-                bool res = ShowMessageBox(title, $"The traffic analysis is still running.\nAre you sure you want to stop it?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
-                if (res) restApiService?.StopTrafficAnalysis(AbortType.CanceledByUser);
+                bool res = ShowMessageBox(title, $"The traffic analysis is still running.\n{question}?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                if (res)
+                {
+                    restApiService?.StopTrafficAnalysis(AbortType.CanceledByUser);
+                    if (abortType == AbortType.Disconnect)
+                    {
+                        await WaitCondition(isTrafficRunning);
+                    }
+                }
                 else if (abortType == AbortType.Disconnect) restApiService?.StopTrafficAnalysis(abortType);
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
             }
+        }
+
+        private static async Task WaitCondition(bool waitCondition)
+        {
+            await Task.Run(() =>
+            {
+                while (waitCondition)
+                {
+                    Thread.Sleep(250);
+                }
+            });
         }
 
         private void Help_Click(object sender, RoutedEventArgs e)
@@ -623,7 +643,7 @@ namespace PoEWizard
                             _comImg.Visibility = Visibility.Visible;
                         }
                     }
-                    StopTrafficAnalysis(AbortType.Disconnect, $"Disconnecting switch {device.IpAddress}");
+                    StopTrafficAnalysis(AbortType.Disconnect, $"Disconnecting switch {device.IpAddress}", "Do you want to save the traffic analysis report");
                     restApiService.Close();
                 }
                 await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
@@ -1071,14 +1091,16 @@ namespace PoEWizard
         {
             try
             {
+                isTrafficRunning = true;
                 _trafficLabel.Content = TRAFFIC_ANALYSIS_RUNNING;
+                string switchName = device.Name;
                 TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(duration));
                 if (report != null)
                 {
                     TextViewer tv = new TextViewer(TRAFFIC_ANALYSIS_IDLE, report.Summary)
                     {
                         Owner = this,
-                        SaveFilename = $"{device.Name}-{DateTime.Now.ToString("MM-dd-yyyy_hh_mm_ss")}-traffic-analysis.txt",
+                        SaveFilename = $"{switchName}-{DateTime.Now.ToString("MM-dd-yyyy_hh_mm_ss")}-traffic-analysis.txt",
                         CsvData = report.Data.ToString()
                     };
                     tv.Show();
@@ -1090,8 +1112,9 @@ namespace PoEWizard
             }
             finally
             {
-                if (device.IsConnected) _traffic.IsEnabled = true; else _traffic.IsEnabled = false;
                 _trafficLabel.Content = TRAFFIC_ANALYSIS_IDLE;
+                isTrafficRunning = false;
+                if (device.IsConnected) _traffic.IsEnabled = true; else _traffic.IsEnabled = false;
                 HideProgress();
                 HideInfoBox();
             }
@@ -1290,7 +1313,7 @@ namespace PoEWizard
                 _vcbootMenuItem.IsEnabled = false;
                 _cfgMenuItem.IsEnabled = false;
                 string title = $"Rebooting switch {device.IpAddress}";
-                StopTrafficAnalysis(AbortType.Disconnect, title);
+                StopTrafficAnalysis(AbortType.Disconnect, title, "Do you want to save the traffic analysis report");
                 ShowProgress($"{title}...");
                 string duration = await Task.Run(() => restApiService.RebootSwitch(600));
                 SetDisconnectedState();

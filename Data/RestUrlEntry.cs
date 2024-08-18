@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using static PoEWizard.Data.RestUrl;
 
 namespace PoEWizard.Data
 {
