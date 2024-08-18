@@ -311,8 +311,7 @@ namespace PoEWizard
             }
             else
             {
-                bool res = ShowMessageBox("Connection", $"The traffic analysis is still running.\nAre you sure you want to stop it?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
-                if (res) StopTrafficAnalysis(AbortType.CanceledByUser);
+               StopTrafficAnalysis(AbortType.CanceledByUser, "Traffic Analysis");
 
             }
         }
@@ -327,7 +326,7 @@ namespace PoEWizard
             }
         }
 
-        private void StopTrafficAnalysis(AbortType abortType)
+        private void StopTrafficAnalysis(AbortType abortType, string title)
         {
             try
             {
@@ -336,7 +335,9 @@ namespace PoEWizard
                     device.IsConnected = false;
                     _traffic.IsEnabled = false;
                 }
-                restApiService?.StopTrafficAnalysis(abortType);
+                bool res = ShowMessageBox(title, $"The traffic analysis is still running.\nAre you sure you want to stop it?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                if (res) restApiService?.StopTrafficAnalysis(AbortType.CanceledByUser);
+                else if (abortType == AbortType.Disconnect) restApiService?.StopTrafficAnalysis(abortType);
             }
             catch (Exception ex)
             {
@@ -548,9 +549,9 @@ namespace PoEWizard
                 restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
-                    StopTrafficAnalysis(AbortType.Disconnect);
-                    Logger.Activity($"Disconnected switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
-                    ShowProgress($"Disconnecting from switch {device.IpAddress}...");
+                    string title = $"Disconnecting switch {device.IpAddress}";
+                    Logger.Activity($"{title} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
+                    ShowProgress($"{title} ...");
                     await CloseRestApiService();
                     SetDisconnectedState();
                     return;
@@ -605,7 +606,6 @@ namespace PoEWizard
         {
             try
             {
-                StopTrafficAnalysis(AbortType.Disconnect);
                 if (restApiService != null && !isClosing)
                 {
                     isClosing = true;
@@ -623,6 +623,7 @@ namespace PoEWizard
                             _comImg.Visibility = Visibility.Visible;
                         }
                     }
+                    StopTrafficAnalysis(AbortType.Disconnect, $"Disconnecting switch {device.IpAddress}");
                     restApiService.Close();
                 }
                 await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
@@ -1288,8 +1289,9 @@ namespace PoEWizard
                 _snapshotMenuItem.IsEnabled = false;
                 _vcbootMenuItem.IsEnabled = false;
                 _cfgMenuItem.IsEnabled = false;
-                StopTrafficAnalysis(AbortType.Disconnect);
-                ShowProgress($"Rebooting switch {device.IpAddress}...");
+                string title = $"Rebooting switch {device.IpAddress}";
+                StopTrafficAnalysis(AbortType.Disconnect, title);
+                ShowProgress($"{title}...");
                 string duration = await Task.Run(() => restApiService.RebootSwitch(600));
                 SetDisconnectedState();
                 string txt = $"Switch {device.IpAddress} ready to connect";

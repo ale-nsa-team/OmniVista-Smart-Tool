@@ -11,6 +11,8 @@ namespace PoEWizard.Components
     public partial class TrafficAnalysis : Window
     {
         private const string MINUTE = "minute";
+        private const string DEFAULT_DURATION = "3 minutes";
+        private const string HOUR = "hour";
 
         public List<string> TimeDurationList { get; set; }
         public string Duration {  get; set; }
@@ -27,18 +29,21 @@ namespace PoEWizard.Components
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
             _header.Text = "Select the traffic analysis duration";
-            TimeDurationList = new List<string>() { $"1 {MINUTE}", $"2 {MINUTE}s", $"3 {MINUTE}s", $"5 {MINUTE}s", $"10 {MINUTE}s", $"15 {MINUTE}s", $"30 {MINUTE}s" };
+            TimeDurationList = new List<string>() { $"1 {MINUTE}", $"2 {MINUTE}s", $"3 {MINUTE}s", $"5 {MINUTE}s", $"10 {MINUTE}s",
+                                                    $"15 {MINUTE}s", $"30 {MINUTE}s", $"1 {HOUR}", $"3 {HOUR}s" };
         }
 
         public void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
             DataContext = this;
-            Duration = $"1 {MINUTE}";
+            Duration = DEFAULT_DURATION;
         }
 
         public void BtnOk_Click(object sender, RoutedEventArgs e)
         {
-            TrafficDurationSec = Utils.StringToInt(Duration) * 60;
+            if (Duration.Contains(MINUTE)) TrafficDurationSec = Utils.StringToInt(Duration) * 60;
+            else if (Duration.Contains(HOUR)) TrafficDurationSec = Utils.StringToInt(Duration) * 3600;
+            else TrafficDurationSec = Utils.StringToInt(Duration);
             DialogResult = true;
             Close();
         }
