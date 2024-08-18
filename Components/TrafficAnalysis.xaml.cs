@@ -10,9 +10,7 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class TrafficAnalysis : Window
     {
-        private const string MINUTE = "minute";
         private const string DEFAULT_DURATION = "3 minutes";
-        private const string HOUR = "hour";
 
         public List<string> TimeDurationList { get; set; }
         public string Duration {  get; set; }

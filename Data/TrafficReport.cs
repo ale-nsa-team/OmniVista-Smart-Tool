@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Data
 {
@@ -32,8 +33,9 @@ namespace PoEWizard.Data
         public DateTime TrafficStartTime { get; set; }
         public SwitchTrafficModel SwitchTraffic { get; set; }
 
+
         public double TrafficDuration { get; set; }
-        public TrafficReport(SwitchTrafficModel switchTraffic, Dictionary<string, List<string>> portsMacList, string completion)
+        public TrafficReport(SwitchTrafficModel switchTraffic, Dictionary<string, List<string>> portsMacList, string completion, int selectedDur)
         {
             this.Summary = string.Empty;
             this.Data = null;
@@ -42,7 +44,21 @@ namespace PoEWizard.Data
             this.TrafficStartTime = switchTraffic.StartTime;
             if (portsMacList?.Count > 0) this.portsMacList = portsMacList;
             this.Summary = $"Traffic analysis {completion}:";
-            this.Summary += $"\n  Switch {this.SwitchTraffic.Name} ({this.SwitchTraffic.IpAddress}), Serial Number: {this.SwitchTraffic.SerialNumber}";
+            int selectedDuration;
+            string unit;
+            if (selectedDur >= 60 && selectedDur < 3600)
+            {
+                unit = MINUTE;
+                selectedDuration = selectedDur / 60;
+            }
+            else
+            {
+                unit = HOUR;
+                selectedDuration = selectedDur / 3600;
+            }
+            this.Summary += $"\n  Selected duration: {selectedDuration} {unit}";
+            if (selectedDuration > 1) this.Summary += "s";
+            this.Summary += $"\n  Switch: {this.SwitchTraffic.Name} ({this.SwitchTraffic.IpAddress}), Serial Number: {this.SwitchTraffic.SerialNumber}";
             this.Summary += $"\n  Date: {this.TrafficStartTime:MM/dd/yyyy hh:mm:ss tt}";
             this.Summary += $"\n  Duration: {Utils.CalcStringDuration(TrafficStartTime, true)}\n\nTraffic Alert:\n";
             this.TrafficDuration = DateTime.Now.Subtract(this.SwitchTraffic.StartTime).TotalSeconds;

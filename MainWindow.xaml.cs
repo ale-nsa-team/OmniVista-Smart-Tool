@@ -55,6 +55,7 @@ namespace PoEWizard
         #region Local constants
         const string TRAFFIC_ANALYSIS_RUNNING = "Running ...";
         const string TRAFFIC_ANALYSIS_IDLE = "Traffic Analysis";
+        const string ASK_SAVE_TRAFFIC_REPORT = "Do you want to save the traffic analysis report";
         #endregion
 
         #region public variables
@@ -319,7 +320,7 @@ namespace PoEWizard
                 }
                 else
                 {
-                    StopTrafficAnalysis(AbortType.CanceledByUser, "Traffic Analysis", "Are you sure you want to stop it");
+                    StopTrafficAnalysis(AbortType.CanceledByUser, "Traffic Analysis", "Are you sure you want to stop it", "interrupted by the user");
                 }
             }
             catch (Exception ex)
@@ -328,7 +329,7 @@ namespace PoEWizard
             }
         }
 
-        private async void StopTrafficAnalysis(AbortType abortType, string title, string question)
+        private async void StopTrafficAnalysis(AbortType abortType, string title, string question, string stopReason)
         {
             try
             {
@@ -340,13 +341,13 @@ namespace PoEWizard
                 bool res = ShowMessageBox(title, $"The traffic analysis is still running.\n{question}?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                 if (res)
                 {
-                    restApiService?.StopTrafficAnalysis(AbortType.CanceledByUser);
+                    restApiService?.StopTrafficAnalysis(AbortType.CanceledByUser, stopReason);
                     if (abortType == AbortType.Disconnect)
                     {
                         await WaitCondition(isTrafficRunning);
                     }
                 }
-                else if (abortType == AbortType.Disconnect) restApiService?.StopTrafficAnalysis(abortType);
+                else if (abortType == AbortType.Disconnect) restApiService?.StopTrafficAnalysis(abortType, stopReason);
             }
             catch (Exception ex)
             {
@@ -643,7 +644,7 @@ namespace PoEWizard
                             _comImg.Visibility = Visibility.Visible;
                         }
                     }
-                    StopTrafficAnalysis(AbortType.Disconnect, $"Disconnecting switch {device.IpAddress}", "Do you want to save the traffic analysis report");
+                    StopTrafficAnalysis(AbortType.Disconnect, $"Disconnecting switch {device.IpAddress}", ASK_SAVE_TRAFFIC_REPORT, "interrupted before disconnecting the switch");
                     restApiService.Close();
                 }
                 await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
@@ -1313,7 +1314,7 @@ namespace PoEWizard
                 _vcbootMenuItem.IsEnabled = false;
                 _cfgMenuItem.IsEnabled = false;
                 string title = $"Rebooting switch {device.IpAddress}";
-                StopTrafficAnalysis(AbortType.Disconnect, title, "Do you want to save the traffic analysis report");
+                StopTrafficAnalysis(AbortType.Disconnect, title, ASK_SAVE_TRAFFIC_REPORT, "interrupted before rebooting the switch");
                 ShowProgress($"{title}...");
                 string duration = await Task.Run(() => restApiService.RebootSwitch(600));
                 SetDisconnectedState();

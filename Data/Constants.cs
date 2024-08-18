@@ -244,7 +244,7 @@ namespace PoEWizard.Data
         public const string LPNI = "lpNi";
         public const string LPCMM = "lpCmm";
         public const string DEBUG_APP_INDEX = "systemSwitchLoggingApplicationIndex";
-        // Used by "SHOW_INTERFACES"
+        // Used by Traffic Analysis
         public const string TRAF_SLOT_PORT = "Chassis/Slot/Port";
         public const string TRAF_STATUS = "Operational Status";
         public const string TRAF_LINK_QUALITY = "Link-Quality";
@@ -267,6 +267,8 @@ namespace PoEWizard.Data
         public const string TRAF_COLLISIONS = "Collisions";
         public const string TRAF_LATE_COLLISIONS = "Late collisions";
         public const string TRAF_EXC_COLLISIONS = "Exc-Collisions";
+        public const string MINUTE = "minute";
+        public const string HOUR = "hour";
         // Used by Config Wizard commands
         public const string SWITCH_CFG_DNS = "systemDNS";
         public const string SWITCH_CFG_DHCP = "alaDhcpRelay";

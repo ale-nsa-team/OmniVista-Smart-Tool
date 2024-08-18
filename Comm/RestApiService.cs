@@ -25,6 +25,7 @@ namespace PoEWizard.Comm
         private SwitchDebugModel _debugSwitchLog;
         private SwitchTrafficModel _switchTraffic;
         private static AbortType stopTrafficAnalysis;
+        private static string stopTrafficAnalysisReason = "completed";
 
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
@@ -369,9 +370,10 @@ namespace PoEWizard.Comm
             return Utils.CalcStringDuration(startTime, true);
         }
 
-        public void StopTrafficAnalysis(AbortType abortType)
+        public void StopTrafficAnalysis(AbortType abortType, string stopReason)
         {
             stopTrafficAnalysis = abortType;
+            stopTrafficAnalysisReason = stopReason;
         }
 
         public TrafficReport RunTrafficAnalysis(int duration)
@@ -380,6 +382,7 @@ namespace PoEWizard.Comm
             try
             {
                 stopTrafficAnalysis = AbortType.Running;
+                stopTrafficAnalysisReason = "completed";
                 _switchTraffic = null;
                 GetPortsTrafficInformation();
                 DateTime startTime = DateTime.Now;
@@ -410,18 +413,11 @@ namespace PoEWizard.Comm
                             }
                         }
                     }
-                    string completion = "completed";
-                    if (stopTrafficAnalysis != AbortType.Running)
-                    {
-                        int initDuration = duration / 60;
-                        completion = $"interrupted by the user before {duration / 60} minute";
-                        if (initDuration > 1) completion += "s";
-                    }
-                    report = new TrafficReport(_switchTraffic, portMacList, completion);
+                    report = new TrafficReport(_switchTraffic, portMacList, stopTrafficAnalysisReason, duration);
                 }
                 if (stopTrafficAnalysis == AbortType.CanceledByUser)
                 {
-                    Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was interrupted by the user before {duration / 60} minutes!");
+                    Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was {stopTrafficAnalysisReason}, selected duration: {duration / 60} minutes!");
                 }
                 Logger.Activity(report.Summary);
             }
