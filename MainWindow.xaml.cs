@@ -108,6 +108,10 @@ namespace PoEWizard
                         reportAck = ShowMessageBox(report.Title, report.Message, MsgBoxIcons.Info);
                         break;
                     case ReportType.Value:
+                        if (_progressBar.Visibility != Visibility.Visible)
+                        {
+                            ShowProgress(report.Title, false);
+                        }
                         _progressBar.Value = int.TryParse(report.Message, out int i) ? i : 0;
                         break;
                     default:

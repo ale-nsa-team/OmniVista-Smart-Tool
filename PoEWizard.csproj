@@ -156,7 +156,6 @@
     <Compile Include="Data\Activity.cs" />
     <Compile Include="Data\ChassisSlotPort.cs" />
     <Compile Include="Data\CliParseUtils.cs" />
-    <Compile Include="Data\Props.cs" />
     <Compile Include="Data\CmdRequest.cs" />
     <Compile Include="Data\SwitchDebugApp.cs" />
     <Compile Include="Data\TrafficReport.cs" />
@@ -180,6 +179,8 @@
     <Compile Include="Device\SlotModel.cs" />
     <Compile Include="Device\SlotView.cs" />
     <Compile Include="Device\SnmpModel.cs" />
+    <Compile Include="Device\SnmpStation.cs" />
+    <Compile Include="Device\SnmpUser.cs" />
     <Compile Include="Device\SwitchDebugModel.cs" />
     <Compile Include="Device\SwitchModel.cs" />
     <Compile Include="Device\PortModel.cs" />

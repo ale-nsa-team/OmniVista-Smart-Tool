@@ -22,6 +22,29 @@
     </Page.Resources>
 
     <StackPanel Style="{DynamicResource cfgWindow}">
+        <DataGrid x:Name="_users" ItemsSource="{Binding Users}" Style="{DynamicResource defaultGrid}">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Width="Auto">
+                    <DataGridTemplateColumn.HeaderTemplate>
+                        <DataTemplate>
+                            <Button Style="{DynamicResource deleteButton}" Click="AddSite">
+                                <Image Source="Resources/plus-green.png" />
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.HeaderTemplate>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Style="{DynamicResource deleteButton}" Click="DeleteSite">
+                                <Image Source="Resources/remove.png" />
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Path=Name}" />
+                <DataGridTextColumn Header="SNMP Access Level" Width="*" Binding="{Binding Path=Version}" />
+                <DataGridTextColumn Header="Protocols" Width="*" Binding="{Binding Path=Protocol}" />
+            </DataGrid.Columns>
+        </DataGrid>
         <StackPanel Orientation="Horizontal">
             <Label>Version</Label>
             <ComboBox x:Name="_snmpVersion" Style="{DynamicResource defaultCombo}"

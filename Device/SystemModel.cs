@@ -1,6 +1,7 @@
 ﻿using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace PoEWizard.Device
@@ -31,8 +32,9 @@ namespace PoEWizard.Device
             return this.MemberwiseClone();
         }
 
-        public List<CmdRequest> ToCommandList()
+        public List<CmdRequest> ToCommandList(SystemModel orig)
         {
+            List<PropertyInfo> changes = GetChanges(orig);
             List<CmdRequest> cmdList = new List<CmdRequest>();
             string tz = TimeZoneInfo.Local.StandardName;
             string tzabv = Regex.Replace(tz, "[^A-Z]", "");
@@ -41,15 +43,44 @@ namespace PoEWizard.Device
 
             cmdList.Add(new CmdRequest(Command.DISABLE_AUTO_FABRIC));
             cmdList.Add(new CmdRequest(Command.SET_SYSTEM_TIMEZONE, tzabv));
-            cmdList.Add(new CmdRequest(Command.SET_SYSTEM_DATE,date));
+            cmdList.Add(new CmdRequest(Command.SET_SYSTEM_DATE, date));
             cmdList.Add(new CmdRequest(Command.SET_SYSTEM_TIME, time));
             cmdList.Add(new CmdRequest(Command.ENABLE_DDM));
-            if (!string.IsNullOrEmpty(MgtIpAddr)) cmdList.Add(new CmdRequest(Command.SET_MNGT_INTERFACE, MgtIpAddr, NetMask));
-            if (!string.IsNullOrEmpty(AdminPwd) && AdminPwd != Constants.DEFAULT_PASSWORD) cmdList.Add(new CmdRequest(Command.SET_PASSWORD, "admin", AdminPwd));
-            if (!string.IsNullOrEmpty(Name)) cmdList.Add(new CmdRequest(Command.SET_SYSTEM_NAME));
-            if (!string.IsNullOrEmpty(Contact)) cmdList.Add(new CmdRequest(Command.SET_CONTACT, Contact));
-            if (!string.IsNullOrEmpty(Location)) cmdList.Add(new CmdRequest(Command.SET_LOCATION,Location));
+            foreach (var prop in changes)
+            {
+                if (string.IsNullOrEmpty((string)prop.GetValue(this, null))) continue;
+                switch (prop.Name)
+                {
+                    case "MtgIpAddr":
+                        cmdList.Add(new CmdRequest(Command.SET_MNGT_INTERFACE, MgtIpAddr, NetMask));
+                        break;
+                    case "AdminPwd":
+                        cmdList.Add(new CmdRequest(Command.SET_PASSWORD, "admin", AdminPwd));
+                        break;
+                    case "Name":
+                        cmdList.Add(new CmdRequest(Command.SET_SYSTEM_NAME, Name));
+                        break;
+                    case "Contact":
+                        cmdList.Add(new CmdRequest(Command.SET_CONTACT, Contact));
+                        break;
+                    case "Location":
+                        cmdList.Add(new CmdRequest(Command.SET_LOCATION, Location));
+                        break;
+                }
+            }
             return cmdList;
+        }
+
+        private List<PropertyInfo> GetChanges(SystemModel orig)
+        {
+            List<PropertyInfo> changes = new List<PropertyInfo>();
+            var props = this.GetType().GetProperties();
+            foreach (var prop in props)
+            {
+                if (prop.GetValue(this, null) != prop.GetValue(orig, null))
+                    changes.Add(prop);
+            }
+            return changes;
         }
     }
 }

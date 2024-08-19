@@ -7,8 +7,6 @@ namespace PoEWizard.Device
 {
     public class ServerModel : ICloneable
     {
-        private readonly Props config;
-
         public string Gateway { get; set; }
         public bool IsDns { get; set; } = false;
         public string Dns1 { get; set; }
@@ -21,23 +19,6 @@ namespace PoEWizard.Device
         public string Ntp3 { get; set; }
 
         public ServerModel() { }
-
-        public ServerModel(Props cfg)
-        {
-            PropertyInfo[] props = GetType().GetProperties();
-            foreach (PropertyInfo p in props)
-            {
-                if (p.PropertyType == typeof(bool))
-                {
-                    p.SetValue(this, cfg.GetBool(p.Name, false));
-                }
-                else
-                {
-                    p.SetValue(this, cfg.Get(p.Name), null);
-                }
-            }
-            config = cfg;
-        }
 
         public object Clone()
         {

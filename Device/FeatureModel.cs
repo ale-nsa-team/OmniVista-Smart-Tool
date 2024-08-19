@@ -1,6 +1,7 @@
 ﻿using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace PoEWizard.Device
 {
@@ -79,6 +80,22 @@ namespace PoEWizard.Device
                 cmdList.Add(new CmdRequest(Command.ENABLE_DHCP_RELAY));
             }
             return cmdList;
+        }
+
+        private List<PropertyInfo> GetChanges(FeatureModel orig)
+        {
+            List<PropertyInfo> changes = new List<PropertyInfo>();
+            var props = this.GetType().GetProperties();
+            foreach (var prop in props)
+            {
+                object val = prop.GetValue(this, null);
+                if (val?.GetType() == typeof(Boolean))
+                {
+                    if ((bool)val != (bool)prop.GetValue(orig, null)) changes.Add(prop);
+                }
+                else if (val != prop.GetValue(orig, null)) changes.Add(prop);
+            }
+            return changes;
         }
     }
 }

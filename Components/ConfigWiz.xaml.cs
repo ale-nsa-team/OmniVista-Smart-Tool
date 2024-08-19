@@ -26,6 +26,8 @@ namespace PoEWizard.Components
         private readonly FeatureModel features;
         private readonly SnmpModel snmpData;
         private ServerModel srvOrig;
+        private SystemModel sysOrig;
+        private FeatureModel featOrig;
 
         public bool IsRebootSwitch { get; set; } = false;
 
@@ -119,6 +121,8 @@ namespace PoEWizard.Components
             });
 
             srvOrig = srvData.Clone() as ServerModel;
+            sysOrig = sysData.Clone() as SystemModel;
+            featOrig = features.Clone() as FeatureModel;
 
             HideInfoBox();
         }
@@ -147,7 +151,7 @@ namespace PoEWizard.Components
         {
             await Task.Run(() =>
             {
-                //ApplyCommands(sysData.ToCommandList(), "Applying System parameters...");
+                ApplyCommands(sysData.ToCommandList(sysOrig), "Applying System parameters...");
                 ApplyCommands(srvData.ToCommandList(srvOrig), "Applying DNS and NPT parameters...");
                 //ApplyCommands(features.ToCommandList(), "Applying Features...");
                 //ApplyCommands(snmpData.ToCommandList(), "Applying SNMP configuration...");
