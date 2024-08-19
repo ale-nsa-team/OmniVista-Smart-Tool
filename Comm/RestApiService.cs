@@ -326,11 +326,46 @@ namespace PoEWizard.Comm
             return null;
         }
 
+        public void WriteMemory(int waitSec = 40)
+        {
+            try
+            {
+                if (SwitchModel.SyncStatus == SyncStatusType.Synchronized) return;
+                int estimatedDurationSec = 25;
+                _progress.Report(new ProgressReport { Type = ReportType.Value, Title = $"Writing memory on switch {SwitchModel.IpAddress} ...", Message = "0" });
+                SendProgressReport("Writing memory");
+                SendRequest(GetRestUrlEntry(Command.WRITE_MEMORY));
+                DateTime startTime = DateTime.Now;
+                int dur = 0;
+                while (dur < waitSec)
+                {
+                    Thread.Sleep(1000);
+                    dur = (int)Utils.GetTimeDuration(startTime);
+                    _progress.Report(new ProgressReport { Type = ReportType.Value, Message = $"{(dur / estimatedDurationSec) * 100}" });
+                    if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
+                    _progress.Report(new ProgressReport($"Writing memory on switch {SwitchModel.IpAddress} ({dur} sec) ..."));
+                    try
+                    {
+                        if (dur > 15 && dur % 5 == 0) GetSystemInfo();
+                    }
+                    catch { }
+                }
+                Logger.Activity($"Write memory on switch {SwitchModel.IpAddress} completed (Duration: {dur} sec)");
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError("Write memory", ex);
+            }
+            _progress.Report(new ProgressReport { Type = ReportType.Value, Message = "-1" });
+        }
+
         public string RebootSwitch(int waitSec)
         {
             DateTime startTime = DateTime.Now;
             try
             {
+                int estimatedDurationSec = 320;
+                _progress.Report(new ProgressReport { Type = ReportType.Value, Title = $"Rebooting switch {SwitchModel.IpAddress}", Message = "0" });
                 Logger.Info($"Rebooting switch {SwitchModel.IpAddress}");
                 _progress.Report(new ProgressReport($"Rebooting switch {SwitchModel.IpAddress}"));
                 SendRequest(GetRestUrlEntry(Command.REBOOT_SWITCH));
@@ -343,6 +378,7 @@ namespace PoEWizard.Comm
                     Thread.Sleep(1000);
                     dur = (int)Utils.GetTimeDuration(startTime);
                     _progress.Report(new ProgressReport($"{msg}({Utils.CalcStringDuration(startTime, true)}) ..."));
+                    _progress.Report(new ProgressReport { Type = ReportType.Value, Message = $"{(dur / estimatedDurationSec) * 100}" });
                 }
                 while (dur < waitSec)
                 {
@@ -350,6 +386,7 @@ namespace PoEWizard.Comm
                     dur = (int)Utils.GetTimeDuration(startTime);
                     if (dur >= waitSec) break;
                     _progress.Report(new ProgressReport($"{msg}({Utils.CalcStringDuration(startTime, true)}) ..."));
+                    _progress.Report(new ProgressReport { Type = ReportType.Value, Message = $"{(dur / estimatedDurationSec) * 100}" });
                     if (!Utils.IsReachable(SwitchModel.IpAddress)) continue;
                     try
                     {
@@ -367,6 +404,7 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError($"Reboot switch {SwitchModel.IpAddress}", ex);
             }
+            _progress.Report(new ProgressReport { Type = ReportType.Value, Message = "-1" });
             return Utils.CalcStringDuration(startTime, true);
         }
 
@@ -457,35 +495,6 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 SendSwitchError($"Traffic analysis on switch {SwitchModel.IpAddress}", ex);
-            }
-        }
-
-        public void WriteMemory(int waitSec = 40)
-        {
-            try
-            {
-                if (SwitchModel.SyncStatus == SyncStatusType.Synchronized) return;
-                SendProgressReport("Writing memory");
-                SendRequest(GetRestUrlEntry(Command.WRITE_MEMORY));
-                DateTime startTime = DateTime.Now;
-                int dur = 0;
-                while (dur < waitSec)
-                {
-                    Thread.Sleep(1000);
-                    dur = (int)Utils.GetTimeDuration(startTime);
-                    if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
-                    _progress.Report(new ProgressReport($"Writing memory on switch {SwitchModel.IpAddress} ({dur} sec) ..."));
-                    try
-                    {
-                        if (dur > 15 && dur % 5 == 0) GetSystemInfo();
-                    }
-                    catch { }
-                }
-                Logger.Activity($"Write memory on switch {SwitchModel.IpAddress} completed (Duration: {dur} sec)");
-            }
-            catch (Exception ex)
-            {
-                SendSwitchError("Write memory", ex);
             }
         }
 

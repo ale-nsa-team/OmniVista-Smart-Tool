@@ -919,7 +919,7 @@ namespace PoEWizard
         {
             try
             {
-                ShowProgress($"Writing memory on switch {device.IpAddress}...");
+                ShowProgress($"Writing memory on switch {device.IpAddress} ...");
                 await Task.Run(() => restApiService.GetSystemInfo());
                 if (device.SyncStatus == SyncStatusType.Synchronized) return;
                 await Task.Run(() => restApiService.WriteMemory());
@@ -1216,7 +1216,6 @@ namespace PoEWizard
                 _progressBar.Value = 0;
             }
             _status.Text = message;
-
         }
 
         private void HideProgress()
