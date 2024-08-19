@@ -458,6 +458,25 @@
         <Border x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}" />
     </ControlTemplate>
 
+    <Style x:Key="selectOptionTitle" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource blueGradientBrush}" />
+        <Setter Property="Height" Value="25" />
+        <Setter Property="Margin" Value="0,0,0,10" />
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect ShadowDepth="1" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="selectOptionHeader" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0,0,0,0" />
+    </Style>
+
     <ControlTemplate x:Key="comboBoxToggleButton" TargetType="{x:Type ToggleButton}">
         <Grid>
             <Grid.ColumnDefinitions>

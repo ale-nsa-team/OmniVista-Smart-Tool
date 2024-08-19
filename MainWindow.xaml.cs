@@ -333,6 +333,7 @@ namespace PoEWizard
         {
             try
             {
+                if (!isTrafficRunning) return;
                 if (abortType == AbortType.Disconnect)
                 {
                     device.IsConnected = false;

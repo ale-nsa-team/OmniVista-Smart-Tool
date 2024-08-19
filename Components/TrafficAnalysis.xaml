@@ -21,6 +21,9 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
+        <Border Grid.Row="0" Style="{DynamicResource selectOptionTitle}">
+            <TextBlock x:Name="_trafficTitle" Text="Traffic Analysis" Style="{DynamicResource selectOptionHeader}" />
+        </Border>
         <TextBlock x:Name ="_header" Grid.Row="0" 
                 HorizontalAlignment="Center"
                 TextWrapping="Wrap"
