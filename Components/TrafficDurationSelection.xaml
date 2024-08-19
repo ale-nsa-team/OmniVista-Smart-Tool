@@ -21,13 +21,10 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" Style="{DynamicResource selectOptionTitle}">
-            <TextBlock x:Name="_trafficTitle" Text="Traffic Analysis" Style="{DynamicResource selectOptionHeader}" />
-        </Border>
         <TextBlock x:Name ="_header" Grid.Row="0" 
                 HorizontalAlignment="Center"
                 TextWrapping="Wrap"
-                Margin="0,60,0,0"
+                Margin="0,50,0,0"
                 Style="{DynamicResource popupTitle}" />
         <ComboBox x:Name="_devType" Grid.Row="1" 
                 Width="120" Height="25"
