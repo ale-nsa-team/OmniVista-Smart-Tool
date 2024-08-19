@@ -30,7 +30,7 @@ namespace PoEWizard.Components
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
 
-            _header.Text = $"\nPlease, select the type of device connected to port {port}";
+            _header.Text = $"Please, select the type of device connected to port {port}";
             Devices = Enum.GetValues(typeof(DeviceType)).OfType<DeviceType>().ToList().Select(d => GetDescription(d)).ToList();
         }
 

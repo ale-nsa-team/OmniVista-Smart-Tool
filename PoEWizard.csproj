@@ -149,8 +149,8 @@
     <Compile Include="Components\TextViewer.xaml.cs">
       <DependentUpon>TextViewer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\TrafficAnalysis.xaml.cs">
-      <DependentUpon>TrafficAnalysis.xaml</DependentUpon>
+    <Compile Include="Components\TrafficDurationSelection.xaml.cs">
+      <DependentUpon>TrafficDurationSelection.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Validators.cs" />
     <Compile Include="Data\Activity.cs" />
@@ -262,7 +262,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\TrafficAnalysis.xaml">
+    <Page Include="Components\TrafficDurationSelection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
