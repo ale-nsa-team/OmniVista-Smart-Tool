@@ -50,6 +50,9 @@ namespace PoEWizard
         private string lastPwd;
         private SwitchDebugModel debugSwitchLog;
         private static bool isTrafficRunning = false;
+        private string stopTrafficAnalysisReason = string.Empty;
+        private int selectedTrafficDuration;
+        private DateTime startTrafficAnalysisTime;
         #endregion
 
         #region Local constants
@@ -138,6 +141,9 @@ namespace PoEWizard
                 e.Cancel = true;
                 sftpService?.Disconnect();
                 sftpService = null;
+                stopTrafficAnalysisReason = "interrupted by the user before closing the application";
+                StopTrafficAnalysis(AbortType.Disconnecting, $"Disconnecting switch {device.IpAddress}", ASK_SAVE_TRAFFIC_REPORT);
+                await WaitSaveTrafficAnalysis();
                 await CloseRestApiService();
                 this.Closing -= OnWindowClosing;
                 this.Close();
@@ -315,12 +321,14 @@ namespace PoEWizard
                     var ds = new TrafficAnalysis() { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
                     if (ds.ShowDialog() == true)
                     {
-                        TrafficAnalysis(ds.TrafficDurationSec);
+                        selectedTrafficDuration = ds.TrafficDurationSec;
+                        StartTrafficAnalysis();
                     }
                 }
                 else
                 {
-                    StopTrafficAnalysis(AbortType.CanceledByUser, "Traffic Analysis", "Are you sure you want to stop it", "interrupted by the user");
+                    stopTrafficAnalysisReason = "interrupted by the user";
+                    StopTrafficAnalysis(AbortType.CanceledByUser, "Traffic Analysis", "Are you sure you want to stop it");
                 }
             }
             catch (Exception ex)
@@ -329,38 +337,53 @@ namespace PoEWizard
             }
         }
 
-        private async void StopTrafficAnalysis(AbortType abortType, string title, string question, string stopReason)
+        private bool StopTrafficAnalysis(AbortType abortType, string title, string question)
         {
+            if (!isTrafficRunning) return true;
             try
             {
-                if (!isTrafficRunning) return;
-                if (abortType == AbortType.Disconnect)
+                StringBuilder txt = new StringBuilder("The traffic analysis is still running (selected duration: ");
+                string strSelDuration = string.Empty;
+                int duration = 0;
+                if (selectedTrafficDuration >= 60 && selectedTrafficDuration < 3600)
                 {
-                    device.IsConnected = false;
-                    _traffic.IsEnabled = false;
+                    duration = selectedTrafficDuration / 60;
+                    strSelDuration = $"{duration} {MINUTE}";
                 }
-                bool res = ShowMessageBox(title, $"The traffic analysis is still running.\n{question}?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                else
+                {
+                    duration = selectedTrafficDuration / 3600;
+                    strSelDuration = $"{duration} {HOUR}";
+                }
+                if (duration > 1) strSelDuration += "s";
+                txt.Append(strSelDuration).Append(").\nCurrent duration: ").Append(Utils.CalcStringDuration(startTrafficAnalysisTime, true));
+                txt.Append("\n").Append(question).Append("?");
+                bool res = ShowMessageBox(title, txt.ToString(), MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                 if (res)
                 {
-                    restApiService?.StopTrafficAnalysis(AbortType.CanceledByUser, stopReason);
-                    if (abortType == AbortType.Disconnect)
-                    {
-                        await WaitCondition(isTrafficRunning);
-                    }
+                    restApiService?.StopTrafficAnalysis(AbortType.CanceledByUser, stopTrafficAnalysisReason);
                 }
-                else if (abortType == AbortType.Disconnect) restApiService?.StopTrafficAnalysis(abortType, stopReason);
+                else if (abortType == AbortType.Disconnecting || abortType == AbortType.Rebooting)
+                {
+                    res = ShowMessageBox(title, $"Do you still want to continue {abortType.ToString().ToLower()} the switch {device.IpAddress}?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                    if (!res) return false;
+                    restApiService?.StopTrafficAnalysis(abortType, stopTrafficAnalysisReason);
+                }
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
             }
+            HideInfoBox();
+            HideProgress();
+            return true;
         }
 
-        private static async Task WaitCondition(bool waitCondition)
+        private async Task WaitSaveTrafficAnalysis()
         {
             await Task.Run(() =>
             {
-                while (waitCondition)
+                while (isTrafficRunning)
                 {
                     Thread.Sleep(250);
                 }
@@ -571,8 +594,13 @@ namespace PoEWizard
                 restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
+                    stopTrafficAnalysisReason = "interrupted by the user before disconnecting the switch";
                     string title = $"Disconnecting switch {device.IpAddress}";
                     Logger.Activity($"{title} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
+                    bool save = StopTrafficAnalysis(AbortType.Disconnecting, $"Disconnecting switch {device.IpAddress}", ASK_SAVE_TRAFFIC_REPORT);
+                    if (!save) return;
+                    await WaitSaveTrafficAnalysis();
+                    _traffic.IsEnabled = false;
                     ShowProgress($"{title} ...");
                     await CloseRestApiService();
                     SetDisconnectedState();
@@ -645,7 +673,7 @@ namespace PoEWizard
                             _comImg.Visibility = Visibility.Visible;
                         }
                     }
-                    StopTrafficAnalysis(AbortType.Disconnect, $"Disconnecting switch {device.IpAddress}", ASK_SAVE_TRAFFIC_REPORT, "interrupted before disconnecting the switch");
+                    // StopTrafficAnalysis(AbortType.Disconnect, $"Disconnecting switch {device.IpAddress}", ASK_SAVE_TRAFFIC_REPORT, "interrupted before disconnecting the switch");
                     restApiService.Close();
                 }
                 await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
@@ -1089,14 +1117,15 @@ namespace PoEWizard
             await Task.Run(() => restApiService.RunGetSwitchLog(selectedPort.Name, debugSwitchLog));
         }
 
-        private async void TrafficAnalysis(int duration)
+        private async void StartTrafficAnalysis()
         {
             try
             {
+                startTrafficAnalysisTime = DateTime.Now;
                 isTrafficRunning = true;
                 _trafficLabel.Content = TRAFFIC_ANALYSIS_RUNNING;
                 string switchName = device.Name;
-                TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(duration));
+                TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(selectedTrafficDuration));
                 if (report != null)
                 {
                     TextViewer tv = new TextViewer(TRAFFIC_ANALYSIS_IDLE, report.Summary)
@@ -1211,7 +1240,7 @@ namespace PoEWizard
                     if (res)
                     {
                         string txt = await RebootSwitch();
-                        ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
+                        if (string.IsNullOrEmpty(txt)) ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
                         return;
                     }
                 }
@@ -1305,6 +1334,11 @@ namespace PoEWizard
         {
             try
             {
+                stopTrafficAnalysisReason = "interrupted by the user before rebooting the switch";
+                string title = $"Rebooting switch {device.IpAddress}";
+                bool save = StopTrafficAnalysis(AbortType.Rebooting, title, ASK_SAVE_TRAFFIC_REPORT);
+                if (!save) return null;
+                await WaitSaveTrafficAnalysis();
                 _btnRunWiz.IsEnabled = false;
                 _refreshSwitch.IsEnabled = false;
                 _writeMemory.IsEnabled = false;
@@ -1314,8 +1348,6 @@ namespace PoEWizard
                 _snapshotMenuItem.IsEnabled = false;
                 _vcbootMenuItem.IsEnabled = false;
                 _cfgMenuItem.IsEnabled = false;
-                string title = $"Rebooting switch {device.IpAddress}";
-                StopTrafficAnalysis(AbortType.Disconnect, title, ASK_SAVE_TRAFFIC_REPORT, "interrupted before rebooting the switch");
                 ShowProgress($"{title}...");
                 string duration = await Task.Run(() => restApiService.RebootSwitch(600));
                 SetDisconnectedState();

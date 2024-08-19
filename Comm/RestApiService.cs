@@ -393,7 +393,7 @@ namespace PoEWizard.Comm
                     if (stopTrafficAnalysis != AbortType.Running) break;
                     Thread.Sleep(250);
                 }
-                if (stopTrafficAnalysis == AbortType.Disconnect)
+                if (stopTrafficAnalysis == AbortType.Disconnecting || stopTrafficAnalysis == AbortType.Rebooting)
                 {
                     Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was canceled because the switch is disconnected!");
                     return null;
