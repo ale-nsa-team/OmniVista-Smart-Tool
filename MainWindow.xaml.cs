@@ -139,11 +139,13 @@ namespace PoEWizard
             try
             {
                 e.Cancel = true;
+                string confirm = "closing the application";
+                stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
+                bool save = StopTrafficAnalysis(AbortType.Close, $"Disconnecting switch {device.IpAddress}", ASK_SAVE_TRAFFIC_REPORT, confirm);
+                await WaitSaveTrafficAnalysis();
+                if (!save) return;
                 sftpService?.Disconnect();
                 sftpService = null;
-                stopTrafficAnalysisReason = "interrupted by the user before closing the application";
-                StopTrafficAnalysis(AbortType.Disconnecting, $"Disconnecting switch {device.IpAddress}", ASK_SAVE_TRAFFIC_REPORT);
-                await WaitSaveTrafficAnalysis();
                 await CloseRestApiService();
                 this.Closing -= OnWindowClosing;
                 this.Close();
@@ -337,7 +339,7 @@ namespace PoEWizard
             }
         }
 
-        private bool StopTrafficAnalysis(AbortType abortType, string title, string question)
+        private bool StopTrafficAnalysis(AbortType abortType, string title, string question, string confirm = null)
         {
             if (!isTrafficRunning) return true;
             try
@@ -363,9 +365,12 @@ namespace PoEWizard
                 {
                     restApiService?.StopTrafficAnalysis(AbortType.CanceledByUser, stopTrafficAnalysisReason);
                 }
-                else if (abortType == AbortType.Disconnecting || abortType == AbortType.Rebooting)
+                else if (abortType == AbortType.Close)
                 {
-                    res = ShowMessageBox(title, $"Do you still want to continue {abortType.ToString().ToLower()} the switch {device.IpAddress}?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                    if (string.IsNullOrEmpty(confirm))
+                    {
+                    }
+                    res = ShowMessageBox(title, $"Do you still want to continue {confirm}?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                     if (!res) return false;
                     restApiService?.StopTrafficAnalysis(abortType, stopTrafficAnalysisReason);
                 }
@@ -594,10 +599,11 @@ namespace PoEWizard
                 restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
-                    stopTrafficAnalysisReason = "interrupted by the user before disconnecting the switch";
+                    string confirm = $"disconnecting the switch {device.IpAddress}";
+                    stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
                     string title = $"Disconnecting switch {device.IpAddress}";
                     Logger.Activity($"{title} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
-                    bool save = StopTrafficAnalysis(AbortType.Disconnecting, $"Disconnecting switch {device.IpAddress}", ASK_SAVE_TRAFFIC_REPORT);
+                    bool save = StopTrafficAnalysis(AbortType.Close, $"Disconnecting switch {device.IpAddress}", ASK_SAVE_TRAFFIC_REPORT, confirm);
                     if (!save) return;
                     await WaitSaveTrafficAnalysis();
                     _traffic.IsEnabled = false;
@@ -1134,7 +1140,7 @@ namespace PoEWizard
                         SaveFilename = $"{switchName}-{DateTime.Now.ToString("MM-dd-yyyy_hh_mm_ss")}-traffic-analysis.txt",
                         CsvData = report.Data.ToString()
                     };
-                    tv.Show();
+                    tv.ShowDialog();
                 }
             }
             catch (Exception ex)
@@ -1334,9 +1340,10 @@ namespace PoEWizard
         {
             try
             {
-                stopTrafficAnalysisReason = "interrupted by the user before rebooting the switch";
+                string confirm = $"rebooting the switch {device.IpAddress}";
+                stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
                 string title = $"Rebooting switch {device.IpAddress}";
-                bool save = StopTrafficAnalysis(AbortType.Rebooting, title, ASK_SAVE_TRAFFIC_REPORT);
+                bool save = StopTrafficAnalysis(AbortType.Close, title, ASK_SAVE_TRAFFIC_REPORT, confirm);
                 if (!save) return null;
                 await WaitSaveTrafficAnalysis();
                 _btnRunWiz.IsEnabled = false;
