@@ -251,7 +251,6 @@ namespace PoEWizard.Comm
             _progress.Report(new ProgressReport($"{progressMsg} ..."));
             DateTime startTime = DateTime.Now;
             SendSshCliCommand(cmd, new string[1] { dbgLevel.ToString() });
-            // SendRequest(GetRestUrlEntry(cmd, new string[1] { dbgLevel }));
             bool done = false;
             int loopCnt = 1;
             while (!done)
@@ -336,12 +335,14 @@ namespace PoEWizard.Comm
                 SendProgressReport("Writing memory");
                 SendRequest(GetRestUrlEntry(Command.WRITE_MEMORY));
                 DateTime startTime = DateTime.Now;
+                double ratio;
                 int dur = 0;
                 while (dur < waitSec)
                 {
                     Thread.Sleep(1000);
                     dur = (int)Utils.GetTimeDuration(startTime);
-                    _progress.Report(new ProgressReport { Type = ReportType.Value, Message = $"{(dur / estimatedDurationSec) * 100}" });
+                    ratio = 100 * dur / estimatedDurationSec;
+                    _progress.Report(new ProgressReport { Type = ReportType.Value, Message = $"{ratio}" });
                     if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
                     _progress.Report(new ProgressReport($"Writing memory on switch {SwitchModel.IpAddress} ({dur} sec) ..."));
                     try
@@ -356,6 +357,8 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError("Write memory", ex);
             }
+            _progress.Report(new ProgressReport { Type = ReportType.Value, Message = "100" });
+            Thread.Sleep(1000);
             _progress.Report(new ProgressReport { Type = ReportType.Value, Message = "-1" });
         }
 
@@ -365,28 +368,31 @@ namespace PoEWizard.Comm
             try
             {
                 int estimatedDurationSec = 320;
-                _progress.Report(new ProgressReport { Type = ReportType.Value, Title = $"Rebooting switch {SwitchModel.IpAddress}", Message = "0" });
                 Logger.Info($"Rebooting switch {SwitchModel.IpAddress}");
+                _progress.Report(new ProgressReport(ReportType.Value, $"Rebooting switch {SwitchModel.IpAddress}", "0"));
                 _progress.Report(new ProgressReport($"Rebooting switch {SwitchModel.IpAddress}"));
                 SendRequest(GetRestUrlEntry(Command.REBOOT_SWITCH));
                 if (waitSec <= 0) return string.Empty;
                 string msg = $"Waiting switch {SwitchModel.IpAddress} reboot ";
                 _progress.Report(new ProgressReport($"{msg}..."));
+                double ratio;
                 int dur = 0;
                 while (dur <= 60)
                 {
                     Thread.Sleep(1000);
                     dur = (int)Utils.GetTimeDuration(startTime);
+                    ratio = 100 * dur / estimatedDurationSec;
+                    _progress.Report(new ProgressReport(ReportType.Value, null, $"{ratio}"));
                     _progress.Report(new ProgressReport($"{msg}({Utils.CalcStringDuration(startTime, true)}) ..."));
-                    _progress.Report(new ProgressReport { Type = ReportType.Value, Message = $"{(dur / estimatedDurationSec) * 100}" });
                 }
                 while (dur < waitSec)
                 {
                     Thread.Sleep(1000);
                     dur = (int)Utils.GetTimeDuration(startTime);
                     if (dur >= waitSec) break;
+                    ratio = 100 * dur / estimatedDurationSec;
+                    _progress.Report(new ProgressReport(ReportType.Value, null, $"{ratio}"));
                     _progress.Report(new ProgressReport($"{msg}({Utils.CalcStringDuration(startTime, true)}) ..."));
-                    _progress.Report(new ProgressReport { Type = ReportType.Value, Message = $"{(dur / estimatedDurationSec) * 100}" });
                     if (!Utils.IsReachable(SwitchModel.IpAddress)) continue;
                     try
                     {
@@ -404,6 +410,8 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError($"Reboot switch {SwitchModel.IpAddress}", ex);
             }
+            _progress.Report(new ProgressReport { Type = ReportType.Value, Message = "100" });
+            Thread.Sleep(1000);
             _progress.Report(new ProgressReport { Type = ReportType.Value, Message = "-1" });
             return Utils.CalcStringDuration(startTime, true);
         }

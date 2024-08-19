@@ -920,7 +920,6 @@ namespace PoEWizard
         {
             try
             {
-                ShowProgress($"Writing memory on switch {device.IpAddress} ...");
                 await Task.Run(() => restApiService.GetSystemInfo());
                 if (device.SyncStatus == SyncStatusType.Synchronized) return;
                 await Task.Run(() => restApiService.WriteMemory());
@@ -1359,7 +1358,6 @@ namespace PoEWizard
                 _snapshotMenuItem.IsEnabled = false;
                 _vcbootMenuItem.IsEnabled = false;
                 _cfgMenuItem.IsEnabled = false;
-                ShowProgress($"{title}...");
                 string duration = await Task.Run(() => restApiService.RebootSwitch(600));
                 SetDisconnectedState();
                 string txt = $"Switch {device.IpAddress} ready to connect";
