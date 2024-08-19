@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
-        Title="Login" Height="200" Width="220" WindowStyle="None" ShowInTaskbar="False">
+        Title="Login" Height="210" Width="220" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -21,9 +21,13 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
+        <Border Grid.Row="0" Style="{DynamicResource selectOptionTitle}">
+            <TextBlock x:Name="_deviceTitle" Text="Run Wizard" Style="{DynamicResource selectOptionHeader}" />
+        </Border>
         <TextBlock x:Name ="_header" Grid.Row="0" 
                 HorizontalAlignment="Center"
                 TextWrapping="Wrap"
+                Margin="0,50,0,0"
                 Style="{DynamicResource popupTitle}" />
         <ComboBox x:Name="_devType" Grid.Row="1" 
                 Width="120" Height="25"

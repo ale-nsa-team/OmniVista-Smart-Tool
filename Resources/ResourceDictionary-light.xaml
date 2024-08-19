@@ -460,7 +460,7 @@
 
     <Style x:Key="selectOptionTitle" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource blueGradientBrush}" />
-        <Setter Property="Height" Value="25" />
+        <Setter Property="Height" Value="30" />
         <Setter Property="Margin" Value="0,0,0,10" />
         <Setter Property="Effect">
             <Setter.Value>
