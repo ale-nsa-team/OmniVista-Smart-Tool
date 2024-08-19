@@ -26,7 +26,7 @@ namespace PoEWizard.Device
         public List<CmdRequest> ToCommandList(SnmpModel orig)
         {
             //List<PropertyInfo> changes = GetChanges(orig);
-            //List<CmdRequest> cmdList = new List<CmdRequest>();
+            List<CmdRequest> cmdList = new List<CmdRequest>();
             //if (changes.Count == 0) return cmdList;
 
             //string protos = Protocols.Replace(" ", "").ToLower();
@@ -36,6 +36,7 @@ namespace PoEWizard.Device
             //    {
             //        case "User":
             //        case "Password":
+            //        case "AuthKey":
             //        case "AuthKey":
             //        case "PrivateKey":
             //            if (NotEmpty(User))
@@ -71,7 +72,7 @@ namespace PoEWizard.Device
             //    cmdList.Insert(0, new CmdRequest(Command.SNMP_AUTH_LOCAL));
             //    cmdList.Insert(1, new CmdRequest(Command.SNMP_NO_SECURITY));
             //}
-            //return cmdList;
+            return cmdList;
         }
 
         private bool NotEmpty(string val)

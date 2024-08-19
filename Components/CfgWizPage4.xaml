@@ -27,14 +27,14 @@
                 <DataGridTemplateColumn Width="Auto">
                     <DataGridTemplateColumn.HeaderTemplate>
                         <DataTemplate>
-                            <Button Style="{DynamicResource deleteButton}" Click="AddSite">
+                            <Button Style="{DynamicResource deleteButton}">
                                 <Image Source="Resources/plus-green.png" />
                             </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.HeaderTemplate>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Style="{DynamicResource deleteButton}" Click="DeleteSite">
+                            <Button Style="{DynamicResource deleteButton}" >
                                 <Image Source="Resources/remove.png" />
                             </Button>
                         </DataTemplate>
