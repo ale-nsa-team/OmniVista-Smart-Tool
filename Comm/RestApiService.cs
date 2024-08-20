@@ -26,8 +26,7 @@ namespace PoEWizard.Comm
         private SwitchTrafficModel _switchTraffic;
         private static AbortType stopTrafficAnalysis;
         private static string stopTrafficAnalysisReason = "completed";
-        private double totalProgressBar;
-        private double progressBarCnt;
+        private double totalProgressBarVal;
 
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
@@ -49,88 +48,58 @@ namespace PoEWizard.Comm
         {
             try
             {
-                totalProgressBar = 23;
-                progressBarCnt = 0;
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
-                SendProgressBarMessage($"Connecting to switch {SwitchModel.IpAddress} ...", -1);
-                _progress.Report(new ProgressReport($"Connecting to switch {SwitchModel.IpAddress} ..."));
+                _progress.Report(new ProgressReport("Connecting to switch ..."));
                 RestApiClient.Login();
-                UpdateProgressBar(++progressBarCnt); //  1
                 if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to switch {SwitchModel.IpAddress}!");
                 SwitchModel.IsConnected = true;
                 _progress.Report(new ProgressReport($"Reading system information on switch {SwitchModel.IpAddress}"));
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_MICROCODE));
-                UpdateProgressBar(++progressBarCnt); //  2
                 if (_response[STRING] != null) SwitchModel.LoadFromDictionary(CliParseUtils.ParseHTable(_response[STRING].ToString())[0], DictionaryType.MicroCode);
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_CMM));
-                UpdateProgressBar(++progressBarCnt); //  3
                 if (_response[STRING] != null) SwitchModel.LoadFromDictionary(CliParseUtils.ParseVTable(_response[STRING].ToString()), DictionaryType.Cmm);
                 _response = SendRequest(GetRestUrlEntry(Command.DEBUG_SHOW_APP_LIST));
                 if (_response[DATA] != null) SwitchModel.LoadFromList(CliParseUtils.ParseSwitchDebugAppTable((Dictionary<string, string>)_response[DATA], new string[2] { LPNI, LPCMM }), DictionaryType.SwitchDebugAppList);
-                UpdateProgressBar(++progressBarCnt); //  4
                 ScanSwitch($"Connect to switch {SwitchModel.IpAddress}", reportResult);
             }
             catch (Exception ex)
             {
                 SendSwitchError("Connect", ex);
             }
-            progressBarCnt = 0;
-            totalProgressBar = 0;
         }
 
         public void ScanSwitch(string source, WizardReport reportResult = null)
         {
             try
             {
-                if (totalProgressBar == 0)
-                {
-                    totalProgressBar = 18;
-                    SendProgressBarMessage($"Scanning switch {SwitchModel.IpAddress} ...", -1);
-                }
                 GetCurrentSwitchDebugLevel();
-                progressBarCnt += 2;
-                UpdateProgressBar(progressBarCnt); //  5 , 6
                 GetSnapshot();
-                progressBarCnt += 2;
-                UpdateProgressBar(progressBarCnt); //  7, 8
                 this._wizardReportResult = reportResult;
                 GetSystemInfo();
-                UpdateProgressBar(++progressBarCnt); //  9
                 SendProgressReport("Reading chassis and port information");
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_CHASSIS));
-                UpdateProgressBar(++progressBarCnt); // 10
                 if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseChassisTable(_response[STRING].ToString()), DictionaryType.Chassis);
                 if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseMultipleVTables(_response[STRING].ToString(), DictionaryType.Chassis), DictionaryType.Chassis);
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_TEMPERATURE));
-                UpdateProgressBar(++progressBarCnt); // 11
                 if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 1), DictionaryType.TemperatureList);
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_HEALTH_CONFIG));
-                UpdateProgressBar(++progressBarCnt); // 12
                 if (_response[STRING] != null) SwitchModel.UpdateCpuThreshold(CliParseUtils.ParseETable(_response[STRING].ToString()));
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_PORTS_LIST));
-                UpdateProgressBar(++progressBarCnt); // 13
                 if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 3), DictionaryType.PortsList);
                 SendProgressReport("Reading power supply information");
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_POWER_SUPPLIES));
-                UpdateProgressBar(++progressBarCnt); // 14
                 if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 2), DictionaryType.PowerSupply);
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_HEALTH));
-                UpdateProgressBar(++progressBarCnt); // 15
                 if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 2), DictionaryType.CpuTrafficList);
                 GetLanPower();
-                progressBarCnt += 3;
-                UpdateProgressBar(progressBarCnt); // 16, 17, 18
                 GetMacAndLldpInfo();
-                progressBarCnt += 3;
-                UpdateProgressBar(progressBarCnt); // 19, 20, 21
                 string title = string.IsNullOrEmpty(source) ? $"Refresh switch {SwitchModel.IpAddress}" : source;
             }
             catch (Exception ex)
             {
                 SendSwitchError(source, ex);
             }
-            CloseProgressBar();
         }
 
         public void GetSystemInfo()
@@ -359,7 +328,7 @@ namespace PoEWizard.Comm
             try
             {
                 if (SwitchModel.SyncStatus == SyncStatusType.Synchronized) return;
-                totalProgressBar = 25;
+                totalProgressBarVal = 25;
                 string msg = $"Writing memory on switch {SwitchModel.IpAddress}";
                 SendProgressBarMessage($"{msg} ...", -1);
                 SendRequest(GetRestUrlEntry(Command.WRITE_MEMORY));
@@ -392,7 +361,7 @@ namespace PoEWizard.Comm
             DateTime startTime = DateTime.Now;
             try
             {
-                totalProgressBar = 320;
+                totalProgressBarVal = 320;
                 string msg = $"Rebooting switch {SwitchModel.IpAddress}";
                 Logger.Info(msg);
                 SendProgressBarMessage(msg, -1);
@@ -435,14 +404,9 @@ namespace PoEWizard.Comm
 
         private void SendProgressBarMessage(string txt, double currVal)
         {
+            double ratio = currVal < 0 ? 0 : 100 * currVal / totalProgressBarVal;
+            _progress.Report(new ProgressReport(ReportType.Value, currVal < 0 ? txt : null, $"{ratio}"));
             _progress.Report(new ProgressReport(txt));
-            if (currVal < 0) UpdateProgressBar(0, txt); else UpdateProgressBar(currVal);
-        }
-
-        private void UpdateProgressBar(double currVal, string txt = null)
-        {
-            double ratio = 100 * currVal / totalProgressBar;
-            _progress.Report(new ProgressReport(ReportType.Value, txt, $"{ratio}"));
         }
 
         private void CloseProgressBar()
@@ -450,8 +414,6 @@ namespace PoEWizard.Comm
             _progress.Report(new ProgressReport { Type = ReportType.Value, Message = "100" });
             Thread.Sleep(1000);
             _progress.Report(new ProgressReport { Type = ReportType.Value, Message = "-1" });
-            progressBarCnt = 0;
-            totalProgressBar = 0;
         }
 
         public void StopTrafficAnalysis(AbortType abortType, string stopReason)
