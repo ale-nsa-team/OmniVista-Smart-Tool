@@ -43,7 +43,7 @@ namespace PoEWizard.Device
             ID = Utils.GetDictValue(dict, REMOTE_ID);
             LocalPort = Utils.GetDictValue(dict, LOCAL_PORT);
             MacAddress = Utils.GetDictValue(dict, CHASSIS_MAC_ADDRESS);
-            Vendor = GetVendorName(MacAddress);
+            Vendor = Utils.GetVendorName(MacAddress);
             if (Vendor == MacAddress) Vendor = string.Empty;
             string macId = MacAddress.Replace(":", string.Empty);
             string remoteId = Utils.GetDictValue(dict, REMOTE_PORT).Replace(":", string.Empty);
@@ -99,7 +99,7 @@ namespace PoEWizard.Device
         public override string ToString()
         {
             StringBuilder txt = new StringBuilder("Device Type connected: ");
-            txt.Append(string.IsNullOrEmpty(Type) ? $"Unknown ({PortSubType})" : Type);
+            txt.Append(string.IsNullOrEmpty(Type) ? $"{MED_UNKNOWN} ({PortSubType})" : Type);
             if (!string.IsNullOrEmpty(Name)) txt.Append(", Name: ").Append(Name);
             if (!string.IsNullOrEmpty(Description)) txt.Append(", Description: ").Append(Description);
             if (!string.IsNullOrEmpty(Vendor)) txt.Append(", Vendor: ").Append(Vendor);
@@ -125,13 +125,13 @@ namespace PoEWizard.Device
                     string[] split = Name.Split(',');
                     foreach (string mac in split)
                     {
-                        tip.Add($"{mac} ({GetVendorName(mac)})");
+                        tip.Add($"{mac} ({Utils.GetVendorName(mac)})");
                     }
                     if (split.Length >= 10) tip.Add("          . . .");
                 }
                 else
                 {
-                    tip.Add($"{Name} ({GetVendorName(Name)})");
+                    tip.Add($"{Name} ({Utils.GetVendorName(Name)})");
                 }
             }
             if (!string.IsNullOrEmpty(Description)) tip.Add($"Description: {Description}");
@@ -142,19 +142,11 @@ namespace PoEWizard.Device
             if (!string.IsNullOrEmpty(MacAddress)) tip.Add($"MAC: {MacAddress}");
             if (!string.IsNullOrEmpty(IpAddress)) tip.Add($"IP: {IpAddress}");
             //if (Capabilities?.Count > 0) tip.Add($"Capabilities: [{string.Join(",", Capabilities)}]");
-            if(!string.IsNullOrEmpty(MEDPowerValue)) tip.Add($"Power Value: {MEDPowerValue}");
-            if (!string.IsNullOrEmpty(MEDPowerPriority)) tip.Add($"Power Priority: {MEDPowerPriority}");
+            //if(!string.IsNullOrEmpty(MEDPowerValue)) tip.Add($"Power Value: {MEDPowerValue}");
+            //if (!string.IsNullOrEmpty(MEDPowerPriority)) tip.Add($"Power Priority: {MEDPowerPriority}");
             if (!string.IsNullOrEmpty(RemotePort)) tip.Add($"Remote Port: {RemotePort}");
             return tip.Count > 0 ? string.Join("\n", tip) : null;
         }
 
-        private string GetVendorName(string mac)
-        {
-            string vendorName = mac.Trim();
-            string[] macAddr = vendorName.Split(':');
-            string macMask = macAddr.Length == 6 ? $"{macAddr[0]}{macAddr[1]}{macAddr[2]}" : "-";
-            if (MainWindow.ouiTable.ContainsKey(macMask)) vendorName = MainWindow.ouiTable[macMask];
-            return vendorName;
-        }
     }
 }

@@ -116,7 +116,7 @@ namespace PoEWizard
                             ShowProgress(report.Title, false);
                         }
                         if (report.Message == "-1") HideProgress();
-                        else _progressBar.Value = int.TryParse(report.Message, out int i) ? i : 0;
+                        else _progressBar.Value = double.TryParse(report.Message, out double dVal) ? dVal : 0;
                         break;
                     default:
                         break;
@@ -920,7 +920,6 @@ namespace PoEWizard
         {
             try
             {
-                ShowProgress($"Writing memory on switch {device.IpAddress}...");
                 await Task.Run(() => restApiService.GetSystemInfo());
                 if (device.SyncStatus == SyncStatusType.Synchronized) return;
                 await Task.Run(() => restApiService.WriteMemory());
@@ -1217,7 +1216,6 @@ namespace PoEWizard
                 _progressBar.Value = 0;
             }
             _status.Text = message;
-
         }
 
         private void HideProgress()
@@ -1360,7 +1358,6 @@ namespace PoEWizard
                 _snapshotMenuItem.IsEnabled = false;
                 _vcbootMenuItem.IsEnabled = false;
                 _cfgMenuItem.IsEnabled = false;
-                ShowProgress($"{title}...");
                 string duration = await Task.Run(() => restApiService.RebootSwitch(600));
                 SetDisconnectedState();
                 string txt = $"Switch {device.IpAddress} ready to connect";

@@ -116,16 +116,24 @@ namespace PoEWizard.Device
             {
                 if (dictList.Count > 1)
                 {
-                    EndPointDevice.Type = "Multiple devices";
-                    EndPointDevice.Name = "Multiple devices";
+                    this.EndPointDevice.Type = "Multiple devices";
+                    this.EndPointDevice.Name = "Multiple devices";
                 }
                 else
                 {
-                    EndPointDevice.LoadLldpRemoteTable(dictList[0]);
+                    this.EndPointDevice.LoadLldpRemoteTable(dictList[0]);
                 }
                 foreach (Dictionary<string, string> dict in dictList)
                 {
-                    EndPointDevicesList.Add(new EndPointDeviceModel(dict));
+                    int idx = GetEndPointDeviceIndex(dict);
+                    if (idx >= 0 && idx < this.EndPointDevicesList.Count)
+                    {
+                        this.EndPointDevicesList[idx]?.LoadLldpRemoteTable(dict);
+                    }
+                    else
+                    {
+                        this.EndPointDevicesList.Add(new EndPointDeviceModel(dict));
+                    }
                 }
             }
         }
@@ -134,12 +142,25 @@ namespace PoEWizard.Device
         {
             if (dictList?.Count > 0)
             {
-                EndPointDevice.LoadLldpInventoryTable(dictList[0]);
+                this.EndPointDevice.LoadLldpInventoryTable(dictList[0]);
                 foreach (Dictionary<string, string> dict in dictList)
                 {
-                    EndPointDevicesList.FirstOrDefault(ep => ep.MacAddress == dict[CHASSIS_MAC_ADDRESS])?.LoadLldpInventoryTable(dict);
+                    int idx = GetEndPointDeviceIndex(dict);
+                    if (idx >= 0 && idx < this.EndPointDevicesList.Count)
+                    {
+                        this.EndPointDevicesList[idx]?.LoadLldpInventoryTable(dict);
+                    }
                 }
             }
+        }
+
+        private int GetEndPointDeviceIndex(Dictionary<string, string> dict)
+        {
+            for (int idx = 0; idx < this.EndPointDevicesList.Count; idx++)
+            {
+                if (this.EndPointDevicesList[idx].MacAddress == dict[CHASSIS_MAC_ADDRESS]) return idx;
+            }
+            return -1;
         }
 
         public void UpdatePortStatus(Dictionary<string, string> dict)

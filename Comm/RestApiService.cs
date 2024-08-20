@@ -26,6 +26,7 @@ namespace PoEWizard.Comm
         private SwitchTrafficModel _switchTraffic;
         private static AbortType stopTrafficAnalysis;
         private static string stopTrafficAnalysisReason = "completed";
+        private double totalProgressBarVal;
 
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
@@ -91,12 +92,7 @@ namespace PoEWizard.Comm
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_HEALTH));
                 if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 2), DictionaryType.CpuTrafficList);
                 GetLanPower();
-                SendProgressReport("Reading lldp remote information");
-                _response = SendRequest(GetRestUrlEntry(Command.SHOW_LLDP_REMOTE));
-                if (_response[STRING] != null) SwitchModel.LoadLldpFromList(CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString()), DictionaryType.LldpRemoteList);
-                _response = SendRequest(GetRestUrlEntry(Command.SHOW_LLDP_INVENTORY));
-                if (_response[STRING] != null) SwitchModel.LoadLldpFromList(CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString()), DictionaryType.LldpInventoryList);
-                GetMacAddressList();
+                GetMacAndLldpInfo();
                 string title = string.IsNullOrEmpty(source) ? $"Refresh switch {SwitchModel.IpAddress}" : source;
             }
             catch (Exception ex)
@@ -251,7 +247,6 @@ namespace PoEWizard.Comm
             _progress.Report(new ProgressReport($"{progressMsg} ..."));
             DateTime startTime = DateTime.Now;
             SendSshCliCommand(cmd, new string[1] { dbgLevel.ToString() });
-            // SendRequest(GetRestUrlEntry(cmd, new string[1] { dbgLevel }));
             bool done = false;
             int loopCnt = 1;
             while (!done)
@@ -326,30 +321,65 @@ namespace PoEWizard.Comm
             return null;
         }
 
+        public void WriteMemory(int waitSec = 40)
+        {
+            try
+            {
+                if (SwitchModel.SyncStatus == SyncStatusType.Synchronized) return;
+                totalProgressBarVal = 25;
+                string msg = $"Writing memory on switch {SwitchModel.IpAddress}";
+                SendProgressBarMessage($"{msg} ...", -1);
+                SendRequest(GetRestUrlEntry(Command.WRITE_MEMORY));
+                DateTime startTime = DateTime.Now;
+                double dur = 0;
+                while (dur < waitSec)
+                {
+                    Thread.Sleep(1000);
+                    dur = Utils.GetTimeDuration(startTime);
+                    try
+                    {
+                        int period = (int)dur;
+                        if (period > 15 && period % 5 == 0) GetSystemInfo();
+                    }
+                    catch { }
+                    if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
+                    SendProgressBarMessage($"{msg} ({(int)dur} sec) ...", dur);
+                }
+                Logger.Activity($"Write memory on switch {SwitchModel.IpAddress} completed (Duration: {dur} sec)");
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError("Write memory", ex);
+            }
+            CloseProgressBar();
+        }
+
         public string RebootSwitch(int waitSec)
         {
             DateTime startTime = DateTime.Now;
             try
             {
-                Logger.Info($"Rebooting switch {SwitchModel.IpAddress}");
-                _progress.Report(new ProgressReport($"Rebooting switch {SwitchModel.IpAddress}"));
+                totalProgressBarVal = 320;
+                string msg = $"Rebooting switch {SwitchModel.IpAddress}";
+                Logger.Info(msg);
+                SendProgressBarMessage(msg, -1);
                 SendRequest(GetRestUrlEntry(Command.REBOOT_SWITCH));
                 if (waitSec <= 0) return string.Empty;
-                string msg = $"Waiting switch {SwitchModel.IpAddress} reboot ";
+                msg = $"Waiting switch {SwitchModel.IpAddress} reboot ";
                 _progress.Report(new ProgressReport($"{msg}..."));
-                int dur = 0;
+                double dur = 0;
                 while (dur <= 60)
                 {
                     Thread.Sleep(1000);
-                    dur = (int)Utils.GetTimeDuration(startTime);
-                    _progress.Report(new ProgressReport($"{msg}({Utils.CalcStringDuration(startTime, true)}) ..."));
+                    dur = Utils.GetTimeDuration(startTime);
+                    SendProgressBarMessage($"{msg}({Utils.CalcStringDuration(startTime, true)}) ...", dur);
                 }
                 while (dur < waitSec)
                 {
                     Thread.Sleep(1000);
                     dur = (int)Utils.GetTimeDuration(startTime);
+                    SendProgressBarMessage($"{msg}({Utils.CalcStringDuration(startTime, true)}) ...", dur);
                     if (dur >= waitSec) break;
-                    _progress.Report(new ProgressReport($"{msg}({Utils.CalcStringDuration(startTime, true)}) ..."));
                     if (!Utils.IsReachable(SwitchModel.IpAddress)) continue;
                     try
                     {
@@ -367,7 +397,22 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError($"Reboot switch {SwitchModel.IpAddress}", ex);
             }
+            CloseProgressBar();
             return Utils.CalcStringDuration(startTime, true);
+        }
+
+        private void SendProgressBarMessage(string txt, double currVal)
+        {
+            double ratio = currVal < 0 ? 0 : 100 * currVal / totalProgressBarVal;
+            _progress.Report(new ProgressReport(ReportType.Value, currVal < 0 ? txt : null, $"{ratio}"));
+            _progress.Report(new ProgressReport(txt));
+        }
+
+        private void CloseProgressBar()
+        {
+            _progress.Report(new ProgressReport { Type = ReportType.Value, Message = "100" });
+            Thread.Sleep(1000);
+            _progress.Report(new ProgressReport { Type = ReportType.Value, Message = "-1" });
         }
 
         public void StopTrafficAnalysis(AbortType abortType, string stopReason)
@@ -398,23 +443,9 @@ namespace PoEWizard.Comm
                     Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was canceled because the switch is disconnected!");
                     return null;
                 }
+                GetMacAndLldpInfo();
                 GetPortsTrafficInformation();
-                if (_switchTraffic != null)
-                {
-                    GetMacAddressList();
-                    Dictionary<string, List<string>> portMacList = new Dictionary<string, List<string>>();
-                    foreach (ChassisModel chassis in SwitchModel.ChassisList)
-                    {
-                        foreach (SlotModel slot in chassis.Slots)
-                        {
-                            foreach (PortModel port in slot.Ports)
-                            {
-                                if (port.MacList?.Count > 0) portMacList[port.Name] = port.MacList;
-                            }
-                        }
-                    }
-                    report = new TrafficReport(_switchTraffic, portMacList, stopTrafficAnalysisReason, duration);
-                }
+                report = new TrafficReport(_switchTraffic, stopTrafficAnalysisReason, duration);
                 if (stopTrafficAnalysis == AbortType.CanceledByUser)
                 {
                     Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was {stopTrafficAnalysisReason}, selected duration: {duration / 60} minutes!");
@@ -429,8 +460,13 @@ namespace PoEWizard.Comm
             return report;
         }
 
-        private void GetMacAddressList()
+        private void GetMacAndLldpInfo()
         {
+            SendProgressReport("Reading lldp remote information");
+            _response = SendRequest(GetRestUrlEntry(Command.SHOW_LLDP_REMOTE));
+            if (_response[STRING] != null) SwitchModel.LoadLldpFromList(CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString()), DictionaryType.LldpRemoteList);
+            _response = SendRequest(GetRestUrlEntry(Command.SHOW_LLDP_INVENTORY));
+            if (_response[STRING] != null) SwitchModel.LoadLldpFromList(CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString()), DictionaryType.LldpInventoryList);
             SendProgressReport("Reading MAC address information");
             _response = SendRequest(GetRestUrlEntry(Command.SHOW_MAC_LEARNING));
             if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 1), DictionaryType.MacAddressList);
@@ -446,7 +482,7 @@ namespace PoEWizard.Comm
                     List<Dictionary<string, string>> dictList = CliParseUtils.ParseTrafficTable(_response[STRING].ToString());
                     if (_switchTraffic == null)
                     {
-                        _switchTraffic = new SwitchTrafficModel(SwitchModel.Name, SwitchModel.IpAddress, SwitchModel.SerialNumber, dictList);
+                        _switchTraffic = new SwitchTrafficModel(SwitchModel, dictList);
                     }
                     else
                     {
@@ -457,35 +493,6 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 SendSwitchError($"Traffic analysis on switch {SwitchModel.IpAddress}", ex);
-            }
-        }
-
-        public void WriteMemory(int waitSec = 40)
-        {
-            try
-            {
-                if (SwitchModel.SyncStatus == SyncStatusType.Synchronized) return;
-                SendProgressReport("Writing memory");
-                SendRequest(GetRestUrlEntry(Command.WRITE_MEMORY));
-                DateTime startTime = DateTime.Now;
-                int dur = 0;
-                while (dur < waitSec)
-                {
-                    Thread.Sleep(1000);
-                    dur = (int)Utils.GetTimeDuration(startTime);
-                    if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
-                    _progress.Report(new ProgressReport($"Writing memory on switch {SwitchModel.IpAddress} ({dur} sec) ..."));
-                    try
-                    {
-                        if (dur > 15 && dur % 5 == 0) GetSystemInfo();
-                    }
-                    catch { }
-                }
-                Logger.Activity($"Write memory on switch {SwitchModel.IpAddress} completed (Duration: {dur} sec)");
-            }
-            catch (Exception ex)
-            {
-                SendSwitchError("Write memory", ex);
             }
         }
 

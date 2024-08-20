@@ -9,6 +9,7 @@ namespace PoEWizard.Device
         public string Name { get; set; }
         public string IpAddress { get; set; }
         public string SerialNumber { get; set; }
+        public List<ChassisModel> ChassisList { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime PrevTimeUpdated { get; set; }
         public Dictionary<string, PortTrafficModel> Ports { get; set; }
@@ -16,12 +17,13 @@ namespace PoEWizard.Device
 
         public SwitchTrafficModel() { }
 
-        public SwitchTrafficModel(string name, string ipAddr, string serialNumber, List<Dictionary<string, string>> dictList)
+        public SwitchTrafficModel(SwitchModel switchModel, List<Dictionary<string, string>> dictList)
         {
             this.Ports = new Dictionary<string, PortTrafficModel>();
-            this.Name = name;
-            this.IpAddress = ipAddr;
-            this.SerialNumber = serialNumber;
+            this.Name = switchModel.Name;
+            this.IpAddress = switchModel.IpAddress;
+            this.SerialNumber = switchModel.SerialNumber;
+            this.ChassisList = switchModel.ChassisList;
             this.StartTime = DateTime.Now;
             UpdateTraffic(dictList);
         }
