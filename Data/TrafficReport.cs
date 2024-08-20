@@ -19,7 +19,7 @@ namespace PoEWizard.Data
 
         private PortTrafficModel trafficPort;
         private Dictionary<string, string> alertReport;
-        private readonly Dictionary<string, List<string>> portsMacList = new Dictionary<string, List<string>>();
+        private readonly Dictionary<string, PortModel> switchPorts;
         private double broadCast =0;
         private double uniCast = 0;
         private double multiCast = 0;
@@ -35,14 +35,24 @@ namespace PoEWizard.Data
 
 
         public double TrafficDuration { get; set; }
-        public TrafficReport(SwitchTrafficModel switchTraffic, Dictionary<string, List<string>> portsMacList, string completion, int selectedDur)
+        public TrafficReport(SwitchTrafficModel switchTraffic, string completion, int selectedDur)
         {
             this.Summary = string.Empty;
             this.Data = null;
             this.alertReport = new Dictionary<string, string>();
             this.SwitchTraffic = switchTraffic;
             this.TrafficStartTime = switchTraffic.StartTime;
-            if (portsMacList?.Count > 0) this.portsMacList = portsMacList;
+            this.switchPorts = new Dictionary<string, PortModel>();
+            foreach (ChassisModel chassis in SwitchTraffic.ChassisList)
+            {
+                foreach (SlotModel slot in chassis.Slots)
+                {
+                    foreach (PortModel port in slot.Ports)
+                    {
+                        if (port.MacList?.Count > 0) this.switchPorts[port.Name] = port;
+                    }
+                }
+            }
             this.Summary = $"Traffic analysis {completion}:";
             int selectedDuration;
             string unit;
@@ -72,7 +82,10 @@ namespace PoEWizard.Data
             foreach (KeyValuePair<string, PortTrafficModel> keyVal in this.SwitchTraffic.Ports)
             {
                 this.trafficPort = keyVal.Value;
-                if (this.portsMacList.ContainsKey(this.trafficPort.Port)) this.trafficPort.MacList = this.portsMacList[this.trafficPort.Port];
+                if (this.switchPorts.ContainsKey(this.trafficPort.Port))
+                {
+                    this.trafficPort.MacList = this.switchPorts[this.trafficPort.Port].MacList;
+                }
                 this.Data.Append("\r\n ").Append(this.trafficPort.Port);
                 ParseTrafficRate("Rx Rate", this.trafficPort.RxBytes);
                 ParseTrafficRate("Tx Rate", this.trafficPort.TxBytes);

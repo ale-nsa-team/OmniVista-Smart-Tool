@@ -116,7 +116,7 @@ namespace PoEWizard
                             ShowProgress(report.Title, false);
                         }
                         if (report.Message == "-1") HideProgress();
-                        else _progressBar.Value = int.TryParse(report.Message, out int i) ? i : 0;
+                        else _progressBar.Value = double.TryParse(report.Message, out double dVal) ? dVal : 0;
                         break;
                     default:
                         break;

@@ -142,8 +142,8 @@ namespace PoEWizard.Device
             if (!string.IsNullOrEmpty(MacAddress)) tip.Add($"MAC: {MacAddress}");
             if (!string.IsNullOrEmpty(IpAddress)) tip.Add($"IP: {IpAddress}");
             //if (Capabilities?.Count > 0) tip.Add($"Capabilities: [{string.Join(",", Capabilities)}]");
-            if(!string.IsNullOrEmpty(MEDPowerValue)) tip.Add($"Power Value: {MEDPowerValue}");
-            if (!string.IsNullOrEmpty(MEDPowerPriority)) tip.Add($"Power Priority: {MEDPowerPriority}");
+            //if(!string.IsNullOrEmpty(MEDPowerValue)) tip.Add($"Power Value: {MEDPowerValue}");
+            //if (!string.IsNullOrEmpty(MEDPowerPriority)) tip.Add($"Power Priority: {MEDPowerPriority}");
             if (!string.IsNullOrEmpty(RemotePort)) tip.Add($"Remote Port: {RemotePort}");
             return tip.Count > 0 ? string.Join("\n", tip) : null;
         }
