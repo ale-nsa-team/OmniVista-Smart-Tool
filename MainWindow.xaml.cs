@@ -1207,9 +1207,9 @@ namespace PoEWizard
         private void ShowProgress(string message, bool isIndeterminate = true)
         {
             _progressBar.Visibility = Visibility.Visible;
+            _progressBar.IsIndeterminate = isIndeterminate;
             if (!isIndeterminate)
             {
-                _progressBar.IsIndeterminate = false;
                 _progressBar.Value = 0;
             }
             _status.Text = message;

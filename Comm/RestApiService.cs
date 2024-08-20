@@ -101,6 +101,7 @@ namespace PoEWizard.Comm
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_CHASSIS));
                 UpdateProgressBar(++progressBarCnt); // 10
                 if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseChassisTable(_response[STRING].ToString()), DictionaryType.Chassis);
+                if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseMultipleVTables(_response[STRING].ToString(), DictionaryType.Chassis), DictionaryType.Chassis);
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_TEMPERATURE));
                 UpdateProgressBar(++progressBarCnt); // 11
                 if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 1), DictionaryType.TemperatureList);
@@ -278,6 +279,7 @@ namespace PoEWizard.Comm
             _progress.Report(new ProgressReport($"{progressMsg} ..."));
             DateTime startTime = DateTime.Now;
             SendSshCliCommand(cmd, new string[1] { dbgLevel.ToString() });
+            // SendRequest(GetRestUrlEntry(cmd, new string[1] { dbgLevel }));
             bool done = false;
             int loopCnt = 1;
             while (!done)
@@ -396,21 +398,21 @@ namespace PoEWizard.Comm
                 SendProgressBarMessage(msg, -1);
                 SendRequest(GetRestUrlEntry(Command.REBOOT_SWITCH));
                 if (waitSec <= 0) return string.Empty;
-                msg = $"Waiting switch {SwitchModel.IpAddress} reboot ";
+                string msg = $"Waiting switch {SwitchModel.IpAddress} reboot ";
                 _progress.Report(new ProgressReport($"{msg}..."));
-                double dur = 0;
+                int dur = 0;
                 while (dur <= 60)
                 {
                     Thread.Sleep(1000);
-                    dur = Utils.GetTimeDuration(startTime);
-                    SendProgressBarMessage($"{msg}({Utils.CalcStringDuration(startTime, true)}) ...", dur);
+                    dur = (int)Utils.GetTimeDuration(startTime);
+                    _progress.Report(new ProgressReport($"{msg}({Utils.CalcStringDuration(startTime, true)}) ..."));
                 }
                 while (dur < waitSec)
                 {
                     Thread.Sleep(1000);
                     dur = (int)Utils.GetTimeDuration(startTime);
-                    SendProgressBarMessage($"{msg}({Utils.CalcStringDuration(startTime, true)}) ...", dur);
                     if (dur >= waitSec) break;
+                    _progress.Report(new ProgressReport($"{msg}({Utils.CalcStringDuration(startTime, true)}) ..."));
                     if (!Utils.IsReachable(SwitchModel.IpAddress)) continue;
                     try
                     {
@@ -428,7 +430,6 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError($"Reboot switch {SwitchModel.IpAddress}", ex);
             }
-            CloseProgressBar();
             return Utils.CalcStringDuration(startTime, true);
         }
 
@@ -481,9 +482,23 @@ namespace PoEWizard.Comm
                     Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was canceled because the switch is disconnected!");
                     return null;
                 }
-                GetMacAndLldpInfo();
                 GetPortsTrafficInformation();
-                report = new TrafficReport(_switchTraffic, stopTrafficAnalysisReason, duration);
+                if (_switchTraffic != null)
+                {
+                    GetMacAddressList();
+                    Dictionary<string, List<string>> portMacList = new Dictionary<string, List<string>>();
+                    foreach (ChassisModel chassis in SwitchModel.ChassisList)
+                    {
+                        foreach (SlotModel slot in chassis.Slots)
+                        {
+                            foreach (PortModel port in slot.Ports)
+                            {
+                                if (port.MacList?.Count > 0) portMacList[port.Name] = port.MacList;
+                            }
+                        }
+                    }
+                    report = new TrafficReport(_switchTraffic, portMacList, stopTrafficAnalysisReason, duration);
+                }
                 if (stopTrafficAnalysis == AbortType.CanceledByUser)
                 {
                     Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was {stopTrafficAnalysisReason}, selected duration: {duration / 60} minutes!");
@@ -498,13 +513,8 @@ namespace PoEWizard.Comm
             return report;
         }
 
-        private void GetMacAndLldpInfo()
+        private void GetMacAddressList()
         {
-            SendProgressReport("Reading lldp remote information");
-            _response = SendRequest(GetRestUrlEntry(Command.SHOW_LLDP_REMOTE));
-            if (_response[STRING] != null) SwitchModel.LoadLldpFromList(CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString()), DictionaryType.LldpRemoteList);
-            _response = SendRequest(GetRestUrlEntry(Command.SHOW_LLDP_INVENTORY));
-            if (_response[STRING] != null) SwitchModel.LoadLldpFromList(CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString()), DictionaryType.LldpInventoryList);
             SendProgressReport("Reading MAC address information");
             _response = SendRequest(GetRestUrlEntry(Command.SHOW_MAC_LEARNING));
             if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 1), DictionaryType.MacAddressList);
@@ -520,7 +530,7 @@ namespace PoEWizard.Comm
                     List<Dictionary<string, string>> dictList = CliParseUtils.ParseTrafficTable(_response[STRING].ToString());
                     if (_switchTraffic == null)
                     {
-                        _switchTraffic = new SwitchTrafficModel(SwitchModel, dictList);
+                        _switchTraffic = new SwitchTrafficModel(SwitchModel.Name, SwitchModel.IpAddress, SwitchModel.SerialNumber, dictList);
                     }
                     else
                     {
@@ -531,6 +541,35 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 SendSwitchError($"Traffic analysis on switch {SwitchModel.IpAddress}", ex);
+            }
+        }
+
+        public void WriteMemory(int waitSec = 40)
+        {
+            try
+            {
+                if (SwitchModel.SyncStatus == SyncStatusType.Synchronized) return;
+                SendProgressReport("Writing memory");
+                SendRequest(GetRestUrlEntry(Command.WRITE_MEMORY));
+                DateTime startTime = DateTime.Now;
+                int dur = 0;
+                while (dur < waitSec)
+                {
+                    Thread.Sleep(1000);
+                    dur = (int)Utils.GetTimeDuration(startTime);
+                    if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
+                    _progress.Report(new ProgressReport($"Writing memory on switch {SwitchModel.IpAddress} ({dur} sec) ..."));
+                    try
+                    {
+                        if (dur > 15 && dur % 5 == 0) GetSystemInfo();
+                    }
+                    catch { }
+                }
+                Logger.Activity($"Write memory on switch {SwitchModel.IpAddress} completed (Duration: {dur} sec)");
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError("Write memory", ex);
             }
         }
 

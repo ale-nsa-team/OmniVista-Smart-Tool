@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using static PoEWizard.Data.Constants;
@@ -13,6 +14,7 @@ namespace PoEWizard.Data
         private static readonly Regex etableRegex = new Regex(MATCH_EQUALS);
         private static readonly Regex htableRegex = new Regex(MATCH_TABLE_SEP);
         private static readonly Regex chassisRegex = new Regex(MATCH_CHASSIS);
+        private static readonly Regex userRegex = new Regex(MATCH_USER);
 
         public static List<Dictionary<string, string>> ParseListFromDictionary(Dictionary<string, string> inputDict, string match = null)
         {
@@ -103,9 +105,21 @@ namespace PoEWizard.Data
             return table;
         }
 
-        public static List<Dictionary<string, string>> ParseChassisTable(string data)
+        public static List<Dictionary<string, string>> ParseMultipleVTables(string data, DictionaryType dtype)
         {
             List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();
+            Regex regex;
+            switch (dtype)
+            {
+                case DictionaryType.Chassis:
+                    regex = chassisRegex;
+                    break;
+                case DictionaryType.User:
+                    regex = userRegex; 
+                    break;
+                default:
+                    return table;
+            }
             using (StringReader reader = new StringReader(data))
             {
                 string line;
@@ -122,7 +136,7 @@ namespace PoEWizard.Data
                         };
                         while ((line = reader.ReadLine()) != null)
                         {
-                            if ((match = vtableRegex.Match(line)) != null && match.Success) {
+                            if ((match = regex.Match(line)) != null && match.Success) {
                                 string key = match.Groups[1].Value.Trim();
                                 string value = match.Groups[2].Value.Trim();
                                 value = value.EndsWith(",") ? value.Substring(0, value.Length - 1) : value;
