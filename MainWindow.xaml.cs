@@ -95,7 +95,6 @@ namespace PoEWizard
             progress = new Progress<ProgressReport>(report =>
             {
                 reportAck = false;
-                HideInfoBox();
                 switch (report.Type)
                 {
                     case ReportType.Status:
@@ -617,7 +616,6 @@ namespace PoEWizard
                     SetDisconnectedState();
                     return;
                 }
-                ShowProgress($"Connecting to switch {device.IpAddress}...");
                 isClosing = false;
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
@@ -898,7 +896,6 @@ namespace PoEWizard
         {
             try
             {
-                ShowProgress($"Scanning switch {device.IpAddress}...");
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.IpAddress}", reportResult));
