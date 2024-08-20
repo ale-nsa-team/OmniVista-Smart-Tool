@@ -549,6 +549,15 @@ namespace PoEWizard.Data
             return 0;
         }
 
+        public static string GetVendorName(string mac)
+        {
+            string vendorName = mac.Trim();
+            string[] macAddr = vendorName.Split(':');
+            string macMask = macAddr.Length == 6 ? $"{macAddr[0]}{macAddr[1]}{macAddr[2]}" : "-";
+            if (MainWindow.ouiTable.ContainsKey(macMask)) vendorName = MainWindow.ouiTable[macMask];
+            return vendorName;
+        }
+
     }
 }
 
