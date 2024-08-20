@@ -142,15 +142,17 @@ namespace PoEWizard.Data
     {
         public Command Command { get; }
         public ParseType ParseType { get; }
+        public DictionaryType DictionaryType { get; }
         public string[] Data { get; }
 
-        public CmdRequest(Command command) : this(command, ParseType.Text, null) { }
-        public CmdRequest(Command command, params string[] data) : this(command, ParseType.Text, data) { }
-        public CmdRequest(Command command, ParseType type) : this(command, type, null) { }
-        public CmdRequest(Command command, ParseType type, params string[] data)
+        public CmdRequest(Command command) : this(command, ParseType.Text, DictionaryType.None, null) { }
+        public CmdRequest(Command command, params string[] data) : this(command, ParseType.Text, DictionaryType.None, data) { }
+        public CmdRequest(Command command, ParseType type) : this(command, type, DictionaryType.None, null) { }
+        public CmdRequest(Command command, ParseType type, DictionaryType dtype, params string[] data)
         {
             Command = command;
             ParseType = type;
+            DictionaryType = dtype;
             Data = data?.ToArray();
         }
     }

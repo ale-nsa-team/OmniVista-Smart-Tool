@@ -105,58 +105,66 @@ namespace PoEWizard.Data
             return table;
         }
 
-        public static List<Dictionary<string, string>> ParseMultipleVTables(string data, DictionaryType dtype)
+        public static List<Dictionary<string, string>> ParseMultipleTables(string data, DictionaryType dtype)
         {
             List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();
-            Regex regex;
+            Regex headerRegex;
+            Regex bodyRegex;
+            string key1 = null;
+            string key2 = null;
             switch (dtype)
             {
                 case DictionaryType.Chassis:
-                    regex = chassisRegex;
+                    headerRegex = chassisRegex;
+                    bodyRegex = vtableRegex;
+                    key1 = "ID";
+                    key2 = "Role";
                     break;
                 case DictionaryType.User:
-                    regex = userRegex; 
-                    break;
+                    headerRegex = userRegex;
+                    bodyRegex = etableRegex;
+                    key1 = "User name";
+                    break; ;
                 default:
                     return table;
             }
             using (StringReader reader = new StringReader(data))
             {
                 string line;
+                Dictionary<string, string> dict = new Dictionary<string, string>();
+
                 while ((line = reader.ReadLine()) != null)
                 {
                     if (line.Trim().Length == 0) continue;
-                    Match match = chassisRegex.Match(line);
+                    Match match = headerRegex.Match(line);
                     if (match.Success)
                     {
-                        Dictionary<string, string> dict = new Dictionary<string, string>
+                        if (dict.Count > 0) table.Add(dict);
+                        dict = new Dictionary<string, string>()
                         {
-                            ["ID"] = match.Groups[2].Value,
-                            ["Role"] = match.Groups[3].Value
+                            [key1] = match.Groups[2].Value
                         };
-                        while ((line = reader.ReadLine()) != null)
+                        if (key2 != null)
                         {
-                            if ((match = regex.Match(line)) != null && match.Success) {
-                                string key = match.Groups[1].Value.Trim();
-                                string value = match.Groups[2].Value.Trim();
-                                value = value.EndsWith(",") ? value.Substring(0, value.Length - 1) : value;
-                                dict[key] = value;
-                            }
-                            else
-                            {
-                                break;
-                            }
+                            dict[key2] = match.Groups[3].Value;
                         }
-                        table.Add((dict));
+                    }
+                    else if ((match = bodyRegex.Match(line)).Success)
+                    {
+                        string key = match.Groups[1].Value.Trim();
+                        string value = match.Groups[2].Value.Trim();
+                        value = value.EndsWith(",") ? value.Substring(0, value.Length - 1) : value;
+                        dict[key] = value;
                     }
                 }
+                table.Add(dict);
             }
             return table;
         }
 
         public static Dictionary<string, List<Dictionary<string, string>>> ParseLldpRemoteTable(string data)
         {
-            Dictionary<string, List<Dictionary<string, string>>> dictList = new Dictionary<string, List<Dictionary<string, string>>> ();
+            Dictionary<string, List<Dictionary<string, string>>> dictList = new Dictionary<string, List<Dictionary<string, string>>>();
             string[] split;
             string currPort = string.Empty;
             using (StringReader reader = new StringReader(data))
@@ -176,7 +184,8 @@ namespace PoEWizard.Data
                         if (split.Length == 2)
                         {
                             dictList[currPort].Add(new Dictionary<string, string>());
-                            dictList[currPort][dictList[currPort].Count - 1] = new Dictionary<string, string> {
+                            dictList[currPort][dictList[currPort].Count - 1] = new Dictionary<string, string>
+                            {
                                 ["Local Port"] = currPort,
                                 [CHASSIS_MAC_ADDRESS] = Utils.ExtractSubString(split[0].Trim(), "Chassis "),
                                 [REMOTE_PORT] = Utils.ExtractSubString(split[1].Trim(), "Port ")

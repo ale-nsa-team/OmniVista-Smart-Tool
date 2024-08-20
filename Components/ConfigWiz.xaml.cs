@@ -118,7 +118,7 @@ namespace PoEWizard.Components
                 }
                 dict = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_MULTICAST, ParseType.Etable)) as Dictionary<string, string>;
                 if (dict != null) features.IsMulticast = dict["Status"] == "enabled";
-                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_USER, ParseType.Vtable)) as  List<Dictionary<string, string>>;
+                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_USER, ParseType.MVTable, DictionaryType.User)) as  List<Dictionary<string, string>>;
                 if ( dicList.Count > 0)
                 {
                     foreach (var dic in dicList)

@@ -100,7 +100,7 @@ namespace PoEWizard.Comm
                 SendProgressReport("Reading chassis and port information");
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_CHASSIS));
                 UpdateProgressBar(++progressBarCnt); // 10
-                if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseMultipleVTables(_response[STRING].ToString(), DictionaryType.Chassis), DictionaryType.Chassis);
+                if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseMultipleTables(_response[STRING].ToString(), DictionaryType.Chassis), DictionaryType.Chassis);
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_TEMPERATURE));
                 UpdateProgressBar(++progressBarCnt); // 11
                 if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 1), DictionaryType.TemperatureList);
@@ -194,6 +194,8 @@ namespace PoEWizard.Comm
                         return CliParseUtils.ParseHTable(resp[STRING].ToString(), 2);
                     case ParseType.Vtable:
                         return CliParseUtils.ParseVTable(resp[STRING].ToString());
+                    case ParseType.MVTable:
+                        return CliParseUtils.ParseMultipleTables(resp[STRING].ToString(), cmdReq.DictionaryType);
                     case ParseType.Etable:
                         return CliParseUtils.ParseETable(resp[STRING].ToString());
                     default:

@@ -33,7 +33,7 @@ namespace PoEWizard.Data
         public enum DictionaryType
         {
             SystemRunningDir, Chassis, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList,
-            MacAddressList, TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User
+            MacAddressList, TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, None
         }
         public enum ConfigType { Enable, Disable, Unavailable }
         public enum DeviceType
@@ -303,7 +303,7 @@ namespace PoEWizard.Data
         public const string MATCH_CHASSIS = @"([Local|Remote] Chassis ID )(\d+) \((.+)\)";
         public const string MATCH_AOS_VERSION = @"(\d+)\.(\d+)([\.\d +]+)(\.R)(\d+)";
         public const string MATCH_POE_RUNNING =@"Lanpower chassis \d slot \d service running ...";
-        public const string MATCH_USER = @"(User name)\s*=\s*(\.+)";
+        public const string MATCH_USER = @"(User name)\s*=\s*(.+),";
         #endregion
     }
 }
