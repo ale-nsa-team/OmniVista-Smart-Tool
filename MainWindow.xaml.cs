@@ -95,7 +95,6 @@ namespace PoEWizard
             progress = new Progress<ProgressReport>(report =>
             {
                 reportAck = false;
-                HideInfoBox();
                 switch (report.Type)
                 {
                     case ReportType.Status:
@@ -111,10 +110,7 @@ namespace PoEWizard
                         reportAck = ShowMessageBox(report.Title, report.Message, MsgBoxIcons.Info);
                         break;
                     case ReportType.Value:
-                        if (_progressBar.Visibility != Visibility.Visible)
-                        {
-                            ShowProgress(report.Title, false);
-                        }
+                        if (_progressBar.Visibility != Visibility.Visible) ShowProgress(report.Title, false);
                         if (report.Message == "-1") HideProgress();
                         else _progressBar.Value = double.TryParse(report.Message, out double dVal) ? dVal : 0;
                         break;
@@ -617,7 +613,7 @@ namespace PoEWizard
                     SetDisconnectedState();
                     return;
                 }
-                ShowProgress($"Connecting to switch {device.IpAddress}...");
+                //ShowProgress($"Connecting to switch {device.IpAddress}...");
                 isClosing = false;
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
@@ -709,6 +705,7 @@ namespace PoEWizard
                 ShowProgress($"Running PoE Wizard on port {selectedPort.Name}...");
                 DateTime startTime = DateTime.Now;
                 await Task.Run(() => restApiService.ScanSwitch($"Running PoE Wizard on port {selectedPort.Name}...", reportResult));
+                ShowProgress($"Running PoE Wizard on port {selectedPort.Name}...");
                 UpdateConnectedState(false);
                 switch (selectedDeviceType)
                 {
@@ -898,7 +895,7 @@ namespace PoEWizard
         {
             try
             {
-                ShowProgress($"Scanning switch {device.IpAddress}...");
+                //ShowProgress($"Scanning switch {device.IpAddress}...");
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.IpAddress}", reportResult));
