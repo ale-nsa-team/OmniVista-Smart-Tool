@@ -682,7 +682,6 @@ namespace PoEWizard
                             _comImg.Visibility = Visibility.Visible;
                         }
                     }
-                    // StopTrafficAnalysis(AbortType.Disconnect, $"Disconnecting switch {device.IpAddress}", ASK_SAVE_TRAFFIC_REPORT, "interrupted before disconnecting the switch");
                     restApiService.Close();
                 }
                 await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
@@ -708,6 +707,7 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 await Task.Run(() => restApiService.ScanSwitch($"Running PoE Wizard on port {selectedPort.Name}...", reportResult));
                 UpdateConnectedState(false);
+                ShowProgress($"Running PoE Wizard on port {selectedPort.Name}...");
                 switch (selectedDeviceType)
                 {
                     case DeviceType.Camera:
