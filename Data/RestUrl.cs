@@ -143,7 +143,12 @@ namespace PoEWizard.Data
             [Command.SNMP_STATION] = $"snmp station {DATA_0} {DATA_1} {DATA_2} {DATA_3} enable",
             [Command.SNMP_TRAP_AUTH] = "snmp authentication-trap enable",
             [Command.SNMP_V2_USER] = $"user {DATA_0} password {DATA_1} read-write all {DATA_2}",
-            [Command.SNMP_V3_USER] = $"user {DATA_0} password {DATA_1} read-write all {DATA_2} priv-password {DATA_3}"
+            [Command.SNMP_V3_USER] = $"user {DATA_0} password {DATA_1} read-write all {DATA_2} priv-password {DATA_3}",
+            [Command.SHOW_AAA_AUTH] = "show aaa authentication",
+            [Command.SHOW_USER] =  "show user",
+            [Command.SHOW_SNMP_SECURITY] = "show snmp security",
+            [Command.SHOW_SNMP_STATION] = "show snmp station",
+            [Command.SHOW_SNMP_COMMUNITY] = "show snmp community_map"
         };
 
         public static Dictionary<Command, Dictionary<string, string>> CONTENT_TABLE = new Dictionary<Command, Dictionary<string, string>>

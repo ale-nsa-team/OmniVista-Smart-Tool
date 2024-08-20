@@ -84,7 +84,7 @@ namespace PoEWizard.Data
         DEBUG_CLI_UPDATE_LPCMM_LEVEL = 151,
         DEBUG_CLI_SHOW_LPNI_LEVEL = 152,
         DEBUG_CLI_SHOW_LPCMM_LEVEL = 153,
-        // 190 - 239 Config Wizard commands
+        // 190 - 249 Config Wizard commands
         DISABLE_AUTO_FABRIC = 190,
         ENABLE_DDM = 191,
         ENABLE_MULTICAST = 192,
@@ -130,7 +130,12 @@ namespace PoEWizard.Data
         SNMP_V2_USER = 232,
         SNMP_V3_USER = 233,
         SHOW_IP_INTERFACE = 234,
-        SHOW_MULTICAST = 235
+        SHOW_MULTICAST = 235,
+        SHOW_SNMP_SECURITY = 236,
+        SHOW_SNMP_STATION = 237,
+        SHOW_SNMP_COMMUNITY = 238,
+        SHOW_AAA_AUTH = 239,
+        SHOW_USER = 240
     }
 
     public class CmdRequest

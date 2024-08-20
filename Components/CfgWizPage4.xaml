@@ -1,5 +1,5 @@
 ﻿<Page x:Class="PoEWizard.Components.CfgWizPage4"
-       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
@@ -21,199 +21,89 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <StackPanel Style="{DynamicResource cfgWindow}">
-        <DataGrid x:Name="_users" ItemsSource="{Binding Users}" Style="{DynamicResource defaultGrid}">
-            <DataGrid.Columns>
-                <DataGridTemplateColumn Width="Auto">
-                    <DataGridTemplateColumn.HeaderTemplate>
-                        <DataTemplate>
-                            <Button Style="{DynamicResource deleteButton}">
-                                <Image Source="Resources/plus-green.png" />
-                            </Button>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.HeaderTemplate>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Style="{DynamicResource deleteButton}" >
-                                <Image Source="Resources/remove.png" />
-                            </Button>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Path=Name}" />
-                <DataGridTextColumn Header="SNMP Access Level" Width="*" Binding="{Binding Path=Version}" />
-                <DataGridTextColumn Header="Protocols" Width="*" Binding="{Binding Path=Protocol}" />
-            </DataGrid.Columns>
-        </DataGrid>
-        <StackPanel Orientation="Horizontal">
-            <Label>Version</Label>
-            <ComboBox x:Name="_snmpVersion" Style="{DynamicResource defaultCombo}"
-                      SelectedValue="{Binding Version}"
-                      SelectedValuePath="Content"
-                      IsSynchronizedWithCurrentItem="True"
-                      SelectionChanged="SelectionChanged">
-                <ComboBoxItem IsSelected="True" Content="v2"/>
-                <ComboBoxItem Content="v3"/>
-            </ComboBox>
+    <Grid Style="{DynamicResource _mainGrid}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Style="{DynamicResource cfgWindow}">
+            <Label Style="{DynamicResource titleLabel}" Content="Users" />
+            <DataGrid x:Name="_users" ItemsSource="{Binding Users}" Style="{DynamicResource defaultGrid}">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <Button Style="{DynamicResource deleteButton}">
+                                    <Image Source="../Resources/plus-green.png" />
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Style="{DynamicResource deleteButton}" >
+                                    <Image Source="../Resources/remove.png" />
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Path=Name}" />
+                    <DataGridTextColumn Header="SNMP Access Level" Width="*" Binding="{Binding Path=Version}" />
+                    <DataGridTextColumn Header="Protocols" Width="*" Binding="{Binding Path=Protocol}" />
+                </DataGrid.Columns>
+            </DataGrid>
         </StackPanel>
-        <Label>User</Label>
-        <TextBox x:Name="_snmpUser" 
-                 Validation.ErrorTemplate="{DynamicResource validationTemplate}"
-                 LostFocus="TextChanged">
-            <TextBox.Text>
-                <Binding Path="User" UpdateSourceTrigger="PropertyChanged">
-                    <Binding.ValidationRules>
-                        <local:NameRule PropertyName="Username"/>
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0">Password</Label>
-            <PasswordBox Grid.Row="1" Grid.Column="0" x:Name="_maskedSnmpPwd" 
-                    Validation.ErrorTemplate="{DynamicResource validationTemplate}"
-                    local:PasswordBoxAssistant.BindPassword="True"
-                    PreviewMouseDown="MaskedPwdEnter"
-                    LostFocus="MaskedPasswordChanged">
-                <local:PasswordBoxAssistant.BoundPassword>
-                    <Binding Path="Password" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
-                        <Binding.ValidationRules>
-                            <local:PasswordRule />
-                        </Binding.ValidationRules>
-                    </Binding>
-                </local:PasswordBoxAssistant.BoundPassword>
-            </PasswordBox>
-            <TextBox Grid.Row="1" Grid.Column="0" x:Name="_clearSnmpPwd" Visibility="Hidden"
-                    Validation.ErrorTemplate="{DynamicResource validationTemplate}"
-                    PreviewMouseDown="PasswordEnter"
-                    LostFocus="ClearPasswordChanged">
-                <TextBox.Text>
-                    <Binding Path="Password" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
-                        <Binding.ValidationRules>
-                            <local:PasswordRule PropertyName="Password"/>
-                        </Binding.ValidationRules>
-                    </Binding>
-                </TextBox.Text>
-            </TextBox>
-            <Button Grid.Row="1" Grid.Column="1" x:Name="_btnViewSnmpPwd" Style="{DynamicResource eyeButton}" Click="ShowPassword">
-                <Image x:Name="_viewSnmpPwd" Source="{DynamicResource eye_open}" />
-            </Button>
-        </Grid>
-        <StackPanel Visibility="{Binding Version, Converter={StaticResource SnmpV2ToVisibilityConverter}}">
-            <Label >Community</Label>
-            <TextBox x:Name="_snmpCommunity" 
-                     Validation.ErrorTemplate="{DynamicResource validationTemplate}"
-                     LostFocus="TextChanged">
-                <TextBox.Text>
-                    <Binding Path="Community" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
-                        <Binding.ValidationRules>
-                            <local:NameRule />
-                        </Binding.ValidationRules>
-                    </Binding>
-                </TextBox.Text>
-            </TextBox>
+        <StackPanel Grid.Row="1" Style="{DynamicResource cfgWindow}">
+            <Label Style="{DynamicResource titleLabel}" Content="Communities (v2 only)" />
+            <DataGrid x:Name="_communities" ItemsSource="{Binding Communities}" Style="{DynamicResource defaultGrid}">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <Button Style="{DynamicResource deleteButton}">
+                                    <Image Source="../Resources/plus-green.png" />
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Style="{DynamicResource deleteButton}">
+                                    <Image Source="../Resources/remove.png" />
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" Width="*" />
+                    <DataGridTextColumn Header="User" Binding="{Binding Path=User}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Visibility="{Binding Version, Converter={StaticResource SnmpV3ToVisibilityConverter}}">
-            <Label>Security Protocols</Label>
-            <ComboBox x:Name="_snmpProtos" Style="{DynamicResource defaultCombo}"
-                      SelectedValue="{Binding Protocols}"
-                      SelectedValuePath="Content"
-                      IsSynchronizedWithCurrentItem="True"
-                      SelectionChanged="SelectionChanged">
-                <ComboBoxItem IsSelected="True" Content="MD5 + DES"/>
-                <ComboBoxItem Content="SHA + AES"/>
-                <ComboBoxItem Content="SHA + DES"/>
-            </ComboBox>
+        <StackPanel Grid.Row="2" Style="{DynamicResource cfgWindow}">
+            <Label Style="{DynamicResource titleLabel}" Content="Trap Receivers" />
+            <DataGrid x:Name="_stations" ItemsSource="{Binding Stations}" Style="{DynamicResource defaultGrid}">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <Button Style="{DynamicResource deleteButton}">
+                                    <Image Source="../Resources/plus-green.png" />
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Style="{DynamicResource deleteButton}">
+                                    <Image Source="../Resources/remove.png" />
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="IP Address" Binding="{Binding IpAddress}" Width="*" />
+                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*" />
+                    <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="*" />
+                    <DataGridTextColumn Header="User" Binding="{Binding User}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
         </StackPanel>
-        <Grid Visibility="{Binding Version, Converter={StaticResource SnmpV3ToVisibilityConverter}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0">Private Key</Label>
-            <PasswordBox Grid.Row="1" Grid.Column="0" x:Name="_maskedPrivKey"
-			Validation.ErrorTemplate="{DynamicResource validationTemplate}"
-			local:PasswordBoxAssistant.BindPassword="True"
-			PreviewMouseDown="MaskedPwdEnter"
-            LostFocus="MaskedPasswordChanged">
-                <local:PasswordBoxAssistant.BoundPassword>
-                    <Binding Path="PrivateKey" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
-                        <Binding.ValidationRules>
-                            <local:PasswordRule />
-                        </Binding.ValidationRules>
-                    </Binding>
-                </local:PasswordBoxAssistant.BoundPassword>
-            </PasswordBox>
-            <TextBox Grid.Row="1" Grid.Column="0" x:Name="_clearPrivKey" Visibility="Hidden"
-			Validation.ErrorTemplate="{DynamicResource validationTemplate}"
-			PreviewMouseDown="PasswordEnter"
-			LostFocus="ClearPasswordChanged">
-                <TextBox.Text>
-                    <Binding Path="PrivateKey" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
-                        <Binding.ValidationRules>
-                            <local:PasswordRule />
-                        </Binding.ValidationRules>
-                    </Binding>
-                </TextBox.Text>
-            </TextBox>
-            <Button Grid.Row="1" Grid.Column="1" x:Name="_btnViewPrivKey" Style="{DynamicResource eyeButton}" Click="ShowPrivKey">
-                <Image x:Name="_viewPrivKey" Source="{DynamicResource eye_open}" />
-            </Button>
-            <Label Grid.Row="2" Grid.Column="0">Authorization Key</Label>
-            <PasswordBox Grid.Row="3" Grid.Column="0" x:Name="_maskedAuthKey"
-			Validation.ErrorTemplate="{DynamicResource validationTemplate}"
-			local:PasswordBoxAssistant.BindPassword="True"
-			PreviewMouseDown="MaskedPwdEnter"
-            LostFocus="MaskedPasswordChanged">
-                <local:PasswordBoxAssistant.BoundPassword>
-                    <Binding Path="AuthKey" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
-                        <Binding.ValidationRules>
-                            <local:PasswordRule />
-                        </Binding.ValidationRules>
-                    </Binding>
-                </local:PasswordBoxAssistant.BoundPassword>
-            </PasswordBox>
-            <TextBox Grid.Row="3" Grid.Column="0" x:Name="_clearAuthKey" Visibility="Hidden"
-			Validation.ErrorTemplate="{DynamicResource validationTemplate}"
-			PreviewMouseDown="PasswordEnter"
-			LostFocus="ClearPasswordChanged">
-                <TextBox.Text>
-                    <Binding Path="AuthKey" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
-                        <Binding.ValidationRules>
-                            <local:PasswordRule />
-                        </Binding.ValidationRules>
-                    </Binding>
-                </TextBox.Text>
-            </TextBox>
-            <Button Grid.Row="3" Grid.Column="1" x:Name="_btnViewAuthKey" Style="{DynamicResource eyeButton}" Click="ShowAuthKey">
-                <Image x:Name="_viewAuthKey" Source="{DynamicResource eye_open}" />
-            </Button>
-        </Grid>
-        <Label Margin="0,15,0,0" >SNMP Trap Receiver</Label>
-        <TextBox x:Name="_snmpTrapRec" 
-                 Validation.ErrorTemplate="{DynamicResource validationTemplate}" 
-                 LostFocus="TextChanged">
-            <TextBox.Text>
-                <Binding Path="TrapReceiver" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
-                    <Binding.ValidationRules>
-                        <local:HostnameRule />
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
-    </StackPanel>
+    </Grid>
 </Page>

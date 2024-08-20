@@ -90,9 +90,10 @@
     </Style>
 
     <Style TargetType="DataGrid" x:Key="defaultGrid">
+        <Setter Property="Margin" Value="5,0,5,0" />
         <Setter Property="AutoGenerateColumns" Value="False" />
         <Setter Property="HeadersVisibility" Value="Column" />
-        <Setter Property="Foreground" Value="white" />
+        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Top" />
@@ -111,6 +112,36 @@
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
         <Style.Resources>
+            <Style TargetType="DataGridColumnHeader">
+                <Setter Property="Background" Value="#222" />
+                <Setter Property="Foreground" Value="{StaticResource linkColor}" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                <Setter Property="Padding" Value="6,2,0,2" />
+            </Style>
+            <Style TargetType="DataGridCell">
+                <Setter Property="Padding" Value="6,2,0,2" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type DataGridCell}">
+                            <Border Padding="{TemplateBinding Padding}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            Background="{TemplateBinding Background}" 
+                            SnapsToDevicePixels="True">
+                                <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+                        <Setter Property="BorderThickness" Value="0" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
             <Style TargetType="{x:Type ScrollBar}">
                 <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false"/>
                 <Setter Property="Stylus.IsFlicksEnabled" Value="false"/>
@@ -652,6 +683,13 @@
         <Setter Property="Margin" Value="0,10,0,0" />
     </Style>
 
+    <Style TargetType="Label" x:Key="titleLabel">
+        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0,0,0,4" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+    
     <Style x:Key="fileBox" TargetType="RichTextBox">
         <Setter Property="Background" Value="{StaticResource popupBackgroundColor}" />
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
@@ -680,7 +718,16 @@
 
     <Style TargetType="TextBlock" x:Key="toolTip">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+        <Setter Property="Foreground" Value="{StaticResource linkColor}" />
+        <Style.Resources>
+            <Style TargetType="ToolTip">
+                <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+                <Setter Property="Background" Value="{StaticResource barBackground}" />
+            </Style>
+        </Style.Resources>        
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="devToolTip" BasedOn="{StaticResource toolTip}">
         <Style.Resources>
             <Style TargetType="ToolTip">
                 <Setter Property="FontFamily" Value="Courier New" />

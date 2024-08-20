@@ -11,7 +11,7 @@ namespace PoEWizard.Data
         public enum ReportType { Error, Warning, Info, Status, Value }
         public enum MatchOperation { EndsWith, Equals, StartsWith, Contains, Regex }
         public enum DeviceFunction { Edge, Core };
-        public enum MsgBoxButtons { Ok, Cancel, OkCancel, None };
+        public enum MsgBoxButtons { Ok, Cancel, OkCancel, YesNo, None };
         public enum MsgBoxIcons { Info, Warning, Error, Question, None };
         public enum GridBorderions { Dhcp, Edge, Core, Lps, Lldp, Security, MaxConfigs };
         public enum AosVersion { V6, V8 };
@@ -289,6 +289,11 @@ namespace PoEWizard.Data
         public const string DHCP_DEST = "alaDhcpRelayServerDestinationAddress";
         public const string NTP_SERVER = "alaNtpPeerAddress";
         public const string NTP_ENABLE = "Client mode";
+        public const string USER = "User name";
+        public const string SNMP_ALLOWED = "Snmp allowed";
+        public const string SNMP_AUTH = "Snmp authentication";
+        public const string SNMP_ENC = "Snmp encryption";
+        public const string SNMP_COMMUNITY = "Community string";
         #endregion
 
         #region regex patterns

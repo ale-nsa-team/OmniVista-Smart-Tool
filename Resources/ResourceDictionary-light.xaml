@@ -49,6 +49,7 @@
     </LinearGradientBrush>
 
     <Style TargetType="DataGrid" x:Key="defaultGrid">
+        <Setter Property="Margin" Value="5,0,5,0" />
         <Setter Property="AutoGenerateColumns" Value="False" />
         <Setter Property="HeadersVisibility" Value="Column" />
         <Setter Property="Foreground" Value="black" />
@@ -128,7 +129,7 @@
     <Style x:Key="mainWindow" TargetType="Window">
         <Setter Property="Background" Value="{StaticResource mainWindowBackgroundColor}" />
     </Style>
-    
+
     <Style x:Key="_mainGrid" TargetType="Grid">
         <Setter Property="Background" Value="{StaticResource mainWindowBackgroundColor}" />
     </Style>
@@ -263,8 +264,16 @@
 
     <Style TargetType="Label" x:Key="leftJustifLabel" BasedOn="{StaticResource rightJustifLabel}">
         <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Margin" Value="0,10,0,0" />
     </Style>
-    
+
+    <Style TargetType="Label" x:Key="titleLabel">
+        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0,0,0,4" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
     <Style TargetType="ComboBox" x:Key="defaultCombo" BasedOn="{StaticResource {x:Type ComboBox}}">
         <Setter Property="IsEditable" Value="False" />
         <Setter Property="HorizontalAlignment" Value="Center" />
@@ -298,6 +307,15 @@
     <Style TargetType="TextBlock" x:Key="toolTip">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+        <Style.Resources>
+            <Style TargetType="ToolTip">
+                <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+                <Setter Property="Background" Value="{StaticResource barBackground}" />
+            </Style>
+        </Style.Resources>
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="devToolTip" BasedOn="{StaticResource toolTip}">
         <Style.Resources>
             <Style TargetType="ToolTip">
                 <Setter Property="FontFamily" Value="Courier New" />
@@ -453,7 +471,7 @@
         <Setter Property="Width" Value="16" />
         <Setter Property="Height" Value="16" />
     </Style>
-    
+
     <ControlTemplate x:Key="comboBoxTextBox" TargetType="{x:Type TextBox}">
         <Border x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}" />
     </ControlTemplate>

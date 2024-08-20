@@ -9,16 +9,23 @@ namespace PoEWizard.Device
     public class SnmpModel : ICloneable
     {
         public ObservableCollection<SnmpUser> Users { get; set; }
+        public ObservableCollection<SnmpCommunity> Communities { get; set; }
         public ObservableCollection<SnmpStation> Stations { get; set; }
 
-        public SnmpModel() { }
+        public SnmpModel() 
+        {
+            Users = new ObservableCollection<SnmpUser>();
+            Stations = new ObservableCollection<SnmpStation>();
+        }
 
         public object Clone()
         {
             SnmpModel clone = new SnmpModel();
             clone.Users = new ObservableCollection<SnmpUser>();
+            clone.Communities = new ObservableCollection<SnmpCommunity>();
             clone.Stations = new ObservableCollection<SnmpStation>();
             foreach (SnmpUser user in Users) clone.Users.Add(user.Clone() as SnmpUser);
+            foreach(SnmpCommunity community in Communities) clone.Communities.Add(community.Clone() as SnmpCommunity);
             foreach (SnmpStation station in Stations) clone.Stations.Add(station.Clone() as SnmpStation);
             return clone;
         }

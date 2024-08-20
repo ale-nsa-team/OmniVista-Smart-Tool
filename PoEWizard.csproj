@@ -178,6 +178,7 @@
     <Compile Include="Device\ServerModel.cs" />
     <Compile Include="Device\SlotModel.cs" />
     <Compile Include="Device\SlotView.cs" />
+    <Compile Include="Device\SnmpCommunity.cs" />
     <Compile Include="Device\SnmpModel.cs" />
     <Compile Include="Device\SnmpStation.cs" />
     <Compile Include="Device\SnmpUser.cs" />
@@ -350,6 +351,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\traffic-light.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\plus-green.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

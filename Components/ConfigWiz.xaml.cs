@@ -118,6 +118,21 @@ namespace PoEWizard.Components
                 }
                 dict = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_MULTICAST, ParseType.Etable)) as Dictionary<string, string>;
                 if (dict != null) features.IsMulticast = dict["Status"] == "enabled";
+                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_USER, ParseType.Vtable)) as  List<Dictionary<string, string>>;
+                if ( dicList.Count > 0)
+                {
+                    foreach (var dic in dicList)
+                    {
+                        if (dic[SNMP_ALLOWED] == "YES")
+                        {
+                            SnmpUser user = new SnmpUser(dic[USER]);
+                            if (dic.ContainsKey(SNMP_AUTH)) user.Protocol = dic[SNMP_AUTH];
+                            if (dic.ContainsKey(SNMP_ENC)) user.Encryption = dic[SNMP_ENC];
+                            snmpData.Users.Add(user);
+                        }
+                    }
+                }
+
             });
 
             srvOrig = srvData.Clone() as ServerModel;

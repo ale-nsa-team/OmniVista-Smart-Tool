@@ -319,8 +319,32 @@
                             </Style>
                         </DataGridComboBoxColumn.EditingElementStyle>
                     </DataGridComboBoxColumn>
-                    <DataGridTextColumn Header="Power (Watts)" Width="0.9*" Binding="{Binding Path=Power}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Max Power (Watts)" Width="1.1*" Binding="{Binding Path=MaxPower}" IsReadOnly="True"/>
+                    <DataGridTemplateColumn Width="0.9*" IsReadOnly="True">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Power (Watts)" Style="{DynamicResource toolTip}"
+                                           ToolTip="It's the actual power consumed by the device connected to the port" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Power}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="1.1*" IsReadOnly="True">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Max Power (Watts)" Style="{DynamicResource toolTip}"
+                                           ToolTip="It's the maximum power allowed by the hardware" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=MaxPower}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="PoE Class" Width="*" Binding="{Binding Path=Class}" IsReadOnly="True" />
                     <DataGridTextColumn Header="PoE Mode" Width="0.7*" IsReadOnly="True">
                         <DataGridTextColumn.Binding>
@@ -336,7 +360,7 @@
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Model}"
                                            ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
-                                           Style="{DynamicResource toolTip}" />
+                                           Style="{DynamicResource devToolTip}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -345,7 +369,7 @@
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Type}"
                                            ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
-                                           Style="{DynamicResource toolTip}" />
+                                           Style="{DynamicResource devToolTip}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -354,7 +378,7 @@
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Name}"
                                            ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
-                                           Style="{DynamicResource toolTip}" />
+                                           Style="{DynamicResource devToolTip}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
