@@ -9,12 +9,9 @@ namespace PoEWizard.Data
         public enum ThemeType { Dark, Light }
         public enum LogLevel { Error, Warn, Activity, Info, Debug, Trace }
         public enum ReportType { Error, Warning, Info, Status, Value }
-        public enum MatchOperation { EndsWith, Equals, StartsWith, Contains, Regex }
-        public enum DeviceFunction { Edge, Core };
         public enum MsgBoxButtons { Ok, Cancel, OkCancel, YesNo, None };
         public enum MsgBoxIcons { Info, Warning, Error, Question, None };
         public enum GridBorderions { Dhcp, Edge, Core, Lps, Lldp, Security, MaxConfigs };
-        public enum AosVersion { V6, V8 };
         public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
         public enum PortStatus { Unknown, Up, Down }
         public enum PoeStatus { On, Off, Searching, Fault, Deny, Conflict, PoweredOff, NoPoe }
@@ -28,7 +25,7 @@ namespace PoEWizard.Data
             [Description("Off")]
             Off
         }
-        public enum ParseType { Htable, Htable2, Vtable, Etable, Text }
+        public enum ParseType { Htable, Htable2, Vtable, Etable, MVTable, Text }
         public enum EType { Fiber, Copper, Unknown }
         public enum PriorityLevelType { Low, High, Critical }
         public enum PowerSupplyState { Up, Down, Unknown }
@@ -36,7 +33,7 @@ namespace PoEWizard.Data
         public enum DictionaryType
         {
             SystemRunningDir, Chassis, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList,
-            MacAddressList, TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList
+            MacAddressList, TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User
         }
         public enum ConfigType { Enable, Disable, Unavailable }
         public enum DeviceType
@@ -306,6 +303,7 @@ namespace PoEWizard.Data
         public const string MATCH_CHASSIS = @"([Local|Remote] Chassis ID )(\d+) \((.+)\)";
         public const string MATCH_AOS_VERSION = @"(\d+)\.(\d+)([\.\d +]+)(\.R)(\d+)";
         public const string MATCH_POE_RUNNING =@"Lanpower chassis \d slot \d service running ...";
+        public const string MATCH_USER = @"(User name)\s*=\s*(\.+)";
         #endregion
     }
 }
