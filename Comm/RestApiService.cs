@@ -173,7 +173,7 @@ namespace PoEWizard.Comm
                     break;
 
             }
-            Dictionary<string, object> resp = SendRequest(GetRestUrlEntry(cmdReq.Command));
+            Dictionary<string, object> resp = SendRequest(GetRestUrlEntry(cmdReq));
             if (!string.IsNullOrEmpty(mibReq))
             {
                 return CliParseUtils.ParseListFromDictionary((Dictionary<string, string>)resp[DATA], mibReq);
@@ -1568,6 +1568,12 @@ namespace PoEWizard.Comm
             Dictionary<string, string> body = GetContent(url, data);
             RestUrlEntry entry = new RestUrlEntry(url, data) { Method = body == null ? HttpMethod.Get : HttpMethod.Post, Content = body };
             return entry;
+        }
+
+        private RestUrlEntry GetRestUrlEntry(CmdRequest req)
+        {
+            return GetRestUrlEntry(req.Command, req.Data);
+
         }
 
         private Dictionary<string, object> SendRequest(RestUrlEntry entry)
