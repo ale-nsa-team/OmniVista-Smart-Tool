@@ -27,7 +27,7 @@
             <TextBox.Text>
                 <Binding Path="Gateway" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
-                        <validators:IpAddressRule />
+                        <validators:IpAddressNullRule />
                     </Binding.ValidationRules>
                 </Binding>
             </TextBox.Text>
@@ -43,7 +43,7 @@
                     <TextBox.Text>
                         <Binding Path="Dns1" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
-                                <validators:IpAddressRule />
+                                <validators:IpAddressNullRule />
                             </Binding.ValidationRules>
                         </Binding>
                     </TextBox.Text>
@@ -55,7 +55,7 @@
                     <TextBox.Text>
                         <Binding Path="Dns2" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
-                                <validators:IpAddressRule />
+                                <validators:IpAddressNullRule />
                             </Binding.ValidationRules>
                         </Binding>
                     </TextBox.Text>
@@ -67,7 +67,7 @@
                     <TextBox.Text>
                         <Binding Path="Dns3" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
-                                <validators:IpAddressRule />
+                                <validators:IpAddressNullRule />
                             </Binding.ValidationRules>
                         </Binding>
                     </TextBox.Text>

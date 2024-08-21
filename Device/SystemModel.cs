@@ -8,6 +8,8 @@ namespace PoEWizard.Device
 {
     public class SystemModel : ICloneable
     {
+        private readonly SwitchModel device;
+
         public string MgtIpAddr { get; set; }
         public string NetMask { get; set; }
         public string AdminPwd { get; set; }
@@ -25,6 +27,7 @@ namespace PoEWizard.Device
             Name = device.Name;
             Contact = device.Contact;
             Location = device.Location;
+            this.device = device;
         }
 
         public object Clone()
@@ -53,18 +56,23 @@ namespace PoEWizard.Device
                 {
                     case "MtgIpAddr":
                         cmdList.Add(new CmdRequest(Command.SET_MNGT_INTERFACE, MgtIpAddr, NetMask));
+                        device.IpAddress = MgtIpAddr;
                         break;
                     case "AdminPwd":
                         cmdList.Add(new CmdRequest(Command.SET_PASSWORD, "admin", AdminPwd));
+                        device.Password = AdminPwd;
                         break;
                     case "Name":
                         cmdList.Add(new CmdRequest(Command.SET_SYSTEM_NAME, Name));
+                        device.Name = Name;
                         break;
                     case "Contact":
                         cmdList.Add(new CmdRequest(Command.SET_CONTACT, Contact));
+                        device.Contact = Contact;
                         break;
                     case "Location":
                         cmdList.Add(new CmdRequest(Command.SET_LOCATION, Location));
+                        device.Location = Location;
                         break;
                 }
             }

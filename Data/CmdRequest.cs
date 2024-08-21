@@ -114,11 +114,11 @@ namespace PoEWizard.Data
         SHOW_IP_ROUTES = 216,
         DNS_LOOKUP = 217,
         NO_DNS_LOOKUP = 218,
-        DNS_SERVER = 219,
+        SET_DNS_SERVER = 219,
         DNS_DOMAIN = 220,
         ENABLE_NTP = 221,
         DISABLE_NTP = 222,
-        NTP_SERVER = 223,
+        SET_NTP_SERVER = 223,
         START_POE = 224,
         STOP_POE = 225,
         SNMP_AUTH_LOCAL = 226,
@@ -141,7 +141,9 @@ namespace PoEWizard.Data
         TELNET_AUTH_LOCAL = 243,
         FTP_AUTH_LOCAL = 244,
         DISABLE_SSH = 245,
-        DISABLE_DHCP_RELAY = 246
+        DISABLE_DHCP_RELAY = 246,
+        DELETE_DNS_SERVER = 247,
+        DELETE_NTP_SERVER = 248
     }
 
     public class CmdRequest

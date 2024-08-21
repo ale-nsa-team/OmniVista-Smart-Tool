@@ -30,12 +30,27 @@ namespace PoEWizard.Device
         {
             List<PropertyInfo> changes = GetChanges(orig);
             List<CmdRequest> cmdList = new List<CmdRequest>();
-            List<string> dns = new List<string>();
+            List<string> dnsAdd = new List<string>();
+            List<string> dnsRemove = new List<string>();
             foreach (var prop in changes)
             {
-                if (Regex.IsMatch(prop.Name, "Dns\\d") && IsDns) dns.Add((string)prop.GetValue(this, null));
+                if (Regex.IsMatch(prop.Name, "Dns\\d") && IsDns)
+                {
+                    string newD = (string)prop.GetValue(this, null);
+                    string origD = (string)prop.GetValue(orig, null);
+                    if (!string.IsNullOrEmpty(origD)) dnsRemove.Add(origD);
+                    if (!string.IsNullOrEmpty(newD)) dnsAdd.Add(newD);
+                }
+                
                 if (prop.Name == "DnsDomain" && IsDns) cmdList.Add(new CmdRequest(Command.DNS_DOMAIN, DnsDomain));
-                if (prop.Name.StartsWith("Ntp") && IsNtp) cmdList.Add(new CmdRequest(Command.NTP_SERVER, (string)prop.GetValue(this, null)));
+                if (prop.Name.StartsWith("Ntp") && IsNtp)
+                {
+                    string ntp = (string)prop.GetValue(this, null);
+                    if (string.IsNullOrEmpty(ntp))
+                        cmdList.Add(new CmdRequest(Command.DELETE_NTP_SERVER, (string)prop.GetValue(orig, null)));
+                    else 
+                        cmdList.Add(new CmdRequest(Command.SET_NTP_SERVER, (string)prop.GetValue(this, null)));
+                }
                 if (prop.Name == "IsDns")
                 {
                     if (IsDns) cmdList.Add(new CmdRequest(Command.DNS_LOOKUP));
@@ -47,9 +62,14 @@ namespace PoEWizard.Device
                     else cmdList.Add(new CmdRequest(Command.DISABLE_NTP));
                 }
             }
-            if (dns.Count > 0 && IsDns)
+            foreach (string d in dnsRemove)
             {
-                cmdList.Add(new CmdRequest(Command.DNS_SERVER, string.Join(" ", dns)));
+                cmdList.Add(new CmdRequest(Command.DELETE_DNS_SERVER, d));
+            }
+
+            foreach (string d in dnsAdd)
+            {
+                cmdList.Add(new CmdRequest(Command.SET_DNS_SERVER, d));
             }
             return cmdList;
         }

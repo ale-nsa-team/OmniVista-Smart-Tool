@@ -281,6 +281,10 @@ namespace PoEWizard
             }
             if (wiz.IsRebootSwitch) LaunchRebootSwitch();
             _status.Text = DEFAULT_APP_STATUS;
+
+            //refresh datacontext
+            this.DataContext = null;
+            this.DataContext = device;
         }
 
         private void RunWiz_Click(object sender, RoutedEventArgs e)

@@ -136,10 +136,12 @@ namespace PoEWizard.Data
             [Command.DNS_LOOKUP] = "ip domain-lookup",
             [Command.NO_DNS_LOOKUP]= "no ip domain-lookup",
             [Command.DNS_DOMAIN] = $"ip domain-name {DATA_0}",
-            [Command.DNS_SERVER] = $"ip name-server {DATA_0}",
+            [Command.SET_DNS_SERVER] = $"ip name-server {DATA_0}",
+            [Command.DELETE_DNS_SERVER] = $"no ip name-server {DATA_0}",
             [Command.ENABLE_NTP] = "ntp client admin-state enable",
             [Command.DISABLE_NTP] = "ntp client admin-state disable",
-            [Command.NTP_SERVER] = $"ntp server {DATA_0}",
+            [Command.SET_NTP_SERVER] = $"ntp server {DATA_0}",
+            [Command.DELETE_NTP_SERVER] = $"no ntp server {DATA_0}",
             [Command.START_POE] = $"lanpower chassis {DATA_0} service start",
             [Command.STOP_POE] = $"lanpower chassis {DATA_0} service stop",
             [Command.SNMP_AUTH_LOCAL] = "aaa authentication snmp local",
@@ -253,8 +255,10 @@ namespace PoEWizard.Data
                     case Command.DEBUG_CLI_UPDATE_LPCMM_LEVEL:  // 151
                     // 190 - 229 Config Wizard commands
                     case Command.DNS_DOMAIN:
-                    case Command.DNS_SERVER:
-                    case Command.NTP_SERVER:
+                    case Command.SET_DNS_SERVER:
+                    case Command.DELETE_DNS_SERVER:
+                    case Command.SET_NTP_SERVER:
+                    case Command.DELETE_NTP_SERVER:
                     case Command.DHCP_RELAY_DEST:
                     case Command.SET_SYSTEM_TIMEZONE:
                     case Command.SET_SYSTEM_DATE:

@@ -58,7 +58,7 @@ namespace PoEWizard.Components
             pageNo = 1;
             _btnCfgBack.IsEnabled = false;
             _cfgFrame.Navigate(new CfgWizPage1(sysData));
-            _btnSubmit.IsEnabled = false;
+            //_btnSubmit.IsEnabled = false;
         }
         #endregion
 
@@ -95,7 +95,7 @@ namespace PoEWizard.Components
             if (pageNo == pageCount)
             {
                 _btnCfgNext.IsEnabled = false;
-                _btnSubmit.IsEnabled = true;
+                //_btnSubmit.IsEnabled = true;
             }
             _btnCfgBack.IsEnabled = true;
             NavigateToPage();
@@ -182,9 +182,9 @@ namespace PoEWizard.Components
             {
                 srvData.IsDns = dicList[0][DNS_ENABLE] == "1";
                 srvData.DnsDomain = dicList[0][DNS_DOMAIN];
-                srvData.Dns1 = dicList[0][DNS1];
-                srvData.Dns2 = dicList[0][DNS2];
-                srvData.Dns3 = dicList[0][DNS3];
+                srvData.Dns1 = GetDnsAddr(dicList[0][DNS1]);
+                srvData.Dns2 = GetDnsAddr(dicList[0][DNS2]);
+                srvData.Dns3 = GetDnsAddr(dicList[0][DNS3]);
             }
 
             dict = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_NTP_STATUS, ParseType.Vtable)) as Dictionary<string, string>;
@@ -200,6 +200,11 @@ namespace PoEWizard.Components
                     if (i == 2) srvData.Ntp3 = dicList[i][NTP_SERVER];
                 }
             }
+        }
+
+        private string GetDnsAddr(string dns)
+        {
+            return dns == "0.0.0.0" ? string.Empty : dns;
         }
 
         private void GetFeaturesData()

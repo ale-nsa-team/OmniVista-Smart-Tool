@@ -21,6 +21,17 @@ namespace PoEWizard.Components
         }
     }
 
+    public class IpAddressNullRule : ValidationRule
+    {
+        public IpAddressNullRule() { }
+
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            if (string.IsNullOrEmpty((string)value)) return ValidationResult.ValidResult;
+            return new IpAddressRule().Validate(value, cultureInfo);
+        }
+    }
+
     public class SubnetMaskRule : ValidationRule
     {
         private const string leadingOnes = "(255|254|252|248|240|224|192|128|0+)";
@@ -103,6 +114,7 @@ namespace PoEWizard.Components
 
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
+            if (string.IsNullOrEmpty((string)value)) return ValidationResult.ValidResult;
             return Regex.IsMatch((string)value, pattern)
                 ? ValidationResult.ValidResult
                 : new ValidationResult(false, "Invalid domain name");
