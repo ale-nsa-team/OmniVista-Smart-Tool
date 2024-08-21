@@ -744,7 +744,7 @@ namespace PoEWizard
                 else if (selectedPort.MacList?.Count > 0 && !string.IsNullOrEmpty(selectedPort.MacList[0])) txt.Append(", Device MAC: ").Append(selectedPort.MacList[0]);
                 Logger.Activity(txt.ToString());
                 RefreshSlotAndPortsView();
-                if (result != WizardResult.Fail)
+                if (result == WizardResult.Fail)
                 {
                     bool res = ShowMessageBox("Wizard", "It looks like the wizard was unable to fix the problem.\nDo you want to collect information to send to technical support?",
                                               MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
