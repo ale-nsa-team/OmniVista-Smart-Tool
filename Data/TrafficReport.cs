@@ -111,6 +111,7 @@ namespace PoEWizard.Data
             }
             if (this.alertReport?.Count > 0) foreach (KeyValuePair<string, string> keyVal in this.alertReport) this.Summary += keyVal.Value;
             else this.Summary += $"\nNo traffic anomalies detected.";
+            this.Summary += "\n";
         }
 
         private void ParseAlertConditions()
@@ -126,11 +127,11 @@ namespace PoEWizard.Data
             if (this.crcError > 1) AddPortAlert($"#Rx CRC Error detected: {this.crcError}");
             if (this.collisions > 0) AddPortAlert($"#Collisions detected: {this.collisions}");
             if (this.alignments > 1) AddPortAlert($"#Alignments Error detected: {this.alignments}");
-            if (this.alertReport?.Count > 0 && this.alertReport.ContainsKey(this.trafficPort.Port))
+            if (this.alertReport?.Count > 0 && this.alertReport.ContainsKey(this.trafficPort.Port) && this.trafficPort.MacList?.Count > 0)
             {
                 string txt = PrintMacAdresses("MAC Address");
                 string vendor = PrintVendor();
-                if (string.IsNullOrEmpty(vendor)) txt += $" ({vendor})";
+                if (!string.IsNullOrEmpty(vendor)) txt += $" ({vendor})";
                 AddPortAlert(txt);
             }
         }
@@ -286,19 +287,6 @@ namespace PoEWizard.Data
                     }
                 }
             }
-        }
-
-        private string GetMacAddressList(PortModel port)
-        {
-            string macList = string.Empty;
-            for (int idx = 0; idx < port.EndPointDevicesList.Count; idx++)
-            {
-                string macAddr = port.EndPointDevicesList[idx]?.MacAddress;
-                if (macList.Contains(macAddr)) continue;
-                if (idx > 0) macList += ",";
-                macList += macAddr;
-            }
-            return macList;
         }
 
         private bool IsDeviceTypeUnknown(EndPointDeviceModel device)

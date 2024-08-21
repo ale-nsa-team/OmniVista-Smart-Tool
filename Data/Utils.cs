@@ -537,14 +537,7 @@ namespace PoEWizard.Data
         {
             try
             {
-                double lowerVal = val1;
-                double higherVal = val2;
-                if (higherVal < val1)
-                {
-                    lowerVal = val2;
-                    higherVal = val1;
-                }
-                return RoundUp((lowerVal / higherVal) * 100, dec);
+                return RoundUp((val1 / val2) * 100, dec);
             }
             catch { }
             return 0;

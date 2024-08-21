@@ -111,10 +111,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Comm\AosSshService.cs" />
+    <Compile Include="Comm\FtpService.cs" />
     <Compile Include="Comm\RestApiClient.cs" />
     <Compile Include="Comm\RestApiService.cs" />
     <Compile Include="Comm\ResultCallback.cs" />
     <Compile Include="Comm\SftpService.cs" />
+    <Compile Include="Comm\TftpService.cs" />
     <Compile Include="Components\AboutBox.xaml.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
