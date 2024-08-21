@@ -98,8 +98,8 @@ namespace PoEWizard.Data
             [Command.DEBUG_CLI_SHOW_LPNI_LEVEL] = "show swlog appid lpni",                                  // 152
             [Command.DEBUG_CLI_SHOW_LPCMM_LEVEL] = "show swlog appid lpcmm",                                // 153
             // 190 - 229 Config Wizard commands
-            [Command.DISABLE_AUTO_FABRIC] = "auto-fabric admin-state disable",
-            [Command.ENABLE_DDM] = "interfaces ddm enable",
+            [Command.DISABLE_AUTO_FABRIC] = "auto-fabric admin-state disable",                              // 190
+            [Command.ENABLE_DDM] = "interfaces ddm enable",                                                 // 191
             [Command.ENABLE_MULTICAST] = "ip multicast admin-state enable",
             [Command.ENABLE_QUERYING] = "ip multicast querying enable",
             [Command.ENABLE_QUERIER_FWD] = "ip multicast querier-forwarding enable",
@@ -118,7 +118,7 @@ namespace PoEWizard.Data
             [Command.SSH_AUTH_LOCAL] = "aaa authentication ssh local",
             [Command.SET_SYSTEM_TIMEZONE] = $"system timezone {DATA_0}",
             [Command.SET_SYSTEM_DATE] = $"system date {DATA_0}",
-            [Command.SET_SYSTEM_TIME] = $"set system time {DATA_0}",
+            [Command.SET_SYSTEM_TIME] = $"system time {DATA_0}",
             [Command.SET_SYSTEM_NAME] = $"system name \"{DATA_0}\"",
             [Command.SET_MNGT_INTERFACE] = $"ip interface \"MGT\" address {DATA_0} mask {DATA_1} vlan 1",
             [Command.SET_PASSWORD] = $"user {DATA_0} password \"{DATA_1}\"",
@@ -251,6 +251,19 @@ namespace PoEWizard.Data
                     // 150 - 189: Switch debug CLI commands
                     case Command.DEBUG_CLI_UPDATE_LPNI_LEVEL:   // 150
                     case Command.DEBUG_CLI_UPDATE_LPCMM_LEVEL:  // 151
+                    // 190 - 229 Config Wizard commands
+                    case Command.DNS_DOMAIN:
+                    case Command.DNS_SERVER:
+                    case Command.NTP_SERVER:
+                    case Command.DHCP_RELAY_DEST:
+                    case Command.SET_SYSTEM_TIMEZONE:
+                    case Command.SET_SYSTEM_DATE:
+                    case Command.SET_SYSTEM_TIME:
+                    case Command.SET_SYSTEM_NAME:
+                    case Command.SET_CONTACT:
+                    case Command.SET_LOCATION:
+                    case Command.START_POE:
+                    case Command.STOP_POE:
                         if (data == null || data.Length < 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
                         return url.Replace(DATA_0, (data == null || data.Length < 1) ? "" : data[0]);
 
@@ -260,8 +273,24 @@ namespace PoEWizard.Data
                     case Command.SET_MAX_POWER_PORT:            //  53
                     // 130 - 149: Switch debug MIB commands
                     case Command.DEBUG_SHOW_LEVEL:              // 131
+                    // 190 - 229 Config Wizard commands
+                    case Command.SET_MNGT_INTERFACE:
+                    case Command.SET_PASSWORD:
+                    case Command.SNMP_COMMUNITY_MAP:
                         if (data == null || data.Length < 2) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
                         return url.Replace(DATA_0, data[0]).Replace(DATA_1, data[1]);
+
+                    // 190 - 229 Config Wizard commands
+                    case Command.SNMP_V2_USER:
+                        if (data == null || data.Length < 3) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
+                        return url.Replace(DATA_0, data[0]).Replace(DATA_1, data[1]).Replace(DATA_2, data[2]);
+
+                    // 190 - 229 Config Wizard commands
+                    case Command.SNMP_STATION:
+                    case Command.SNMP_V3_USER:
+                        if (data == null || data.Length < 4) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
+                        return url.Replace(DATA_0, data[0]).Replace(DATA_1, data[1]).Replace(DATA_2, data[2]).Replace(DATA_3, data[3]);
+
 
                     // 100 - 119: Virtual commands
                     case Command.CHECK_POWER_PRIORITY:          //  100
