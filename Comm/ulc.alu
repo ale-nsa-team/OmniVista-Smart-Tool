@@ -1,0 +1,24 @@
+! Alcatel-Lucent Enterprise Universal Lighting Config Script Version 1.1
+! Firmware version
+!Firmware version:OS_8.8.56_R02
+!Firmware location:/6360/firmware
+! Configuration file
+!Config filename:boot_OS6360.cfg
+!Config location:/6360/config
+! Debug file
+!Debug filename:AlcatelDebug.cfg
+!Debug location:/6360/ftpboot/debug
+! Script File
+Script filename:ulc_script.txt
+Script location:/6360/scripts
+! License File
+!License filename:swlicense.dat
+!License location:/6360/license
+! Primary file Server
+Primary server:192.168.0.1
+Primary protocol:FTP
+Primary user:admin
+! Secondary file Server
+!Secondary server:10.200.110.111
+!Secondary protocol:SFTP
+!Secondary user:admin
