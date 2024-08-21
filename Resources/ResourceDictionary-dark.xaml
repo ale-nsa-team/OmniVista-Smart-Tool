@@ -727,7 +727,9 @@
         </Style.Resources>        
     </Style>
 
-    <Style TargetType="TextBlock" x:Key="devToolTip" BasedOn="{StaticResource toolTip}">
+    <Style TargetType="TextBlock" x:Key="devToolTip">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
         <Style.Resources>
             <Style TargetType="ToolTip">
                 <Setter Property="FontFamily" Value="Courier New" />
@@ -736,7 +738,7 @@
             </Style>
         </Style.Resources>
     </Style>
-
+    
     <Style TargetType="Button" x:Key="defaultButton">
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Background" Value="{StaticResource buttonGradientBrush}"/>
