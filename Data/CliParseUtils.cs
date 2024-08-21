@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Windows.Controls;
 using System.Xml.Linq;
 using static PoEWizard.Data.Constants;
 
@@ -110,20 +111,18 @@ namespace PoEWizard.Data
             List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();
             Regex headerRegex;
             Regex bodyRegex;
-            string key1 = null;
-            string key2 = null;
+            string[] headerKeys; 
             switch (dtype)
             {
                 case DictionaryType.Chassis:
                     headerRegex = chassisRegex;
                     bodyRegex = vtableRegex;
-                    key1 = "ID";
-                    key2 = "Role";
+                    headerKeys = new string[] { "ID", "Role" };
                     break;
                 case DictionaryType.User:
                     headerRegex = userRegex;
                     bodyRegex = etableRegex;
-                    key1 = "User name";
+                    headerKeys = new string[] { "User name" };
                     break; ;
                 default:
                     return table;
@@ -140,13 +139,11 @@ namespace PoEWizard.Data
                     if (match.Success)
                     {
                         if (dict.Count > 0) table.Add(dict);
-                        dict = new Dictionary<string, string>()
+                        dict = new Dictionary<string, string>();
+                        int i = 2;
+                        foreach (string key in headerKeys)
                         {
-                            [key1] = match.Groups[2].Value
-                        };
-                        if (key2 != null)
-                        {
-                            dict[key2] = match.Groups[3].Value;
+                            dict[key] = match.Groups[i++].Value;
                         }
                     }
                     else if ((match = bodyRegex.Match(line)).Success)
