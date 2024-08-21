@@ -238,7 +238,7 @@ namespace PoEWizard.Comm
                 SendProgressReport($"Generating tar file");
                 Thread.Sleep(3000);
                 SendRequest(GetRestUrlEntry(Command.DEBUG_CREATE_LOG));
-                Logger.Activity($"Generated log file in {SwitchDebugLogLevel.Debug3} level on switch {SwitchModel.IpAddress}\nDuration: {Utils.CalcStringDuration(progressStartTime)}");
+                Logger.Activity($"Generated log file in {SwitchDebugLogLevel.Debug3} level on switch {SwitchModel.IpAddress}, duration: {Utils.CalcStringDuration(progressStartTime)}");
                 UpdateSwitchLogBar();
             }
             catch (Exception ex)
@@ -389,7 +389,7 @@ namespace PoEWizard.Comm
                     if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
                     UpdateProgressBarMessage($"{msg} ({(int)dur} sec) ...", dur);
                 }
-                Logger.Activity($"Write memory on switch {SwitchModel.IpAddress} completed (Duration: {dur} sec)");
+                Logger.Activity($"Write memory on switch {SwitchModel.IpAddress} completed (duration: {Utils.CalcStringDuration(progressStartTime)})");
             }
             catch (Exception ex)
             {
@@ -406,7 +406,7 @@ namespace PoEWizard.Comm
                 string msg = $"Rebooting switch {SwitchModel.IpAddress}";
                 Logger.Info(msg);
                 StartProgressBar($"{msg} ...", 320);
-                SendRequest(GetRestUrlEntry(Command.REBOOT_SWITCH));
+                SendRebootSwitchRequest();
                 if (waitSec <= 0) return string.Empty;
                 msg = $"Waiting switch {SwitchModel.IpAddress} reboot ";
                 _progress.Report(new ProgressReport($"{msg}..."));
@@ -442,6 +442,27 @@ namespace PoEWizard.Comm
             }
             CloseProgressBar();
             return Utils.CalcStringDuration(progressStartTime, true);
+        }
+
+        private void SendRebootSwitchRequest()
+        {
+            const double MAX_WAIT_RETRY = 30;
+            DateTime startTime = DateTime.Now;
+            double dur = 0;
+            while (dur < MAX_WAIT_RETRY)
+            {
+                try
+                {
+                    SendRequest(GetRestUrlEntry(Command.REBOOT_SWITCH));
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    dur = Utils.GetTimeDuration(startTime);
+                    if (dur >= MAX_WAIT_RETRY) throw ex;
+                }
+                Thread.Sleep(5000);
+            }
         }
 
         private void StartProgressBar(string barText, double initValue)

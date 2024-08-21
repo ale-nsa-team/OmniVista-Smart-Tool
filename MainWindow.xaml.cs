@@ -1224,19 +1224,6 @@ namespace PoEWizard
             }
         }
 
-        private void UpdateProgressBarMessage(string txt, double currVal, double totalVal)
-        {
-            try
-            {
-                progress.Report(new ProgressReport(txt));
-                UpdateProgressBar(currVal, totalVal);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
-
         private void UpdateProgressBar(double currVal, double totalVal)
         {
             try
