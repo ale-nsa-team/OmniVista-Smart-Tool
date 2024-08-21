@@ -305,5 +305,9 @@ namespace PoEWizard.Data
         public const string MATCH_POE_RUNNING =@"Lanpower chassis \d slot \d service running ...";
         public const string MATCH_USER = @"(User name)\s*=\s*(.+),";
         #endregion
+
+        #region numbers
+        public const double MAX_GENERATE_LOG_DURATION = 60;
+        #endregion
     }
 }

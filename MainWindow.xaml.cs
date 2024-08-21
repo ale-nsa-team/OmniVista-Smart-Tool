@@ -110,10 +110,7 @@ namespace PoEWizard
                         reportAck = ShowMessageBox(report.Title, report.Message, MsgBoxIcons.Info);
                         break;
                     case ReportType.Value:
-                        if (_progressBar.Visibility != Visibility.Visible)
-                        {
-                            ShowProgress(report.Title, false);
-                        }
+                        if (!string.IsNullOrEmpty(report.Title)) ShowProgress(report.Title, false);
                         if (report.Message == "-1") HideProgress();
                         else _progressBar.Value = double.TryParse(report.Message, out double dVal) ? dVal : 0;
                         break;
@@ -703,11 +700,12 @@ namespace PoEWizard
             {
                 ProgressReport wizardProgressReport = new ProgressReport("PoE Wizard Report:");
                 reportResult = new WizardReport();
-                ShowProgress($"Running PoE Wizard on port {selectedPort.Name}...");
+                string barText = $"Running PoE Wizard on port {selectedPort.Name} ...";
+                ShowProgress(barText);
                 DateTime startTime = DateTime.Now;
                 await Task.Run(() => restApiService.ScanSwitch($"Running PoE Wizard on port {selectedPort.Name}...", reportResult));
                 UpdateConnectedState(false);
-                ShowProgress($"Running PoE Wizard on port {selectedPort.Name}...");
+                ShowProgress(barText);
                 switch (selectedDeviceType)
                 {
                     case DeviceType.Camera:
@@ -746,18 +744,18 @@ namespace PoEWizard
                 else if (selectedPort.MacList?.Count > 0 && !string.IsNullOrEmpty(selectedPort.MacList[0])) txt.Append(", Device MAC: ").Append(selectedPort.MacList[0]);
                 Logger.Activity(txt.ToString());
                 RefreshSlotAndPortsView();
-                if (result == WizardResult.Fail)
+                if (result != WizardResult.Fail)
                 {
                     bool res = ShowMessageBox("Wizard", "It looks like the wizard was unable to fix the problem.\nDo you want to collect information to send to technical support?",
                                               MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
                     if (!res) return;
-                    ShowInfoBox("Cleaning up current log...");
+                    barText = "Cleaning up current log ...";
+                    ShowInfoBox(barText);
+                    StartProgressBar(barText);
                     sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
                     await Task.Run(() => sftpService.Connect());
                     await Task.Run(() => sftpService.DeleteFile(SWLOG_PATH));
-                    ShowProgress("Collecting switch logs...");
-                    await RunGetSwitchLog(SwitchDebugLogLevel.Debug3);
-                    await DownloadSwitchLogFile();
+                    await GenerateSwitchLogFile();
                 }
                 await Task.Run(() => restApiService.GetSystemInfo());
             }
@@ -775,13 +773,17 @@ namespace PoEWizard
             }
         }
 
-        private async Task DownloadSwitchLogFile()
+        private async Task GenerateSwitchLogFile()
         {
             const double MAX_WAIT_SFTP_RECONNECT_SEC = 60;
             const double MAX_WAIT_TAR_FILE_SEC = 180;
             const double PERIOD_SFTP_RECONNECT_SEC = 30;
             try
             {
+                StartProgressBar($"Collecting logs on switch {device.IpAddress} ...");
+                DateTime initialTime = DateTime.Now;
+                await RunGetSwitchLog(SwitchDebugLogLevel.Debug3);
+                StartProgressBar("Downloading tar file ..");
                 long fsize = 0;
                 long previousSize = -1;
                 DateTime startTime = DateTime.Now;
@@ -795,6 +797,7 @@ namespace PoEWizard
                     msg = !string.IsNullOrEmpty(strDur) ? $"Waiting for tar file ready ({strDur}) ..." : "Waiting for tar file ready ...";
                     if (fsize > 0) msg += $"\nFile size: {Utils.PrintNumberBytes(fsize)}";
                     ShowInfoBox(msg);
+                    UpdateSwitchLogBar(initialTime);
                     await Task.Run(() =>
                     {
                         previousSize = fsize;
@@ -817,6 +820,7 @@ namespace PoEWizard
                             return;
                         }
                     }
+                    UpdateSwitchLogBar(initialTime);
                     if (duration >= MAX_WAIT_TAR_FILE_SEC)
                     {
                         ShowWaitTarFileError(fsize, startTime);
@@ -824,12 +828,14 @@ namespace PoEWizard
                     }
                 }
                 strDur = Utils.CalcStringDuration(startTime, true);
+                string strTotalDuration = Utils.CalcStringDuration(initialTime, true);
                 ShowInfoBox($"Downloading tar file from switch ...\nFile creation duration: {strDur}, File size: {Utils.PrintNumberBytes(fsize)}");
                 string fname = null;
                 await Task.Run(() =>
                 {
                     fname = sftpService.DownloadFile(SWLOG_PATH);
                 });
+                UpdateSwitchLogBar(initialTime);
                 if (fname == null)
                 {
                     ShowMessageBox("Downloading tar file", $"Failed to download file \"{SWLOG_PATH}\" from the switch {device.IpAddress}!", MsgBoxIcons.Error, MsgBoxButtons.Ok);
@@ -850,10 +856,12 @@ namespace PoEWizard
                     File.Delete(fname);
                     info = new FileInfo(saveas);
                 }
+                UpdateSwitchLogBar(initialTime);
                 debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, selectedPort);
                 StringBuilder txt = new StringBuilder("Log tar file \"").Append(SWLOG_PATH).Append("\" downloaded from the switch ").Append(device.IpAddress);
                 txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\" (").Append(Utils.PrintNumberBytes(info.Length));
                 txt.Append(")\n\tDuration of tar file creation: ").Append(strDur);
+                txt.Append("\n\tTotal duration to generate log file in ").Append(SwitchDebugLogLevel.Debug3).Append(" level: ").Append(strTotalDuration);
                 Logger.Activity(txt.ToString());
             }
             catch (Exception ex)
@@ -862,12 +870,18 @@ namespace PoEWizard
             }
             finally
             {
+                CloseProgressBar();
                 HideInfoBox();
                 HideProgress();
                 sftpService?.Disconnect();
                 sftpService = null;
                 debugSwitchLog = null;
             }
+        }
+
+        private void UpdateSwitchLogBar(DateTime initialTime)
+        {
+            UpdateProgressBar(Utils.GetTimeDuration(initialTime), MAX_GENERATE_LOG_DURATION);
         }
 
         private void ShowWaitTarFileError(long fsize, DateTime startTime)
@@ -1195,6 +1209,56 @@ namespace PoEWizard
                 Buttons = buttons
             };
             return (bool)msgBox.ShowDialog();
+        }
+
+        private void StartProgressBar(string barText)
+        {
+            try
+            {
+                _progressBar.IsIndeterminate = false;
+                Utils.StartProgressBar(progress, barText);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
+        private void UpdateProgressBarMessage(string txt, double currVal, double totalVal)
+        {
+            try
+            {
+                progress.Report(new ProgressReport(txt));
+                UpdateProgressBar(currVal, totalVal);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
+        private void UpdateProgressBar(double currVal, double totalVal)
+        {
+            try
+            {
+                Utils.UpdateProgressBar(progress, currVal, totalVal);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
+        private void CloseProgressBar()
+        {
+            try
+            {
+                Utils.CloseProgressBar(progress);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         private void ShowInfoBox(string message)

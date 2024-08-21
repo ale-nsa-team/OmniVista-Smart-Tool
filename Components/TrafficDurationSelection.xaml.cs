@@ -27,8 +27,8 @@ namespace PoEWizard.Components
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
             _header.Text = "Please, select the traffic analysis duration";
-            TimeDurationList = new List<string>() { $"1 {MINUTE}", $"2 {MINUTE}s", $"3 {MINUTE}s", $"5 {MINUTE}s", $"10 {MINUTE}s",
-                                                    $"15 {MINUTE}s", $"30 {MINUTE}s", $"1 {HOUR}", $"3 {HOUR}s" };
+            TimeDurationList = new List<string>() { $"1 {MINUTE}", $"2 {MINUTE}s", $"3 {MINUTE}s", $"5 {MINUTE}s",
+                                                    $"10 {MINUTE}s", $"15 {MINUTE}s", $"30 {MINUTE}s", $"1 {HOUR}" };
         }
 
         public void OnWindowLoaded(object sender, RoutedEventArgs e)

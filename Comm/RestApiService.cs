@@ -28,6 +28,7 @@ namespace PoEWizard.Comm
         private static string stopTrafficAnalysisReason = "completed";
         private double totalProgressBar;
         private double progressBarCnt;
+        private DateTime progressStartTime;
 
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
@@ -49,11 +50,9 @@ namespace PoEWizard.Comm
         {
             try
             {
-                totalProgressBar = 23;
-                progressBarCnt = 0;
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
-                SendProgressBarMessage($"Connecting to switch {SwitchModel.IpAddress} ...", -1);
+                StartProgressBar($"Connecting to switch {SwitchModel.IpAddress} ...", 23);
                 _progress.Report(new ProgressReport($"Connecting to switch {SwitchModel.IpAddress} ..."));
                 RestApiClient.Login();
                 UpdateProgressBar(++progressBarCnt); //  1
@@ -83,11 +82,7 @@ namespace PoEWizard.Comm
         {
             try
             {
-                if (totalProgressBar == 0)
-                {
-                    totalProgressBar = 18;
-                    SendProgressBarMessage($"Scanning switch {SwitchModel.IpAddress} ...", -1);
-                }
+                if (totalProgressBar == 0) StartProgressBar($"Scanning switch {SwitchModel.IpAddress} ...", 18);
                 GetCurrentSwitchDebugLevel();
                 progressBarCnt += 2;
                 UpdateProgressBar(progressBarCnt); //  5 , 6
@@ -216,11 +211,15 @@ namespace PoEWizard.Comm
                     SendProgressError("Get Switch Log", $"Couldn't get data for port {port}");
                     return;
                 }
+                progressStartTime = DateTime.Now;
+                StartProgressBar($"Collecting logs on switch {SwitchModel.IpAddress} ...", MAX_GENERATE_LOG_DURATION);
                 ConnectAosSsh();
+                UpdateSwitchLogBar();
                 int debugSelected = _debugSwitchLog.IntDebugLevelSelected;
                 SendProgressReport($"Getting lan power information of slot {_wizardSwitchSlot.Name}");
                 // Getting current lan power status
                 _response = SendRequest(GetRestUrlEntry(Command.DEBUG_SHOW_LAN_POWER_STATUS, new string[1] { _wizardSwitchSlot.Name }));
+                UpdateSwitchLogBar();
                 if (_response[STRING] != null) _debugSwitchLog.LanPowerStatus = _response[STRING].ToString();
                 // Getting current switch debug level
                 GetCurrentSwitchDebugLevel();
@@ -231,6 +230,7 @@ namespace PoEWizard.Comm
                 SetAppDebugLevel($"Setting CMM debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
                 // Recycling power on switch port
                 RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 5);
+                UpdateSwitchLogBar();
                 // Setting switch debug level back to the previous values
                 SetAppDebugLevel($"Resetting PoE debug level back to {Utils.IntToSwitchDebugLevel(prevLpNiDebug)}", Command.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
                 SetAppDebugLevel($"Resetting CMM debug level back to {Utils.IntToSwitchDebugLevel(prevLpCmmDebug)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
@@ -238,6 +238,8 @@ namespace PoEWizard.Comm
                 SendProgressReport($"Generating tar file");
                 Thread.Sleep(3000);
                 SendRequest(GetRestUrlEntry(Command.DEBUG_CREATE_LOG));
+                Logger.Activity($"Generated log file in {SwitchDebugLogLevel.Debug3} level on switch {SwitchModel.IpAddress}\nDuration: {Utils.CalcStringDuration(progressStartTime)}");
+                UpdateSwitchLogBar();
             }
             catch (Exception ex)
             {
@@ -278,23 +280,26 @@ namespace PoEWizard.Comm
         {
             Command showDbgCmd = cmd == Command.DEBUG_UPDATE_LPCMM_LEVEL ? Command.DEBUG_SHOW_LPCMM_LEVEL : Command.DEBUG_SHOW_LPNI_LEVEL;
             _progress.Report(new ProgressReport($"{progressMsg} ..."));
-            DateTime startTime = DateTime.Now;
+            DateTime startCmdTime = DateTime.Now;
             SendSshCliCommand(cmd, new string[1] { dbgLevel.ToString() });
+            UpdateSwitchLogBar();
             bool done = false;
             int loopCnt = 1;
             while (!done)
             {
                 Thread.Sleep(1000);
                 _progress.Report(new ProgressReport($"{progressMsg} ({loopCnt} sec) ..."));
+                UpdateSwitchLogBar();
                 if (loopCnt % 5 == 0) done = GetAppDebugLevel(showDbgCmd) == dbgLevel;
                 if (loopCnt >= 30)
                 {
-                    Logger.Error($"Took too long ({Utils.CalcStringDuration(startTime)}) to complete\"{cmd}\" to \"{dbgLevel}\"!");
+                    Logger.Error($"Took too long ({Utils.CalcStringDuration(startCmdTime)}) to complete\"{cmd}\" to \"{dbgLevel}\"!");
                     return;
                 }
                 loopCnt++;
             }
-            Logger.Info($"{(cmd == Command.DEBUG_UPDATE_LPCMM_LEVEL ? "\"lpCmm\"" : "\"lpNi\"")} debug level set to \"{dbgLevel}\", Duration: {Utils.CalcStringDuration(startTime)}");
+            Logger.Info($"{(cmd == Command.DEBUG_UPDATE_LPCMM_LEVEL ? "\"lpCmm\"" : "\"lpNi\"")} debug level set to \"{dbgLevel}\", Duration: {Utils.CalcStringDuration(startCmdTime)}");
+            UpdateSwitchLogBar();
         }
 
         private void GetCurrentSwitchDebugLevel()
@@ -302,9 +307,16 @@ namespace PoEWizard.Comm
             SendProgressReport($"Getting current log levels");
             if (_debugSwitchLog == null) _debugSwitchLog = new SwitchDebugModel();
             GetAppDebugLevel(Command.DEBUG_SHOW_LPNI_LEVEL);
+            UpdateSwitchLogBar();
             SwitchModel.SetAppLogLevel(LPNI, _debugSwitchLog.LpNiLogLevel);
             GetAppDebugLevel(Command.DEBUG_SHOW_LPCMM_LEVEL);
             SwitchModel.SetAppLogLevel(LPCMM, _debugSwitchLog.LpCmmLogLevel);
+            UpdateSwitchLogBar();
+        }
+
+        private void UpdateSwitchLogBar()
+        {
+            UpdateProgressBar(Utils.GetTimeDuration(progressStartTime));
         }
 
         private int GetAppDebugLevel(Command cmd)
@@ -359,16 +371,15 @@ namespace PoEWizard.Comm
             try
             {
                 if (SwitchModel.SyncStatus == SyncStatusType.Synchronized) return;
-                totalProgressBar = 25;
                 string msg = $"Writing memory on switch {SwitchModel.IpAddress}";
-                SendProgressBarMessage($"{msg} ...", -1);
+                StartProgressBar($"{msg} ...", 25);
                 SendRequest(GetRestUrlEntry(Command.WRITE_MEMORY));
-                DateTime startTime = DateTime.Now;
+                progressStartTime = DateTime.Now;
                 double dur = 0;
                 while (dur < waitSec)
                 {
                     Thread.Sleep(1000);
-                    dur = Utils.GetTimeDuration(startTime);
+                    dur = Utils.GetTimeDuration(progressStartTime);
                     try
                     {
                         int period = (int)dur;
@@ -376,7 +387,7 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                     if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
-                    SendProgressBarMessage($"{msg} ({(int)dur} sec) ...", dur);
+                    UpdateProgressBarMessage($"{msg} ({(int)dur} sec) ...", dur);
                 }
                 Logger.Activity($"Write memory on switch {SwitchModel.IpAddress} completed (Duration: {dur} sec)");
             }
@@ -389,13 +400,12 @@ namespace PoEWizard.Comm
 
         public string RebootSwitch(int waitSec)
         {
-            DateTime startTime = DateTime.Now;
+            progressStartTime = DateTime.Now;
             try
             {
-                totalProgressBar = 320;
                 string msg = $"Rebooting switch {SwitchModel.IpAddress}";
                 Logger.Info(msg);
-                SendProgressBarMessage(msg, -1);
+                StartProgressBar($"{msg} ...", 320);
                 SendRequest(GetRestUrlEntry(Command.REBOOT_SWITCH));
                 if (waitSec <= 0) return string.Empty;
                 msg = $"Waiting switch {SwitchModel.IpAddress} reboot ";
@@ -404,14 +414,14 @@ namespace PoEWizard.Comm
                 while (dur <= 60)
                 {
                     Thread.Sleep(1000);
-                    dur = Utils.GetTimeDuration(startTime);
-                    SendProgressBarMessage($"{msg}({Utils.CalcStringDuration(startTime, true)}) ...", dur);
+                    dur = Utils.GetTimeDuration(progressStartTime);
+                    UpdateProgressBarMessage($"{msg}({Utils.CalcStringDuration(progressStartTime, true)}) ...", dur);
                 }
                 while (dur < waitSec)
                 {
                     Thread.Sleep(1000);
-                    dur = (int)Utils.GetTimeDuration(startTime);
-                    SendProgressBarMessage($"{msg}({Utils.CalcStringDuration(startTime, true)}) ...", dur);
+                    dur = (int)Utils.GetTimeDuration(progressStartTime);
+                    UpdateProgressBarMessage($"{msg}({Utils.CalcStringDuration(progressStartTime, true)}) ...", dur);
                     if (dur >= waitSec) break;
                     if (!Utils.IsReachable(SwitchModel.IpAddress)) continue;
                     try
@@ -424,35 +434,65 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                 }
-                Logger.Activity($"Switch {SwitchModel.IpAddress} rebooted after {Utils.CalcStringDuration(startTime, true)}");
+                Logger.Activity($"Switch {SwitchModel.IpAddress} rebooted after {Utils.CalcStringDuration(progressStartTime, true)}");
             }
             catch (Exception ex)
             {
                 SendSwitchError($"Reboot switch {SwitchModel.IpAddress}", ex);
             }
             CloseProgressBar();
-            return Utils.CalcStringDuration(startTime, true);
+            return Utils.CalcStringDuration(progressStartTime, true);
         }
 
-        private void SendProgressBarMessage(string txt, double currVal)
+        private void StartProgressBar(string barText, double initValue)
         {
-            _progress.Report(new ProgressReport(txt));
-            if (currVal < 0) UpdateProgressBar(0, txt); else UpdateProgressBar(currVal);
+            try
+            {
+                totalProgressBar = initValue;
+                progressBarCnt = 0;
+                Utils.StartProgressBar(_progress, barText);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
-        private void UpdateProgressBar(double currVal, string txt = null)
+        private void UpdateProgressBarMessage(string txt, double currVal)
         {
-            double ratio = 100 * currVal / totalProgressBar;
-            _progress.Report(new ProgressReport(ReportType.Value, txt, $"{ratio}"));
+            try
+            {
+                _progress.Report(new ProgressReport(txt));
+                UpdateProgressBar(currVal);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
+        private void UpdateProgressBar(double currVal)
+        {
+            try
+            {
+                Utils.UpdateProgressBar(_progress, currVal, totalProgressBar);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         private void CloseProgressBar()
         {
-            _progress.Report(new ProgressReport { Type = ReportType.Value, Message = "100" });
-            Thread.Sleep(1000);
-            _progress.Report(new ProgressReport { Type = ReportType.Value, Message = "-1" });
-            progressBarCnt = 0;
-            totalProgressBar = 0;
+            try
+            {
+                Utils.CloseProgressBar(_progress);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         public void StopTrafficAnalysis(AbortType abortType, string stopReason)
@@ -463,7 +503,7 @@ namespace PoEWizard.Comm
 
         public TrafficReport RunTrafficAnalysis(int duration)
         {
-            TrafficReport report = null;
+            TrafficReport report;
             try
             {
                 stopTrafficAnalysis = AbortType.Running;

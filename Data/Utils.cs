@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Xml;
 using System.Xml.Linq;
@@ -556,6 +557,32 @@ namespace PoEWizard.Data
             string macMask = macAddr.Length == 6 ? $"{macAddr[0]}{macAddr[1]}{macAddr[2]}" : "-";
             if (MainWindow.ouiTable.ContainsKey(macMask)) vendorName = MainWindow.ouiTable[macMask];
             return vendorName;
+        }
+
+
+        public static void StartProgressBar(IProgress<ProgressReport> progress, string barText)
+        {
+            progress.Report(new ProgressReport(barText));
+            progress.Report(new ProgressReport(ReportType.Value, barText, "0"));
+        }
+
+        public static void UpdateProgressBarMessage(IProgress<ProgressReport> progress, string txt, double currVal, double totalVal)
+        {
+            progress.Report(new ProgressReport(txt));
+            UpdateProgressBar(progress, currVal, totalVal);
+        }
+
+        public static void UpdateProgressBar(IProgress<ProgressReport> progress, double currVal, double totalVal)
+        {
+            double ratio = totalVal > 0 ? 100 * currVal / totalVal : 0;
+            progress.Report(new ProgressReport(ReportType.Value, null, $"{ratio}"));
+        }
+
+        public static void CloseProgressBar(IProgress<ProgressReport> progress)
+        {
+            progress.Report(new ProgressReport { Type = ReportType.Value, Message = "100" });
+            Thread.Sleep(1000);
+            progress.Report(new ProgressReport { Type = ReportType.Value, Message = "-1" });
         }
 
     }
