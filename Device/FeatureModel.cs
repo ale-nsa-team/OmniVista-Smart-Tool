@@ -43,41 +43,72 @@ namespace PoEWizard.Device
             return this.MemberwiseClone();
         }
 
-        public List<CmdRequest> ToCommandList()
+        public List<CmdRequest> ToCommandList(FeatureModel orig)
         {
+            List<PropertyInfo> changes = GetChanges(orig);
             List<CmdRequest> cmdList = new List<CmdRequest>();
-            if (IsPoe)
+            foreach (var prop in changes)
             {
-                foreach (var chas in device.ChassisList)
+                switch (prop.Name)
                 {
-                    if (chas != null)
-                    {
-                        cmdList.Add(new CmdRequest(Command.START_POE, chas.Number.ToString()));
-                    }
+                    case "IsPoe":
+                        var cmd = IsPoe ? Command.START_POE : Command.STOP_POE;
+                        foreach (var chas in device.ChassisList)
+                        {
+                            if (chas != null)
+                            {
+                                cmdList.Add(new CmdRequest(cmd, chas.Number.ToString()));
+                            }
+                        }
+                        break;
+                    case "IsLldp":
+                        if (IsLldp) cmdList.Add(new CmdRequest(Command.LLDP_SYSTEM_DESCRIPTION_ENABLE));
+                        break;
+                    case "IsInsecureProtos":
+                        if (IsInsecureProtos)
+                        {
+                            cmdList.Add(new CmdRequest(Command.DISABLE_TELNET));
+                            cmdList.Add(new CmdRequest(Command.DISABLE_FTP));
+                        }
+                        else
+                        {
+                            cmdList.Add(new CmdRequest(Command.ENABLE_TELNET));
+                            cmdList.Add(new CmdRequest(Command.ENABLE_FTP));
+                            cmdList.Add(new CmdRequest(Command.TELNET_AUTH_LOCAL));
+                            cmdList.Add(new CmdRequest(Command.FTP_AUTH_LOCAL));
+                        }
+                        break;
+                    case "IsSsh":
+                        if (IsSsh)
+                        {
+                            cmdList.Add(new CmdRequest(Command.ENABLE_SSH));
+                            cmdList.Add(new CmdRequest(Command.SSH_AUTH_LOCAL));
+                        }
+                        else
+                        {
+                            cmdList.Add(new CmdRequest(Command.DISABLE_SSH));
+                        }
+                        break;
+                    case "IsMulticast":
+                        if (IsMulticast)
+                        {
+                            cmdList.Add(new CmdRequest(Command.ENABLE_MULTICAST));
+                            cmdList.Add(new CmdRequest(Command.ENABLE_QUERYING));
+                            cmdList.Add(new CmdRequest(Command.ENABLE_MULTICAST_VLAN1));
+                        }
+                        break;
+                    case "IsDhcpRelay":
+                        if (IsDhcpRelay)
+                        {
+                            if (!string.IsNullOrEmpty(DhcpSrv)) cmdList.Add(new CmdRequest(Command.DHCP_RELAY_DEST, DhcpSrv));
+                            cmdList.Add(new CmdRequest(Command.ENABLE_DHCP_RELAY));
+                        }
+                        else
+                        {
+                            cmdList.Add(new CmdRequest(Command.DISABLE_DHCP_RELAY));
+                        }
+                        break;
                 }
-            }
-
-            if (IsLldp) cmdList.Add(new CmdRequest(Command.LLDP_SYSTEM_DESCRIPTION_ENABLE));
-            if (IsInsecureProtos)
-            {
-                cmdList.Add(new CmdRequest(Command.DISABLE_TELNET));
-                cmdList.Add(new CmdRequest(Command.DISABLE_FTP));
-            }
-            if (IsSsh)
-            {
-                cmdList.Add(new CmdRequest(Command.ENABLE_SSH));
-                cmdList.Add(new CmdRequest(Command.SSH_AUTH_LOCAL));
-            }
-            if (IsMulticast)
-            {
-                cmdList.Add(new CmdRequest(Command.ENABLE_MULTICAST));
-                cmdList.Add(new CmdRequest(Command.ENABLE_QUERYING));
-                cmdList.Add(new CmdRequest(Command.ENABLE_MULTICAST_VLAN1));
-            }
-            if (IsDhcpRelay)
-            {
-                if (!string.IsNullOrEmpty(DhcpSrv)) cmdList.Add(new CmdRequest(Command.DHCP_RELAY_DEST, DhcpSrv));
-                cmdList.Add(new CmdRequest(Command.ENABLE_DHCP_RELAY));
             }
             return cmdList;
         }

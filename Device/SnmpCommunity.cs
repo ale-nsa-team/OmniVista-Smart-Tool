@@ -10,6 +10,13 @@ namespace PoEWizard.Device
 
         public SnmpCommunity() { }
 
+        public SnmpCommunity(string name, string user, string status)
+        {
+            Name = name;
+            User = user;
+            Status = status;
+        }
+
         public object Clone()
         {
             return this.MemberwiseClone();

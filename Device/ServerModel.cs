@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace PoEWizard.Device
 {
@@ -32,7 +33,7 @@ namespace PoEWizard.Device
             List<string> dns = new List<string>();
             foreach (var prop in changes)
             {
-                if (prop.Name.StartsWith("Dns") && IsDns) dns.Add((string)prop.GetValue(this, null));
+                if (Regex.IsMatch(prop.Name, "Dns\\d") && IsDns) dns.Add((string)prop.GetValue(this, null));
                 if (prop.Name == "DnsDomain" && IsDns) cmdList.Add(new CmdRequest(Command.DNS_DOMAIN, DnsDomain));
                 if (prop.Name.StartsWith("Ntp") && IsNtp) cmdList.Add(new CmdRequest(Command.NTP_SERVER, (string)prop.GetValue(this, null)));
                 if (prop.Name == "IsDns")

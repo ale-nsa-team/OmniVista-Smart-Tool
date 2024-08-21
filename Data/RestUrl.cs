@@ -105,10 +105,16 @@ namespace PoEWizard.Data
             [Command.ENABLE_QUERIER_FWD] = "ip multicast querier-forwarding enable",
             [Command.ENABLE_MULTICAST_VLAN1] = "ip multicast vlan 1 admin-state enable",
             [Command.ENABLE_DHCP_RELAY] = "ip dhcp relay admin-state enable",
+            [Command.DISABLE_DHCP_RELAY] = "ip dhcp relay admin-state disable",
             [Command.DHCP_RELAY_DEST] = $"ip dhcp relay destination {DATA_0}",
             [Command.DISABLE_FTP] = "ip service ftp admin-state disable",
             [Command.DISABLE_TELNET] = "ip service telnet admin-state disable",
+            [Command.ENABLE_TELNET] = "ip service telnet admin-state enable",
+            [Command.ENABLE_FTP] = "ip service ftp admin-state enable",
+            [Command.TELNET_AUTH_LOCAL] = "aaa authentication telnet local",
+            [Command.FTP_AUTH_LOCAL] = "aaa authentication ftp local",
             [Command.ENABLE_SSH] = "ip service ssh admin-state enable",
+            [Command.DISABLE_SSH] = "ip service ssh admin-state disable",
             [Command.SSH_AUTH_LOCAL] = "aaa authentication ssh local",
             [Command.SET_SYSTEM_TIMEZONE] = $"system timezone {DATA_0}",
             [Command.SET_SYSTEM_DATE] = $"system date {DATA_0}",
@@ -137,7 +143,7 @@ namespace PoEWizard.Data
             [Command.START_POE] = $"lanpower chassis {DATA_0} service start",
             [Command.STOP_POE] = $"lanpower chassis {DATA_0} service stop",
             [Command.SNMP_AUTH_LOCAL] = "aaa authentication snmp local",
-            [Command.SNMP_COMMUNITY_MODE] = "snmp community mode enable",
+            [Command.SNMP_COMMUNITY_MODE] = "snmp community-map mode enable",
             [Command.SNMP_COMMUNITY_MAP] = $"snmp community-map {DATA_0} user {DATA_1} enable",
             [Command.SNMP_NO_SECURITY] = "snmp security no-security",
             [Command.SNMP_STATION] = $"snmp station {DATA_0} {DATA_1} {DATA_2} {DATA_3} enable",
@@ -148,7 +154,7 @@ namespace PoEWizard.Data
             [Command.SHOW_USER] =  "show user",
             [Command.SHOW_SNMP_SECURITY] = "show snmp security",
             [Command.SHOW_SNMP_STATION] = "show snmp station",
-            [Command.SHOW_SNMP_COMMUNITY] = "show snmp community_map"
+            [Command.SHOW_SNMP_COMMUNITY] = "show snmp community-map"
         };
 
         public static Dictionary<Command, Dictionary<string, string>> CONTENT_TABLE = new Dictionary<Command, Dictionary<string, string>>

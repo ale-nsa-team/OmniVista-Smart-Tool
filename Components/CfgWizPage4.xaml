@@ -48,8 +48,8 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Path=Name}" />
-                    <DataGridTextColumn Header="SNMP Access Level" Width="*" Binding="{Binding Path=Version}" />
-                    <DataGridTextColumn Header="Protocols" Width="*" Binding="{Binding Path=Protocol}" />
+                    <DataGridTextColumn Header="Authentication Protocol" Width="*" Binding="{Binding Path=Protocol}" />
+                    <DataGridTextColumn Header="Encryption Protocol" Width="*" Binding="{Binding Path=Encryption}" />
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>
@@ -102,6 +102,7 @@
                     <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*" />
                     <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="*" />
                     <DataGridTextColumn Header="User" Binding="{Binding User}" Width="*" />
+                    <DataGridTextColumn Header="Community" Binding="{Binding Community}" Width="*" />
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>

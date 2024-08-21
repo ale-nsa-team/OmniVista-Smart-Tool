@@ -135,7 +135,13 @@ namespace PoEWizard.Data
         SHOW_SNMP_STATION = 237,
         SHOW_SNMP_COMMUNITY = 238,
         SHOW_AAA_AUTH = 239,
-        SHOW_USER = 240
+        SHOW_USER = 240,
+        ENABLE_TELNET = 241,
+        ENABLE_FTP = 242,
+        TELNET_AUTH_LOCAL = 243,
+        FTP_AUTH_LOCAL = 244,
+        DISABLE_SSH = 245,
+        DISABLE_DHCP_RELAY = 246
     }
 
     public class CmdRequest

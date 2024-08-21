@@ -28,6 +28,7 @@ namespace PoEWizard.Components
         private ServerModel srvOrig;
         private SystemModel sysOrig;
         private FeatureModel featOrig;
+        private SnmpModel snmpOrig;
 
         public bool IsRebootSwitch { get; set; } = false;
 
@@ -64,80 +65,18 @@ namespace PoEWizard.Components
         #region Event Handlers
         private async void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            ShowInfoBox("Loading current paramaeters...");
+            ShowInfoBox("Loading current paramaeters, please wait...");
             await Task.Run(() => 
             {
-                List<Dictionary<string, string>> dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
-                Dictionary<string, string> dict = dicList.FirstOrDefault(d => d[IP_ADDR] == device.IpAddress);
-                if (dict != null) sysData.NetMask = dict[SUBNET_MASK];
-                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
-                dict = dicList.FirstOrDefault(d => d[DNS_DEST] == "0.0.0.0/0");
-                if (dict != null) srvData.Gateway = dict[GATEWAY];
-                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DNS_CONFIG, ParseType.Htable))as List<Dictionary<string, string>>;
-                if (dicList.Count > 0)
-                {
-                    srvData.IsDns = dicList[0][DNS_ENABLE] == "1";
-                    srvData.DnsDomain = dicList[0][DNS_DOMAIN];
-                    srvData.Dns1 = dicList[0][DNS1];
-                    srvData.Dns2 = dicList[0][DNS2];
-                    srvData.Dns3 = dicList[0][DNS3];
-                }
-
-                dict = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_NTP_STATUS, ParseType.Vtable)) as Dictionary<string, string>;
-                if ( dict != null) srvData.IsNtp = dict[NTP_ENABLE] == "enabled";
-                if (srvData.IsNtp)
-                {
-                    dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_NTP_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
-                    int n = Math.Min(dicList.Count, 3);
-                    for (int i = 0; i < n; i++)
-                    {
-                        if (i == 0) srvData.Ntp1 = dicList[i][NTP_SERVER];
-                        if (i == 1) srvData.Ntp2 = dicList[i][NTP_SERVER];
-                        if (i == 2) srvData.Ntp3 = dicList[i][NTP_SERVER];
-                    }
-                }
-
-                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DHCP_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
-                if (dicList.Count > 0) features.IsDhcpRelay = dicList[0][DHCP_ENABLE] == "1";
-                if (features.IsDhcpRelay)
-                {
-                    dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DHCP_RELAY, ParseType.Htable)) as List<Dictionary<string, string>>;
-                    if (dicList.Count > 0 && dicList[0].Count > 0) features.DhcpSrv = dicList[0][DHCP_DEST];
-                }
-
-                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_IP_SERVICE, ParseType.Htable)) as List<Dictionary<string, string>>;
-                if (dicList.Count > 0)
-                {
-                    dict = dicList.FirstOrDefault(d => d["Name"] == "ftp");
-                    bool isftp = dict != null ? dict["Status"] == "enabled" : false;
-                    dict = dicList.FirstOrDefault(d => d["Name"] == "telnet");
-                    bool istelnet = dict != null ? dict["Status"] == "enabled" : false;
-                    features.IsInsecureProtos = isftp || istelnet;
-                    dict = dict = dicList.FirstOrDefault(d => d["Name"] == "ssh");
-                    features.IsSsh = dict != null ? dict["Status"] == "enabled" : false;
-                }
-                dict = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_MULTICAST, ParseType.Etable)) as Dictionary<string, string>;
-                if (dict != null) features.IsMulticast = dict["Status"] == "enabled";
-                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_USER, ParseType.MVTable, DictionaryType.User)) as  List<Dictionary<string, string>>;
-                if ( dicList.Count > 0)
-                {
-                    foreach (var dic in dicList)
-                    {
-                        if (dic[SNMP_ALLOWED] == "YES")
-                        {
-                            SnmpUser user = new SnmpUser(dic[USER]);
-                            if (dic.ContainsKey(SNMP_AUTH)) user.Protocol = dic[SNMP_AUTH];
-                            if (dic.ContainsKey(SNMP_ENC)) user.Encryption = dic[SNMP_ENC];
-                            snmpData.Users.Add(user);
-                        }
-                    }
-                }
-
+                GetServerData();
+                GetFeaturesData();
+                GetSnmpData();
             });
 
             srvOrig = srvData.Clone() as ServerModel;
             sysOrig = sysData.Clone() as SystemModel;
             featOrig = features.Clone() as FeatureModel;
+            snmpOrig = snmpData.Clone() as SnmpModel;
 
             HideInfoBox();
         }
@@ -168,7 +107,7 @@ namespace PoEWizard.Components
             {
                 ApplyCommands(sysData.ToCommandList(sysOrig), "Applying System parameters...");
                 ApplyCommands(srvData.ToCommandList(srvOrig), "Applying DNS and NPT parameters...");
-                //ApplyCommands(features.ToCommandList(), "Applying Features...");
+                ApplyCommands(features.ToCommandList(featOrig), "Applying Features...");
                 //ApplyCommands(snmpData.ToCommandList(), "Applying SNMP configuration...");
             });
             HideInfoBox();
@@ -227,6 +166,117 @@ namespace PoEWizard.Components
                         Errors.Add(ex.Message);
                 }
 
+            }
+        }
+
+        private void GetServerData()
+        {
+            List<Dictionary<string, string>> dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
+            Dictionary<string, string> dict = dicList.FirstOrDefault(d => d[IP_ADDR] == device.IpAddress);
+            if (dict != null) sysData.NetMask = dict[SUBNET_MASK];
+            dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
+            dict = dicList.FirstOrDefault(d => d[DNS_DEST] == "0.0.0.0/0");
+            if (dict != null) srvData.Gateway = dict[GATEWAY];
+            dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DNS_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
+            if (dicList.Count > 0)
+            {
+                srvData.IsDns = dicList[0][DNS_ENABLE] == "1";
+                srvData.DnsDomain = dicList[0][DNS_DOMAIN];
+                srvData.Dns1 = dicList[0][DNS1];
+                srvData.Dns2 = dicList[0][DNS2];
+                srvData.Dns3 = dicList[0][DNS3];
+            }
+
+            dict = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_NTP_STATUS, ParseType.Vtable)) as Dictionary<string, string>;
+            if (dict != null) srvData.IsNtp = dict[NTP_ENABLE] == "enabled";
+            if (srvData.IsNtp)
+            {
+                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_NTP_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
+                int n = Math.Min(dicList.Count, 3);
+                for (int i = 0; i < n; i++)
+                {
+                    if (i == 0) srvData.Ntp1 = dicList[i][NTP_SERVER];
+                    if (i == 1) srvData.Ntp2 = dicList[i][NTP_SERVER];
+                    if (i == 2) srvData.Ntp3 = dicList[i][NTP_SERVER];
+                }
+            }
+        }
+
+        private void GetFeaturesData()
+        {
+            List<Dictionary<string,string>> dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DHCP_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
+            if (dicList.Count > 0) features.IsDhcpRelay = dicList[0][DHCP_ENABLE] == "1";
+            if (features.IsDhcpRelay)
+            {
+                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DHCP_RELAY, ParseType.Htable)) as List<Dictionary<string, string>>;
+                if (dicList.Count > 0 && dicList[0].Count > 0) features.DhcpSrv = dicList[0][DHCP_DEST];
+            }
+
+            dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_IP_SERVICE, ParseType.Htable)) as List<Dictionary<string, string>>;
+            Dictionary<string, string> dict;
+            if (dicList.Count > 0)
+            {
+                dict = dicList.FirstOrDefault(d => d["Name"] == "ftp");
+                bool isftp = dict != null ? dict["Status"] == "enabled" : false;
+                dict = dicList.FirstOrDefault(d => d["Name"] == "telnet");
+                bool istelnet = dict != null ? dict["Status"] == "enabled" : false;
+                features.IsInsecureProtos = isftp || istelnet;
+                dict = dicList.FirstOrDefault(d => d["Name"] == "ssh");
+                features.IsSsh = dict != null ? dict["Status"] == "enabled" : false;
+            }
+            dict = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_MULTICAST, ParseType.Etable)) as Dictionary<string, string>;
+            if (dict != null) features.IsMulticast = dict["Status"] == "enabled";
+        }
+
+        private void GetSnmpData()
+        {
+            List<Dictionary<string, string>> dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_USER, ParseType.MVTable, DictionaryType.User)) as List<Dictionary<string, string>>;
+            if (dicList.Count > 0)
+            {
+                foreach (var dic in dicList)
+                {
+                    if (dic[SNMP_ALLOWED] == "YES")
+                    {
+                        SnmpUser user = new SnmpUser(dic["User name"]);
+                        if (dic.ContainsKey(SNMP_AUTH)) user.Protocol = dic[SNMP_AUTH];
+                        if (dic.ContainsKey(SNMP_ENC)) user.Encryption = dic[SNMP_ENC];
+                        snmpData.Users.Add(user);
+                    }
+                }
+            }
+
+            dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_SNMP_COMMUNITY, ParseType.Htable)) as List<Dictionary<string, string>>;
+            if ( dicList.Count > 0)
+            {
+                foreach(var dic in dicList)
+                {
+                    snmpData.Communities.Add(new SnmpCommunity(dic[SNMP_COMMUNITY], dic["user name"], dic[SNMP_STATUS]));
+                }
+            }
+
+            dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_SNMP_STATION, ParseType.Htable)) as List<Dictionary<string, string>>;
+            if ( dicList.Count > 0)
+            {
+                foreach (var dic in dicList)
+                {
+                    string ip_port = dic[SNMP_STATION_IP];
+                    SnmpStation station = new SnmpStation(ip_port, dic[SNMP_STATUS], dic[SNMP_VERSION], dic[USER]);
+                    if (station.Version == "v2")
+                    {
+                        SnmpCommunity comm = snmpData.Communities.FirstOrDefault(c => c.User == station.User);
+                        if (comm != null)
+                        {
+                            station.Community = comm.Name;
+                            station.User = "--";
+                        }
+                    }
+                    else
+                    {
+                        station.Community += "--";
+                    }
+
+                    snmpData.Stations.Add(station);
+                }
             }
         }
 

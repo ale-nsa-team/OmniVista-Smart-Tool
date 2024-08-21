@@ -287,11 +287,14 @@ namespace PoEWizard.Data
         public const string DHCP_DEST = "alaDhcpRelayServerDestinationAddress";
         public const string NTP_SERVER = "alaNtpPeerAddress";
         public const string NTP_ENABLE = "Client mode";
-        public const string USER = "User name";
+        public const string USER = "user";
         public const string SNMP_ALLOWED = "Snmp allowed";
         public const string SNMP_AUTH = "Snmp authentication";
         public const string SNMP_ENC = "Snmp encryption";
-        public const string SNMP_COMMUNITY = "Community string";
+        public const string SNMP_COMMUNITY = "community string";
+        public const string SNMP_STATUS = "status";
+        public const string SNMP_STATION_IP = "ipAddress/port";
+        public const string SNMP_VERSION = "protocol";
         #endregion
 
         #region regex patterns

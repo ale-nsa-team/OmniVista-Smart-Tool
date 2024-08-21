@@ -15,6 +15,7 @@ namespace PoEWizard.Device
         public SnmpModel() 
         {
             Users = new ObservableCollection<SnmpUser>();
+            Communities = new ObservableCollection<SnmpCommunity>();
             Stations = new ObservableCollection<SnmpStation>();
         }
 
