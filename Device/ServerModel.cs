@@ -40,16 +40,8 @@ namespace PoEWizard.Device
                 {
                     string newD = (string)prop.GetValue(this, null);
                     string origD = (string)prop.GetValue(orig, null);
-                    if (origD != newD)
-                    {
-                        if (!string.IsNullOrEmpty(origD)) dnsRemove.Add(origD);
-                        if (!string.IsNullOrEmpty(newD))
-                        {
-                            dnsRemove.Add(newD);
-                            dnsAdd.Add(newD);
-                        }
-                    }
-                    else if (!string.IsNullOrEmpty(newD)) dnsAdd.Add(newD);
+                    if (!string.IsNullOrEmpty(origD)) dnsRemove.Add(origD);
+                    if (!string.IsNullOrEmpty(newD)) dnsAdd.Add(newD);
                 }
             }
             foreach (var prop in changes)
