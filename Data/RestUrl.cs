@@ -189,7 +189,7 @@ namespace PoEWizard.Data
                 if (!url.Contains(DAT)) return url;
                 string[] lines = Regex.Split(url, @"" + DAT);
                 if (lines.Length == 1) return url;
-                if (data.Length != lines.Length - 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
+                if (data.Length < lines.Length - 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
                 string cmd_url = lines[0];
                 int idx = 1;
                 foreach(string val in data)
