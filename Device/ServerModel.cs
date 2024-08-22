@@ -30,13 +30,13 @@ namespace PoEWizard.Device
         public List<CmdRequest> ToCommandList(ServerModel orig)
         {
             List<PropertyInfo> changes = GetChanges(orig);
-            List<PropertyInfo> props = this.GetType().GetProperties().Where(p => Regex.IsMatch(p.Name, "Dns\\d")).ToList();
+            List<PropertyInfo> dnsProps = this.GetType().GetProperties().Where(p => Regex.IsMatch(p.Name, "Dns\\d")).ToList();
             List<CmdRequest> cmdList = new List<CmdRequest>();
             List<string> dnsAdd = new List<string>();
             HashSet<string> dnsRemove = new HashSet<string>();
             if (changes.FindIndex(p => Regex.IsMatch(p.Name, "Dns\\d")) != -1)
             {
-                foreach (var prop in props)
+                foreach (var prop in dnsProps)
                 {
                     string newD = (string)prop.GetValue(this, null);
                     string origD = (string)prop.GetValue(orig, null);
