@@ -9,6 +9,7 @@ namespace PoEWizard.Data
     public class RestUrl
     {
 
+        #region Public Constants
         public const string REST_URL = "REQUEST_URL";
         public const string RESULT = "RESULT";
         public const string RESPONSE = "RESPONSE";
@@ -19,9 +20,13 @@ namespace PoEWizard.Data
         public const string DATA = "data";
         public const string NODE = "node";
         public const string HTTP_RESPONSE = "diag";
+        #endregion
 
-        public const string DAT = "%_DATA_%";
+        #region Private Constants
+        private const string DAT = "%_DATA_%";
+        #endregion
 
+        #region Command Table
         public readonly static Dictionary<Command, string> CMD_TBL = new Dictionary<Command, string>
         {
             #region Basic Connect Switch commands
@@ -165,29 +170,9 @@ namespace PoEWizard.Data
             #endregion
 
         };
+        #endregion
 
-        public static Dictionary<Command, Dictionary<string, string>> CONTENT_TABLE = new Dictionary<Command, Dictionary<string, string>>
-        {
-            [Command.DEBUG_UPDATE_LLDPNI_LEVEL] = new Dictionary<string, string> {
-                { "mibObject0-T1", "systemSwitchLoggingIndex:|-1" },
-                { "mibObject1-T1", "systemSwitchLoggingAppName:lldpNi" },
-                { "mibObject2-T1", $"systemSwitchLoggingLevel:{DAT}" },
-                { "mibObject3-T1", "systemSwitchLoggingVrf:" }
-            },
-            [Command.DEBUG_UPDATE_LPNI_LEVEL] = new Dictionary<string, string> {
-                { "mibObject0-T1", "systemSwitchLoggingIndex:|-1" },
-                { "mibObject1-T1", "systemSwitchLoggingAppName:lpNi" },
-                { "mibObject2-T1", $"systemSwitchLoggingLevel:{DAT}" },
-                { "mibObject3-T1", "systemSwitchLoggingVrf:" }
-            },
-            [Command.DEBUG_UPDATE_LPCMM_LEVEL] = new Dictionary<string, string> {
-                { "mibObject0-T1", "systemSwitchLoggingIndex:|-1" },
-                { "mibObject1-T1", "systemSwitchLoggingAppName:lpCmm" },
-                { "mibObject2-T1", $"systemSwitchLoggingLevel:{DAT}" },
-                { "mibObject3-T1", "systemSwitchLoggingVrf:" }
-            }
-        };
-
+        #region Public Methods
         public static string ParseUrl(RestUrlEntry entry)
         {
             string req = GetReqFromCmdTbl(entry.RestUrl, entry.Data).Trim();
@@ -250,6 +235,31 @@ namespace PoEWizard.Data
                 return null;
             }
         }
+        #endregion
+
+        #region Private Methods
+        private static readonly Dictionary<Command, Dictionary<string, string>> CONTENT_TABLE = new Dictionary<Command, Dictionary<string, string>>
+        {
+            [Command.DEBUG_UPDATE_LLDPNI_LEVEL] = new Dictionary<string, string> {
+                { "mibObject0-T1", "systemSwitchLoggingIndex:|-1" },
+                { "mibObject1-T1", "systemSwitchLoggingAppName:lldpNi" },
+                { "mibObject2-T1", $"systemSwitchLoggingLevel:{DAT}" },
+                { "mibObject3-T1", "systemSwitchLoggingVrf:" }
+            },
+            [Command.DEBUG_UPDATE_LPNI_LEVEL] = new Dictionary<string, string> {
+                { "mibObject0-T1", "systemSwitchLoggingIndex:|-1" },
+                { "mibObject1-T1", "systemSwitchLoggingAppName:lpNi" },
+                { "mibObject2-T1", $"systemSwitchLoggingLevel:{DAT}" },
+                { "mibObject3-T1", "systemSwitchLoggingVrf:" }
+            },
+            [Command.DEBUG_UPDATE_LPCMM_LEVEL] = new Dictionary<string, string> {
+                { "mibObject0-T1", "systemSwitchLoggingIndex:|-1" },
+                { "mibObject1-T1", "systemSwitchLoggingAppName:lpCmm" },
+                { "mibObject2-T1", $"systemSwitchLoggingLevel:{DAT}" },
+                { "mibObject3-T1", "systemSwitchLoggingVrf:" }
+            }
+        };
+        #endregion
 
     }
 }
