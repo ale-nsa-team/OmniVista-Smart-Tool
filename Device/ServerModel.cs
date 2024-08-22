@@ -9,6 +9,9 @@ namespace PoEWizard.Device
 {
     public class ServerModel : ICloneable
     {
+
+        private List<PropertyInfo> changes;
+
         public string Gateway { get; set; }
         public bool IsDns { get; set; } = false;
         public string Dns1 { get; set; }
@@ -29,32 +32,18 @@ namespace PoEWizard.Device
 
         public List<CmdRequest> ToCommandList(ServerModel orig)
         {
-            List<PropertyInfo> changes = GetChanges(orig);
-            List<PropertyInfo> dnsProps = this.GetType().GetProperties().Where(p => Regex.IsMatch(p.Name, "Dns\\d")).ToList();
+            changes = GetChanges(orig);
             List<CmdRequest> cmdList = new List<CmdRequest>();
             List<string> dnsAdd = new List<string>();
             List<string> dnsRemove = new List<string>();
-            if (changes.FindIndex(p => Regex.IsMatch(p.Name, "Dns\\d")) != -1)
-            {
-                foreach (var prop in dnsProps)
-                {
-                    string newD = (string)prop.GetValue(this, null);
-                    string origD = (string)prop.GetValue(orig, null);
-                    if (!string.IsNullOrEmpty(origD)) dnsRemove.Add(origD);
-                    if (!string.IsNullOrEmpty(newD)) dnsAdd.Add(newD);
-                }
-            }
+            List<string> ntpAdd = new List<string>();
+            List<string> ntpRemove = new List<string>();
+            UpdateServerList(dnsAdd, dnsRemove, orig, "Dns\\d");
+            UpdateServerList(ntpAdd, ntpRemove, orig, "Ntp\\d");
+
             foreach (var prop in changes)
             {
                 if (prop.Name == "DnsDomain" && IsDns) cmdList.Add(new CmdRequest(Command.DNS_DOMAIN, DnsDomain));
-                if (prop.Name.StartsWith("Ntp") && IsNtp)
-                {
-                    string ntp = (string)prop.GetValue(this, null);
-                    if (string.IsNullOrEmpty(ntp))
-                        cmdList.Add(new CmdRequest(Command.DELETE_NTP_SERVER, (string)prop.GetValue(orig, null)));
-                    else
-                        cmdList.Add(new CmdRequest(Command.SET_NTP_SERVER, (string)prop.GetValue(this, null)));
-                }
                 if (prop.Name == "IsDns")
                 {
                     if (IsDns) cmdList.Add(new CmdRequest(Command.DNS_LOOKUP));
@@ -66,15 +55,23 @@ namespace PoEWizard.Device
                     else cmdList.Add(new CmdRequest(Command.DISABLE_NTP));
                 }
             }
-            foreach (string d in dnsRemove)
+            foreach (string dns in dnsRemove)
             {
-                cmdList.Add(new CmdRequest(Command.DELETE_DNS_SERVER, d));
+                cmdList.Add(new CmdRequest(Command.DELETE_DNS_SERVER, dns));
             }
 
-            if (dnsAdd.Count > 0)
+            if (dnsAdd.Count > 0) cmdList.Add(new CmdRequest(Command.SET_DNS_SERVER, string.Join(" ", dnsAdd)));
+
+            foreach (string ntp in ntpRemove)
             {
-                cmdList.Add(new CmdRequest(Command.SET_DNS_SERVER, string.Join(" ", dnsAdd)));
+                cmdList.Add(new CmdRequest(Command.DELETE_NTP_SERVER, ntp));
             }
+
+            foreach (string ntp in ntpAdd)
+            {
+                cmdList.Add(new CmdRequest(Command.SET_NTP_SERVER, ntp));
+            }
+
             return cmdList;
         }
 
@@ -92,6 +89,21 @@ namespace PoEWizard.Device
                 else if (val != prop.GetValue(orig, null)) changes.Add(prop);
             }
             return changes;
+        }
+
+        private void UpdateServerList(List<string> add, List<string> remove, ServerModel orig, string pattern)
+        {
+            if (changes.FindIndex(p => Regex.IsMatch(p.Name, pattern)) != -1)
+            {
+                List<PropertyInfo> srvProps = this.GetType().GetProperties().Where(p => Regex.IsMatch(p.Name, pattern)).ToList();
+                foreach (var prop in srvProps)
+                {
+                    string newD = (string)prop.GetValue(this, null);
+                    string origD = (string)prop.GetValue(orig, null);
+                    if (!string.IsNullOrEmpty(origD)) remove.Add(origD);
+                    if (!string.IsNullOrEmpty(newD)) add.Add(newD);
+                }
+            }
         }
     }
 }

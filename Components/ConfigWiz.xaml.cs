@@ -195,9 +195,9 @@ namespace PoEWizard.Components
                 int n = Math.Min(dicList.Count, 3);
                 for (int i = 0; i < n; i++)
                 {
-                    if (i == 0) srvData.Ntp1 = dicList[i][NTP_SERVER];
-                    if (i == 1) srvData.Ntp2 = dicList[i][NTP_SERVER];
-                    if (i == 2) srvData.Ntp3 = dicList[i][NTP_SERVER];
+                    if (i == 0) srvData.Ntp1 = dicList[i].TryGetValue(NTP_SERVER, out string v) ? v : "";
+                    if (i == 1) srvData.Ntp2 = dicList[i].TryGetValue(NTP_SERVER, out string v) ? v : "";
+                    if (i == 2) srvData.Ntp3 = dicList[i].TryGetValue(NTP_SERVER, out string v) ? v : "";
                 }
             }
         }
