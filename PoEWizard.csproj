@@ -111,6 +111,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Comm\AosSshService.cs" />
+    <Compile Include="Comm\DhcpService.cs" />
     <Compile Include="Comm\FtpService.cs" />
     <Compile Include="Comm\RestApiClient.cs" />
     <Compile Include="Comm\RestApiService.cs" />
@@ -210,6 +211,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Comm\ulc.alu" />
     <None Include="oui.csv" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -356,6 +358,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\plus-green.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Comm\ulc_script.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

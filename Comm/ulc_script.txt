@@ -1,0 +1,39 @@
+rm -f /flash/rcl.log
+
+configuration error-file-limit 9
+
+aaa authentication default local
+aaa authentication http local
+echo "aaa authentication" >> /flash/rcl.log
+
+ip dos type invalid-ip admin-state disable
+echo "ip dos type" >> /flash/rcl.log
+
+echo "lldp info" >> /flash/rcl.log
+lldp nearest-bridge chassis tlv management port-description enable system-name enable system-description enable
+lldp nearest-bridge chassis tlv management management-address enable
+
+echo "dhcp to static" >> /flash/rcl.log
+no ip interface dhcp-client ; ip interface "ULC" address 192.168.0.2/24 vlan 1 admin-state enable
+
+session cli timeout 15
+
+rm -f /flash/serial.txt
+show cmm | grep "Serial Number" | awk -F': ' '{print $2}' | tr -d ',' | sed 's/^ *//;s/ *$//' >> /flash/serial.txt
+
+auto-fabric admin-state disable
+echo "auto-fabric" >> /flash/rcl.log
+
+write memory
+echo "post write memory" >> /flash/rcl.log
+
+cp /flash/working/vcboot.cfg /flash/certified/
+cp /flash/working/vcsetup.cfg /flash/certified/
+echo "post fast sync working - certified" >> /flash/rcl.log
+
+show running-directory >> /flash/rcl.log
+cat /flash/serial.txt >> /flash/rcl.log
+
+echo "Done" >> /flash/rcl.log
+
+
