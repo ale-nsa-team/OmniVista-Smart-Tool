@@ -25,7 +25,7 @@ namespace PoEWizard.Data
             [Description("Off")]
             Off
         }
-        public enum ParseType { Htable, Htable2, Vtable, Etable, MVTable, Text }
+        public enum ParseType { Htable, Htable2, Htable3, Vtable, Etable, MVTable, Text, MibTable }
         public enum EType { Fiber, Copper, Unknown }
         public enum PriorityLevelType { Low, High, Critical }
         public enum PowerSupplyState { Up, Down, Unknown }
@@ -33,7 +33,7 @@ namespace PoEWizard.Data
         public enum DictionaryType
         {
             SystemRunningDir, Chassis, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList,
-            MacAddressList, TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, None
+            MacAddressList, TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, None
         }
         public enum ConfigType { Enable, Disable, Unavailable }
         public enum DeviceType
@@ -268,9 +268,10 @@ namespace PoEWizard.Data
         public const string MINUTE = "minute";
         public const string HOUR = "hour";
         // Used by Config Wizard commands
-        public const string SWITCH_CFG_DNS = "systemDNS";
-        public const string SWITCH_CFG_DHCP = "alaDhcpRelay";
-        public const string SWITCH_CFG_NTP = "alaNtpPeer";
+        public const string MIB_SWITCH_LOG = "systemSwitchLoggingApplication";
+        public const string MIB_SWITCH_CFG_DNS = "systemDNS";
+        public const string MIB_SWITCH_CFG_DHCP = "alaDhcpRelay";
+        public const string MIB_SWITCH_CFG_NTP = "alaNtpPeer";
         // Used by BuildOuiTable method of MainWindow.xaml.cs class
         public const string OUI_FILE = "oui.csv";
         // Used by Config Wizard

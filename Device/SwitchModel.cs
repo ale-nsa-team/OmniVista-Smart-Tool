@@ -61,6 +61,7 @@ namespace PoEWizard.Device
 
         public void LoadFromDictionary(Dictionary<string, string> dict, DictionaryType dt)
         {
+            if (dict == null || dict.Count == 0) return;
             switch (dt)
             {
                 case DictionaryType.SystemRunningDir:
@@ -92,13 +93,14 @@ namespace PoEWizard.Device
             }
         }
 
-        public void LoadFromList(List<Dictionary<string, string>> list, DictionaryType dt)
+        public void LoadFromList(List<Dictionary<string, string>> dictList, DictionaryType dt)
         {
+            if (dictList == null || dictList.Count == 0) return;
             switch (dt)
             {
                 case DictionaryType.Chassis:
                     ChassisList = new List<ChassisModel>();
-                    foreach (Dictionary<string, string> dict in list)
+                    foreach (Dictionary<string, string> dict in dictList)
                     {
                         ChassisModel ci = new ChassisModel(dict);
                         ChassisList.Add(ci);
@@ -106,10 +108,10 @@ namespace PoEWizard.Device
                     break;
 
                 case DictionaryType.PortsList:
-                    int nchas = list.GroupBy(d => GetChassisId(d)).Count();
+                    int nchas = dictList.GroupBy(d => GetChassisId(d)).Count();
                     for (int i = 1; i <= nchas; i++)
                     {
-                        List<Dictionary<string, string>> chasList = list.Where(d => GetChassisId(d) == i).ToList();
+                        List<Dictionary<string, string>> chasList = dictList.Where(d => GetChassisId(d) == i).ToList();
                         if (chasList?.Count == 0) continue;
                         ChassisModel chas = this.GetChassis(GetChassisId(chasList[0]));
                         int nslots = chasList.GroupBy(c => GetSlotId(c)).Count();
@@ -135,7 +137,7 @@ namespace PoEWizard.Device
                     break;
 
                 case DictionaryType.PowerSupply:
-                    foreach (var dic in list)
+                    foreach (var dic in dictList)
                     {
                         var chas = GetChassis(ParseId(dic[CHAS_PS], 0));
                         if (chas == null) continue;
@@ -147,7 +149,7 @@ namespace PoEWizard.Device
                 case DictionaryType.MacAddressList:
                     string prevPort = "";
                     Dictionary<string, PortModel> ports = new Dictionary<string, PortModel>();
-                    foreach (Dictionary<string, string> dict in list)
+                    foreach (Dictionary<string, string> dict in dictList)
                     {
                         string currPort = Utils.GetDictValue(dict, INTERFACE);
                         ChassisSlotPort slotPort = new ChassisSlotPort(currPort);
@@ -183,7 +185,7 @@ namespace PoEWizard.Device
 
                 case DictionaryType.TemperatureList:
                     SwitchTemperature temperature = new SwitchTemperature();
-                    foreach (var dic in list)
+                    foreach (var dic in dictList)
                     {
                         string[] split = Utils.GetDictValue(dic, CHAS_DEVICE).Trim().Split('/');
                         ChassisModel chas = GetChassis(Utils.StringToInt(split[0]));
@@ -197,7 +199,7 @@ namespace PoEWizard.Device
 
                 case DictionaryType.CpuTrafficList:
                     int cpu = 0;
-                    foreach (var dic in list)
+                    foreach (var dic in dictList)
                     {
                         string slotNr = Utils.GetDictValue(dic, CPU).ToLower().Replace("slot", "").Trim();
                         SlotModel slot = GetSlot(slotNr);
@@ -209,7 +211,7 @@ namespace PoEWizard.Device
                     break;
 
                 case DictionaryType.SwitchDebugAppList:
-                    foreach (Dictionary<string, string> dict in list)
+                    foreach (Dictionary<string, string> dict in dictList)
                     {
                         string appId = Utils.GetDictValue(dict, DEBUG_APP_ID);
                         string appName = Utils.GetDictValue(dict, DEBUG_APP_NAME);

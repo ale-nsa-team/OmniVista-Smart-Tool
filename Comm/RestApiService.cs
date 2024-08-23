@@ -16,6 +16,8 @@ namespace PoEWizard.Comm
     public class RestApiService
     {
         private Dictionary<string, object> _response = new Dictionary<string, object>();
+        private List<Dictionary<string, string>> _dictList = new List<Dictionary<string, string>>();
+        private Dictionary<string, string> _dict = new Dictionary<string, string>();
         private readonly IProgress<ProgressReport> _progress;
         private PortModel _wizardSwitchPort;
         private SlotModel _wizardSwitchSlot;
@@ -59,14 +61,14 @@ namespace PoEWizard.Comm
                 if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to switch {SwitchModel.IpAddress}!");
                 SwitchModel.IsConnected = true;
                 _progress.Report(new ProgressReport($"Reading system information on switch {SwitchModel.IpAddress}"));
-                _response = SendRequest(GetRestUrlEntry(Command.SHOW_MICROCODE));
+                _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_MICROCODE, ParseType.Htable)) as List<Dictionary<string, string>>;
+                SwitchModel.LoadFromDictionary(_dictList[0], DictionaryType.MicroCode);
                 UpdateProgressBar(++progressBarCnt); //  2
-                if (_response[STRING] != null) SwitchModel.LoadFromDictionary(CliParseUtils.ParseHTable(_response[STRING].ToString())[0], DictionaryType.MicroCode);
-                _response = SendRequest(GetRestUrlEntry(Command.SHOW_CMM));
+                _dict = RunSwichCommand(new CmdRequest(Command.SHOW_CMM, ParseType.Vtable)) as Dictionary<string, string>;
+                SwitchModel.LoadFromDictionary(_dict, DictionaryType.Cmm);
                 UpdateProgressBar(++progressBarCnt); //  3
-                if (_response[STRING] != null) SwitchModel.LoadFromDictionary(CliParseUtils.ParseVTable(_response[STRING].ToString()), DictionaryType.Cmm);
-                _response = SendRequest(GetRestUrlEntry(Command.DEBUG_SHOW_APP_LIST));
-                if (_response[DATA] != null) SwitchModel.LoadFromList(CliParseUtils.ParseSwitchDebugAppTable((Dictionary<string, string>)_response[DATA], new string[2] { LPNI, LPCMM }), DictionaryType.SwitchDebugAppList);
+                _dictList = RunSwichCommand(new CmdRequest(Command.DEBUG_SHOW_APP_LIST, ParseType.MibTable, DictionaryType.SwitchDebugAppList)) as List<Dictionary<string, string>>;
+                SwitchModel.LoadFromList(_dictList, DictionaryType.SwitchDebugAppList);
                 UpdateProgressBar(++progressBarCnt); //  4
                 ScanSwitch($"Connect to switch {SwitchModel.IpAddress}", reportResult);
             }
@@ -93,25 +95,25 @@ namespace PoEWizard.Comm
                 GetSystemInfo();
                 UpdateProgressBar(++progressBarCnt); //  9
                 SendProgressReport("Reading chassis and port information");
-                _response = SendRequest(GetRestUrlEntry(Command.SHOW_CHASSIS));
+                _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_CHASSIS, ParseType.MVTable, DictionaryType.Chassis)) as List<Dictionary<string, string>>;
+                SwitchModel.LoadFromList(_dictList, DictionaryType.Chassis);
                 UpdateProgressBar(++progressBarCnt); // 10
-                if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseMultipleTables(_response[STRING].ToString(), DictionaryType.Chassis), DictionaryType.Chassis);
-                _response = SendRequest(GetRestUrlEntry(Command.SHOW_TEMPERATURE));
+                _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_TEMPERATURE, ParseType.Htable)) as List<Dictionary<string, string>>;
+                SwitchModel.LoadFromList(_dictList, DictionaryType.TemperatureList);
                 UpdateProgressBar(++progressBarCnt); // 11
-                if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 1), DictionaryType.TemperatureList);
-                _response = SendRequest(GetRestUrlEntry(Command.SHOW_HEALTH_CONFIG));
+                _dict = RunSwichCommand(new CmdRequest(Command.SHOW_HEALTH_CONFIG, ParseType.Etable)) as Dictionary<string, string>;
+                SwitchModel.UpdateCpuThreshold(_dict);
                 UpdateProgressBar(++progressBarCnt); // 12
-                if (_response[STRING] != null) SwitchModel.UpdateCpuThreshold(CliParseUtils.ParseETable(_response[STRING].ToString()));
-                _response = SendRequest(GetRestUrlEntry(Command.SHOW_PORTS_LIST));
+                _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_PORTS_LIST, ParseType.Htable3)) as List<Dictionary<string, string>>;
+                SwitchModel.LoadFromList(_dictList, DictionaryType.PortsList);
                 UpdateProgressBar(++progressBarCnt); // 13
-                if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 3), DictionaryType.PortsList);
                 SendProgressReport("Reading power supply information");
-                _response = SendRequest(GetRestUrlEntry(Command.SHOW_POWER_SUPPLIES));
+                _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_POWER_SUPPLIES, ParseType.Htable2)) as List<Dictionary<string, string>>;
+                SwitchModel.LoadFromList(_dictList, DictionaryType.PowerSupply);
                 UpdateProgressBar(++progressBarCnt); // 14
-                if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 2), DictionaryType.PowerSupply);
-                _response = SendRequest(GetRestUrlEntry(Command.SHOW_HEALTH));
+                _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
+                SwitchModel.LoadFromList(_dictList, DictionaryType.CpuTrafficList);
                 UpdateProgressBar(++progressBarCnt); // 15
-                if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 2), DictionaryType.CpuTrafficList);
                 GetLanPower();
                 progressBarCnt += 3;
                 UpdateProgressBar(progressBarCnt); // 16, 17, 18
@@ -130,8 +132,8 @@ namespace PoEWizard.Comm
         public void GetSystemInfo()
         {
             SendProgressReport("Reading system information");
-            _response = SendRequest(GetRestUrlEntry(Command.SHOW_SYSTEM_RUNNING_DIR));
-            if (_response[DATA] != null) SwitchModel.LoadFromDictionary((Dictionary<string, string>)_response[DATA], DictionaryType.SystemRunningDir);
+            _dict = RunSwichCommand(new CmdRequest(Command.SHOW_SYSTEM_RUNNING_DIR, ParseType.MibTable, DictionaryType.SystemRunningDir)) as Dictionary<string, string>;
+            SwitchModel.LoadFromDictionary(_dict, DictionaryType.SystemRunningDir);
         }
 
         public void GetSnapshot()
@@ -156,37 +158,43 @@ namespace PoEWizard.Comm
 
         public object RunSwichCommand(CmdRequest cmdReq)
         {
-            string mibReq = null;
-            switch (cmdReq.Command)
-            {
-                case Command.SHOW_DNS_CONFIG:       // 207
-                    mibReq = SWITCH_CFG_DNS;
-                    break;
-
-                case Command.SHOW_DHCP_CONFIG:      // 208
-                case Command.SHOW_DHCP_RELAY:       // 209
-                    mibReq = SWITCH_CFG_DHCP;
-                    break;
-
-                case Command.SHOW_NTP_CONFIG:       // 210
-                    mibReq = SWITCH_CFG_NTP;
-                    break;
-
-            }
             Dictionary<string, object> resp = SendRequest(GetRestUrlEntry(cmdReq));
-            if (!string.IsNullOrEmpty(mibReq))
+            if (cmdReq.ParseType == ParseType.MibTable)
             {
-                return CliParseUtils.ParseListFromDictionary((Dictionary<string, string>)resp[DATA], mibReq);
+                if (!resp.ContainsKey(DATA) || resp[DATA] == null) return resp;
+                Dictionary<string, string>  xmlDict = resp[DATA] as Dictionary<string, string>;
+                switch (cmdReq.DictionaryType)
+                {
+                    case DictionaryType.MibList:
+                        Dictionary<Command, string> mibParamTbl = new Dictionary<Command, string>
+                        {
+                            [Command.SHOW_DNS_CONFIG] = MIB_SWITCH_CFG_DNS, [Command.SHOW_DHCP_CONFIG] = MIB_SWITCH_CFG_DHCP,
+                            [Command.SHOW_DHCP_RELAY] = MIB_SWITCH_CFG_DHCP, [Command.SHOW_NTP_CONFIG] = MIB_SWITCH_CFG_NTP,
+                            [Command.DEBUG_SHOW_LEVEL] = DEBUG_SWITCH_LOG
+                        };
+                        if (mibParamTbl.ContainsKey(cmdReq.Command))
+                        {
+                            return CliParseUtils.ParseListFromDictionary(xmlDict, mibParamTbl[cmdReq.Command]);
+                        }
+                        return resp;
+
+                    case DictionaryType.SwitchDebugAppList:
+                        return CliParseUtils.ParseSwitchDebugAppTable(xmlDict, new string[2] { LPNI, LPCMM });
+
+                    default:
+                        return xmlDict;
+                }
             }
-            else if (resp.ContainsKey(STRING))
+            else if (resp.ContainsKey(STRING) && resp[STRING] != null)
             {
                 switch (cmdReq.ParseType)
                 {
-
                     case ParseType.Htable:
                         return CliParseUtils.ParseHTable(resp[STRING].ToString(), 1);
                     case ParseType.Htable2:
                         return CliParseUtils.ParseHTable(resp[STRING].ToString(), 2);
+                    case ParseType.Htable3:
+                        return CliParseUtils.ParseHTable(resp[STRING].ToString(), 3);
                     case ParseType.Vtable:
                         return CliParseUtils.ParseVTable(resp[STRING].ToString());
                     case ParseType.MVTable:
@@ -197,7 +205,7 @@ namespace PoEWizard.Comm
                         return resp;
                 }
             }
-            else return null;
+            return null;
         }
 
         public void RunGetSwitchLog(string port, SwitchDebugModel debugLog)
@@ -326,9 +334,9 @@ namespace PoEWizard.Comm
                 string appName = cmd == Command.DEBUG_SHOW_LPNI_LEVEL ? LPNI : LPCMM;
                 if (SwitchModel.DebugApp.ContainsKey(appName))
                 {
-                    _response = SendRequest(GetRestUrlEntry(Command.DEBUG_SHOW_LEVEL, new string[2] { SwitchModel.DebugApp[appName].Index, SwitchModel.DebugApp[appName].NbSubApp }));
-                    List<Dictionary<string, string>> list = CliParseUtils.ParseListFromDictionary((Dictionary<string, string>)_response[DATA], DEBUG_SWITCH_LOG);
-                    if (_response[DATA] != null) _debugSwitchLog.LoadFromDictionary(list);
+                    _dictList = RunSwichCommand(new CmdRequest(Command.DEBUG_SHOW_LEVEL, ParseType.MibTable, DictionaryType.MibList,
+                                                new string[2] { SwitchModel.DebugApp[appName].Index, SwitchModel.DebugApp[appName].NbSubApp })) as List<Dictionary<string, string>>;
+                    _debugSwitchLog.LoadFromDictionary(_dictList);
                 }
             }
             catch (Exception ex)
@@ -1558,16 +1566,19 @@ namespace PoEWizard.Comm
             Logger.Info($"Closing Rest API");
         }
 
-        private RestUrlEntry GetRestUrlEntry(Command url)
+        private RestUrlEntry GetRestUrlEntry(Command cmd)
         {
-            return GetRestUrlEntry(url, new string[1] { null });
+            return GetRestUrlEntry(cmd, new string[1] { null });
         }
 
-        private RestUrlEntry GetRestUrlEntry(Command url, string[] data)
+        private RestUrlEntry GetRestUrlEntry(Command cmd, string[] data)
         {
-            Dictionary<string, string> body = GetContent(url, data);
-            RestUrlEntry entry = new RestUrlEntry(url, data) { Method = body == null ? HttpMethod.Get : HttpMethod.Post, Content = body };
-            return entry;
+            Dictionary<string, string> body = GetContent(cmd, data);
+            return new RestUrlEntry(cmd, data)
+            {
+                Method = body == null ? HttpMethod.Get : HttpMethod.Post,
+                Content = body
+            };
         }
 
         private RestUrlEntry GetRestUrlEntry(CmdRequest req)

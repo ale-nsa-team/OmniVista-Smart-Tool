@@ -119,11 +119,13 @@ namespace PoEWizard.Data
                     bodyRegex = vtableRegex;
                     headerKeys = new string[] { "ID", "Role" };
                     break;
+
                 case DictionaryType.User:
                     headerRegex = userRegex;
                     bodyRegex = etableRegex;
                     headerKeys = new string[] { "User name" };
                     break; ;
+
                 default:
                     return table;
             }
