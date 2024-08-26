@@ -170,6 +170,7 @@ namespace PoEWizard.Data
         public CmdRequest(Command command) : this(command, ParseType.Text, DictionaryType.None, null) { }
         public CmdRequest(Command command, params string[] data) : this(command, ParseType.Text, DictionaryType.None, data) { }
         public CmdRequest(Command command, ParseType type) : this(command, type, DictionaryType.None, null) { }
+        public CmdRequest(Command command, ParseType type, params string[] data) : this(command, type, DictionaryType.None, data) { }
         public CmdRequest(Command command, ParseType type, DictionaryType dtype, params string[] data)
         {
             Command = command;

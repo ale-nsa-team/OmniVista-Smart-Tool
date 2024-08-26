@@ -45,7 +45,7 @@ namespace PoEWizard.Device
             this.Budget = ParseDouble(Utils.GetDictValue(dict, MAX_POWER));
             this.IsInitialized = (Utils.GetDictValue(dict, INIT_STATUS)).ToLower() == "initialized";
             this.Is8023btSupport = (Utils.GetDictValue(dict, BT_SUPPORT)) == "Yes";
-            PowerClassDetection = Enum.TryParse(Utils.GetDictValue(dict, CLASS_DETECTION), true, out ConfigType res) ? res : ConfigType.Unavailable;
+            this.PowerClassDetection = Enum.TryParse(Utils.GetDictValue(dict, CLASS_DETECTION), true, out ConfigType res) ? res : ConfigType.Unavailable;
             this.IsHiResDetection = (Utils.GetDictValue(dict, HI_RES_DETECTION)) == "enable";
             this.PPoE = Enum.TryParse(Utils.GetDictValue(dict, PPOE), true, out res) ? res : ConfigType.Unavailable;
             this.FPoE = Enum.TryParse(Utils.GetDictValue(dict, FPOE), true, out res) ? res : ConfigType.Unavailable;

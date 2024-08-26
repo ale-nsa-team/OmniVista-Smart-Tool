@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Data
 {
@@ -171,6 +172,18 @@ namespace PoEWizard.Data
             [Command.SHOW_SNMP_COMMUNITY] = "show snmp community-map"
             #endregion
 
+        };
+        #endregion
+
+        #region MIB Request Table
+
+        public static Dictionary<Command, string> MIB_REQ_TBL = new Dictionary<Command, string>
+        {
+            [Command.SHOW_DNS_CONFIG] = MIB_SWITCH_CFG_DNS,
+            [Command.SHOW_DHCP_CONFIG] = MIB_SWITCH_CFG_DHCP,
+            [Command.SHOW_DHCP_RELAY] = MIB_SWITCH_CFG_DHCP,
+            [Command.SHOW_NTP_CONFIG] = MIB_SWITCH_CFG_NTP,
+            [Command.DEBUG_SHOW_LEVEL] = DEBUG_SWITCH_LOG
         };
         #endregion
 

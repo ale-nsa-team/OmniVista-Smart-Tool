@@ -166,17 +166,8 @@ namespace PoEWizard.Comm
                 switch (cmdReq.DictionaryType)
                 {
                     case DictionaryType.MibList:
-                        Dictionary<Command, string> mibParamTbl = new Dictionary<Command, string>
-                        {
-                            [Command.SHOW_DNS_CONFIG] = MIB_SWITCH_CFG_DNS, [Command.SHOW_DHCP_CONFIG] = MIB_SWITCH_CFG_DHCP,
-                            [Command.SHOW_DHCP_RELAY] = MIB_SWITCH_CFG_DHCP, [Command.SHOW_NTP_CONFIG] = MIB_SWITCH_CFG_NTP,
-                            [Command.DEBUG_SHOW_LEVEL] = DEBUG_SWITCH_LOG
-                        };
-                        if (mibParamTbl.ContainsKey(cmdReq.Command))
-                        {
-                            return CliParseUtils.ParseListFromDictionary(xmlDict, mibParamTbl[cmdReq.Command]);
-                        }
-                        return resp;
+                        if (MIB_REQ_TBL.ContainsKey(cmdReq.Command)) return CliParseUtils.ParseListFromDictionary(xmlDict, MIB_REQ_TBL[cmdReq.Command]);
+                        else return resp;
 
                     case DictionaryType.SwitchDebugAppList:
                         return CliParseUtils.ParseSwitchDebugAppTable(xmlDict, new string[2] { LPNI, LPCMM });
@@ -1345,7 +1336,7 @@ namespace PoEWizard.Comm
                     }
                     if (slot.PowerClassDetection == ConfigType.Disable)
                     {
-                        SendRequest(GetRestUrlEntry(Command.POWER_CLASS_DETECTION_ENABLE, new string[1] { $"{slot.Name}" }));
+                        SendRequest(GetRestUrlEntry(new CmdRequest(Command.POWER_CLASS_DETECTION_ENABLE, new string[1] { $"{slot.Name}" })));
                     }
                     GetSlotPower(slot);
                     if (!slot.IsInitialized)
@@ -1359,8 +1350,8 @@ namespace PoEWizard.Comm
                 chassis.PowerRemaining = chassis.PowerBudget - chassis.PowerConsumed;
                 foreach (var ps in chassis.PowerSupplies)
                 {
-                    _response = SendRequest(GetRestUrlEntry(Command.SHOW_POWER_SUPPLY, new string[1] { ps.Id.ToString() }));
-                    if (_response[STRING] != null) ps.LoadFromDictionary(CliParseUtils.ParseVTable(_response[STRING].ToString()));
+                    _dict = RunSwichCommand(new CmdRequest(Command.SHOW_POWER_SUPPLY, ParseType.Vtable, new string[1] { ps.Id.ToString() })) as Dictionary<string, string>;
+                    ps.LoadFromDictionary(_dict);
                 }
             }
             SwitchModel.SupportsPoE = (nbChassisPoE > 0);
@@ -1371,8 +1362,8 @@ namespace PoEWizard.Comm
         {
             try
             {
-                _response = SendRequest(GetRestUrlEntry(Command.SHOW_CHASSIS_LAN_POWER_STATUS, new string[] { chassis.Number.ToString() }));
-                if (_response[STRING] != null) chassis.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 2));
+                _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_CHASSIS_LAN_POWER_STATUS, ParseType.Htable2, new string[1] { chassis.Number.ToString() })) as List<Dictionary<string, string>>;
+                chassis.LoadFromList(_dictList);
                 chassis.PowerBudget = 0;
                 chassis.PowerConsumed = 0;
             }
@@ -1386,14 +1377,14 @@ namespace PoEWizard.Comm
         private void GetSlotPower(SlotModel slot)
         {
             GetSlotLanPower(slot);
-            _response = SendRequest(GetRestUrlEntry(Command.SHOW_LAN_POWER_CONFIG, new string[1] { $"{slot.Name}" }));
-            if (_response[STRING] != null) slot.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 2), DictionaryType.LanPowerCfg);
+            _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_LAN_POWER_CONFIG, ParseType.Htable2, new string[1] { $"{slot.Name}" })) as List<Dictionary<string, string>>;
+            slot.LoadFromList(_dictList, DictionaryType.LanPowerCfg);
         }
 
         private void GetSlotLanPower(SlotModel slot)
         {
-            _response = SendRequest(GetRestUrlEntry(Command.SHOW_LAN_POWER, new string[1] { $"{slot.Name}" }));
-            if (_response[STRING] != null) slot.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 1), DictionaryType.LanPower);
+            _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_LAN_POWER, ParseType.Htable, new string[1] { $"{slot.Name}" })) as List<Dictionary<string, string>>;
+            slot.LoadFromList(_dictList, DictionaryType.LanPower);
         }
 
         private void ParseException(ProgressReport progressReport, Exception ex)
