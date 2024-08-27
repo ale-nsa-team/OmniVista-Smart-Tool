@@ -158,7 +158,7 @@ namespace PoEWizard.Components
             {
                 try
                 {
-                    restSrv.RunSwichCommand(cmd);
+                    restSrv.RunSwitchCommand(cmd);
                 }
                 catch (Exception ex)
                 {
@@ -171,13 +171,13 @@ namespace PoEWizard.Components
 
         private void GetServerData()
         {
-            List<Dictionary<string, string>> dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
+            List<Dictionary<string, string>> dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
             Dictionary<string, string> dict = dicList.FirstOrDefault(d => d[IP_ADDR] == device.IpAddress);
             if (dict != null) sysData.NetMask = dict[SUBNET_MASK];
-            dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
+            dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
             dict = dicList.FirstOrDefault(d => d[DNS_DEST] == "0.0.0.0/0");
             if (dict != null) srvData.Gateway = dict[GATEWAY];
-            dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DNS_CONFIG, ParseType.MibTable, DictionaryType.MibList)) as List<Dictionary<string, string>>;
+            dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_DNS_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
             if (dicList.Count > 0)
             {
                 srvData.IsDns = dicList[0][DNS_ENABLE] == "1";
@@ -187,11 +187,11 @@ namespace PoEWizard.Components
                 srvData.Dns3 = GetDnsAddr(dicList[0][DNS3]);
             }
 
-            dict = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_NTP_STATUS, ParseType.Vtable)) as Dictionary<string, string>;
+            dict = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_NTP_STATUS, ParseType.Vtable)) as Dictionary<string, string>;
             if (dict != null) srvData.IsNtp = dict[NTP_ENABLE] == "enabled";
             if (srvData.IsNtp)
             {
-                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_NTP_CONFIG, ParseType.MibTable, DictionaryType.MibList)) as List<Dictionary<string, string>>;
+                dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_NTP_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
                 int n = Math.Min(dicList.Count, 3);
                 for (int i = 0; i < n; i++)
                 {
@@ -209,15 +209,15 @@ namespace PoEWizard.Components
 
         private void GetFeaturesData()
         {
-            List<Dictionary<string,string>> dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DHCP_CONFIG, ParseType.MibTable, DictionaryType.MibList)) as List<Dictionary<string, string>>;
+            List<Dictionary<string,string>> dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_DHCP_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
             if (dicList.Count > 0) features.IsDhcpRelay = dicList[0][DHCP_ENABLE] == "1";
             if (features.IsDhcpRelay)
             {
-                dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_DHCP_RELAY, ParseType.MibTable, DictionaryType.MibList)) as List<Dictionary<string, string>>;
+                dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_DHCP_RELAY, ParseType.Htable)) as List<Dictionary<string, string>>;
                 if (dicList.Count > 0 && dicList[0].Count > 0) features.DhcpSrv = dicList[0][DHCP_DEST];
             }
 
-            dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_IP_SERVICE, ParseType.Htable)) as List<Dictionary<string, string>>;
+            dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_IP_SERVICE, ParseType.Htable)) as List<Dictionary<string, string>>;
             Dictionary<string, string> dict;
             if (dicList.Count > 0)
             {
@@ -229,14 +229,13 @@ namespace PoEWizard.Components
                 dict = dicList.FirstOrDefault(d => d["Name"] == "ssh");
                 features.IsSsh = dict != null ? dict["Status"] == "enabled" : false;
             }
-            dict = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_MULTICAST, ParseType.Etable)) as Dictionary<string, string>;
+            dict = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_MULTICAST, ParseType.Etable)) as Dictionary<string, string>;
             if (dict != null) features.IsMulticast = dict["Status"] == "enabled";
         }
 
         private void GetSnmpData()
         {
-            new CmdRequest(Command.SHOW_USER, ParseType.MVTable, DictionaryType.User);
-            List<Dictionary<string, string>> dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_USER, ParseType.MVTable, DictionaryType.User)) as List<Dictionary<string, string>>;
+            List<Dictionary<string, string>> dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_USER, ParseType.MVTable, DictionaryType.User)) as List<Dictionary<string, string>>;
             if (dicList.Count > 0)
             {
                 foreach (var dic in dicList)
@@ -251,7 +250,7 @@ namespace PoEWizard.Components
                 }
             }
 
-            dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_SNMP_COMMUNITY, ParseType.Htable)) as List<Dictionary<string, string>>;
+            dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_SNMP_COMMUNITY, ParseType.Htable)) as List<Dictionary<string, string>>;
             if ( dicList.Count > 0)
             {
                 foreach(var dic in dicList)
@@ -260,7 +259,7 @@ namespace PoEWizard.Components
                 }
             }
 
-            dicList = restSrv.RunSwichCommand(new CmdRequest(Command.SHOW_SNMP_STATION, ParseType.Htable)) as List<Dictionary<string, string>>;
+            dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_SNMP_STATION, ParseType.Htable)) as List<Dictionary<string, string>>;
             if ( dicList.Count > 0)
             {
                 foreach (var dic in dicList)

@@ -133,7 +133,8 @@ namespace PoEWizard.Data
             [Command.SET_SYSTEM_DATE] = $"system date {DAT}",
             [Command.SET_SYSTEM_TIME] = $"system time {DAT}",
             [Command.SET_SYSTEM_NAME] = $"system name {DAT}",
-            [Command.SET_MNGT_INTERFACE] = $"ip interface \"MGT\" address {DAT} mask {DAT} vlan 1",
+            [Command.SET_MGT_INTERFACE] = $"ip interface \"MGT\" address {DAT} mask {DAT} vlan 1",
+            [Command.SET_LOOPBACK_DET] = "loopback-detection enable",
             [Command.SET_PASSWORD] = $"user {DAT} password {DAT}",
             [Command.SET_CONTACT] = $"system contact {DAT}",
             [Command.SET_LOCATION] = $"system location {DAT}",
@@ -169,7 +170,10 @@ namespace PoEWizard.Data
             [Command.SHOW_USER] =  "show user",
             [Command.SHOW_SNMP_SECURITY] = "show snmp security",
             [Command.SHOW_SNMP_STATION] = "show snmp station",
-            [Command.SHOW_SNMP_COMMUNITY] = "show snmp community-map"
+            [Command.SHOW_SNMP_COMMUNITY] = "show snmp community-map",
+            [Command.ENABLE_MGT_VLAN] = "vlan 1 admin-state enable",
+            [Command.SET_MGT_INTERFACE] = $"ip interface \"IBMGT-1\" address {DAT} mask {DAT} vlan 1",
+            [Command.ENABLE_SPAN_TREE] = "spantree vlan 1 admin-state enable"
             #endregion
 
         };

@@ -175,6 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Device\EndPointDeviceModel.cs" />
+    <Compile Include="Device\FactoryDefault.cs" />
     <Compile Include="Device\FeatureModel.cs" />
     <Compile Include="Device\PortTrafficModel.cs" />
     <Compile Include="Device\PowerSupplyModel.cs" />
@@ -211,7 +212,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Comm\ulc.alu" />
+    <None Include="Resources\ulc.alu" />
     <None Include="oui.csv" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -360,7 +361,7 @@
     <Resource Include="Resources\plus-green.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Comm\ulc_script.txt" />
+    <Resource Include="Resources\ulc_script.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
