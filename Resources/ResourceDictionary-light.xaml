@@ -20,19 +20,19 @@
     <converters:CpuUsageToVisibilityConverter x:Key="CpuUsageToVisibilityConverter" />
     <converters:DeviceToTooltipConverter x:Key="DeviceToTooltipConverter" />
 
-    <BitmapImage x:Key="connected" UriSource="connected.png" />
-    <BitmapImage x:Key="disconnected" UriSource="disconnected-light.png" />
-    <BitmapImage x:Key="info" UriSource="info.png" />
-    <BitmapImage x:Key="question" UriSource="question.png" />
-    <BitmapImage x:Key="alert" UriSource="alert.png" />
-    <BitmapImage x:Key="remove" UriSource="remove.png" />
-    <BitmapImage x:Key="error" UriSource="error.png" />
-    <BitmapImage x:Key="eye_open" UriSource="../Resources/eye-open-light.png" />
-    <BitmapImage x:Key="eye_closed" UriSource="../Resources/eye-closed-light.png" />
-    <BitmapImage x:Key="refresh" UriSource="../Resources/refresh-light.png" />
-    <BitmapImage x:Key="write_memory" UriSource="../Resources/save-light.png" />
-    <BitmapImage x:Key="reboot" UriSource="../Resources/reboot-light.png" />
-    <BitmapImage x:Key="traffic" UriSource="../Resources/traffic-light.png" />
+    <BitmapImage x:Key="connected" UriSource="Img/connected.png" />
+    <BitmapImage x:Key="disconnected" UriSource="Img/disconnected-light.png" />
+    <BitmapImage x:Key="info" UriSource="Img/info.png" />
+    <BitmapImage x:Key="question" UriSource="Img/question.png" />
+    <BitmapImage x:Key="alert" UriSource="Img/alert.png" />
+    <BitmapImage x:Key="remove" UriSource="Img/remove.png" />
+    <BitmapImage x:Key="error" UriSource="Img/error.png" />
+    <BitmapImage x:Key="eye_open" UriSource="Img/eye-open-light.png" />
+    <BitmapImage x:Key="eye_closed" UriSource="Img/eye-closed-light.png" />
+    <BitmapImage x:Key="refresh" UriSource="Img/refresh-light.png" />
+    <BitmapImage x:Key="write_memory" UriSource="Img//save-light.png" />
+    <BitmapImage x:Key="reboot" UriSource="Img/reboot-light.png" />
+    <BitmapImage x:Key="traffic" UriSource="Img/traffic-light.png" />
 
     <SolidColorBrush x:Key="fontColor" Color="Black" />
     <SolidColorBrush x:Key="linkColor" Color="Blue" />
@@ -466,7 +466,7 @@
     </Style>
 
     <Style TargetType="Image" x:Key="warnImg">
-        <Setter Property="Source" Value="warning.png" />
+        <Setter Property="Source" Value="Img/warning.png" />
         <Setter Property="Margin" Value="5,0" />
         <Setter Property="Width" Value="16" />
         <Setter Property="Height" Value="16" />

@@ -58,6 +58,7 @@
                 <MenuItem Header="About" Click="About_Click"/>
             </MenuItem>
             <MenuItem Header="Configuration">
+                <MenuItem Header="Factory Reset..." x:Name="_factoryRst" IsEnabled="False" Click="FactoryReset" />
                 <MenuItem Header="Basic Config Wizard..." x:Name="_cfgMenuItem" IsEnabled="False" Click="LaunchConfigWizard"/>
             </MenuItem>
         </Menu>
@@ -394,7 +395,7 @@
                         Click="RunWiz_Click">
                     <StackPanel Orientation="Horizontal">
                         <Label Style="{DynamicResource valLabel}">Run Wizard</Label>
-                        <Image Source="Resources/wand.png" Height="16" Width="16"/>
+                        <Image Source="Resources/Img/wand.png" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>
                 <Button x:Name="_refreshSwitch" Style="{DynamicResource largeButton}" 

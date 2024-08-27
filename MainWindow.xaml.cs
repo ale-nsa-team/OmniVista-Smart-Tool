@@ -257,6 +257,17 @@ namespace PoEWizard
             ps.Show();
         }
 
+        private void FactoryReset(object sender, RoutedEventArgs e)
+        {
+            bool res = ShowMessageBox("Factory reset", 
+                "The switch configuration will be restored to factory default. Please confirm your action.", 
+                MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
+            if (!res) return;
+            ShowProgress("Applying factory default...");
+            FactoryDefault.Progress = progress;
+            Task.Run(() => FactoryDefault.Reset(device));
+        }
+
         private void LaunchConfigWizard(object sender, RoutedEventArgs e)
         {
             _status.Text = "Running wizard...";
@@ -1315,6 +1326,7 @@ namespace PoEWizard
                 _writeMemory.IsEnabled = true;
                 _reboot.IsEnabled = true;
                 _psMenuItem.IsEnabled = true;
+                _factoryRst.IsEnabled = true;
                 _cfgMenuItem.IsEnabled = true;
                 _disconnectMenuItem.Visibility = Visibility.Visible;
                 _tempStatus.Visibility = Visibility.Visible;
@@ -1445,6 +1457,7 @@ namespace PoEWizard
             _reboot.IsEnabled = false;
             _traffic.IsEnabled = false;
             _psMenuItem.IsEnabled = false;
+            _factoryRst.IsEnabled = false;
             _cfgMenuItem.IsEnabled = false;
             _comImg.ToolTip = "Click to reconnect";
             _disconnectMenuItem.Visibility = Visibility.Collapsed;

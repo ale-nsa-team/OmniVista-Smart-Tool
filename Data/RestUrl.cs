@@ -173,7 +173,8 @@ namespace PoEWizard.Data
             [Command.SHOW_SNMP_COMMUNITY] = "show snmp community-map",
             [Command.ENABLE_MGT_VLAN] = "vlan 1 admin-state enable",
             [Command.SET_MGT_INTERFACE] = $"ip interface \"IBMGT-1\" address {DAT} mask {DAT} vlan 1",
-            [Command.ENABLE_SPAN_TREE] = "spantree vlan 1 admin-state enable"
+            [Command.ENABLE_SPAN_TREE] = "spantree vlan 1 admin-state enable",
+            [Command.CLEAR_SWLOG] = "swlog clear all"
             #endregion
 
         };

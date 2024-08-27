@@ -158,7 +158,8 @@ namespace PoEWizard.Data
         TELNET_AUTH_LOCAL,
         FTP_AUTH_LOCAL,
         DISABLE_SSH,
-        DISABLE_DHCP_RELAY
+        DISABLE_DHCP_RELAY,
+        CLEAR_SWLOG
         #endregion
 
     }

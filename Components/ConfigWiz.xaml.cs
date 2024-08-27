@@ -171,14 +171,11 @@ namespace PoEWizard.Components
 
         private void GetServerData()
         {
-            List<Dictionary<string, string>> dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
-            Dictionary<string, string> dict = dicList.FirstOrDefault(d => d[IP_ADDR] == device.IpAddress);
-            if (dict != null) sysData.NetMask = dict[SUBNET_MASK];
-            dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
-            dict = dicList.FirstOrDefault(d => d[DNS_DEST] == "0.0.0.0/0");
+            List<Dictionary<string, string>> dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
+            Dictionary<string, string>  dict = dicList.FirstOrDefault(d => d[DNS_DEST] == "0.0.0.0/0");
             if (dict != null) srvData.Gateway = dict[GATEWAY];
             dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_DNS_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
-            if (dicList.Count > 0)
+            if (dicList?.Count > 0)
             {
                 srvData.IsDns = dicList[0][DNS_ENABLE] == "1";
                 srvData.DnsDomain = dicList[0][DNS_DOMAIN];
@@ -192,7 +189,7 @@ namespace PoEWizard.Components
             if (srvData.IsNtp)
             {
                 dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_NTP_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
-                int n = Math.Min(dicList.Count, 3);
+                int n = Math.Min(dicList?.Count ?? 0, 3);
                 for (int i = 0; i < n; i++)
                 {
                     if (i == 0) srvData.Ntp1 = dicList[i].TryGetValue(NTP_SERVER, out string v) ? v : "";
@@ -210,7 +207,7 @@ namespace PoEWizard.Components
         private void GetFeaturesData()
         {
             List<Dictionary<string,string>> dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_DHCP_CONFIG, ParseType.Htable)) as List<Dictionary<string, string>>;
-            if (dicList.Count > 0) features.IsDhcpRelay = dicList[0][DHCP_ENABLE] == "1";
+            if (dicList?.Count > 0) features.IsDhcpRelay = dicList[0][DHCP_ENABLE] == "1";
             if (features.IsDhcpRelay)
             {
                 dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_DHCP_RELAY, ParseType.Htable)) as List<Dictionary<string, string>>;

@@ -23,7 +23,7 @@
             <ColumnDefinition Width="150" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <Image Grid.Row="0" Grid.Column="0" Source="../Resources/ale-icon.png" Stretch="None"/>
+        <Image Grid.Row="0" Grid.Column="0" Source="../Resources/Img/ale-icon.png" Stretch="None"/>
         <StackPanel Grid.Row="0" Grid.Column="1">
             <TextBlock x:Name="_aboutTitle" Style="{DynamicResource aboutTitle}" />
             <TextBlock x:Name="_version" Style="{DynamicResource aboutParagraph}" />

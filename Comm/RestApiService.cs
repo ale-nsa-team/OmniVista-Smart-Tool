@@ -1,6 +1,7 @@
 ﻿using PoEWizard.Data;
 using PoEWizard.Device;
 using PoEWizard.Exceptions;
+using Renci.SshNet.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -134,6 +135,9 @@ namespace PoEWizard.Comm
             SendProgressReport("Reading system information");
             _dict = RunSwitchCommand(new CmdRequest(Command.SHOW_SYSTEM_RUNNING_DIR, ParseType.MibTable, DictionaryType.SystemRunningDir)) as Dictionary<string, string>;
             SwitchModel.LoadFromDictionary(_dict, DictionaryType.SystemRunningDir);
+            _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
+            _dict = _dictList.FirstOrDefault(d => d[IP_ADDR] == SwitchModel.IpAddress);
+            if (_dict != null) SwitchModel.NetMask = _dict[SUBNET_MASK];
         }
 
         public void GetSnapshot()
