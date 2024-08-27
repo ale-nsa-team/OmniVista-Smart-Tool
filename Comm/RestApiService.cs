@@ -143,7 +143,7 @@ namespace PoEWizard.Comm
                 SendProgressReport("Reading configuration snapshot");
                 _response = SendRequest(GetRestUrlEntry(Command.SHOW_CONFIGURATION));
                 if (_response[STRING] != null) SwitchModel.ConfigSnapshot = _response[STRING].ToString();
-                if (!SwitchModel.ConfigSnapshot.Contains(RestUrl.CMD_TBL[Command.LLDP_SYSTEM_DESCRIPTION_ENABLE]))
+                if (!SwitchModel.ConfigSnapshot.Contains(CMD_TBL[Command.LLDP_SYSTEM_DESCRIPTION_ENABLE]))
                 {
                     SendProgressReport("Enabling LLDP description");
                     SendRequest(GetRestUrlEntry(Command.LLDP_SYSTEM_DESCRIPTION_ENABLE));
@@ -192,6 +192,10 @@ namespace PoEWizard.Comm
                         return CliParseUtils.ParseMultipleTables(resp[STRING].ToString(), cmdReq.DictionaryType);
                     case ParseType.Etable:
                         return CliParseUtils.ParseETable(resp[STRING].ToString());
+                    case ParseType.LldpRemoteTable:
+                        return CliParseUtils.ParseLldpRemoteTable(resp[STRING].ToString());
+                    case ParseType.TrafficTable:
+                        return CliParseUtils.ParseTrafficTable(resp[STRING].ToString());
                     default:
                         return resp;
                 }
@@ -563,31 +567,25 @@ namespace PoEWizard.Comm
         private void GetMacAndLldpInfo()
         {
             SendProgressReport("Reading lldp remote information");
-            _response = SendRequest(GetRestUrlEntry(Command.SHOW_LLDP_REMOTE));
-            if (_response[STRING] != null) SwitchModel.LoadLldpFromList(CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString()), DictionaryType.LldpRemoteList);
-            _response = SendRequest(GetRestUrlEntry(Command.SHOW_LLDP_INVENTORY));
-            if (_response[STRING] != null) SwitchModel.LoadLldpFromList(CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString()), DictionaryType.LldpInventoryList);
+
+            object lldpList = RunSwichCommand(new CmdRequest(Command.SHOW_LLDP_REMOTE, ParseType.LldpRemoteTable));
+            SwitchModel.LoadLldpFromList(lldpList as Dictionary<string, List<Dictionary<string, string>>>, DictionaryType.LldpRemoteList);
+            lldpList = RunSwichCommand(new CmdRequest(Command.SHOW_LLDP_INVENTORY, ParseType.LldpRemoteTable));
+            SwitchModel.LoadLldpFromList(lldpList as Dictionary<string, List<Dictionary<string, string>>>, DictionaryType.LldpInventoryList);
             SendProgressReport("Reading MAC address information");
-            _response = SendRequest(GetRestUrlEntry(Command.SHOW_MAC_LEARNING));
-            if (_response[STRING] != null) SwitchModel.LoadFromList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 1), DictionaryType.MacAddressList);
+            _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_MAC_LEARNING, ParseType.Htable)) as List<Dictionary<string, string>>;
+            SwitchModel.LoadFromList(_dictList, DictionaryType.MacAddressList);
         }
 
         private void GetPortsTrafficInformation()
         {
             try
             {
-                this._response = SendRequest(GetRestUrlEntry(Command.SHOW_INTERFACES));
-                if (_response[STRING] != null)
+                _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_INTERFACES, ParseType.TrafficTable)) as List<Dictionary<string, string>>;
+                if (_dictList?.Count > 0)
                 {
-                    List<Dictionary<string, string>> dictList = CliParseUtils.ParseTrafficTable(_response[STRING].ToString());
-                    if (_switchTraffic == null)
-                    {
-                        _switchTraffic = new SwitchTrafficModel(SwitchModel, dictList);
-                    }
-                    else
-                    {
-                        _switchTraffic.UpdateTraffic(dictList);
-                    }
+                    if (_switchTraffic == null) _switchTraffic = new SwitchTrafficModel(SwitchModel, _dictList);
+                    else _switchTraffic.UpdateTraffic(_dictList);
                 }
             }
             catch (Exception ex)
@@ -1300,21 +1298,14 @@ namespace PoEWizard.Comm
         {
             if (_wizardSwitchPort == null) return;
             GetSlotPower(_wizardSwitchSlot);
-            _response = SendRequest(GetRestUrlEntry(Command.SHOW_PORT_STATUS, new string[1] { _wizardSwitchPort.Name }));
-            List<Dictionary<string, string>> dictList;
-            if (_response[STRING] != null)
-            {
-                dictList = CliParseUtils.ParseHTable(_response[STRING].ToString(), 3);
-                if (dictList?.Count > 0) _wizardSwitchPort.UpdatePortStatus(dictList[0]);
-            }
-            _response = SendRequest(GetRestUrlEntry(Command.SHOW_PORT_MAC_ADDRESS, new string[1] { _wizardSwitchPort.Name }));
-            if (_response[STRING] != null) _wizardSwitchPort.UpdateMacList(CliParseUtils.ParseHTable(_response[STRING].ToString(), 1));
-            _response = SendRequest(GetRestUrlEntry(Command.SHOW_PORT_LLDP_REMOTE, new string[] { _wizardSwitchPort.Name }));
-            if (_response[STRING] != null)
-            {
-                Dictionary<string, List<Dictionary<string, string>>> lldpList = CliParseUtils.ParseLldpRemoteTable(_response[STRING].ToString());
-                if (lldpList?.Count > 0) _wizardSwitchPort.LoadLldpRemoteTable(lldpList[_wizardSwitchPort.Name]);
-            }
+
+            _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_PORT_STATUS, ParseType.Htable3, new string[1] { _wizardSwitchPort.Name })) as List<Dictionary<string, string>>;
+            if (_dictList?.Count > 0) _wizardSwitchPort.UpdatePortStatus(_dictList[0]);
+            _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_PORT_MAC_ADDRESS, ParseType.Htable, new string[1] { _wizardSwitchPort.Name })) as List<Dictionary<string, string>>;
+            _wizardSwitchPort.UpdateMacList(_dictList);
+            Dictionary<string, List<Dictionary<string, string>>> lldpList = RunSwichCommand(new CmdRequest(Command.SHOW_LLDP_REMOTE, ParseType.LldpRemoteTable,
+                new string[] { _wizardSwitchPort.Name })) as Dictionary<string, List<Dictionary<string, string>>>;
+            _wizardSwitchPort.LoadLldpRemoteTable(lldpList[_wizardSwitchPort.Name]);
         }
 
         private void GetLanPower()

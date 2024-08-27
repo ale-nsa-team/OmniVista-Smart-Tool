@@ -25,7 +25,7 @@ namespace PoEWizard.Data
             [Description("Off")]
             Off
         }
-        public enum ParseType { Htable, Htable2, Htable3, Vtable, Etable, MVTable, Text, MibTable }
+        public enum ParseType { Htable, Htable2, Htable3, Vtable, Etable, MVTable, Text, MibTable, LldpRemoteTable, TrafficTable }
         public enum EType { Fiber, Copper, Unknown }
         public enum PriorityLevelType { Low, High, Critical }
         public enum PowerSupplyState { Up, Down, Unknown }
