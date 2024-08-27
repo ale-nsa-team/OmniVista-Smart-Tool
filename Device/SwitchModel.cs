@@ -238,6 +238,7 @@ namespace PoEWizard.Device
 
         public void LoadLldpFromList(Dictionary<string, List<Dictionary<string, string>>> list, DictionaryType dt)
         {
+            if (list == null || list.Count < 1) return;
             foreach (string key in list.Keys.ToList())
             {
                 ChassisSlotPort slotPort = new ChassisSlotPort(key);

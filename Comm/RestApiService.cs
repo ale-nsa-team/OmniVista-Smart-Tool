@@ -141,13 +141,11 @@ namespace PoEWizard.Comm
             try
             {
                 SendProgressReport("Reading configuration snapshot");
-                _response = SendRequest(GetRestUrlEntry(Command.SHOW_CONFIGURATION));
-                if (_response[STRING] != null) SwitchModel.ConfigSnapshot = _response[STRING].ToString();
+                SwitchModel.ConfigSnapshot = RunSwichCommand(new CmdRequest(Command.SHOW_CONFIGURATION, ParseType.NoParsing)) as string;
                 if (!SwitchModel.ConfigSnapshot.Contains(CMD_TBL[Command.LLDP_SYSTEM_DESCRIPTION_ENABLE]))
                 {
                     SendProgressReport("Enabling LLDP description");
-                    SendRequest(GetRestUrlEntry(Command.LLDP_SYSTEM_DESCRIPTION_ENABLE));
-                    WriteMemory();
+                    RunSwichCommand(new CmdRequest(Command.LLDP_SYSTEM_DESCRIPTION_ENABLE));
                 }
             }
             catch (Exception ex)
@@ -196,6 +194,8 @@ namespace PoEWizard.Comm
                         return CliParseUtils.ParseLldpRemoteTable(resp[STRING].ToString());
                     case ParseType.TrafficTable:
                         return CliParseUtils.ParseTrafficTable(resp[STRING].ToString());
+                    case ParseType.NoParsing:
+                        return resp[STRING].ToString();
                     default:
                         return resp;
                 }
@@ -376,7 +376,7 @@ namespace PoEWizard.Comm
                 if (SwitchModel.SyncStatus == SyncStatusType.Synchronized) return;
                 string msg = $"Writing memory on switch {SwitchModel.IpAddress}";
                 StartProgressBar($"{msg} ...", 25);
-                SendRequest(GetRestUrlEntry(Command.WRITE_MEMORY));
+                RunSwichCommand(new CmdRequest(Command.WRITE_MEMORY));
                 progressStartTime = DateTime.Now;
                 double dur = 0;
                 while (dur < waitSec)
@@ -456,7 +456,7 @@ namespace PoEWizard.Comm
             {
                 try
                 {
-                    SendRequest(GetRestUrlEntry(Command.REBOOT_SWITCH));
+                    RunSwichCommand(new CmdRequest(Command.REBOOT_SWITCH));
                     return;
                 }
                 catch (Exception ex)
@@ -1298,7 +1298,6 @@ namespace PoEWizard.Comm
         {
             if (_wizardSwitchPort == null) return;
             GetSlotPower(_wizardSwitchSlot);
-
             _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_PORT_STATUS, ParseType.Htable3, new string[1] { _wizardSwitchPort.Name })) as List<Dictionary<string, string>>;
             if (_dictList?.Count > 0) _wizardSwitchPort.UpdatePortStatus(_dictList[0]);
             _dictList = RunSwichCommand(new CmdRequest(Command.SHOW_PORT_MAC_ADDRESS, ParseType.Htable, new string[1] { _wizardSwitchPort.Name })) as List<Dictionary<string, string>>;
@@ -1327,7 +1326,7 @@ namespace PoEWizard.Comm
                     }
                     if (slot.PowerClassDetection == ConfigType.Disable)
                     {
-                        SendRequest(GetRestUrlEntry(new CmdRequest(Command.POWER_CLASS_DETECTION_ENABLE, new string[1] { $"{slot.Name}" })));
+                        RunSwichCommand(new CmdRequest(Command.POWER_CLASS_DETECTION_ENABLE, new string[1] { $"{slot.Name}" }));
                     }
                     GetSlotPower(slot);
                     if (!slot.IsInitialized)
