@@ -11,16 +11,16 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class CustomMsgBox : Window
     {
-        private ResourceDictionary light;
-        private ResourceDictionary dark;
-        private ResourceDictionary currDict;
+        private readonly ResourceDictionary light;
+        private readonly ResourceDictionary dark;
+        private readonly ResourceDictionary currDict;
 
         public string Header { get; set; }
         public string Message { get; set; }
         public MsgBoxButtons Buttons { get; set; }
         public MsgBoxIcons Img { get; set; }
 
-        public CustomMsgBox(Window owner)
+        public CustomMsgBox(Window owner, MsgBoxButtons boxButtons)
         {
             InitializeComponent();
             light = Resources.MergedDictionaries[0];
@@ -38,14 +38,25 @@ namespace PoEWizard.Components
             this.Owner = owner;
             msgOkBtn.Visibility = Visibility.Collapsed;
             msgCancelBtn.Visibility = Visibility.Collapsed;
+            if (boxButtons == MsgBoxButtons.YesNo)
+            {
+                _okBtnLabel.Content = "Yes";
+                _cancelBtnLabel.Content = "No";
+            }
+            else if (boxButtons == MsgBoxButtons.OkCancel)
+            {
+                _okBtnLabel.Content = "OK";
+                _cancelBtnLabel.Content = "Cancel";
+            }
+            Buttons = boxButtons;
             msgIcon.Source = null;
         }
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
             msgHeader.Text = Header ?? "";
             msgBody.Text = Message ?? "";
-            if (Buttons == MsgBoxButtons.Ok || Buttons == MsgBoxButtons.OkCancel) msgOkBtn.Visibility = Visibility.Visible;
-            if (Buttons == MsgBoxButtons.Cancel || Buttons == MsgBoxButtons.OkCancel) msgCancelBtn.Visibility = Visibility.Visible;
+            if (Buttons == MsgBoxButtons.Ok || Buttons == MsgBoxButtons.OkCancel || Buttons == MsgBoxButtons.YesNo) msgOkBtn.Visibility = Visibility.Visible;
+            if (Buttons == MsgBoxButtons.Cancel || Buttons == MsgBoxButtons.OkCancel || Buttons == MsgBoxButtons.YesNo) msgCancelBtn.Visibility = Visibility.Visible;
             if (Buttons == MsgBoxButtons.None)
             {
                 Task.Delay(TimeSpan.FromSeconds(3)).ContinueWith(o => Dispatcher.Invoke(new Action(() => this.Close())));

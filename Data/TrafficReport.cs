@@ -84,28 +84,25 @@ namespace PoEWizard.Data
             foreach (KeyValuePair<string, PortTrafficModel> keyVal in this.SwitchTraffic.Ports)
             {
                 this.trafficPort = keyVal.Value;
-                if (this.switchPorts.ContainsKey(this.trafficPort.Port))
-                {
-                    this.trafficPort.MacList = this.switchPorts[this.trafficPort.Port].MacList;
-                }
+                if (this.switchPorts.ContainsKey(this.trafficPort.Port)) this.trafficPort.MacList = this.switchPorts[this.trafficPort.Port].MacList;
                 this.Data.Append("\r\n ").Append(this.trafficPort.Port);
                 ParseTrafficRate("Rx Rate", this.trafficPort.RxBytes);
                 ParseTrafficRate("Tx Rate", this.trafficPort.TxBytes);
-                this.broadCast = GetAvgTrafficSamples(this.trafficPort.BroadcastFrames);
+                this.broadCast = GetDiffTrafficSamples(this.trafficPort.BroadcastFrames);
                 this.Data.Append(",").Append(this.broadCast);
-                this.uniCast = GetAvgTrafficSamples(this.trafficPort.UnicastFrames);
-                this.Data.Append(",").Append(uniCast);
+                this.uniCast = GetDiffTrafficSamples(this.trafficPort.UnicastFrames);
+                this.Data.Append(",").Append(this.uniCast);
                 this.Data.Append(",").Append(Utils.CalcPercent(this.broadCast, this.uniCast, 2));
-                this.multiCast = GetAvgTrafficSamples(this.trafficPort.MulticastFrames);
+                this.multiCast = GetDiffTrafficSamples(this.trafficPort.MulticastFrames);
                 this.Data.Append(",").Append(this.multiCast);
-                this.lostFrames = GetAvgTrafficSamples(this.trafficPort.LostFrames);
+                this.lostFrames = GetDiffTrafficSamples(this.trafficPort.LostFrames);
                 this.Data.Append(",").Append(this.lostFrames);
-                this.crcError = GetMaxTrafficSamples(this.trafficPort.CrcErrorFrames);
+                this.crcError = GetDiffTrafficSamples(this.trafficPort.CrcErrorFrames);
                 this.Data.Append(",").Append(this.crcError);
-                this.collisions = GetMaxTrafficSamples(this.trafficPort.CollidedFrames) + GetMaxTrafficSamples(this.trafficPort.Collisions) +
-                                  GetMaxTrafficSamples(this.trafficPort.ExcCollisions) + GetMaxTrafficSamples(this.trafficPort.LateCollisions);
+                this.collisions = GetDiffTrafficSamples(this.trafficPort.CollidedFrames) + GetDiffTrafficSamples(this.trafficPort.Collisions) +
+                                  GetDiffTrafficSamples(this.trafficPort.ExcCollisions) + GetDiffTrafficSamples(this.trafficPort.LateCollisions);
                 this.Data.Append(",").Append(this.collisions);
-                this.alignments = GetMaxTrafficSamples(this.trafficPort.AlignmentsError);
+                this.alignments = GetDiffTrafficSamples(this.trafficPort.AlignmentsError);
                 this.Data.Append(",").Append(this.alignments).Append(",\"").Append(PrintVendor()).Append("\",\"").Append(PrintMacAdresses()).Append("\"");
                 ParseAlertConditions();
             }
@@ -208,44 +205,15 @@ namespace PoEWizard.Data
 
         private double AddTrafficRate(List<double> nbBytes)
         {
-            double dVal = (GetAvgTrafficSamples(nbBytes) * 8 / this.TrafficDuration) / 1024;
+            double dVal = (GetDiffTrafficSamples(nbBytes) * 8 / this.TrafficDuration) / 1024;
             double avg = Math.Round(dVal, 2, MidpointRounding.ToEven);
             return avg;
         }
 
-        private double GetAvgTrafficSamples(List<double> list)
+        private double GetDiffTrafficSamples(List<double> list)
         {
-
             if (list?.Count > 0) return list[list.Count - 1] - list[0];
             return 0;
-        }
-
-        private double GetMaxTrafficSamples(List<double> list)
-        {
-            if (list?.Count > 0)
-            {
-                List<double> traffDiff = BuildDiffSample(list);
-                if (traffDiff?.Count > 1)
-                {
-                    double maxValue = traffDiff.Max();
-                    double avg = GetAvgTrafficSamples(list);
-                    if (maxValue < avg) maxValue = avg;
-                    return maxValue;
-                }
-            }
-            return 0;
-        }
-
-        private List<double> BuildDiffSample(List<double> list)
-        {
-            List<double> diffSamples = new List<double>();
-            double prevBytes = list[0];
-            for (int idx = 1; idx < list.Count; idx++)
-            {
-                if (list[idx] > prevBytes) diffSamples.Add(list[idx] - prevBytes);
-                prevBytes = list[idx];
-            }
-            return diffSamples;
         }
 
         private void BuildLldpDevicesReport()
