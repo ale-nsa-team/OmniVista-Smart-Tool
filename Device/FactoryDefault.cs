@@ -45,13 +45,13 @@ namespace PoEWizard.Device
             }
             //setup mgt vlan
             restSvc = MainWindow.restApiService;
-            restSvc.RunSwichCommand(new CmdRequest(Command.DISABLE_AUTO_FABRIC));
-            restSvc.RunSwichCommand(new CmdRequest(Command.ENABLE_DDM));
-            restSvc.RunSwichCommand(new CmdRequest(Command.ENABLE_MGT_VLAN));
-            restSvc.RunSwichCommand(new CmdRequest(Command.SET_MGT_INTERFACE, device.IpAddress));
-            restSvc.RunSwichCommand(new CmdRequest(Command.ENABLE_SPAN_TREE));
-            restSvc.RunSwichCommand(new CmdRequest(Command.SET_SYSTEM_NAME, device.IpAddress));
-            restSvc.RunSwichCommand(new CmdRequest(Command.SET_LOOPBACK_DET));
+            restSvc.RunSwitchCommand(new CmdRequest(Command.DISABLE_AUTO_FABRIC));
+            restSvc.RunSwitchCommand(new CmdRequest(Command.ENABLE_DDM));
+            restSvc.RunSwitchCommand(new CmdRequest(Command.ENABLE_MGT_VLAN));
+            restSvc.RunSwitchCommand(new CmdRequest(Command.SET_MGT_INTERFACE, device.IpAddress));
+            restSvc.RunSwitchCommand(new CmdRequest(Command.ENABLE_SPAN_TREE));
+            restSvc.RunSwitchCommand(new CmdRequest(Command.SET_SYSTEM_NAME, device.IpAddress));
+            restSvc.RunSwitchCommand(new CmdRequest(Command.SET_LOOPBACK_DET));
             restSvc.RebootSwitch(600);
         }
     }

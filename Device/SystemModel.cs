@@ -55,7 +55,7 @@ namespace PoEWizard.Device
                 switch (prop.Name)
                 {
                     case "MtgIpAddr":
-                        cmdList.Add(new CmdRequest(Command.SET_MNGT_INTERFACE, MgtIpAddr, NetMask));
+                        cmdList.Add(new CmdRequest(Command.SET_MGT_INTERFACE, MgtIpAddr, NetMask));
                         device.IpAddress = MgtIpAddr;
                         break;
                     case "AdminPwd":
