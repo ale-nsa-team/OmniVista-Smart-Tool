@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.RestUrl;
 
 namespace PoEWizard.Comm
 {
@@ -184,23 +186,23 @@ namespace PoEWizard.Comm
 
         public Dictionary<string, string> SendRequest(RestUrlEntry entry)
         {
-            string url = RestUrl.ParseUrl(entry);
+            string url = ParseUrl(entry);
             if (string.IsNullOrEmpty(url)) throw new SwitchCommandError("Command line is missing!");
             entry.StartTime = DateTime.Now;
             Dictionary<string, string> response = SendRestApiRequest(entry, url);
-            response[RestUrl.DURATION] = Utils.CalcStringDuration(entry.StartTime);
-            entry.Duration = response[RestUrl.DURATION];
+            response[DURATION] = Utils.CalcStringDuration(entry.StartTime);
+            entry.Duration = response[DURATION];
             entry.Response = response;
             return response;
         }
 
         private Dictionary<string, string> SendRestApiRequest(RestUrlEntry entry, string url)
         {
-            Dictionary<string, string> response = new Dictionary<string, string> { [RestUrl.REST_URL] = url, [Constants.ERROR] = "", [RestUrl.DURATION] = "" };
+            Dictionary<string, string> response = new Dictionary<string, string> { [REST_URL] = url, [ERROR] = string.Empty, [DURATION] = string.Empty };
             try
             {
                 url = $"{this._httpClient.BaseAddress}{url}";
-                response[RestUrl.REST_URL] = url;
+                response[REST_URL] = url;
                 HttpRequestMessage request = GetHttpRequest(entry, url);
                 var http_response = this._httpClient.SendAsync(request);
                 while (!http_response.IsCompleted) { };
@@ -214,15 +216,12 @@ namespace PoEWizard.Comm
                 }
                 if (http_response.Result.StatusCode == HttpStatusCode.OK)
                 {
-                    response[RestUrl.RESULT] = http_response.Result.Content.ReadAsStringAsync().Result;
+                    response[RESULT] = http_response.Result.Content.ReadAsStringAsync().Result;
                 }
                 else
                 {
                     string errorDescr = ParseError(http_response, url);
-                    if (errorDescr != null)
-                    {
-                        response[Constants.ERROR] = errorDescr;
-                    }
+                    if (!string.IsNullOrEmpty(errorDescr)) response[ERROR] = errorDescr;
                 }
             }
             catch (Exception ex)
@@ -239,19 +238,21 @@ namespace PoEWizard.Comm
             {
                 string xmlError = http_response.Result.Content.ReadAsStringAsync().Result;
                 var errorList = CliParseUtils.ParseXmlToDictionary(xmlError);
-                if (errorList.ContainsKey(RestUrl.API_ERROR) && !string.IsNullOrEmpty(errorList[RestUrl.API_ERROR]))
+                if (errorList.ContainsKey(API_ERROR) && !string.IsNullOrEmpty(errorList[API_ERROR]))
                 {
-                    string error = errorList[RestUrl.API_ERROR].Trim();
+                    string error = errorList[API_ERROR].Trim();
                     if (!string.IsNullOrEmpty(error))
                     {
                         error = Utils.ReplaceFirst(error, ":", "");
                         string errMsg = error.ToLower();
-                        if (errorList.ContainsKey(RestUrl.HTTP_RESPONSE) && !string.IsNullOrEmpty(errorList[RestUrl.HTTP_RESPONSE]))
+                        if (errorList.ContainsKey(HTTP_RESPONSE) && !string.IsNullOrEmpty(errorList[HTTP_RESPONSE]))
                         {
                             HttpStatusCode code = Utils.ConvertToHttpStatusCode(errorList);
-                            string errorMsg = $"Requested URL: {url}\r\nHTTP Response: {code} ({errorList[RestUrl.HTTP_RESPONSE]})\r\nError: {error}";
-                            if (errMsg.Contains("power range supported")) return null;
-                            if (errMsg.Contains("not supported") || errMsg.Contains("command in progress")) Logger.Warn(errorMsg); else Logger.Error(errorMsg);
+                            string errorMsg = $"Requested URL: {url}\r\nHTTP Response: {code} ({errorList[HTTP_RESPONSE]})\r\nError: {error}";
+                            if (errMsg.Contains("not supported") || errMsg.Contains("command in progress") || errMsg.Contains("power range supported"))
+                                Logger.Warn(errorMsg);
+                            else
+                                Logger.Error(errorMsg);
                         }
                         return error;
                     }
