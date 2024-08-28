@@ -376,18 +376,18 @@ namespace PoEWizard
                 if (duration > 1) strSelDuration += "s";
                 txt.Append(strSelDuration).Append(").\nCurrent duration: ").Append(Utils.CalcStringDuration(startTrafficAnalysisTime, true));
                 txt.Append("\n").Append(question).Append("?");
-                bool res = ShowMessageBox(title, txt.ToString(), MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                bool res = ShowMessageBox(title, txt.ToString(), MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
                 if (res)
                 {
                     restApiService?.StopTrafficAnalysis(AbortType.CanceledByUser, stopTrafficAnalysisReason);
                 }
                 else if (abortType == AbortType.Close)
                 {
-                    if (string.IsNullOrEmpty(confirm))
+                    if (!string.IsNullOrEmpty(confirm))
                     {
+                        res = ShowMessageBox(title, $"Do you still want to continue {confirm}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
+                        if (!res) return false;
                     }
-                    res = ShowMessageBox(title, $"Do you still want to continue {confirm}?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
-                    if (!res) return false;
                     restApiService?.StopTrafficAnalysis(abortType, stopTrafficAnalysisReason);
                 }
             }
@@ -762,7 +762,7 @@ namespace PoEWizard
                 if (result == WizardResult.Fail)
                 {
                     bool res = ShowMessageBox("Wizard", "It looks like the wizard was unable to fix the problem.\nDo you want to collect information to send to technical support?",
-                                              MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
+                                              MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                     if (!res) return;
                     barText = "Cleaning up current log ...";
                     ShowInfoBox(barText);
@@ -982,12 +982,12 @@ namespace PoEWizard
                     int resetSlotCnt = 0;
                     foreach (var reports in reportResult.Result)
                     {
-                        List<ReportResult> reportList = reports.Value as List<ReportResult>;
+                        List<ReportResult> reportList = reports.Value;
                         if (reportList?.Count > 0)
                         {
                             ReportResult report = reportList[reportList.Count - 1];
                             string alertMsg = $"{report.AlertDescription}\nDo you want to turn it On?";
-                            if (report?.Result == WizardResult.Warning && ShowMessageBox($"Slot {report.ID} warning", alertMsg, MsgBoxIcons.Question, MsgBoxButtons.OkCancel))
+                            if (report?.Result == WizardResult.Warning && ShowMessageBox($"Slot {report.ID} warning", alertMsg, MsgBoxIcons.Question, MsgBoxButtons.YesNo))
                             {
                                 await Task.Run(() => restApiService.RunPowerUpSlot(report.ID));
                                 resetSlotCnt++;
@@ -1066,7 +1066,7 @@ namespace PoEWizard
             {
                 string alertDescription = reportResult.GetAlertDescription(selectedPort.Name);
                 string msg = !string.IsNullOrEmpty(alertDescription) ? alertDescription : "To enable 802.3.bt all devices on the same slot will restart";
-                if (!ShowMessageBox("Enable 802.3.bt", $"{msg}\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
+                if (!ShowMessageBox("Enable 802.3.bt", $"{msg}\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo))
                     return;
             }
             await RunPoeWizard(new List<Command>() { Command.POWER_823BT_ENABLE });
@@ -1089,7 +1089,7 @@ namespace PoEWizard
                 string alert = reportResult.GetAlertDescription(selectedPort.Name);
                 if (!ShowMessageBox("Power Priority Change",
                                     $"{(!string.IsNullOrEmpty(alert) ? $"{alert}" : "")}\nSome other devices with lower priority may stop\nDo you want to proceed?",
-                                    MsgBoxIcons.Warning, MsgBoxButtons.OkCancel)) return;
+                                    MsgBoxIcons.Warning, MsgBoxButtons.YesNo)) return;
             }
             await RunPoeWizard(new List<Command>() { Command.POWER_PRIORITY_PORT });
             Logger.Debug($"Change Power Priority on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
@@ -1114,13 +1114,13 @@ namespace PoEWizard
             if (result != WizardResult.Ok && result != WizardResult.Fail) reportResult.RemoveLastWizardReport(selectedPort.Name); else reset = true;
             await CheckDefaultMaxPower();
             if (selectedPort.Poe == PoeStatus.Off && (ShowMessageBox("Port PoE turned Off", $"The PoE on port {selectedPort.Name} is turned Off!\n Do you want to turn it On?",
-                                                                     MsgBoxIcons.Warning, MsgBoxButtons.OkCancel)))
+                                                                     MsgBoxIcons.Warning, MsgBoxButtons.YesNo)))
             {
                 await RunWizardCommands(new List<Command>() { Command.RESET_POWER_PORT }, 30);
                 Logger.Info($"PoE turned Off, reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                 reset = true;
             }
-            if (!reset && ShowMessageBox("Resetting Port", $"Do you want to recycle the power on port {selectedPort.Name}?", MsgBoxIcons.Question, MsgBoxButtons.OkCancel))
+            if (!reset && ShowMessageBox("Resetting Port", $"Do you want to recycle the power on port {selectedPort.Name}?", MsgBoxIcons.Question, MsgBoxButtons.YesNo))
             {
                 await RunWizardCommands(new List<Command>() { Command.RESET_POWER_PORT }, 30);
                 Logger.Info($"Recycling the power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
@@ -1135,7 +1135,7 @@ namespace PoEWizard
             {
                 string alert = reportResult.GetAlertDescription(selectedPort.Name);
                 string msg = !string.IsNullOrEmpty(alert) ? alert : $"Changing Max. Power on port {selectedPort.Name} to default";
-                if (ShowMessageBox("Check default Max. Power", $"{msg}\nDo you want to change?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
+                if (ShowMessageBox("Check default Max. Power", $"{msg}\nDo you want to change?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo))
                 {
                     await RunWizardCommands(new List<Command>() { Command.CHANGE_MAX_POWER });
                 }
@@ -1216,12 +1216,12 @@ namespace PoEWizard
         private bool ShowMessageBox(string title, string message, MsgBoxIcons icon = MsgBoxIcons.Info, MsgBoxButtons buttons = MsgBoxButtons.Ok)
         {
             _infoBox.Visibility = Visibility.Collapsed;
-            CustomMsgBox msgBox = new CustomMsgBox(this)
+            CustomMsgBox msgBox = new CustomMsgBox(this, buttons)
             {
                 Header = title,
                 Message = message,
-                Img = icon,
-                Buttons = buttons
+                Img = icon
+                //, Buttons = buttons
             };
             return (bool)msgBox.ShowDialog();
         }
@@ -1308,7 +1308,7 @@ namespace PoEWizard
                 {
                     string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be saved.\n" +
                         $"Do you want to reboot the switch on {WORKING_DIR} directory?";
-                    bool res = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                    bool res = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
                     if (res)
                     {
                         string txt = await RebootSwitch();
@@ -1365,7 +1365,7 @@ namespace PoEWizard
         {
             try
             {
-                if (ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.IpAddress}?", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel))
+                if (ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.IpAddress}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo))
                 {
                     await Task.Run(() => restApiService.GetSystemInfo());
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
@@ -1380,7 +1380,7 @@ namespace PoEWizard
                     Logger.Activity($"Rebooting switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
                     string txt = await RebootSwitch();
                     if (string.IsNullOrEmpty(txt)) return;
-                    if (ShowMessageBox("Reboot Switch", $"{txt}\nDo you want to reconnect to the switch {device.IpAddress}?", MsgBoxIcons.Info, MsgBoxButtons.OkCancel))
+                    if (ShowMessageBox("Reboot Switch", $"{txt}\nDo you want to reconnect to the switch {device.IpAddress}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo))
                     {
                         Connect();
                     }
@@ -1400,7 +1400,7 @@ namespace PoEWizard
         private bool AuthorizeWriteMemory(string title)
         {
             return ShowMessageBox(title, "Flash memory is not synchronized\nDo you want to save it now?\nIt may take up to 30 sec to execute Write Memory.",
-                                  MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                                  MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
         }
 
         private async Task<string> RebootSwitch()

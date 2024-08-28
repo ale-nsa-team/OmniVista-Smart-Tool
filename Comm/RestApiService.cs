@@ -1556,19 +1556,14 @@ namespace PoEWizard.Comm
             Logger.Info($"Closing Rest API");
         }
 
-        private RestUrlEntry GetRestUrlEntry(Command cmd, string[] data)
+        private RestUrlEntry GetRestUrlEntry(CmdRequest req)
         {
-            Dictionary<string, string> body = GetContent(cmd, data);
-            return new RestUrlEntry(cmd, data)
+            Dictionary<string, string> body = GetContent(req.Command, req.Data);
+            return new RestUrlEntry(req.Command, req.Data)
             {
                 Method = body == null ? HttpMethod.Get : HttpMethod.Post,
                 Content = body
             };
-        }
-
-        private RestUrlEntry GetRestUrlEntry(CmdRequest req)
-        {
-            return GetRestUrlEntry(req.Command, req.Data);
         }
 
         private Dictionary<string, object> SendRequest(RestUrlEntry entry)

@@ -38,8 +38,12 @@
             <TextBlock Grid.Row="1" Grid.Column="1" x:Name="msgBody" Style="{DynamicResource msgBoxBody}" />
             <Border Grid.Row="2" Grid.ColumnSpan="2" Style="{DynamicResource propsBorder}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button x:Name="msgOkBtn" Style="{DynamicResource defaultButton}" Margin="0,0,10,0" Click="MsgOkBtn_Click">OK</Button>
-                    <Button x:Name="msgCancelBtn" Style="{DynamicResource defaultButton}" Margin="0,0,10,0"  Click="MsgCancelBtn_Click">Cancel</Button>
+                    <Button x:Name="msgOkBtn" Style="{DynamicResource defaultButton}" Margin="0,0,10,0" Click="MsgOkBtn_Click">
+                        <Label x:Name="_okBtnLabel" Style="{DynamicResource valLabel}">OK</Label>
+                    </Button>
+                    <Button x:Name="msgCancelBtn" Style="{DynamicResource defaultButton}" Margin="0,0,10,0"  Click="MsgCancelBtn_Click">
+                        <Label x:Name="_cancelBtnLabel" Style="{DynamicResource valLabel}">Cancel</Label>
+                    </Button>
                 </StackPanel>
             </Border>
         </Grid>
