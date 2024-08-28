@@ -25,17 +25,19 @@ namespace PoEWizard.Data
 
         private double rxBroadCast = 0;
         private double rxUniCast = 0;
+        private string rxBroadCastPercent = string.Empty;
         private double rxMultiCast = 0;
         private double rxLostFrames = 0;
+        private double rxCrcError = 0;
+        private double rxAlignments = 0;
 
         private double txBroadCast = 0;
         private double txUniCast = 0;
+        private string txBroadCastPercent = string.Empty;
         private double txMultiCast = 0;
         private double txLostFrames = 0;
 
-        private double rxCrcError = 0;
         private double txCollisions = 0;
-        private double rxAlignments = 0;
 
         public string Summary { get; set; }
         public StringBuilder Data { get; set; }
@@ -103,7 +105,8 @@ namespace PoEWizard.Data
                 this.Data.Append(",").Append(this.rxBroadCast);
                 this.rxUniCast = GetDiffTrafficSamples(this.trafficPort.RxUnicastFrames);
                 this.Data.Append(",").Append(this.rxUniCast);
-                this.Data.Append(",").Append(Utils.CalcPercent(this.rxBroadCast, this.rxUniCast, 2));
+                this.rxBroadCastPercent = GetBroadcastPercent(this.rxBroadCast, this.rxUniCast);
+                this.Data.Append(",").Append(this.rxBroadCastPercent);
                 this.rxMultiCast = GetDiffTrafficSamples(this.trafficPort.RxMulticastFrames);
                 this.Data.Append(",").Append(this.rxMultiCast);
                 this.rxLostFrames = GetDiffTrafficSamples(this.trafficPort.RxLostFrames);
@@ -119,7 +122,8 @@ namespace PoEWizard.Data
                 this.Data.Append(",").Append(this.txBroadCast);
                 this.txUniCast = GetDiffTrafficSamples(this.trafficPort.TxUnicastFrames);
                 this.Data.Append(",").Append(this.txUniCast);
-                this.Data.Append(",").Append(Utils.CalcPercent(this.txBroadCast, this.txUniCast, 2));
+                this.txBroadCastPercent = GetBroadcastPercent(this.rxBroadCast, this.rxUniCast);
+                this.Data.Append(",").Append(this.txBroadCastPercent);
                 this.txMultiCast = GetDiffTrafficSamples(this.trafficPort.TxMulticastFrames);
                 this.Data.Append(",").Append(this.txMultiCast);
                 this.txLostFrames = GetDiffTrafficSamples(this.trafficPort.TxLostFrames);
@@ -138,6 +142,12 @@ namespace PoEWizard.Data
             if (this.alertReport?.Count > 0) foreach (KeyValuePair<string, string> keyVal in this.alertReport) this.Summary += keyVal.Value;
             else this.Summary += $"\nNo traffic anomalies detected.";
             this.Summary += "\n";
+        }
+
+        private string GetBroadcastPercent(double broadCast, double uniCast)
+        {
+            if (uniCast > 0) return Utils.CalcPercent(broadCast, uniCast, 2).ToString();
+            return "";
         }
 
         private void ParseAlertConditions()
