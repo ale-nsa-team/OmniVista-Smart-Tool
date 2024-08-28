@@ -1026,7 +1026,7 @@ namespace PoEWizard.Comm
             double prevMaxPower = _wizardSwitchPort.MaxPower;
             if (!_wizardSwitchPort.Is4Pair)
             {
-                RunSwitchCommand(new CmdRequest(Command.POWER_4PAIR_PORT, new string[1] { _wizardSwitchSlot.Name }));
+                RunSwitchCommand(new CmdRequest(Command.POWER_4PAIR_PORT, new string[1] { _wizardSwitchPort.Name }));
                 Thread.Sleep(3000);
                 ExecuteActionOnPort($"Re-enabling 2-Pair power on port {_wizardSwitchPort.Name}", waitSec, Command.POWER_2PAIR_PORT);
             }
