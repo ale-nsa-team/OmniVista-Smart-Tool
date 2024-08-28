@@ -2,12 +2,17 @@
 using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace PoEWizard.Device
 {
     public static class FactoryDefault
     {
         private static RestApiService restSvc;
+        private static SwitchModel swModel;
         public static IProgress<ProgressReport> Progress { get; set; }
 
         private static readonly List<string> files = new List<string>()
@@ -45,9 +50,10 @@ namespace PoEWizard.Device
             "/flash/rcl.log"
         };
 
-        public static void Reset(SwitchModel device)
+        private static void Reset(SwitchModel device)
         {
             Progress.Report(new ProgressReport("Removing config files..."));
+            swModel = device;
             SftpService sftp = new SftpService(device.IpAddress, "admin", device.Password);
             sftp.Connect();
             foreach (string file in files)
@@ -57,17 +63,50 @@ namespace PoEWizard.Device
             restSvc = MainWindow.restApiService;
             restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
             sftp.DeleteFile("/flash/.bash_history");
-            //Progress.Report(new ProgressReport("setting up management interface..."));
-            //setup mgt vlan
-            //restSvc.RunSwitchCommand(new CmdRequest(Command.DISABLE_AUTO_FABRIC));
-            //restSvc.RunSwitchCommand(new CmdRequest(Command.ENABLE_DDM));
-            //restSvc.RunSwitchCommand(new CmdRequest(Command.ENABLE_MGT_VLAN));
-            //restSvc.RunSwitchCommand(new CmdRequest(Command.SET_MGT_INTERFACE, device.IpAddress, device.NetMask));
-            //restSvc.RunSwitchCommand(new CmdRequest(Command.ENABLE_SPAN_TREE));
-            //restSvc.RunSwitchCommand(new CmdRequest(Command.SET_SYSTEM_NAME, device.IpAddress));
-            //restSvc.RunSwitchCommand(new CmdRequest(Command.SET_LOOPBACK_DET));
+            
             sftp.Disconnect();
             restSvc.RebootSwitch(600);
+        }
+
+        private static string LoadTemplate(string filename)
+        {
+            try
+            {
+                string path = Path.Combine(MainWindow.dataPath, filename);
+                IEnumerable<string> lines = ReadFromDisk(Path.Combine("Resources", filename));
+                var res = lines.Select(l => l.Replace("{Name}", swModel.Name));
+                res = res.Select(l => l.Replace("{Location}", swModel.Location));
+                res = res.Select(l => l.Replace("{IpAddress}", swModel.IpAddress));
+                res = res.Select(l => l.Replace("{SubnetMask}", swModel.NetMask));
+                File.WriteAllLines(path, res);
+                return path;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Exception while writing config file {filename}: {ex.Message}");
+                return null;
+            }
+
+        }
+
+        public static IEnumerable<string> ReadFromDisk(string filepath)
+        {
+            string filename = Path.GetFileName(filepath);
+            IEnumerable<string> lines = new List<string>();
+
+            if (File.Exists(filepath))
+            {
+                try
+                {
+                    lines = File.ReadLines(filepath, Encoding.UTF8);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Exception while reading config file {filename}: {ex.Message}");
+                    return null;
+                }
+            }
+            return lines;
         }
     }
 }
