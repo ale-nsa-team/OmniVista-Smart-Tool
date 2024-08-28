@@ -20,7 +20,6 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static PoEWizard.Data.Constants;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PoEWizard
 {
@@ -35,7 +34,6 @@ namespace PoEWizard
         private readonly ResourceDictionary darkDict;
         private readonly ResourceDictionary lightDict;
         private ResourceDictionary currentDict;
-        private readonly string appVersion;
         private readonly IProgress<ProgressReport> progress;
         private bool reportAck;
         private SftpService sftpService;
@@ -80,7 +78,6 @@ namespace PoEWizard
             string version = assembly.GetName().Version.ToString();
             string title = assembly.GetCustomAttribute<AssemblyTitleAttribute>().Title;
             string ale = assembly.GetCustomAttribute<AssemblyCompanyAttribute>().Company;
-            appVersion = title + " (V." + string.Join(".", version.Split('.').ToList().Take(2)) + ")";
             //datapath
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             dataPath = Path.Combine(appData, ale, title);
