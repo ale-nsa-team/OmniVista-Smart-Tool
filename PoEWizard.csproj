@@ -298,67 +298,67 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\wiz.ico" />
+    <Resource Include="Resources\Img\wiz.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="wiz.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\wand.png" />
+    <Resource Include="Resources\Img\wand.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\connected.png" />
-    <Resource Include="Resources\disconnected-dark.png" />
-    <Resource Include="Resources\disconnected-light.png" />
+    <Resource Include="Resources\Img\connected.png" />
+    <Resource Include="Resources\Img\disconnected-dark.png" />
+    <Resource Include="Resources\Img\disconnected-light.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\ale-icon.png" />
+    <Resource Include="Resources\Img\ale-icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\alert.png" />
-    <Resource Include="Resources\eye-closed-dark.png" />
-    <Resource Include="Resources\eye-closed-light.png" />
-    <Resource Include="Resources\eye-open-dark.png" />
-    <Resource Include="Resources\eye-open-light.png" />
-    <Resource Include="Resources\info.png" />
-    <Resource Include="Resources\question.png" />
-    <Resource Include="Resources\remove.png" />
+    <Resource Include="Resources\Img\alert.png" />
+    <Resource Include="Resources\Img\eye-closed-dark.png" />
+    <Resource Include="Resources\Img\eye-closed-light.png" />
+    <Resource Include="Resources\Img\eye-open-dark.png" />
+    <Resource Include="Resources\Img\eye-open-light.png" />
+    <Resource Include="Resources\Img\info.png" />
+    <Resource Include="Resources\Img\question.png" />
+    <Resource Include="Resources\Img\remove.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\error.png" />
+    <Resource Include="Resources\Img\error.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\refresh-dark.png" />
+    <Resource Include="Resources\Img\refresh-dark.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\refresh-light.png" />
+    <Resource Include="Resources\Img\refresh-light.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\warning.png" />
+    <Resource Include="Resources\Img\warning.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\danger.png" />
+    <Resource Include="Resources\Img\danger.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\save-dark.png" />
+    <Resource Include="Resources\Img\save-dark.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\save-light.png" />
+    <Resource Include="Resources\Img\save-light.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\reboot-dark.png" />
+    <Resource Include="Resources\Img\reboot-dark.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\reboot-light.png" />
+    <Resource Include="Resources\Img\reboot-light.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\traffic-dark.png" />
+    <Resource Include="Resources\Img\traffic-dark.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\traffic-light.png" />
+    <Resource Include="Resources\Img\traffic-light.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\plus-green.png" />
+    <Resource Include="Resources\Img\plus-green.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\ulc_script.txt" />

@@ -22,7 +22,7 @@ namespace PoEWizard.Device
         public SystemModel(SwitchModel device)
         {
             MgtIpAddr = device.IpAddress;
-            NetMask = "255.255.255.0";
+            NetMask = device.NetMask;
             AdminPwd = device.Password;
             Name = device.Name;
             Contact = device.Contact;

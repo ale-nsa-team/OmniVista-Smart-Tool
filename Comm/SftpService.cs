@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using PoEWizard.Data;
 using Renci.SshNet;
@@ -34,7 +37,7 @@ namespace PoEWizard.Comm
             {
                 if (!_sftpClient.IsConnected) _sftpClient.Connect();
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 Logger.Error("Error connecting to switch.", ex);
             }
@@ -65,7 +68,7 @@ namespace PoEWizard.Comm
                     _sftpClient.UploadFile(fs, remotePath);
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 Logger.Error("Error uploading file.", ex);
             }
@@ -108,9 +111,13 @@ namespace PoEWizard.Comm
         {
             try
             {
-                _sftpClient.DeleteFile(remotePath);
+                if (remotePath.Contains("*")) DeleteFileWC(remotePath);
+                else _sftpClient.DeleteFile(remotePath);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         public long GetFileSize(string remotePath)
@@ -130,6 +137,29 @@ namespace PoEWizard.Comm
         public void Disconnect()
         {
             _sftpClient?.Disconnect();
+        }
+
+        private IEnumerable<ISftpFile> ListDirectoryWC(string pattern)
+        {
+            string directoryName = (pattern[0] == '/' ? "" : "/") + pattern.Substring(0, pattern.LastIndexOf('/'));
+            string regexPattern = pattern.Substring(pattern.LastIndexOf('/') + 1)
+                    .Replace(".", "\\.")
+                    .Replace("*", ".*")
+                    .Replace("?", ".");
+            Regex reg = new Regex('^' + regexPattern + '$');
+
+            var results = _sftpClient.ListDirectory(string.IsNullOrEmpty(directoryName) ? "/" : directoryName);
+            
+            return results.Where(e => reg.IsMatch(e.Name));
+
+        }
+
+        private void DeleteFileWC(string pattern)
+        {
+            foreach (var file in ListDirectoryWC(pattern))
+            {
+                file.Delete();
+            }
         }
     }
 }

@@ -35,14 +35,14 @@
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
                                 <Button Style="{DynamicResource deleteButton}">
-                                    <Image Source="../Resources/plus-green.png" />
+                                    <Image Source="../Resources/Img/plus-green.png" />
                                 </Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Style="{DynamicResource deleteButton}" >
-                                    <Image Source="../Resources/remove.png" />
+                                    <Image Source="../Resources/Img/remove.png" />
                                 </Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -61,14 +61,14 @@
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
                                 <Button Style="{DynamicResource deleteButton}">
-                                    <Image Source="../Resources/plus-green.png" />
+                                    <Image Source="../Resources/Img/plus-green.png" />
                                 </Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Style="{DynamicResource deleteButton}">
-                                    <Image Source="../Resources/remove.png" />
+                                    <Image Source="../Resources/Img/remove.png" />
                                 </Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -86,14 +86,14 @@
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
                                 <Button Style="{DynamicResource deleteButton}">
-                                    <Image Source="../Resources/plus-green.png" />
+                                    <Image Source="../Resources/Img/plus-green.png" />
                                 </Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Style="{DynamicResource deleteButton}">
-                                    <Image Source="../Resources/remove.png" />
+                                    <Image Source="../Resources/Img/remove.png" />
                                 </Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
