@@ -107,7 +107,7 @@ namespace PoEWizard
                         reportAck = ShowMessageBox(report.Title, report.Message, MsgBoxIcons.Warning);
                         break;
                     case ReportType.Info:
-                        reportAck = ShowMessageBox(report.Title, report.Message, MsgBoxIcons.Info);
+                        reportAck = ShowMessageBox(report.Title, report.Message);
                         break;
                     case ReportType.Value:
                         if (!string.IsNullOrEmpty(report.Title)) ShowProgress(report.Title, false);
@@ -282,7 +282,7 @@ namespace PoEWizard
             if (wiz.Errors.Count > 0)
             {
                 string errMsg = $"The following {(wiz.Errors.Count > 1 ? "errors where" : "error was")} reported:";
-                ShowMessageBox("Wizard", $"{errMsg}\n\n\u2022 {string.Join("\n\u2022 ", wiz.Errors)}", MsgBoxIcons.Error, MsgBoxButtons.Ok);
+                ShowMessageBox("Wizard", $"{errMsg}\n\n\u2022 {string.Join("\n\u2022 ", wiz.Errors)}", MsgBoxIcons.Error);
                 Logger.Warn($"Configuration from Wizard applyed with errors:\n\t{string.Join("\n\t", wiz.Errors)}");
                 Activity.Log($"Switch S/N {device.SerialNumber} Model {device.Model}: Wizard applied with errors");
             }
@@ -853,7 +853,7 @@ namespace PoEWizard
                 UpdateSwitchLogBar(initialTime);
                 if (fname == null)
                 {
-                    ShowMessageBox("Downloading tar file", $"Failed to download file \"{SWLOG_PATH}\" from the switch {device.IpAddress}!", MsgBoxIcons.Error, MsgBoxButtons.Ok);
+                    ShowMessageBox("Downloading tar file", $"Failed to download file \"{SWLOG_PATH}\" from the switch {device.IpAddress}!", MsgBoxIcons.Error);
                     return;
                 }
                 var sfd = new SaveFileDialog()
@@ -906,7 +906,7 @@ namespace PoEWizard
             msg.Append(Utils.CalcStringDuration(startTime, true)).Append(")\nFile size: ");
             if (fsize == 0) msg.Append("0 Bytes"); else msg.Append(Utils.PrintNumberBytes(fsize));
             Logger.Error(msg.ToString());
-            ShowMessageBox("Waiting for tar file ready", msg.ToString(), MsgBoxIcons.Error, MsgBoxButtons.Ok);
+            ShowMessageBox("Waiting for tar file ready", msg.ToString(), MsgBoxIcons.Error);
         }
 
         private void RefreshSlotAndPortsView()
@@ -1221,7 +1221,6 @@ namespace PoEWizard
                 Header = title,
                 Message = message,
                 Img = icon
-                //, Buttons = buttons
             };
             return (bool)msgBox.ShowDialog();
         }
@@ -1312,7 +1311,7 @@ namespace PoEWizard
                     if (res)
                     {
                         string txt = await RebootSwitch(420);
-                        if (string.IsNullOrEmpty(txt)) ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
+                        if (string.IsNullOrEmpty(txt)) ShowMessageBox("Connection", txt);
                         return;
                     }
                 }
@@ -1370,7 +1369,7 @@ namespace PoEWizard
                     await Task.Run(() => restApiService.GetSystemInfo());
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
                     {
-                        ShowMessageBox("Reboot Switch", $"Cannot reboot the switch {device.IpAddress} because it's not certified!", MsgBoxIcons.Error, MsgBoxButtons.Ok);
+                        ShowMessageBox("Reboot Switch", $"Cannot reboot the switch {device.IpAddress} because it's not certified!", MsgBoxIcons.Error);
                         return;
                     }
                     if (device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory("Reboot Switch"))
