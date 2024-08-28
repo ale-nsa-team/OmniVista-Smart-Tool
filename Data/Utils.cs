@@ -537,7 +537,7 @@ namespace PoEWizard.Data
         {
             try
             {
-                return RoundUp((val1 / val2) * 100, dec);
+                if (val2 > 0) return RoundUp((val1 / val2) * 100, dec);
             }
             catch { }
             return 0;
