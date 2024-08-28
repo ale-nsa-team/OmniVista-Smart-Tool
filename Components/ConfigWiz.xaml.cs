@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using static PoEWizard.Data.Constants;
+using System.Threading;
 
 namespace PoEWizard.Components
 {
@@ -165,6 +166,10 @@ namespace PoEWizard.Components
                 try
                 {
                     restSrv.RunSwitchCommand(cmd);
+                    if (cmd.Command == Command.START_POE)
+                    {
+                        WaitChassisUp();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -283,6 +288,31 @@ namespace PoEWizard.Components
                     snmpData.Stations.Add(station);
                 }
             }
+        }
+
+        private void WaitChassisUp()
+        {
+            foreach (var chassis in device.ChassisList)
+            {
+                foreach (var slot in chassis.Slots)
+                {
+                    ShowInfoBox($"Waiting for slot {slot.Name} to come up...");
+                    int count = 0;
+                    while (count < 15)
+                    {
+                        Thread.Sleep(2000);
+                        GetSlotPowerStatus(slot);
+                        if (slot.IsInitialized) break;
+                        count++;
+                    }
+                }
+            }
+        }
+
+        private void GetSlotPowerStatus(SlotModel slot)
+        {
+            var _dictList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_SLOT_LAN_POWER_STATUS, ParseType.Htable2, slot.Name)) as List<Dictionary<string, string>>;
+            if (_dictList?.Count > 0) slot.LoadFromDictionary(_dictList[0]);
         }
 
         private void ShowInfoBox(string message)
