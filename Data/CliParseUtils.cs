@@ -318,11 +318,13 @@ namespace PoEWizard.Data
             using (StringReader reader = new StringReader(data))
             {
                 string line;
+                string keyId = string.Empty;
                 while ((line = reader.ReadLine()) != null)
                 {
                     if (line.Trim().Length == 0) continue;
                     if (line.Contains(TRAF_SLOT_PORT))
                     {
+                        keyId = string.Empty;
                         split = line.Trim().Split(':');
                         if (split.Length == 2) dict = new Dictionary<string, string> { [PORT] = split[1].Trim() };
                     }
@@ -333,7 +335,7 @@ namespace PoEWizard.Data
                         string key = null;
                         if (match.Success)
                         {
-                            key = match.Groups[1].Value.Trim();
+                            key = $"{keyId}{match.Groups[1].Value.Trim()}";
                             if (key.StartsWith(FPGA)) key = FPGA;
                             value = match.Groups[2].Value.Trim();
                             value = value.EndsWith(",") ? value.Substring(0, value.Length - 1) : value;
@@ -342,13 +344,26 @@ namespace PoEWizard.Data
                                 split = value.Split(':');
                                 if (split.Length == 2)
                                 {
-                                    key = split[0].Trim();
+                                    key = $"{keyId}{split[0].Trim()}";
                                     value = split[1].Trim();
+                                }
+                            }
+                        }
+                        else if (line.Contains(":"))
+                        {
+                            split = line.Split(':');
+                            if (split.Length == 2 && string.IsNullOrEmpty(split[1]))
+                            {
+                                if (split[0].Contains("Rx") || split[0].Contains("Tx"))
+                                {
+                                    keyId = split[0].Trim();
+                                    continue;
                                 }
                             }
                         }
                         if (line.Contains(TRAF_SLOT_PORT))
                         {
+                            keyId = string.Empty;
                             table.Add(dict);
                             split = line.Trim().Split(':');
                             if (split.Length == 2) dict = new Dictionary<string, string> { [PORT] = split[1].Trim() };
