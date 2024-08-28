@@ -561,6 +561,7 @@ namespace PoEWizard.Comm
                 if (stopTrafficAnalysis == AbortType.Close)
                 {
                     Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was canceled because the switch is disconnected!");
+                    Activity.Log(SwitchModel, "Traffic analysis interrupted.");
                     return null;
                 }
                 GetMacAndLldpInfo();
@@ -570,6 +571,7 @@ namespace PoEWizard.Comm
                 {
                     Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was {stopTrafficAnalysisReason}, selected duration: {duration / 60} minutes!");
                 }
+                Activity.Log(SwitchModel, $"Traffic analysis {stopTrafficAnalysisReason}.");
                 Logger.Activity(report.Summary);
             }
             catch (Exception ex)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PoEWizard.Device;
+using System;
 using System.IO;
 
 namespace PoEWizard.Data
@@ -19,16 +20,17 @@ namespace PoEWizard.Data
             }
         }
 
-        public static void Log(string text)
+        public static void Log(SwitchModel device, string text)
         {
             string strDate = DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt");
+            string line = $"Switch {device.Name}, S/N {device.SerialNumber}, Model {device.Model}: {text}";
             try
             {
                 lock (lockObj)
                 {
                     using (StreamWriter file = File.AppendText(FilePath))
                     {
-                        file.WriteLine($"{strDate} - {text}");
+                        file.WriteLine($"{strDate} - {line}");
                     }
                 }
             }

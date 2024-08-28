@@ -263,7 +263,7 @@ namespace PoEWizard
                 MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
             if (!res) return;
             Logger.Warn($"Switch S/N {device.SerialNumber} Model {device.Model}: Factory reset applied!");
-            Activity.Log($"Switch S/N {device.SerialNumber} Model {device.Model}: Factory reset applied");
+            Activity.Log(device, "Factory reset applied");
             ShowProgress("Applying factory default...");
             FactoryDefault.Progress = progress;
             await Task.Run(() => FactoryDefault.Reset(device));
@@ -293,11 +293,11 @@ namespace PoEWizard
                 string errMsg = $"The following {(wiz.Errors.Count > 1 ? "errors where" : "error was")} reported:";
                 ShowMessageBox("Wizard", $"{errMsg}\n\n\u2022 {string.Join("\n\u2022 ", wiz.Errors)}", MsgBoxIcons.Error);
                 Logger.Warn($"Configuration from Wizard applyed with errors:\n\t{string.Join("\n\t", wiz.Errors)}");
-                Activity.Log($"Switch S/N {device.SerialNumber} Model {device.Model}: Wizard applied with errors");
+                Activity.Log(device, "Wizard applied with errors");
             }
             else
             {
-                Activity.Log($"Switch S/N {device.SerialNumber} Model {device.Model}: Config Wizard applied");
+                Activity.Log(device, "Config Wizard applied");
             }
             if (wiz.IsRebootSwitch) LaunchRebootSwitch();
             _status.Text = DEFAULT_APP_STATUS;
@@ -328,11 +328,13 @@ namespace PoEWizard
 
         private void WriteMemory_Click(object sender, RoutedEventArgs e)
         {
+            Activity.Log(device, "Write memory.");
             WriteMemory();
         }
 
         private void Reboot_Click(object sender, RoutedEventArgs e)
         {
+            Activity.Log(device, "Reboot.");
             LaunchRebootSwitch();
         }
 
@@ -759,6 +761,7 @@ namespace PoEWizard
                     progress.Report(wizardProgressReport);
                     await WaitAckProgress();
                 }
+                Activity.Log(device, $"PoE Wizard execution {(result == WizardResult.Fail ? "failed" : "succeeded")} on port {selectedPort.Name}");
                 StringBuilder txt = new StringBuilder("PoE Wizard completed on port ");
                 txt.Append(selectedPort.Name).Append(" with device type ").Append(selectedDeviceType).Append(":").Append(msg).Append("\nPoE status: ").Append(selectedPort.Poe);
                 txt.Append(", Port Status: ").Append(selectedPort.Status).Append(", Power: ").Append(selectedPort.Power).Append(" Watts");
@@ -1164,6 +1167,7 @@ namespace PoEWizard
         {
             try
             {
+                Activity.Log(device, "Started traffic analysis");
                 startTrafficAnalysisTime = DateTime.Now;
                 isTrafficRunning = true;
                 _trafficLabel.Content = TRAFFIC_ANALYSIS_RUNNING;
