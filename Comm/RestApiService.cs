@@ -526,6 +526,8 @@ namespace PoEWizard.Comm
             try
             {
                 Utils.CloseProgressBar(_progress);
+                progressBarCnt = 0;
+                totalProgressBar = 0;
             }
             catch (Exception ex)
             {
