@@ -134,7 +134,7 @@ namespace PoEWizard.Data
                 this.Data.Append(",").Append(GetDiffTrafficSamples(this.trafficPort.TxLateCollisions));
                 this.Data.Append(",").Append(GetDiffTrafficSamples(this.trafficPort.TxExcCollisions));
                 this.txCollisions = GetDiffTrafficSamples(this.trafficPort.TxCollidedFrames) + GetDiffTrafficSamples(this.trafficPort.TxCollisions) +
-                                  GetDiffTrafficSamples(this.trafficPort.TxLateCollisions) + GetDiffTrafficSamples(this.trafficPort.TxExcCollisions);
+                                    GetDiffTrafficSamples(this.trafficPort.TxLateCollisions) + GetDiffTrafficSamples(this.trafficPort.TxExcCollisions);
                 #endregion
 
                 this.Data.Append(",\"").Append(PrintVendor()).Append("\",\"").Append(PrintMacAdresses()).Append("\"");
@@ -175,10 +175,7 @@ namespace PoEWizard.Data
             if (this.rxAlignments > 1) AddPortAlert($"#Rx Alignments Error detected: {this.rxAlignments}");
             if (this.alertReport?.Count > 0 && this.alertReport.ContainsKey(this.trafficPort.Port) && this.trafficPort.MacList?.Count > 0)
             {
-                string txt = PrintMacAdresses("MAC Address");
-                string vendor = PrintVendor();
-                if (!string.IsNullOrEmpty(vendor)) txt += $" ({vendor})";
-                AddPortAlert(txt);
+                AddPortAlert(PrintMacAdresses("MAC Address"));
             }
         }
 
@@ -189,17 +186,43 @@ namespace PoEWizard.Data
 
         private string PrintMacAdresses(string title = null)
         {
+            string vendor;
             string txt = string.IsNullOrEmpty(title) ? string.Empty : title;
             if (this.trafficPort.MacList?.Count > 1)
             {
                 if (!string.IsNullOrEmpty(title)) txt += "es: ";
-                txt += string.Join(",", this.trafficPort.MacList);
-                if (this.trafficPort.MacList.Count > 9) txt += " ...";
+                int cnt = 0;
+                foreach (string mac in this.trafficPort.MacList)
+                {
+                    cnt++;
+                    if (cnt > 1)
+                    {
+                        if (string.IsNullOrEmpty(title))
+                        {
+                            txt += ", ";
+                        }
+                        else
+                        {
+                            if (cnt % 5 == 0) txt += "\n\t  "; else txt += ", ";
+                        }
+                    }
+                    txt += mac;
+                    vendor = Utils.GetVendorName(mac);
+                    if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) txt += $" ({vendor})";
+                }
+                if (this.trafficPort.MacList.Count > 9)
+                {
+                    if (!string.IsNullOrEmpty(title)) txt += "\n\t\t..."; else txt += " ...";
+                }
             }
             else if (this.trafficPort.MacList?.Count > 0)
             {
                 if (!string.IsNullOrEmpty(title)) txt += ": ";
-                txt += this.trafficPort.MacList[0];
+                string mac;
+                mac = this.trafficPort.MacList[0];
+                txt += mac;
+                vendor = Utils.GetVendorName(mac);
+                if (!string.IsNullOrEmpty(vendor)) txt += $" ({vendor})";
             }
             return txt;
         }
