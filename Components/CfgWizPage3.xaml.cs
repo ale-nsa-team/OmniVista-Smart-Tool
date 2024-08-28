@@ -34,8 +34,19 @@ namespace PoEWizard.Components
             CheckBox cb = sender as CheckBox;
             if (cb.IsKeyboardFocusWithin)
             {
-                BindingExpression b = BindingOperations.GetBindingExpression(cb, CheckBox.IsCheckedProperty);
-                //features.Save(b.ResolvedSourcePropertyName, cb.IsChecked == true);
+               if (cb.IsChecked == false)
+                {
+                    CustomMsgBox dlg = new CustomMsgBox(MainWindow.Instance, MsgBoxButtons.YesNo)
+                    {
+                        Header = "PoE",
+                        Message = "This operation will turn off power on all PoE ports\nDo you want to continue?",
+                        Img = MsgBoxIcons.Warning
+                    };
+                    if (dlg.ShowDialog() == false)
+                    {
+                        cb.IsChecked = true;
+                    }
+                }
             }
         }
 
