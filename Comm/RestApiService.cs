@@ -1,7 +1,6 @@
 ﻿using PoEWizard.Data;
 using PoEWizard.Device;
 using PoEWizard.Exceptions;
-using Renci.SshNet.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -419,16 +418,23 @@ namespace PoEWizard.Comm
                 double dur = 0;
                 while (dur <= 60)
                 {
+                    if (dur >= waitSec)
+                    {
+                        throw new Exception($"Switch {SwitchModel.IpAddress} didn't come back within {Utils.CalcStringDuration(progressStartTime, true)}!");
+                    }
                     Thread.Sleep(1000);
                     dur = Utils.GetTimeDuration(progressStartTime);
                     UpdateProgressBarMessage($"{msg}({Utils.CalcStringDuration(progressStartTime, true)}) ...", dur);
                 }
-                while (dur < waitSec)
+                while (dur < waitSec + 1)
                 {
+                    if (dur >= waitSec)
+                    {
+                        throw new Exception($"Switch {SwitchModel.IpAddress} didn't come back within {Utils.CalcStringDuration(progressStartTime, true)}!");
+                    }
                     Thread.Sleep(1000);
                     dur = (int)Utils.GetTimeDuration(progressStartTime);
                     UpdateProgressBarMessage($"{msg}({Utils.CalcStringDuration(progressStartTime, true)}) ...", dur);
-                    if (dur >= waitSec) break;
                     if (!Utils.IsReachable(SwitchModel.IpAddress)) continue;
                     try
                     {
@@ -445,6 +451,7 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 SendSwitchError($"Reboot switch {SwitchModel.IpAddress}", ex);
+                return null;
             }
             CloseProgressBar();
             return Utils.CalcStringDuration(progressStartTime, true);

@@ -1311,7 +1311,7 @@ namespace PoEWizard
                     bool res = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
                     if (res)
                     {
-                        string txt = await RebootSwitch();
+                        string txt = await RebootSwitch(420);
                         if (string.IsNullOrEmpty(txt)) ShowMessageBox("Connection", txt, MsgBoxIcons.Info, MsgBoxButtons.Ok);
                         return;
                     }
@@ -1378,7 +1378,7 @@ namespace PoEWizard
                         await Task.Run(() => restApiService.WriteMemory());
                     }
                     Logger.Activity($"Rebooting switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
-                    string txt = await RebootSwitch();
+                    string txt = await RebootSwitch(420);
                     if (string.IsNullOrEmpty(txt)) return;
                     if (ShowMessageBox("Reboot Switch", $"{txt}\nDo you want to reconnect to the switch {device.IpAddress}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo))
                     {
@@ -1403,7 +1403,7 @@ namespace PoEWizard
                                   MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
         }
 
-        private async Task<string> RebootSwitch()
+        private async Task<string> RebootSwitch(int waitSec)
         {
             try
             {
@@ -1422,11 +1422,10 @@ namespace PoEWizard
                 _snapshotMenuItem.IsEnabled = false;
                 _vcbootMenuItem.IsEnabled = false;
                 _cfgMenuItem.IsEnabled = false;
-                string duration = await Task.Run(() => restApiService.RebootSwitch(600));
+                string duration = await Task.Run(() => restApiService.RebootSwitch(waitSec));
                 SetDisconnectedState();
-                string txt = $"Switch {device.IpAddress} ready to connect";
-                if (!string.IsNullOrEmpty(duration)) txt += $"\nReboot duration: {duration}";
-                return txt;
+                if (string.IsNullOrEmpty(duration)) return null;
+                return $"Switch {device.IpAddress} ready to connect\nReboot duration: {duration}";
             }
             catch (Exception ex)
             {
