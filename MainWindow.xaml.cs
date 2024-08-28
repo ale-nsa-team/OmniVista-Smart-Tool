@@ -1291,6 +1291,7 @@ namespace PoEWizard
         {
             _progressBar.Visibility = Visibility.Hidden;
             _status.Text = DEFAULT_APP_STATUS;
+            _progressBar.Value = 0;
         }
 
         private void HideInfoBox()
