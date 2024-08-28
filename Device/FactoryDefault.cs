@@ -4,13 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Reflection;
 using System.Text;
 
 namespace PoEWizard.Device
 {
     public static class FactoryDefault
     {
+        private const string TEMPLATE = "vcboot_template.txt";
         private static RestApiService restSvc;
         private static SwitchModel swModel;
         public static IProgress<ProgressReport> Progress { get; set; }
@@ -50,7 +51,7 @@ namespace PoEWizard.Device
             "/flash/rcl.log"
         };
 
-        private static void Reset(SwitchModel device)
+        public static void Reset(SwitchModel device)
         {
             Progress.Report(new ProgressReport("Removing config files..."));
             swModel = device;
@@ -63,42 +64,50 @@ namespace PoEWizard.Device
             restSvc = MainWindow.restApiService;
             restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
             sftp.DeleteFile("/flash/.bash_history");
-            
+            LoadTemplate(TEMPLATE);
+            sftp.UploadFile(Path.Combine(MainWindow.dataPath, TEMPLATE), "/flash/working/vcboot.cfg");
             sftp.Disconnect();
-            restSvc.RebootSwitch(600);
+            restSvc.RebootSwitch(300);
         }
 
-        private static string LoadTemplate(string filename)
+        private static void LoadTemplate(string filename)
         {
             try
             {
+
+                string content = ReadFromDisk(filename);
+                string res = content.Replace("{Name}", swModel.Name)
+                    .Replace("{Location}", swModel.Location)
+                    .Replace("{IpAddress}", swModel.IpAddress)
+                    .Replace("{SubnetMask}", swModel.NetMask);
                 string path = Path.Combine(MainWindow.dataPath, filename);
-                IEnumerable<string> lines = ReadFromDisk(Path.Combine("Resources", filename));
-                var res = lines.Select(l => l.Replace("{Name}", swModel.Name));
-                res = res.Select(l => l.Replace("{Location}", swModel.Location));
-                res = res.Select(l => l.Replace("{IpAddress}", swModel.IpAddress));
-                res = res.Select(l => l.Replace("{SubnetMask}", swModel.NetMask));
-                File.WriteAllLines(path, res);
-                return path;
+                if (File.Exists(path)) File.Delete(path);
+                using (TextWriter writer = new StreamWriter(path))
+                {
+                    writer.NewLine = "\n";
+                    foreach (string line in res.Split('\n'))
+                    {
+                        writer.WriteLine(line);
+                    }
+                }
             }
             catch (Exception ex)
             {
                 Logger.Error($"Exception while writing config file {filename}: {ex.Message}");
-                return null;
             }
 
         }
 
-        public static IEnumerable<string> ReadFromDisk(string filepath)
+        public static string ReadFromDisk(string filename)
         {
-            string filename = Path.GetFileName(filepath);
-            IEnumerable<string> lines = new List<string>();
-
-            if (File.Exists(filepath))
             {
                 try
                 {
-                    lines = File.ReadLines(filepath, Encoding.UTF8);
+                    Assembly assembly = Assembly.GetExecutingAssembly();
+                    using (StreamReader reader = new StreamReader(assembly.GetManifestResourceStream($"PoEWizard.Resources.{filename}")))
+                    {
+                        return reader.ReadToEnd();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -106,7 +115,6 @@ namespace PoEWizard.Device
                     return null;
                 }
             }
-            return lines;
         }
     }
 }

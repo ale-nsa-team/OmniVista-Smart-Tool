@@ -364,7 +364,7 @@
     <Resource Include="Resources\ulc_script.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\vcboot_template.txt" />
+    <EmbeddedResource Include="Resources\vcboot_template.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
