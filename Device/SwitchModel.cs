@@ -14,6 +14,7 @@ namespace PoEWizard.Device
         public string IpAddress { get; set; }
         public string NetMask { get; set; }
         public string MacAddress { get; set; }
+        public string DefaultGwy { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
         public SwitchStatus Status { get; set; }

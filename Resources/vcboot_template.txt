@@ -6,6 +6,8 @@ spantree vlan 1 admin-state enable
 ip interface "IBMGT-1" address {IpAddress} mask {SubnetMask} vlan 1 
 aaa authentication default "local"
 aaa authentication console "local"
+aaa authentication ssh "local"
+ip service ssh admin-state enable
 session cli timeout 999
 session prompt default "{Name}->"
 loopback-detection enable

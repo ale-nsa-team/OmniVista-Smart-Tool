@@ -116,6 +116,7 @@ namespace PoEWizard.Data
         SET_LOCATION,
         SET_PASSWORD,
         SET_CONTACT,
+        SET_DEFAULT_GATEWAY,
         ENABLE_MGT_VLAN,
         SET_MGT_INTERFACE,
         ENABLE_SPAN_TREE,

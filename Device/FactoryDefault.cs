@@ -3,9 +3,7 @@ using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace PoEWizard.Device
 {
@@ -57,29 +55,31 @@ namespace PoEWizard.Device
             swModel = device;
             SftpService sftp = new SftpService(device.IpAddress, "admin", device.Password);
             sftp.Connect();
-            foreach (string file in files)
-            {
-                sftp.DeleteFile(file);
-            }
+            //foreach (string file in files)
+            //{
+            //    sftp.DeleteFile(file);
+            //}
             restSvc = MainWindow.restApiService;
             restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
             sftp.DeleteFile("/flash/.bash_history");
             LoadTemplate(TEMPLATE);
             sftp.UploadFile(Path.Combine(MainWindow.dataPath, TEMPLATE), "/flash/working/vcboot.cfg");
             sftp.Disconnect();
-            restSvc.RebootSwitch(300);
         }
 
         private static void LoadTemplate(string filename)
         {
             try
             {
-
                 string content = ReadFromDisk(filename);
                 string res = content.Replace("{Name}", swModel.Name)
                     .Replace("{Location}", swModel.Location)
                     .Replace("{IpAddress}", swModel.IpAddress)
                     .Replace("{SubnetMask}", swModel.NetMask);
+                if (!string.IsNullOrEmpty(swModel.DefaultGwy))
+                {
+                    res += $"ip static-route 0.0.0.0/0 gateway {swModel.DefaultGwy}";
+                }
                 string path = Path.Combine(MainWindow.dataPath, filename);
                 if (File.Exists(path)) File.Delete(path);
                 using (TextWriter writer = new StreamWriter(path))

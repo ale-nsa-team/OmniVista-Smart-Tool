@@ -20,6 +20,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static PoEWizard.Data.Constants;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PoEWizard
 {
@@ -257,7 +258,7 @@ namespace PoEWizard
             ps.Show();
         }
 
-        private void FactoryReset(object sender, RoutedEventArgs e)
+        private async void FactoryReset(object sender, RoutedEventArgs e)
         {
             bool res = ShowMessageBox("Factory reset", 
                 "The switch configuration will be restored to factory default. Please confirm your action.", 
@@ -265,7 +266,15 @@ namespace PoEWizard
             if (!res) return;
             ShowProgress("Applying factory default...");
             FactoryDefault.Progress = progress;
-            Task.Run(() => FactoryDefault.Reset(device));
+            await Task.Run(() => FactoryDefault.Reset(device));
+            string tout = await RebootSwitch(300);
+            SetDisconnectedState();
+            if (string.IsNullOrEmpty(tout)) return;
+            if (ShowMessageBox("Reboot Switch", $"{tout}\nDo you want to reconnect to the switch {device.IpAddress}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo))
+            {
+                Connect();
+            }
+
         }
 
         private void LaunchConfigWizard(object sender, RoutedEventArgs e)
@@ -292,10 +301,8 @@ namespace PoEWizard
             }
             if (wiz.IsRebootSwitch) LaunchRebootSwitch();
             _status.Text = DEFAULT_APP_STATUS;
-
-            //refresh datacontext
-            this.DataContext = null;
-            this.DataContext = device;
+            HideInfoBox();
+            SetConnectedState(false);
         }
 
         private void RunWiz_Click(object sender, RoutedEventArgs e)
@@ -1293,7 +1300,8 @@ namespace PoEWizard
 
         private void UpdateConnectedState(bool checkCertified)
         {
-            if (device.IsConnected) SetConnectedState(checkCertified); else SetDisconnectedState();
+            if (device.IsConnected) SetConnectedState(checkCertified); 
+            else SetDisconnectedState();
         }
 
         private async void SetConnectedState(bool checkCertified)

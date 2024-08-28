@@ -52,7 +52,7 @@ namespace PoEWizard.Components
             restSrv = MainWindow.restApiService;
             Errors = new List<string>();
             sysData = new SystemModel(device);
-            srvData = new ServerModel();
+            srvData = new ServerModel(device.DefaultGwy);
             features = new FeatureModel(device);
             snmpData = new SnmpModel();
             pageNo = 1;
@@ -103,14 +103,20 @@ namespace PoEWizard.Components
 
         private async void CfgSubmit_Click(object sender, RoutedEventArgs e)
         {
+            bool needRefresh = false;
             await Task.Run(() =>
             {
-                ApplyCommands(sysData.ToCommandList(sysOrig), "Applying System parameters...");
+                needRefresh = ApplyCommands(sysData.ToCommandList(sysOrig), "Applying System parameters...");
                 ApplyCommands(srvData.ToCommandList(srvOrig), "Applying DNS and NPT parameters...");
-                ApplyCommands(features.ToCommandList(featOrig), "Applying Features...");
+                needRefresh = ApplyCommands(features.ToCommandList(featOrig), "Applying Features...") || needRefresh;
                 //ApplyCommands(snmpData.ToCommandList(), "Applying SNMP configuration...");
             });
             HideInfoBox();
+            if (needRefresh)
+            {
+                ShowInfoBox("Reloading switch data, please wait...");
+                await Task.Run(() => restSrv.ScanSwitch(null));
+            }
             DialogResult = true;
             Close();
         }
@@ -149,9 +155,9 @@ namespace PoEWizard.Components
             _cfgFrame.Navigate(page);
         }
 
-        private void ApplyCommands(List<CmdRequest> cmds, string message)
+        private bool ApplyCommands(List<CmdRequest> cmds, string message)
         {
-            if (cmds.Count == 0) return;
+            if (cmds.Count == 0) return false;
             ShowInfoBox(message);
 
             foreach (CmdRequest cmd in cmds)
@@ -165,16 +171,13 @@ namespace PoEWizard.Components
                     if (!Regex.IsMatch(ex.Message, MATCH_POE_RUNNING))
                         Errors.Add(ex.Message);
                 }
-
             }
+            return true;
         }
 
         private void GetServerData()
         {
-            List<Dictionary<string, string>> dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
-            Dictionary<string, string>  dict = dicList.FirstOrDefault(d => d[DNS_DEST] == "0.0.0.0/0");
-            if (dict != null) srvData.Gateway = dict[GATEWAY];
-            dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_DNS_CONFIG, ParseType.MibTable, DictionaryType.MibList)) as List<Dictionary<string, string>>;
+            List<Dictionary<string, string>> dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_DNS_CONFIG, ParseType.MibTable, DictionaryType.MibList)) as List<Dictionary<string, string>>;
             if (dicList?.Count > 0)
             {
                 srvData.IsDns = dicList[0][DNS_ENABLE] == "1";
@@ -184,7 +187,7 @@ namespace PoEWizard.Components
                 srvData.Dns3 = GetDnsAddr(dicList[0][DNS3]);
             }
 
-            dict = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_NTP_STATUS, ParseType.Vtable)) as Dictionary<string, string>;
+            Dictionary<string, string> dict = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_NTP_STATUS, ParseType.Vtable)) as Dictionary<string, string>;
             if (dict != null) srvData.IsNtp = dict[NTP_ENABLE] == "enabled";
             if (srvData.IsNtp)
             {

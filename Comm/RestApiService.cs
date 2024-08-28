@@ -91,7 +91,8 @@ namespace PoEWizard.Comm
                 GetSnapshot();
                 progressBarCnt += 2;
                 UpdateProgressBar(progressBarCnt); //  7, 8
-                this._wizardReportResult = reportResult;
+                if (reportResult != null) this._wizardReportResult = reportResult;
+                else this._wizardReportResult = new WizardReport();
                 GetSystemInfo();
                 UpdateProgressBar(++progressBarCnt); //  9
                 SendProgressReport("Reading chassis and port information");
@@ -137,6 +138,9 @@ namespace PoEWizard.Comm
             _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
             _dict = _dictList.FirstOrDefault(d => d[IP_ADDR] == SwitchModel.IpAddress);
             if (_dict != null) SwitchModel.NetMask = _dict[SUBNET_MASK];
+            _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
+            _dict = _dictList.FirstOrDefault(d => d[DNS_DEST] == "0.0.0.0/0");
+            if (_dict != null) SwitchModel.DefaultGwy = _dict[GATEWAY];
         }
 
         public void GetSnapshot()

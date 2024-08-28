@@ -25,6 +25,11 @@ namespace PoEWizard.Device
 
         public ServerModel() { }
 
+        public ServerModel(string gateway) 
+        {
+            Gateway = gateway;
+        }
+
         public object Clone()
         {
             return this.MemberwiseClone();
@@ -43,6 +48,7 @@ namespace PoEWizard.Device
 
             foreach (var prop in changes)
             {
+                if (prop.Name == "Gateway") cmdList.Add(new CmdRequest(Command.SET_DEFAULT_GATEWAY, Gateway));
                 if (prop.Name == "DnsDomain" && IsDns) cmdList.Add(new CmdRequest(Command.DNS_DOMAIN, DnsDomain));
                 if (prop.Name == "IsDns")
                 {
