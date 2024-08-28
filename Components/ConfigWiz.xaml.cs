@@ -165,6 +165,7 @@ namespace PoEWizard.Components
             {
                 try
                 {
+                    Logger.Info($"Config wizard: applying command {cmd.Command} {(cmd.Data != null ? "With data: " + string.Join(", ", cmd.Data) : "")}");
                     restSrv.RunSwitchCommand(cmd);
                     if (cmd.Command == Command.START_POE)
                     {

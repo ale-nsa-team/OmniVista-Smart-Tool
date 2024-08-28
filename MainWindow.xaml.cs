@@ -87,6 +87,7 @@ namespace PoEWizard
             darkDict = Resources.MergedDictionaries[1];
             currentDict = darkDict;
             Instance = this;
+            Activity.DataPath = dataPath;
             BuildOuiTable();
 
             // progress report handling
@@ -261,6 +262,8 @@ namespace PoEWizard
                 "The switch configuration will be restored to factory default. Please confirm your action.", 
                 MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
             if (!res) return;
+            Logger.Warn($"Switch S/N {device.SerialNumber} Model {device.Model}: Factory reset applied!");
+            Activity.Log($"Switch S/N {device.SerialNumber} Model {device.Model}: Factory reset applied");
             ShowProgress("Applying factory default...");
             FactoryDefault.Progress = progress;
             await Task.Run(() => FactoryDefault.Reset(device));
@@ -276,7 +279,7 @@ namespace PoEWizard
 
         private void LaunchConfigWizard(object sender, RoutedEventArgs e)
         {
-            _status.Text = "Running wizard...";
+            _status.Text = "Running config wizard...";
 
             ConfigWiz wiz = new ConfigWiz(device)
             {
@@ -294,7 +297,7 @@ namespace PoEWizard
             }
             else
             {
-                Activity.Log($"Switch S/N {device.SerialNumber} Model {device.Model}: Wizard applied");
+                Activity.Log($"Switch S/N {device.SerialNumber} Model {device.Model}: Config Wizard applied");
             }
             if (wiz.IsRebootSwitch) LaunchRebootSwitch();
             _status.Text = DEFAULT_APP_STATUS;

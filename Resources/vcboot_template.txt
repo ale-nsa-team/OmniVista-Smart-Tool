@@ -1,3 +1,4 @@
+auto-fabric admin-state disable
 system name "{Name}"
 system location "{Location}"
 interfaces ddm enable
