@@ -18,6 +18,7 @@ namespace PoEWizard.Data
         const double MAX_PERCENT_WARNING_LOST_FRAMES = 5;
         const double MAX_PERCENT_CRITICAL_LOST_FRAMES = 8;
         const double MIN_NB_BROADCAST_FRAMES = 300;
+        const double MIN_UNICAST_RATE_KBPS = 301;
 
         private PortTrafficModel trafficPort;
         private Dictionary<string, string> alertReport;
@@ -105,9 +106,9 @@ namespace PoEWizard.Data
                 this.Data.Append(",").Append(this.rxBroadCast);
                 this.rxUniCast = GetDiffTrafficSamples(this.trafficPort.RxUnicastFrames);
                 this.Data.Append(",").Append(this.rxUniCast);
-                this.rxBroadCastPercent = GetBroadcastPercent(this.rxBroadCast, this.rxUniCast);
-                this.Data.Append(",").Append(this.rxBroadCastPercent);
                 this.rxMultiCast = GetDiffTrafficSamples(this.trafficPort.RxMulticastFrames);
+                this.rxBroadCastPercent = GetBroadcastPercent(this.rxBroadCast, this.rxUniCast, this.rxMultiCast);
+                this.Data.Append(",").Append(this.rxBroadCastPercent);
                 this.Data.Append(",").Append(this.rxMultiCast);
                 this.rxLostFrames = GetDiffTrafficSamples(this.trafficPort.RxLostFrames);
                 this.Data.Append(",").Append(this.rxLostFrames);
@@ -122,9 +123,9 @@ namespace PoEWizard.Data
                 this.Data.Append(",").Append(this.txBroadCast);
                 this.txUniCast = GetDiffTrafficSamples(this.trafficPort.TxUnicastFrames);
                 this.Data.Append(",").Append(this.txUniCast);
-                this.txBroadCastPercent = GetBroadcastPercent(this.rxBroadCast, this.rxUniCast);
-                this.Data.Append(",").Append(this.txBroadCastPercent);
                 this.txMultiCast = GetDiffTrafficSamples(this.trafficPort.TxMulticastFrames);
+                this.txBroadCastPercent = GetBroadcastPercent(this.rxBroadCast, this.rxUniCast, this.rxMultiCast);
+                this.Data.Append(",").Append(this.txBroadCastPercent);
                 this.Data.Append(",").Append(this.txMultiCast);
                 this.txLostFrames = GetDiffTrafficSamples(this.trafficPort.TxLostFrames);
                 this.Data.Append(",").Append(this.txLostFrames);
@@ -144,25 +145,26 @@ namespace PoEWizard.Data
             this.Summary += "\n";
         }
 
-        private string GetBroadcastPercent(double broadCast, double uniCast)
+        private string GetBroadcastPercent(double broadCast, double uniCast, double multicast)
         {
-            if (uniCast > 0) return Utils.CalcPercent(broadCast, uniCast, 2).ToString();
-            return "";
+            double rate = ((uniCast + multicast) * 8)/this.TrafficDuration;
+            if (uniCast > 0 && rate >= MIN_UNICAST_RATE_KBPS) return Utils.CalcPercent(broadCast, uniCast, 2).ToString();
+            return string.Empty;
         }
 
         private void ParseAlertConditions()
         {
-            if (this.rxBroadCast > MIN_NB_BROADCAST_FRAMES && this.trafficPort.MacList.Count > 1)
+            if (this.rxBroadCast > MIN_NB_BROADCAST_FRAMES && this.trafficPort.MacList.Count > 1 && !string.IsNullOrEmpty(this.rxBroadCastPercent))
             {
-                AddAlertPercent(this.rxBroadCast, "#Rx Broadcast Frames", this.rxUniCast, "#Rx Unicast Frames", MAX_PERCENT_BROADCAST);
+                AddPortAlert($"#Rx Broadcast Frames ({this.rxUniCast}) > {MAX_PERCENT_BROADCAST}% of #Rx Unicast Frames ({this.rxUniCast}), Percentage: {this.rxBroadCastPercent}%");
             }
             if (!AddAlertPercent(this.rxLostFrames, "Critical #Rx Lost Frames", this.rxUniCast + this.rxMultiCast, "#Rx Unicast and #Rx Multicast Frames", MAX_PERCENT_CRITICAL_LOST_FRAMES))
             {
                 AddAlertPercent(this.rxLostFrames, "Warning #Rx Lost Frames", this.rxUniCast + this.rxMultiCast, "#Rx Unicast and #Rx Multicast Frames", MAX_PERCENT_WARNING_LOST_FRAMES);
             }
-            if (this.txBroadCast > MIN_NB_BROADCAST_FRAMES && this.trafficPort.MacList.Count > 1)
+            if (this.txBroadCast > MIN_NB_BROADCAST_FRAMES && this.trafficPort.MacList.Count > 1 && !string.IsNullOrEmpty(this.txBroadCastPercent))
             {
-                AddAlertPercent(this.txBroadCast, "#Tx Broadcast Frames", this.txUniCast, "#Tx Unicast Frames", MAX_PERCENT_BROADCAST);
+                AddPortAlert($"#Tx Broadcast Frames ({this.txUniCast}) > {MAX_PERCENT_BROADCAST}% of #Tx Unicast Frames ({this.txUniCast}), Percentage: {this.txBroadCastPercent}%");
             }
             if (!AddAlertPercent(this.txLostFrames, "Critical #Tx Lost Frames", this.txUniCast + this.txMultiCast, "#Tx Unicast and #Tx Multicast Frames", MAX_PERCENT_CRITICAL_LOST_FRAMES))
             {
