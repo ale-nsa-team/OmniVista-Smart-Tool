@@ -101,6 +101,7 @@ namespace PoEWizard.Data
                     this.trafficPort.MacList = this.switchPorts[this.trafficPort.Port].MacList;
                     this.trafficPort.EndPointDevice = this.switchPorts[this.trafficPort.Port].EndPointDevice;
                 }
+                if (this.trafficPort.MacList == null || this.trafficPort.MacList.Count < 1) continue;
                 this.Data.Append("\r\n ").Append(this.trafficPort.Port);
                 ParseTrafficRate("Rx Rate", this.trafficPort.RxBytes);
                 ParseTrafficRate("Tx Rate", this.trafficPort.TxBytes);
