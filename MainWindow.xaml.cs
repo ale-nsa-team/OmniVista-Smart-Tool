@@ -338,6 +338,11 @@ namespace PoEWizard
             LaunchRebootSwitch();
         }
 
+        private void CollectLogs_Click(object sender, RoutedEventArgs e)
+        {
+            Activity.Log(device, "Debug Log.");
+        }
+
         private void Traffic_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -697,6 +702,7 @@ namespace PoEWizard
                             _refreshSwitch.IsEnabled = false;
                             _writeMemory.IsEnabled = false;
                             _reboot.IsEnabled = false;
+                            _collectLogs.IsEnabled = false;
                             _traffic.IsEnabled = false;
                             _comImg.Visibility = Visibility.Collapsed;
                             await Task.Run(() => restApiService.WriteMemory());
@@ -1337,6 +1343,7 @@ namespace PoEWizard
                 _refreshSwitch.IsEnabled = true;
                 _writeMemory.IsEnabled = true;
                 _reboot.IsEnabled = true;
+                _collectLogs.IsEnabled = true;
                 _psMenuItem.IsEnabled = true;
                 _factoryRst.IsEnabled = true;
                 _cfgMenuItem.IsEnabled = true;
@@ -1429,6 +1436,7 @@ namespace PoEWizard
                 _refreshSwitch.IsEnabled = false;
                 _writeMemory.IsEnabled = false;
                 _reboot.IsEnabled = false;
+                _collectLogs.IsEnabled = false;
                 _traffic.IsEnabled = false;
                 _switchMenuItem.IsEnabled = false;
                 _snapshotMenuItem.IsEnabled = false;
@@ -1466,6 +1474,7 @@ namespace PoEWizard
             _refreshSwitch.IsEnabled = false;
             _writeMemory.IsEnabled = false;
             _reboot.IsEnabled = false;
+            _collectLogs.IsEnabled = false;
             _traffic.IsEnabled = false;
             _psMenuItem.IsEnabled = false;
             _factoryRst.IsEnabled = false;

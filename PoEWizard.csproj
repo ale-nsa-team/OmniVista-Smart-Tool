@@ -352,10 +352,7 @@
     <Resource Include="Resources\Img\reboot-light.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Img\traffic-dark.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Img\traffic-light.png" />
+    <Resource Include="Resources\Img\traffic.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Img\plus-green.png" />
@@ -365,6 +362,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\vcboot_template.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Img\collectlogs.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
