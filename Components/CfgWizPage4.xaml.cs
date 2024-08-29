@@ -62,6 +62,19 @@ namespace PoEWizard.Components
             }
         }
 
+        private void AddUser(object sender, RoutedEventArgs e)
+        {
+            NewUser usr = new NewUser()
+            {
+                Owner = MainWindow.Instance,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            if (usr.ShowDialog() == true)
+            {
+
+            }
+        }
+
         private void ShowPassword(object sender, RoutedEventArgs e)
         {
             //Button btn = sender as Button;

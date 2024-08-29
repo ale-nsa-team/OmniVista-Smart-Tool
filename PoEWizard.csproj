@@ -121,6 +121,9 @@
     <Compile Include="Components\AboutBox.xaml.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\NewUser.xaml.cs">
+      <DependentUpon>NewUser.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\CfgWizPage1.xaml.cs">
       <DependentUpon>CfgWizPage1.xaml</DependentUpon>
     </Compile>
@@ -225,6 +228,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Components\AboutBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\NewUser.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

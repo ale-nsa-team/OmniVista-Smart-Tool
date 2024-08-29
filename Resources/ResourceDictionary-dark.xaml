@@ -27,7 +27,7 @@
     <BitmapImage x:Key="question" UriSource="Img/question.png" />
     <BitmapImage x:Key="alert" UriSource="Img/alert.png" />
     <BitmapImage x:Key="remove" UriSource="Img/remove.png" />
-    <BitmapImage x:Key="eye_open" UriSource="Img//eye-open-dark.png" />
+    <BitmapImage x:Key="eye_open" UriSource="Img/eye-open-dark.png" />
     <BitmapImage x:Key="eye_closed" UriSource="Img/eye-closed-dark.png" />
     <BitmapImage x:Key="refresh" UriSource="Img/refresh-dark.png" />
     <BitmapImage x:Key="write_memory" UriSource="Img/save-dark.png" />

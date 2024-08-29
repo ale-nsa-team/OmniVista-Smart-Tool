@@ -34,7 +34,7 @@
                     <DataGridTemplateColumn Width="Auto">
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
-                                <Button Style="{DynamicResource deleteButton}">
+                                <Button Style="{DynamicResource deleteButton}" Click="AddUser">
                                     <Image Source="../Resources/Img/plus-green.png" />
                                 </Button>
                             </DataTemplate>
