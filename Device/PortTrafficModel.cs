@@ -7,7 +7,9 @@ namespace PoEWizard.Device
     public class PortTrafficModel
     {
         public string Port { get; set; }
+        public bool IsUplink { get; set; } = false;
         public List<string> MacList { get; set; } = new List<string>();
+        public EndPointDeviceModel EndPointDevice { get; set; }
         public string MacAddress { get; set; }
         public double BandWidth { get; set; }
         public List<double> RxBytes { get; set; } = new List<double>();

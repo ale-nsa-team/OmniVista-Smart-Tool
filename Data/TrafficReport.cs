@@ -11,7 +11,7 @@ namespace PoEWizard.Data
 
         const string HEADER = "Port,Rx Rate (Kbps),Tx Rate (Kbps),#Rx Broadcast Frames,#Rx Unicast Frames,Rx Broadcast/Unicast (%),#Rx Multicast Frames,#Rx Lost Frames,#Rx CRC Error,#Rx Alignments Error," +
             "#Tx Broadcast Frames,#Tx Unicast Frames,Tx Broadcast/Unicast (%),#Tx Multicast Frames,#Tx Lost Frames,#Tx Collided Frames,#Tx Collisions,#Tx Late Collisions,#Tx Excessive Collisions," +
-            "Vendor,MAC Address List";
+            "Device Type,Vendor,MAC Address List";
         const string HEADER_DEVICE = "Port,Type,Name,Description,IP Address,Vendor,Model,Software Version,Serial Number,MAC Address";
         const double MAX_PERCENT_BROADCAST = 0.5;
         const double MAX_PERCENT_RATE = 70;
@@ -95,7 +95,12 @@ namespace PoEWizard.Data
             foreach (KeyValuePair<string, PortTrafficModel> keyVal in this.SwitchTraffic.Ports)
             {
                 this.trafficPort = keyVal.Value;
-                if (this.switchPorts.ContainsKey(this.trafficPort.Port)) this.trafficPort.MacList = this.switchPorts[this.trafficPort.Port].MacList;
+                if (this.switchPorts.ContainsKey(this.trafficPort.Port))
+                {
+                    this.trafficPort.IsUplink = this.switchPorts[this.trafficPort.Port].IsUplink;
+                    this.trafficPort.MacList = this.switchPorts[this.trafficPort.Port].MacList;
+                    this.trafficPort.EndPointDevice = this.switchPorts[this.trafficPort.Port].EndPointDevice;
+                }
                 this.Data.Append("\r\n ").Append(this.trafficPort.Port);
                 ParseTrafficRate("Rx Rate", this.trafficPort.RxBytes);
                 ParseTrafficRate("Tx Rate", this.trafficPort.TxBytes);
@@ -137,7 +142,16 @@ namespace PoEWizard.Data
                                     GetDiffTrafficSamples(this.trafficPort.TxLateCollisions) + GetDiffTrafficSamples(this.trafficPort.TxExcCollisions);
                 #endregion
 
-                this.Data.Append(",\"").Append(PrintVendor()).Append("\",\"").Append(PrintMacAdresses()).Append("\"");
+                this.Data.Append(",\"");
+                if (this.trafficPort.MacList?.Count > 0 && this.trafficPort.EndPointDevice != null && !IsDeviceTypeUnknown(this.trafficPort.EndPointDevice))
+                {
+                    this.Data.Append(this.trafficPort.EndPointDevice.Type).Append("\",\"").Append(this.trafficPort.EndPointDevice.Vendor);
+                }
+                else
+                {
+                    this.Data.Append("\",\"");
+                }
+                this.Data.Append("\",\"").Append(PrintMacAdresses()).Append("\"");
                 ParseAlertConditions();
             }
             if (this.alertReport?.Count > 0) foreach (KeyValuePair<string, string> keyVal in this.alertReport) this.Summary += keyVal.Value;
@@ -147,14 +161,14 @@ namespace PoEWizard.Data
 
         private string GetBroadcastPercent(double broadCast, double uniCast, double multicast)
         {
-            double rate = ((uniCast + multicast) * 8)/this.TrafficDuration;
+            double rate = ((uniCast + multicast) * 8) / this.TrafficDuration;
             if (uniCast > 0 && rate >= MIN_UNICAST_RATE_KBPS) return Utils.CalcPercent(broadCast, uniCast, 2).ToString();
             return string.Empty;
         }
 
         private void ParseAlertConditions()
         {
-            if (this.rxBroadCast > MIN_NB_BROADCAST_FRAMES && this.trafficPort.MacList.Count > 1 && !string.IsNullOrEmpty(this.rxBroadCastPercent))
+            if (this.rxBroadCast > MIN_NB_BROADCAST_FRAMES && this.trafficPort.IsUplink && !string.IsNullOrEmpty(this.rxBroadCastPercent))
             {
                 AddPortAlert($"#Rx Broadcast Frames ({this.rxUniCast}) > {MAX_PERCENT_BROADCAST}% of #Rx Unicast Frames ({this.rxUniCast}), Percentage: {this.rxBroadCastPercent}%");
             }
@@ -162,7 +176,7 @@ namespace PoEWizard.Data
             {
                 AddAlertPercent(this.rxLostFrames, "Warning #Rx Lost Frames", this.rxUniCast + this.rxMultiCast, "#Rx Unicast and #Rx Multicast Frames", MAX_PERCENT_WARNING_LOST_FRAMES);
             }
-            if (this.txBroadCast > MIN_NB_BROADCAST_FRAMES && this.trafficPort.MacList.Count > 1 && !string.IsNullOrEmpty(this.txBroadCastPercent))
+            if (this.txBroadCast > MIN_NB_BROADCAST_FRAMES && this.trafficPort.IsUplink && !string.IsNullOrEmpty(this.txBroadCastPercent))
             {
                 AddPortAlert($"#Tx Broadcast Frames ({this.txUniCast}) > {MAX_PERCENT_BROADCAST}% of #Tx Unicast Frames ({this.txUniCast}), Percentage: {this.txBroadCastPercent}%");
             }
@@ -186,44 +200,45 @@ namespace PoEWizard.Data
 
         private string PrintMacAdresses(string title = null)
         {
-            string vendor;
-            string txt = string.IsNullOrEmpty(title) ? string.Empty : title;
+            string text = string.IsNullOrEmpty(title) ? string.Empty : title;
             if (this.trafficPort.MacList?.Count > 1)
             {
-                if (!string.IsNullOrEmpty(title)) txt += "es: ";
+                if (!string.IsNullOrEmpty(title)) text += "es: ";
                 int cnt = 0;
                 foreach (string mac in this.trafficPort.MacList)
                 {
                     cnt++;
                     if (cnt > 1)
                     {
-                        if (string.IsNullOrEmpty(title))
-                        {
-                            txt += ", ";
-                        }
+                        if (string.IsNullOrEmpty(title)) text += ", ";
                         else
                         {
-                            if (cnt % 5 == 0) txt += "\n\t  "; else txt += ", ";
+                            if (cnt % 5 == 0) text += "\n\t  "; else text += ", ";
                         }
                     }
-                    txt += mac;
-                    vendor = Utils.GetVendorName(mac);
-                    if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) txt += $" ({vendor})";
+                    text = AddVendorName(text, mac);
                 }
                 if (this.trafficPort.MacList.Count > 9)
                 {
-                    if (!string.IsNullOrEmpty(title)) txt += "\n\t\t..."; else txt += " ...";
+                    if (!string.IsNullOrEmpty(title)) text += "\n\t\t..."; else text += " ...";
                 }
             }
             else if (this.trafficPort.MacList?.Count > 0)
             {
-                if (!string.IsNullOrEmpty(title)) txt += ": ";
+                if (!string.IsNullOrEmpty(title)) text += ": ";
                 string mac;
                 mac = this.trafficPort.MacList[0];
-                txt += mac;
-                vendor = Utils.GetVendorName(mac);
-                if (!string.IsNullOrEmpty(vendor)) txt += $" ({vendor})";
+                text = AddVendorName(text, mac);
             }
+            return text;
+        }
+
+        private string AddVendorName(string txt, string mac)
+        {
+            txt += mac;
+            string vendor = string.Empty;
+            if (string.IsNullOrEmpty(this.trafficPort.EndPointDevice.Vendor) || this.trafficPort.MacList?.Count > 1) vendor = Utils.GetVendorName(mac);
+            if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) txt += $" ({vendor})";
             return txt;
         }
 
@@ -290,48 +305,44 @@ namespace PoEWizard.Data
 
         private void BuildLldpDevicesReport()
         {
-            this.Data.Append("\n\n").Append(HEADER_DEVICE);
-            foreach (ChassisModel chassis in SwitchTraffic.ChassisList)
+            if (this.switchPorts?.Count > 0)
             {
-                foreach (SlotModel slot in chassis.Slots)
+                this.Data.Append("\n\n").Append(HEADER_DEVICE);
+                foreach (KeyValuePair<string, PortModel> keyVal in this.switchPorts)
                 {
-                    foreach (PortModel port in slot.Ports)
+                    if (keyVal.Value == null || keyVal.Value.EndPointDevice == null || string.IsNullOrEmpty(keyVal.Value.EndPointDevice.Type)) continue;
+                    PortModel port = keyVal.Value;
+                    EndPointDeviceModel device = port.EndPointDevice;
+                    string macList = IsDeviceTypeUnknown(device) ? device.Name : string.Empty;
+                    if (macList.Contains(",")) continue;
+                    if (port.EndPointDevicesList.Count > 1) continue;
+                    // HEADER_DEVICE = "Port,Type,Name,Description,IP Address,Vendor,Model,Software Version,Serial Number,MAC Address";
+                    this.Data.Append("\n ").Append(port.Name).Append(",\"").Append(device.Type).Append("\"");
+                    if (IsDeviceTypeUnknown(device))
                     {
-                        EndPointDeviceModel device = port.EndPointDevice;
-                        if (device != null && !string.IsNullOrEmpty(device.Type))
-                        {
-                            string macList = IsDeviceTypeUnknown(device) ? device.Name : string.Empty;
-                            if (macList.Contains(",")) continue;
-                            if (port.EndPointDevicesList.Count > 1) continue;
-                            // HEADER_DEVICE = "Port,Type,Name,Description,IP Address,Vendor,Model,Software Version,Serial Number,MAC Address";
-                            this.Data.Append("\n ").Append(port.Name).Append(",\"").Append(device.Type).Append("\"");
-                            if (IsDeviceTypeUnknown(device))
-                            {
-                                this.Data.Append(",\"\",\"\",\"\"");
-                            }
-                            else
-                            {
-                                this.Data.Append(",\"").Append(device.Name).Append("\",\"").Append(device.Description).Append("\",\"").Append(device.IpAddress).Append("\"");
-                            }
-                            string vendor = !string.IsNullOrEmpty(device.Vendor) ? device.Vendor :
-                                            !string.IsNullOrEmpty(device.MacAddress) ? Utils.GetVendorName(device.MacAddress) : string.Empty;
-                            if (string.IsNullOrEmpty(vendor) && !string.IsNullOrEmpty(macList))
-                            {
-                                vendor = Utils.GetVendorName(macList);
-                            }
-                            this.Data.Append(",\"").Append(vendor).Append("\",\"").Append(device.Model).Append("\",\"").Append(device.SoftwareVersion).Append("\"");
-                            this.Data.Append(",\"").Append(device.SerialNumber).Append("\",\"");
-                            if (!string.IsNullOrEmpty(device.MacAddress)) this.Data.Append(device.MacAddress); else this.Data.Append(macList);
-                            this.Data.Append("\"");
-                        }
+                        this.Data.Append(",\"\",\"\",\"\"");
                     }
+                    else
+                    {
+                        this.Data.Append(",\"").Append(device.Name).Append("\",\"").Append(device.Description).Append("\",\"").Append(device.IpAddress).Append("\"");
+                    }
+                    string vendor = !string.IsNullOrEmpty(device.Vendor) ? device.Vendor :
+                                    !string.IsNullOrEmpty(device.MacAddress) ? Utils.GetVendorName(device.MacAddress) : string.Empty;
+                    if (string.IsNullOrEmpty(vendor) && !string.IsNullOrEmpty(macList))
+                    {
+                        vendor = Utils.GetVendorName(macList);
+                    }
+                    this.Data.Append(",\"").Append(vendor).Append("\",\"").Append(device.Model).Append("\",\"").Append(device.SoftwareVersion).Append("\"");
+                    this.Data.Append(",\"").Append(device.SerialNumber).Append("\",\"");
+                    if (!string.IsNullOrEmpty(device.MacAddress)) this.Data.Append(device.MacAddress); else this.Data.Append(macList);
+                    this.Data.Append("\"");
                 }
             }
         }
 
         private bool IsDeviceTypeUnknown(EndPointDeviceModel device)
         {
-            return !string.IsNullOrEmpty(device.Type) && device.Type == MED_UNKNOWN;
+            return device == null || string.IsNullOrEmpty(device.Type) || device.Type == MED_UNKNOWN;
         }
     }
 
