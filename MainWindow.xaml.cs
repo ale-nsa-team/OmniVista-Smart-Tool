@@ -197,6 +197,16 @@ namespace PoEWizard
             tv.Show();
         }
 
+        private void ViewActivities_Click(object sender, RoutedEventArgs e)
+        {
+            TextViewer tv = new TextViewer("Activity Log")
+            {
+                Owner = this,
+                Filename = Activity.FilePath
+            };
+            tv.Show();
+        }
+
         private async void ViewVcBoot_Click(object sender, RoutedEventArgs e)
         {
             try
