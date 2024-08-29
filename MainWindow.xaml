@@ -41,7 +41,7 @@
                     <MenuItem Header="Log Level" x:Name="_logLevels">
                         <MenuItem Header="Error" Click="LogLevelItem_Click" />
                         <MenuItem Header="Warn" Click="LogLevelItem_Click" />
-                        <MenuItem Header="Activity" Click="LogLevelItem_Click" IsChecked="True" />
+                        <MenuItem Header="Basic" Click="LogLevelItem_Click" IsChecked="True" />
                         <MenuItem Header="Info" Click="LogLevelItem_Click" />
                         <MenuItem Header="Debug" Click="LogLevelItem_Click" />
                         <MenuItem Header="Trace" Click="LogLevelItem_Click" />

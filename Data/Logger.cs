@@ -30,7 +30,7 @@ namespace PoEWizard.Data
         {
             try
             {
-                LogLevel = LogLevel.Activity;
+                LogLevel = LogLevel.Basic;
                 string filename = "PoEWizard.log";
                 LogPath = Path.Combine(MainWindow.dataPath, "Log", filename);
                 if (!Directory.Exists(Path.GetDirectoryName(LogPath)))
@@ -91,7 +91,7 @@ namespace PoEWizard.Data
 
         public static void Activity(string message)
         {
-            Log(message, LogLevel.Activity);
+            Log(message, LogLevel.Basic);
         }
 
         public static void Debug(string message)
