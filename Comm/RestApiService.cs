@@ -225,7 +225,7 @@ namespace PoEWizard.Comm
                     }
                 }
                 progressStartTime = DateTime.Now;
-                StartProgressBar($"Collecting logs on switch {SwitchModel.Name} ...", MAX_GENERATE_LOG_DURATION);
+                StartProgressBar($"Collecting logs on switch {SwitchModel.Name} ...", Utils.GetEstimateCollectLogDuration(restartPoE, port));
                 ConnectAosSsh();
                 UpdateSwitchLogBar();
                 int debugSelected = _debugSwitchLog.IntDebugLevelSelected;
@@ -621,7 +621,6 @@ namespace PoEWizard.Comm
         private void GetMacAndLldpInfo()
         {
             SendProgressReport("Reading lldp remote information");
-
             object lldpList = RunSwitchCommand(new CmdRequest(Command.SHOW_LLDP_REMOTE, ParseType.LldpRemoteTable));
             SwitchModel.LoadLldpFromList(lldpList as Dictionary<string, List<Dictionary<string, string>>>, DictionaryType.LldpRemoteList);
             lldpList = RunSwitchCommand(new CmdRequest(Command.SHOW_LLDP_INVENTORY, ParseType.LldpRemoteTable));
@@ -1513,7 +1512,7 @@ namespace PoEWizard.Comm
             StringBuilder txt = new StringBuilder();
             if (cmd == Command.POWER_823BT_ENABLE) txt.Append("Enabling");
             else if (cmd == Command.POWER_823BT_DISABLE) txt.Append("Disabling");
-            txt.Append(" 802.3bt on slot ").Append(_wizardSwitchSlot.Name).Append(" of switch ").Append(SwitchModel.IpAddress);
+            txt.Append(" 802.3bt on slot ").Append(_wizardSwitchSlot.Name).Append(" of switch ").Append(SwitchModel.Name);
             _progress.Report(new ProgressReport($"{txt} ..."));
             PowerDownSlot();
             WaitSlotPower(false);
@@ -1545,7 +1544,7 @@ namespace PoEWizard.Comm
             DateTime startTime = DateTime.Now;
             StringBuilder txt = new StringBuilder("Powering ");
             if (powerUp) txt.Append("UP"); else txt.Append("DOWN");
-            txt.Append(" slot ").Append(_wizardSwitchSlot.Name).Append(" on switch ").Append(SwitchModel.IpAddress);
+            txt.Append(" slot ").Append(_wizardSwitchSlot.Name).Append(" on switch ").Append(SwitchModel.Name);
             _progress.Report(new ProgressReport($"{txt} ..."));
             int dur = 0;
             while (dur < 50)

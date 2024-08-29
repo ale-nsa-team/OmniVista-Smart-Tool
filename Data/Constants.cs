@@ -313,7 +313,9 @@ namespace PoEWizard.Data
         #endregion
 
         #region numbers
-        public const double MAX_GENERATE_LOG_DURATION = 60;
+        public const double MAX_COLLECT_LOGS_WIZARD_DURATION = 60;
+        public const double MAX_COLLECT_LOGS_RESET_POE_DURATION = 76;
+        public const double MAX_COLLECT_LOGS_DURATION = 50;
         #endregion
     }
 }

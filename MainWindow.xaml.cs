@@ -52,6 +52,7 @@ namespace PoEWizard
         private string stopTrafficAnalysisReason = string.Empty;
         private int selectedTrafficDuration;
         private DateTime startTrafficAnalysisTime;
+        private double maxCollectLogsDur = 0;
         #endregion
 
         #region Local constants
@@ -819,6 +820,7 @@ namespace PoEWizard
 
         private async Task<string> RunCollectLogs(bool restartPoE, string port = null)
         {
+            maxCollectLogsDur = Utils.GetEstimateCollectLogDuration(restartPoE, port);
             string barText = "Cleaning up current log ...";
             ShowInfoBox(barText);
             StartProgressBar(barText);
@@ -937,7 +939,7 @@ namespace PoEWizard
 
         private void UpdateSwitchLogBar(DateTime initialTime)
         {
-            UpdateProgressBar(Utils.GetTimeDuration(initialTime), MAX_GENERATE_LOG_DURATION);
+            UpdateProgressBar(Utils.GetTimeDuration(initialTime), maxCollectLogsDur);
         }
 
         private void ShowWaitTarFileError(long fsize, DateTime startTime)

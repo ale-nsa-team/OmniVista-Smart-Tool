@@ -578,6 +578,13 @@ namespace PoEWizard.Data
             progress.Report(new ProgressReport { Type = ReportType.Value, Message = "-1" });
         }
 
+        public static double GetEstimateCollectLogDuration(bool restartPoE, string port)
+        {
+            if (port == null && restartPoE) return MAX_COLLECT_LOGS_RESET_POE_DURATION;
+            else if (port == null && !restartPoE) return MAX_COLLECT_LOGS_DURATION;
+            else return MAX_COLLECT_LOGS_WIZARD_DURATION;
+        }
+
     }
 }
 
