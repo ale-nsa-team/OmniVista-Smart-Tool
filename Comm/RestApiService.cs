@@ -256,6 +256,10 @@ namespace PoEWizard.Comm
                         RestartChassisPoE();
                     }
                 }
+                else
+                {
+                    Thread.Sleep(5000);
+                }
                 UpdateSwitchLogBar();
                 // Setting switch debug level back to the previous values
                 SetAppDebugLevel($"Resetting PoE debug level back to {Utils.IntToSwitchDebugLevel(prevLpNiDebug)}", Command.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
