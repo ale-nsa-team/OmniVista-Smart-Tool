@@ -22,13 +22,9 @@
     </Page.Resources>
 
     <StackPanel Style="{DynamicResource cfgWindow}">
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
             <Label Margin="82,0,0,0">Enable PoE</Label>
             <CheckBox x:Name="_poE" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsPoe}" Checked="Option_Changed" Unchecked="Option_Changed"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <Label Margin="65,0,0,0">Enhance LLDP</Label>
-            <CheckBox x:Name="_lldp" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsLldp}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <Label>Disable Insecure Protocols</Label>

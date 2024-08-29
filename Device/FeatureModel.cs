@@ -10,7 +10,6 @@ namespace PoEWizard.Device
         private readonly SwitchModel device;
         
         public bool IsPoe { get; set; } = false;
-        public bool IsLldp { get; set; } = false;
         public bool IsInsecureProtos { get; set; } = false;
         public bool IsSsh { get; set; } = true;
         public bool IsMulticast { get; set; } = true;
@@ -60,9 +59,6 @@ namespace PoEWizard.Device
                                 cmdList.Add(new CmdRequest(cmd, chas.Number.ToString()));
                             }
                         }
-                        break;
-                    case "IsLldp":
-                        if (IsLldp) cmdList.Add(new CmdRequest(Command.LLDP_SYSTEM_DESCRIPTION_ENABLE));
                         break;
                     case "IsInsecureProtos":
                         if (IsInsecureProtos)
