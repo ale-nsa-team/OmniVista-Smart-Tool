@@ -141,7 +141,7 @@ namespace PoEWizard
                 e.Cancel = true;
                 string confirm = "closing the application";
                 stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                bool save = StopTrafficAnalysis(AbortType.Close, $"Disconnecting switch {device.IpAddress}", ASK_SAVE_TRAFFIC_REPORT, confirm);
+                bool save = StopTrafficAnalysis(AbortType.Close, $"Disconnecting switch {device.Name}", ASK_SAVE_TRAFFIC_REPORT, confirm);
                 await WaitSaveTrafficAnalysis();
                 if (!save) return;
                 sftpService?.Disconnect();
@@ -280,7 +280,7 @@ namespace PoEWizard
             string tout = await RebootSwitch(300);
             SetDisconnectedState();
             if (string.IsNullOrEmpty(tout)) return;
-            if (ShowMessageBox("Reboot Switch", $"{tout}\nDo you want to reconnect to the switch {device.IpAddress}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo))
+            if (ShowMessageBox("Reboot Switch", $"{tout}\nDo you want to reconnect to the switch {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo))
             {
                 Connect();
             }
@@ -353,7 +353,7 @@ namespace PoEWizard
             try
             {
                 Activity.Log(device, "Collect Logs.");
-                bool restartPoE = ShowMessageBox("Collect Logs", $"Do you want to restart all slots to collect the logs?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
+                bool restartPoE = ShowMessageBox("Collect Logs", $"Do you want to recycle PoE on all ports of switch {device.Name} to collect the logs?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
                 await RunCollectLogs(restartPoE);
             }
             catch (Exception ex)
@@ -648,11 +648,11 @@ namespace PoEWizard
                 restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
-                    string confirm = $"disconnecting the switch {device.IpAddress}";
+                    string confirm = $"disconnecting the switch {device.Name}";
                     stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                    string title = $"Disconnecting switch {device.IpAddress}";
+                    string title = $"Disconnecting switch {device.Name}";
                     Logger.Activity($"{title} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
-                    bool save = StopTrafficAnalysis(AbortType.Close, $"Disconnecting switch {device.IpAddress}", ASK_SAVE_TRAFFIC_REPORT, confirm);
+                    bool save = StopTrafficAnalysis(AbortType.Close, $"Disconnecting switch {device.Name}", ASK_SAVE_TRAFFIC_REPORT, confirm);
                     if (!save) return;
                     await WaitSaveTrafficAnalysis();
                     _traffic.IsEnabled = false;
@@ -667,7 +667,7 @@ namespace PoEWizard
                 await Task.Run(() => restApiService.Connect(reportResult));
                 UpdateConnectedState(true);
                 _traffic.IsEnabled = true;
-                await CheckSwitchScanResult($"Connect to switch {device.IpAddress}...", startTime);
+                await CheckSwitchScanResult($"Connect to switch {device.Name}...", startTime);
                 Logger.Activity($"Connected to switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
             }
             catch (Exception ex)
@@ -836,7 +836,7 @@ namespace PoEWizard
             const double PERIOD_SFTP_RECONNECT_SEC = 30;
             try
             {
-                StartProgressBar($"Collecting logs on switch {device.IpAddress} ...");
+                StartProgressBar($"Collecting logs on switch {device.Name} ...");
                 DateTime initialTime = DateTime.Now;
                 await RunGetSwitchLog(SwitchDebugLogLevel.Debug3, restartPoE, port);
                 StartProgressBar("Downloading tar file ..");
@@ -867,7 +867,7 @@ namespace PoEWizard
                         if (Utils.GetTimeDuration(resetSftpConnectionTime) >= PERIOD_SFTP_RECONNECT_SEC)
                         {
                             sftpService.ResetConnection();
-                            Logger.Warn($"Waited too long ({Utils.CalcStringDuration(startTime, true)}) for the switch {device.IpAddress} to start creating the tar file!");
+                            Logger.Warn($"Waited too long ({Utils.CalcStringDuration(startTime, true)}) for the switch {device.Name} to start creating the tar file!");
                             resetSftpConnectionTime = DateTime.Now;
                         }
                         if (duration >= MAX_WAIT_SFTP_RECONNECT_SEC)
@@ -894,7 +894,7 @@ namespace PoEWizard
                 UpdateSwitchLogBar(initialTime);
                 if (fname == null)
                 {
-                    ShowMessageBox("Downloading tar file", $"Failed to download file \"{SWLOG_PATH}\" from the switch {device.IpAddress}!", MsgBoxIcons.Error);
+                    ShowMessageBox("Downloading tar file", $"Failed to download file \"{SWLOG_PATH}\" from the switch {device.Name}!", MsgBoxIcons.Error);
                     return;
                 }
                 var sfd = new SaveFileDialog()
@@ -968,9 +968,9 @@ namespace PoEWizard
             {
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
-                await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.IpAddress}", reportResult));
+                await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.Name}", reportResult));
                 UpdateConnectedState(false);
-                await CheckSwitchScanResult($"Refresh switch {device.IpAddress}", startTime);
+                await CheckSwitchScanResult($"Refresh switch {device.Name}", startTime);
             }
             catch (Exception ex)
             {
@@ -1038,7 +1038,7 @@ namespace PoEWizard
                     }
                     if (resetSlotCnt > 0)
                     {
-                        await Task.Run(() => WaitTask(20, $"Waiting Ports to come UP on Switch {device.IpAddress}"));
+                        await Task.Run(() => WaitTask(20, $"Waiting Ports to come UP on Switch {device.Name}"));
                         await Task.Run(() => restApiService.RefreshSwitchPorts());
                         RefreshSlotAndPortsView();
                     }
@@ -1409,12 +1409,12 @@ namespace PoEWizard
         {
             try
             {
-                if (ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.IpAddress}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo))
+                if (ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo))
                 {
                     await Task.Run(() => restApiService.GetSystemInfo());
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
                     {
-                        ShowMessageBox("Reboot Switch", $"Cannot reboot the switch {device.IpAddress} because it's not certified!", MsgBoxIcons.Error);
+                        ShowMessageBox("Reboot Switch", $"Cannot reboot the switch {device.Name} because it's not certified!", MsgBoxIcons.Error);
                         return;
                     }
                     if (device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory("Reboot Switch"))
@@ -1424,7 +1424,7 @@ namespace PoEWizard
                     Logger.Activity($"Rebooting switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
                     string txt = await RebootSwitch(420);
                     if (string.IsNullOrEmpty(txt)) return;
-                    if (ShowMessageBox("Reboot Switch", $"{txt}\nDo you want to reconnect to the switch {device.IpAddress}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo))
+                    if (ShowMessageBox("Reboot Switch", $"{txt}\nDo you want to reconnect to the switch {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo))
                     {
                         Connect();
                     }
@@ -1451,9 +1451,9 @@ namespace PoEWizard
         {
             try
             {
-                string confirm = $"rebooting the switch {device.IpAddress}";
+                string confirm = $"rebooting the switch {device.Name}";
                 stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                string title = $"Rebooting switch {device.IpAddress}";
+                string title = $"Rebooting switch {device.Name}";
                 bool save = StopTrafficAnalysis(AbortType.Close, title, ASK_SAVE_TRAFFIC_REPORT, confirm);
                 if (!save) return null;
                 await WaitSaveTrafficAnalysis();
@@ -1470,7 +1470,7 @@ namespace PoEWizard
                 string duration = await Task.Run(() => restApiService.RebootSwitch(waitSec));
                 SetDisconnectedState();
                 if (string.IsNullOrEmpty(duration)) return null;
-                return $"Switch {device.IpAddress} ready to connect\nReboot duration: {duration}";
+                return $"Switch {device.Name} ready to connect\nReboot duration: {duration}";
             }
             catch (Exception ex)
             {
