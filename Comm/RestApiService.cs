@@ -210,25 +210,31 @@ namespace PoEWizard.Comm
             return null;
         }
 
-        public void RunGetSwitchLog(string port, SwitchDebugModel debugLog)
+        public void RunGetSwitchLog(SwitchDebugModel debugLog, bool restartPoE, string port = null)
         {
             try
             {
                 _debugSwitchLog = debugLog;
-                GetSwitchSlotPort(port);
-                if (_wizardSwitchPort == null)
+                if (port != null)
                 {
-                    SendProgressError("Get Switch Log", $"Couldn't get data for port {port}");
-                    return;
+                    GetSwitchSlotPort(port);
+                    if (_wizardSwitchPort == null)
+                    {
+                        SendProgressError("Get Switch Log", $"Couldn't get data for port {port}");
+                        return;
+                    }
                 }
                 progressStartTime = DateTime.Now;
                 StartProgressBar($"Collecting logs on switch {SwitchModel.IpAddress} ...", MAX_GENERATE_LOG_DURATION);
                 ConnectAosSsh();
                 UpdateSwitchLogBar();
                 int debugSelected = _debugSwitchLog.IntDebugLevelSelected;
-                SendProgressReport($"Getting lan power information of slot {_wizardSwitchSlot.Name}");
                 // Getting current lan power status
-                _debugSwitchLog.LanPowerStatus = RunSwitchCommand(new CmdRequest(Command.DEBUG_SHOW_LAN_POWER_STATUS, ParseType.NoParsing, new string[1] { _wizardSwitchSlot.Name })) as string;
+                if (_wizardSwitchSlot != null)
+                {
+                    SendProgressReport($"Getting lan power information of slot {_wizardSwitchSlot.Name}");
+                    _debugSwitchLog.LanPowerStatus = RunSwitchCommand(new CmdRequest(Command.DEBUG_SHOW_LAN_POWER_STATUS, ParseType.NoParsing, new string[1] { _wizardSwitchSlot.Name })) as string;
+                }
                 UpdateSwitchLogBar();
                 // Getting current switch debug level
                 GetCurrentSwitchDebugLevel();
@@ -237,8 +243,19 @@ namespace PoEWizard.Comm
                 // Setting switch debug level
                 SetAppDebugLevel($"Setting PoE debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPNI_LEVEL, debugSelected);
                 SetAppDebugLevel($"Setting CMM debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
-                // Recycling power on switch port
-                RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 5);
+                if (restartPoE)
+                {
+                    if (_wizardSwitchPort != null)
+                    {
+                        // Recycling power on switch port
+                        RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 5);
+                    }
+                    else
+                    {
+                        // Recycling power on all chassis of the switch
+                        RestartChassisPoE();
+                    }
+                }
                 UpdateSwitchLogBar();
                 // Setting switch debug level back to the previous values
                 SetAppDebugLevel($"Resetting PoE debug level back to {Utils.IntToSwitchDebugLevel(prevLpNiDebug)}", Command.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
@@ -257,6 +274,25 @@ namespace PoEWizard.Comm
             finally
             {
                 DisconnectAosSsh();
+            }
+        }
+
+        private void RestartChassisPoE()
+        {
+            foreach (var chassis in this.SwitchModel.ChassisList)
+            {
+                _progress.Report(new ProgressReport($"Turning power OFF on all slots of chassis {chassis.Number} to capture logs ..."));
+                RunSwitchCommand(new CmdRequest(Command.STOP_POE, new string[1] { chassis.Number.ToString() }));
+                UpdateSwitchLogBar();
+                Thread.Sleep(5000);
+                _progress.Report(new ProgressReport($"Turning power ON on all slots of chassis {chassis.Number} to capture logs ..."));
+                RunSwitchCommand(new CmdRequest(Command.START_POE, new string[1] { chassis.Number.ToString() }));
+                foreach (var slot in chassis.Slots)
+                {
+                    UpdateSwitchLogBar();
+                    _wizardSwitchSlot = slot;
+                    WaitSlotPower(true);
+                }
             }
         }
 

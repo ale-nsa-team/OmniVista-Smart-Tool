@@ -338,9 +338,18 @@ namespace PoEWizard
             LaunchRebootSwitch();
         }
 
-        private void CollectLogs_Click(object sender, RoutedEventArgs e)
+        private async void CollectLogs_Click(object sender, RoutedEventArgs e)
         {
-            Activity.Log(device, "Debug Log.");
+            try
+            {
+                Activity.Log(device, "Collect Logs.");
+                bool restartPoE = ShowMessageBox("Collect Logs", $"Do you want to restart all slots to collect the logs?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
+                await RunCollectLogs(restartPoE);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         private void Traffic_Click(object sender, RoutedEventArgs e)
@@ -780,13 +789,7 @@ namespace PoEWizard
                     bool res = ShowMessageBox("Wizard", "It looks like the wizard was unable to fix the problem.\nDo you want to collect information to send to technical support?",
                                               MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                     if (!res) return;
-                    barText = "Cleaning up current log ...";
-                    ShowInfoBox(barText);
-                    StartProgressBar(barText);
-                    sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
-                    await Task.Run(() => sftpService.Connect());
-                    await Task.Run(() => sftpService.DeleteFile(SWLOG_PATH));
-                    await GenerateSwitchLogFile();
+                    barText = await RunCollectLogs(true, selectedPort.Name);
                 }
                 await Task.Run(() => restApiService.GetSystemInfo());
             }
@@ -804,7 +807,19 @@ namespace PoEWizard
             }
         }
 
-        private async Task GenerateSwitchLogFile()
+        private async Task<string> RunCollectLogs(bool restartPoE, string port = null)
+        {
+            string barText = "Cleaning up current log ...";
+            ShowInfoBox(barText);
+            StartProgressBar(barText);
+            sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
+            await Task.Run(() => sftpService.Connect());
+            await Task.Run(() => sftpService.DeleteFile(SWLOG_PATH));
+            await GenerateSwitchLogFile(restartPoE, port);
+            return barText;
+        }
+
+        private async Task GenerateSwitchLogFile(bool restartPoE, string port)
         {
             const double MAX_WAIT_SFTP_RECONNECT_SEC = 60;
             const double MAX_WAIT_TAR_FILE_SEC = 180;
@@ -813,7 +828,7 @@ namespace PoEWizard
             {
                 StartProgressBar($"Collecting logs on switch {device.IpAddress} ...");
                 DateTime initialTime = DateTime.Now;
-                await RunGetSwitchLog(SwitchDebugLogLevel.Debug3);
+                await RunGetSwitchLog(SwitchDebugLogLevel.Debug3, restartPoE, port);
                 StartProgressBar("Downloading tar file ..");
                 long fsize = 0;
                 long previousSize = -1;
@@ -1163,10 +1178,10 @@ namespace PoEWizard
             await Task.Run(() => restApiService.RunWizardCommands(selectedPort.Name, reportResult, cmdList, waitSec));
         }
 
-        private async Task RunGetSwitchLog(SwitchDebugLogLevel debugLevel)
+        private async Task RunGetSwitchLog(SwitchDebugLogLevel debugLevel, bool restartPoE = false, string port = null)
         {
             debugSwitchLog = new SwitchDebugModel(reportResult, debugLevel);
-            await Task.Run(() => restApiService.RunGetSwitchLog(selectedPort.Name, debugSwitchLog));
+            await Task.Run(() => restApiService.RunGetSwitchLog(debugSwitchLog, restartPoE));
         }
 
         private async void StartTrafficAnalysis()
