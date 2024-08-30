@@ -22,7 +22,7 @@
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="Enter Switch Credentials" Style="{DynamicResource popupTitle}" />
-        <StackPanel Grid.Row="1" Style="{DynamicResource loginWindow}">
+        <StackPanel Grid.Row="1" Style="{DynamicResource popupWindow}">
             <Label>IP Address</Label>
             <TextBox x:Name="_ipAddress" x:FieldModifier="private" 
                      Validation.ErrorTemplate="{DynamicResource validationTemplate}"

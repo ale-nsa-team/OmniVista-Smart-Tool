@@ -32,7 +32,7 @@
             </TextBox.Text>
         </TextBox>
         <Label>Netmask</Label>
-        <TextBox x:Name="_netMask" Validation.ErrorTemplate="{DynamicResource validationTemplate}" LostFocus="TextChanged">
+        <TextBox x:Name="_netMask" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
             <TextBox.Text>
                 <Binding Path=" NetMask" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
@@ -91,7 +91,7 @@
             </TextBox.Text>
         </TextBox>
         <Label>Contact</Label>
-        <TextBox x:Name="_contact" Validation.ErrorTemplate="{DynamicResource validationTemplate}" LostFocus="TextChanged">
+        <TextBox x:Name="_contact" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
             <TextBox.Text>
                 <Binding Path="Contact" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
@@ -101,7 +101,7 @@
             </TextBox.Text>
         </TextBox>
         <Label>Location</Label>
-        <TextBox x:Name="_location" Validation.ErrorTemplate="{DynamicResource validationTemplate}" LostFocus="TextChanged">
+        <TextBox x:Name="_location" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
             <TextBox.Text>
                 <Binding Path="Location" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
@@ -110,6 +110,12 @@
                 </Binding>
             </TextBox.Text>
         </TextBox>
+        <StackPanel Orientation="Horizontal" Style="{DynamicResource cfgWindow}" Margin="0,10,0,0">
+            <Label>Set date and time</Label>
+            <CheckBox x:Name="_setDate" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsDateAndTime}"/>
+        </StackPanel>
+                    
+
     </StackPanel>
 </Page>
 

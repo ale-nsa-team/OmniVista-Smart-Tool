@@ -161,12 +161,10 @@ namespace PoEWizard.Data
             [Command.STOP_POE] = $"lanpower chassis {DAT} service stop",
             [Command.SNMP_AUTH_LOCAL] = "aaa authentication snmp local",
             [Command.SNMP_COMMUNITY_MODE] = "snmp community-map mode enable",
-            [Command.SNMP_COMMUNITY_MAP] = $"snmp community-map {DAT} user {DAT} enable",
+            [Command.SNMP_COMMUNITY_MAP] = $"snmp community-map \"{DAT}\" user \"{DAT}\" enable",
             [Command.SNMP_NO_SECURITY] = "snmp security no-security",
-            [Command.SNMP_STATION] = $"snmp station {DAT} {DAT} {DAT} {DAT} enable",
+            [Command.SNMP_STATION] = $"snmp station {DAT} 162 \"{DAT}\" {DAT} enable",
             [Command.SNMP_TRAP_AUTH] = "snmp authentication-trap enable",
-            [Command.SNMP_V2_USER] = $"user {DAT} password {DAT} read-write all {DAT}",
-            [Command.SNMP_V3_USER] = $"user {DAT} password {DAT} read-write all {DAT} priv-password {DAT}",
             [Command.SHOW_AAA_AUTH] = "show aaa authentication",
             [Command.SHOW_USER] =  "show user",
             [Command.SHOW_SNMP_SECURITY] = "show snmp security",
@@ -175,7 +173,8 @@ namespace PoEWizard.Data
             [Command.ENABLE_MGT_VLAN] = "vlan 1 admin-state enable",
             [Command.SET_MGT_INTERFACE] = $"ip interface \"IBMGT-1\" address {DAT} mask {DAT} vlan 1",
             [Command.ENABLE_SPAN_TREE] = "spantree vlan 1 admin-state enable",
-            [Command.CLEAR_SWLOG] = "swlog clear all"
+            [Command.CLEAR_SWLOG] = "swlog clear all",
+            [Command.SNMP_USER] = $"user {DAT} password {DAT} read-only all {DAT} priv-password {DAT}"
             #endregion
 
         };

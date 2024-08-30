@@ -16,6 +16,7 @@ namespace PoEWizard.Device
         public string Name { get; set; }
         public string Contact { get; set; }
         public string Location { get; set; }
+        public bool IsDateAndTime { get; set; } = true;
 
         public SystemModel() { }
 
@@ -39,19 +40,22 @@ namespace PoEWizard.Device
         {
             List<PropertyInfo> changes = GetChanges(orig);
             List<CmdRequest> cmdList = new List<CmdRequest>();
-            string tz = TimeZoneInfo.Local.StandardName;
-            string tzabv = Regex.Replace(tz, "[^A-Z]", "");
-            string date = DateTime.Now.ToString("MM/dd/yyy");
-            string time = DateTime.Now.ToString("HH:mm:ss");
+            if (IsDateAndTime)
+            {
+                string tz = TimeZoneInfo.Local.StandardName;
+                string tzabv = Regex.Replace(tz, "[^A-Z]", "");
+                string date = DateTime.Now.ToString("MM/dd/yyy");
+                string time = DateTime.Now.ToString("HH:mm:ss");
+                cmdList.Add(new CmdRequest(Command.DISABLE_AUTO_FABRIC));
+                cmdList.Add(new CmdRequest(Command.SET_SYSTEM_TIMEZONE, tzabv));
+                cmdList.Add(new CmdRequest(Command.SET_SYSTEM_DATE, date));
+                cmdList.Add(new CmdRequest(Command.SET_SYSTEM_TIME, time));
+                cmdList.Add(new CmdRequest(Command.ENABLE_DDM));
+            }
 
-            cmdList.Add(new CmdRequest(Command.DISABLE_AUTO_FABRIC));
-            cmdList.Add(new CmdRequest(Command.SET_SYSTEM_TIMEZONE, tzabv));
-            cmdList.Add(new CmdRequest(Command.SET_SYSTEM_DATE, date));
-            cmdList.Add(new CmdRequest(Command.SET_SYSTEM_TIME, time));
-            cmdList.Add(new CmdRequest(Command.ENABLE_DDM));
             foreach (var prop in changes)
             {
-                if (string.IsNullOrEmpty((string)prop.GetValue(this, null))) continue;
+                if (prop.Name != "IsDateAndTime" && string.IsNullOrEmpty((string)prop.GetValue(this, null))) continue;
                 switch (prop.Name)
                 {
                     case "MtgIpAddr":

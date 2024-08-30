@@ -44,7 +44,7 @@
         </StackPanel>
         <StackPanel x:Name="_dhcpSrv" Orientation="Horizontal" Visibility="{Binding IsDhcpRelay, Converter={StaticResource BoolToVisibilityConverter}}">
             <Label Margin="57,5,0,0">DHCP Server Address</Label>
-            <TextBox x:Name="_srvAddr" Width="150" Margin="5,10,0,0" Validation.ErrorTemplate="{DynamicResource validationTemplate}" LostFocus="SrvAddr_Changed">
+            <TextBox x:Name="_srvAddr" Width="150" Margin="5,10,0,0" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
                 <TextBox.Text>
                     <Binding Path="DhcpSrv" UpdateSourceTrigger="PropertyChanged">
                         <Binding.ValidationRules>

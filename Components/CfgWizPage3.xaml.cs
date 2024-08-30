@@ -1,7 +1,6 @@
 ﻿using PoEWizard.Device;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Components
@@ -47,15 +46,6 @@ namespace PoEWizard.Components
                         cb.IsChecked = true;
                     }
                 }
-            }
-        }
-
-        private void SrvAddr_Changed(object sender, RoutedEventArgs e)
-        {
-            BindingExpression b = BindingOperations.GetBindingExpression(_srvAddr, TextBox.TextProperty);
-            if (!b?.HasValidationError ?? false)
-            {
-                //features.Save(b.ResolvedSourcePropertyName, _srvAddr.Text);
             }
         }
     }

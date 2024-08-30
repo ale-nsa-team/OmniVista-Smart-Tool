@@ -110,7 +110,6 @@ namespace PoEWizard.Components
                 needRefresh = ApplyCommands(sysData.ToCommandList(sysOrig), "Applying System parameters...");
                 ApplyCommands(srvData.ToCommandList(srvOrig), "Applying DNS and NPT parameters...");
                 needRefresh = ApplyCommands(features.ToCommandList(featOrig), "Applying Features...") || needRefresh;
-                //ApplyCommands(snmpData.ToCommandList(), "Applying SNMP configuration...");
             });
             HideInfoBox();
             if (needRefresh)
@@ -271,21 +270,12 @@ namespace PoEWizard.Components
                 foreach (var dic in dicList)
                 {
                     string ip_port = dic[SNMP_STATION_IP];
-                    SnmpStation station = new SnmpStation(ip_port, dic[SNMP_STATUS], dic[SNMP_VERSION], dic[USER]);
+                    SnmpStation station = new SnmpStation(ip_port, dic[SNMP_STATUS], dic[SNMP_VERSION], dic[USER], null);
                     if (station.Version == "v2")
                     {
-                        SnmpCommunity comm = snmpData.Communities.FirstOrDefault(c => c.User == station.User);
-                        if (comm != null)
-                        {
-                            station.Community = comm.Name;
-                            station.User = "--";
-                        }
+                        SnmpCommunity comm = snmpData.Communities.FirstOrDefault(c => c.User == dic[USER]);
+                        station.Community = comm?.Name ?? "--";
                     }
-                    else
-                    {
-                        station.Community += "--";
-                    }
-
                     snmpData.Stations.Add(station);
                 }
             }

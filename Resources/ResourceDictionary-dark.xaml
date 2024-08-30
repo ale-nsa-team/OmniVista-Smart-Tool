@@ -4,8 +4,7 @@
 
     <converters:ValueToColorConverter x:Key="ValueToColorConverter" />
     <converters:BoolToSymbolConverter x:Key="BoolToSymbolConverter" />
-    <converters:SnmpV2ToVisibilityConverter x:Key="SnmpV2ToVisibilityConverter" />
-    <converters:SnmpV3ToVisibilityConverter x:Key="SnmpV3ToVisibilityConverter" />
+    <converters:SnmpVersionToVisibilityConverter x:Key="SnmpVersionToVisibilityConverter" />
     <converters:BoolToVisibilityConvertter x:Key="BoolToVisibilityConverter" />
     <converters:PoeToPriorityLevelConverter x:Key="PoeToPriorityLevelConverter" />
     <converters:AosVersionToVisibilityConverter x:Key="AosVersionToVisibilityConverter" />
@@ -616,7 +615,7 @@
         </Style.Resources>
     </Style>
 
-    <Style x:Key="loginWindow" TargetType="StackPanel">
+    <Style x:Key="popupPanel" TargetType="StackPanel">
         <Setter Property="Background" Value="{StaticResource popupBackgroundColor}" />
         <Style.Resources>
             <Style TargetType="{x:Type Label}">

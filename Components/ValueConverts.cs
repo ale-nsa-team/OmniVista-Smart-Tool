@@ -1,4 +1,5 @@
-﻿using PoEWizard.Data;
+﻿using Microsoft.Win32.SafeHandles;
+using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
 using System.Collections.Generic;
@@ -432,34 +433,14 @@ namespace PoEWizard.Components
         }
     }
 
-    public class SnmpV2ToVisibilityConverter : IValueConverter
+    public class SnmpVersionToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null)
-            {
-                string item = value as string;
-                return item.Contains("v2") ? Visibility.Visible : Visibility.Collapsed;
-            }
-            return Visibility.Collapsed;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return DependencyProperty.UnsetValue;
-        }
-    }
-
-    public class SnmpV3ToVisibilityConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value != null)
-            {
-                string item = value as string;
-                return item.Contains("v3") ? Visibility.Visible : Visibility.Collapsed;
-            }
-            return Visibility.Visible;
+            if (Utils.IsInvalid(value) || Utils.IsInvalid(parameter)) return Visibility.Collapsed;
+            string item = value as string;
+            string par = parameter as string;
+            return item.Contains(par) ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

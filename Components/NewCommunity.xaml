@@ -1,0 +1,41 @@
+﻿<Window x:Class="PoEWizard.Components.NewCommunity"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PoEWizard.Components"
+        mc:Ignorable="d"
+        Loaded="OnWindowLoaded"
+        Title="New User" Height="300" Width="220" WindowStyle="None" ShowInTaskbar="False">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
+                <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Style="{DynamicResource popupWindow}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="New Community" Style="{DynamicResource popupTitle}" />
+        <StackPanel Grid.Row="1" Style="{DynamicResource popupPanel}">
+            <Label>Name</Label>
+            <TextBox x:Name="_commname" x:FieldModifier="private" Text="{Binding CommunityName}" KeyUp="TextBox_KeyUp"/>
+            <Label>Associated User</Label>
+            <ComboBox x:Name="_users" Style="{DynamicResource defaultCombo}" Margin="20"
+                      ItemsSource="{Binding Users}"
+                      SelectedItem="{Binding SelectedUser}"
+                      IsSynchronizedWithCurrentItem="True"/>
+        </StackPanel>
+        <Border Grid.Row="2" Style="{DynamicResource propsBorder}">
+            <StackPanel Orientation="Horizontal">
+                <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="2,0,0,0">Create</Button>
+                <Button Click="BtnCancel_Click" Style="{DynamicResource defaultButton}" Margin="20,0,0,0">Cancel</Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

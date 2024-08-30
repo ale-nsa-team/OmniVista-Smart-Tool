@@ -1,7 +1,12 @@
-﻿using PoEWizard.Device;
+﻿using PoEWizard.Comm;
+using PoEWizard.Data;
+using PoEWizard.Device;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
 using static PoEWizard.Data.Constants;
 
@@ -12,8 +17,16 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class CfgWizPage4 : Page
     {
+        private readonly List<Command> enableSnmp = new List<Command>()
+        {
+            Command.SNMP_AUTH_LOCAL,
+            Command.SNMP_NO_SECURITY,
+            Command.SNMP_COMMUNITY_MODE
+        };
+
 
         private readonly SnmpModel data;
+        private readonly RestApiService restSrv;
         private readonly ImageSource eye_open;
         private readonly ImageSource eye_closed;
 
@@ -35,34 +48,10 @@ namespace PoEWizard.Components
 
             data = snmpData;
             DataContext = data;
+            restSrv = MainWindow.restApiService;
         }
 
-        private void OnPageLoaded(object sender, RoutedEventArgs e)
-        {
-            //_snmpUser.Focus();
-        }
-
-        private void PasswordEnter(object sender, RoutedEventArgs e)
-        {
-            if (sender is TextBox tb)
-            {
-                e.Handled = true;
-                tb.Focus();
-                tb.SelectAll();
-            }
-        }
-
-        private void MaskedPwdEnter(object sender, RoutedEventArgs e)
-        {
-            if (sender is PasswordBox pb)
-            {
-                e.Handled = true;
-                pb.Focus();
-                pb.SelectAll();
-            }
-        }
-
-        private void AddUser(object sender, RoutedEventArgs e)
+        private async void AddUser(object sender, RoutedEventArgs e)
         {
             NewUser usr = new NewUser()
             {
@@ -71,122 +60,89 @@ namespace PoEWizard.Components
             };
             if (usr.ShowDialog() == true)
             {
-
-            }
-        }
-
-        private void ShowPassword(object sender, RoutedEventArgs e)
-        {
-            //Button btn = sender as Button;
-            //if (btn?.Content is Image img)
-            //{
-            //    bool isEnabled = img.Source == eye_closed;
-            //    img.Source = isEnabled ? eye_open : eye_closed;
-            //    _clearSnmpPwd.Visibility = isEnabled ? Visibility.Hidden : Visibility.Visible;
-            //    _maskedSnmpPwd.Visibility = isEnabled ? Visibility.Visible : Visibility.Hidden;
-            //}
-        }
-
-        private void ShowPrivKey(object sender, RoutedEventArgs e)
-        {
-            //Button btn = sender as Button;
-            //if (btn?.Content is Image img)
-            //{
-            //    bool isEnabled = img.Source == eye_closed;
-            //    img.Source = isEnabled ? eye_open : eye_closed;
-            //    _clearPrivKey.Visibility = isEnabled ? Visibility.Hidden : Visibility.Visible;
-            //    _maskedPrivKey.Visibility = isEnabled ? Visibility.Visible : Visibility.Hidden;
-            //}
-        }
-
-        private void ShowAuthKey(object sender, RoutedEventArgs e)
-        {
-            //Button btn = sender as Button;
-            //if (btn?.Content is Image img)
-            //{
-            //    bool isEnabled = img.Source == eye_closed;
-            //    img.Source = isEnabled ? eye_open : eye_closed;
-            //    _clearAuthKey.Visibility = isEnabled ? Visibility.Hidden : Visibility.Visible;
-            //    _maskedAuthKey.Visibility = isEnabled ? Visibility.Visible : Visibility.Hidden;
-            //}
-        }
-
-        private void SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ComboBox cb = sender as ComboBox;
-            if (cb.IsKeyboardFocusWithin)
-            {
-                BindingExpression be = BindingOperations.GetBindingExpression(cb, ComboBox.SelectedValueProperty);
-                //data.Save(be.ResolvedSourcePropertyName, (string)cb.SelectedValue);
-            }
-        }
-
-        private void TextChanged(object sender, RoutedEventArgs e)
-        {
-            if (sender is TextBox tb)
-            {
-                BindingExpression b = BindingOperations.GetBindingExpression(tb, TextBox.TextProperty);
-                if (!b?.HasValidationError ?? false)
+                string err = null;
+                await Task.Run(() =>
                 {
-                    //data.Save(b.ResolvedSourcePropertyName, tb.Text);
+                    try
+                    {
+                        restSrv.RunSwitchCommand(new CmdRequest(Command.SNMP_USER, usr.Username, usr.Password, "md5+des", usr.Password));
+                    }
+                    catch (Exception ex)
+                    {
+                        err = ex.Message;
+                    }
+
+                });
+                if (err != null)
+                {
+                    CustomMsgBox box = new CustomMsgBox(MainWindow.Instance, MsgBoxButtons.Ok)
+                    {
+                        Message = err,
+                        Img = MsgBoxIcons.Error
+                    };
+                    box.ShowDialog();
+
+                }
+                else
+                {
+                    data.AddUser(usr.Username, usr.Password);
                 }
             }
         }
 
-        private void MaskedPasswordChanged(object sender, RoutedEventArgs e)
+        private async void AddCommunity(object sender, RoutedEventArgs e)
         {
-
-            //if (sender is PasswordBox pb)
-            //{
-            //    BindingExpression b = BindingOperations.GetBindingExpression(pb, PasswordBoxAssistant.BoundPassword);
-            //    if (!b?.HasValidationError ?? false)
-            //    {
-            //        //data.Save(b.ResolvedSourcePropertyName, pb.Password);
-            //    }
-            //    else
-            //    {
-            //        switch (pb.Name)
-            //        {
-            //            case "_maskedSnmpPwd":
-            //                _clearSnmpPwd.Text = _maskedSnmpPwd.Password;
-            //                break;
-            //            case "_maskedPrivKey":
-            //                _clearPrivKey.Text = _maskedPrivKey.Password;
-            //                break;
-            //            case "_maskedAuthKey":
-            //                _clearAuthKey.Text = _maskedAuthKey.Password;
-            //                break;
-            //        }
-            //    }
-            //}
-
+            NewCommunity cmy = new NewCommunity()
+            {
+                Owner = MainWindow.Instance,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            cmy.Users = data.Users.Select(u => u.Name).ToList();
+            if (cmy.ShowDialog() == true)
+            {
+                await Task.Run(() =>
+                {
+                    foreach (var cmd in enableSnmp)
+                    {
+                        restSrv.RunSwitchCommand(new CmdRequest(cmd));
+                    }
+                    restSrv.RunSwitchCommand(new CmdRequest(Command.SNMP_COMMUNITY_MAP, cmy.CommunityName, cmy.SelectedUser));
+                });
+                data.AddCommunity(cmy.CommunityName, cmy.SelectedUser);
+            }
         }
 
-        private void ClearPasswordChanged(object sender, RoutedEventArgs e)
+        private async void AddStation(object sender, RoutedEventArgs e)
         {
-            //if (sender is TextBox tb)
-            //{
-            //    BindingExpression b = BindingOperations.GetBindingExpression(tb, TextBox.TextProperty);
-            //    if (!b?.HasValidationError ?? false)
-            //    {
-            //        //data.Save(b.ResolvedSourcePropertyName, tb.Text);
-            //    }
-            //    else
-            //    {
-            //        switch (tb.Name)
-            //        {
-            //            case "_clearSnmpPwd":
-            //                _maskedSnmpPwd.Password = _clearSnmpPwd.Text;
-            //                break;
-            //            case "_clearPrivKey":
-            //                _maskedPrivKey.Password = _clearPrivKey.Text;
-            //                break;
-            //            case "_clearAuthKey":
-            //                _maskedAuthKey.Password = _clearAuthKey.Text;
-            //                break;
-            //        }
-            //    }
-            //}
+            NewTrapReceiver recv = new NewTrapReceiver()
+            {
+                Owner = MainWindow.Instance,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+
+            recv.Users = data.Users.Select(u => u.Name).ToList();
+            recv.Communities = data.Communities.Select(c => c.Name).ToList();
+            if (recv.ShowDialog() == true)
+            {
+                string user;
+                string version;
+                if (recv.Version.Contains("v2"))
+                {
+                    var comm = data.Communities.FirstOrDefault(c => c.Name == recv.SelectedCommunity);
+                    user = comm?.User;
+                    version = "v2";
+                }
+                else
+                {
+                    user = recv.SelectedUser;
+                    version = "v3";
+                }
+                await Task.Run(() =>
+                {
+                    MainWindow.restApiService.RunSwitchCommand(new CmdRequest(Command.SNMP_STATION, recv.IpAddress, user, version));
+                });
+                data.AddStation(recv.IpAddress, version, user, recv.SelectedCommunity);
+            }
         }
     }
 }

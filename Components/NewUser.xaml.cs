@@ -78,8 +78,23 @@ namespace PoEWizard.Components
                 img.Source = isVisible ? eye_open : eye_closed;
                 _clearPwd.Visibility = isVisible ? Visibility.Hidden : Visibility.Visible;
                 _maskedPwd.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
-                if (isVisible) _maskedPwd.Password = _clearPwd.Text;
-                else _clearPwd.Text = _maskedPwd.Password;
+            }
+        }
+
+        private void MaskedPasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (sender is PasswordBox pb)
+            {
+                _clearPwd.Text = pb.Password;
+            }
+
+        }
+
+        private void ClearPasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (sender is TextBox tb)
+            {
+                _maskedPwd.Password = tb.Text;
             }
         }
 

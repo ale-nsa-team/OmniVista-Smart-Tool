@@ -121,6 +121,12 @@
     <Compile Include="Components\AboutBox.xaml.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\NewCommunity.xaml.cs">
+      <DependentUpon>NewCommunity.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\NewTrapReceiver.xaml.cs">
+      <DependentUpon>NewTrapReceiver.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\NewUser.xaml.cs">
       <DependentUpon>NewUser.xaml</DependentUpon>
     </Compile>
@@ -228,6 +234,14 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Components\AboutBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\NewCommunity.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\NewTrapReceiver.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

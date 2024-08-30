@@ -7,7 +7,6 @@
       xmlns:dev="clr-namespace:PoEWizard.Device"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Loaded="OnPageLoaded"
       Title="SNMP Settings">
     <Page.DataContext>
         <dev:SnmpModel/>
@@ -60,7 +59,7 @@
                     <DataGridTemplateColumn Width="Auto">
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
-                                <Button Style="{DynamicResource deleteButton}">
+                                <Button Style="{DynamicResource deleteButton}" Click="AddCommunity">
                                     <Image Source="../Resources/Img/plus-green.png" />
                                 </Button>
                             </DataTemplate>
@@ -80,12 +79,14 @@
         </StackPanel>
         <StackPanel Grid.Row="2" Style="{DynamicResource cfgWindow}">
             <Label Style="{DynamicResource titleLabel}" Content="Trap Receivers" />
-            <DataGrid x:Name="_stations" ItemsSource="{Binding Stations}" Style="{DynamicResource defaultGrid}">
+            <DataGrid x:Name="_stations" 
+                      ItemsSource="{Binding Stations}" 
+                      Style="{DynamicResource defaultGrid}">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Width="Auto">
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
-                                <Button Style="{DynamicResource deleteButton}">
+                                <Button Style="{DynamicResource deleteButton}" Click="AddStation">
                                     <Image Source="../Resources/Img/plus-green.png" />
                                 </Button>
                             </DataTemplate>
@@ -99,10 +100,10 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTextColumn Header="IP Address" Binding="{Binding IpAddress}" Width="*" />
-                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*" />
-                    <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="*" />
+                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="0.7*" />
+                    <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="0.7*" />
                     <DataGridTextColumn Header="User" Binding="{Binding User}" Width="*" />
-                    <DataGridTextColumn Header="Community" Binding="{Binding Community}" Width="*" />
+                    <DataGridTextColumn Header="Community" Binding="{Binding Community}" Width="1.5*" />
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>

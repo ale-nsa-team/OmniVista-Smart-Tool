@@ -1,9 +1,8 @@
-﻿using System.Windows;
+﻿using PoEWizard.Device;
+using System.Windows;
 using System.Windows.Controls;
-using PoEWizard.Device;
-using static PoEWizard.Data.Constants;
 using System.Windows.Media;
-using System.Windows.Data;
+using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Components
 {
@@ -72,32 +71,11 @@ namespace PoEWizard.Components
             }
         }
 
-        private void TextChanged(object sender, RoutedEventArgs e)
-        {
-            if (sender is TextBox tb)
-            {
-                BindingExpression b = BindingOperations.GetBindingExpression(tb, TextBox.TextProperty);
-                if (!b?.HasValidationError ?? false)
-                {
-                    //sysData.Save(b.ResolvedSourcePropertyName, tb.Text);
-                }
-            }
-        }
-
         private void MaskedPasswordChanged(object sender, RoutedEventArgs e)
         {
-
             if (sender is PasswordBox pb)
             {
-                BindingExpression b = BindingOperations.GetBindingExpression(pb, PasswordBoxAssistant.BoundPassword);
-                if (!b?.HasValidationError ?? false)
-                {
-                    //sysData.Save(b.ResolvedSourcePropertyName, pb.Password);
-                }
-                else if (pb == _maskedAdminPwd)
-                {
-                    _clearAdminPwd.Text = _maskedAdminPwd.Password;
-                }
+                _clearAdminPwd.Text = _maskedAdminPwd.Password;
             }
 
         }
@@ -106,15 +84,7 @@ namespace PoEWizard.Components
         {
             if (sender is TextBox tb)
             {
-                BindingExpression b = BindingOperations.GetBindingExpression(tb, TextBox.TextProperty);
-                if (!b?.HasValidationError ?? false)
-                {
-                    //sysData.Save(b.ResolvedSourcePropertyName, tb.Text);
-                }
-                else if (tb == _clearAdminPwd)
-                {
-                    _maskedAdminPwd.Password = tb.Text;
-                }
+                _maskedAdminPwd.Password = tb.Text;
             }
         }
     }
