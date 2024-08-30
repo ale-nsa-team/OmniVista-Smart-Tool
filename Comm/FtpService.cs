@@ -49,7 +49,6 @@ namespace PoEWizard.Comm
             server.Start();
 
             // List all files in FTPRoot at the start
-            Logger.Activity($"FTP server started on port {Port} ...");
             Logger.Debug($"Files available for download in {FtpRoot}:");
             if (Directory.Exists(FtpRoot))
             {

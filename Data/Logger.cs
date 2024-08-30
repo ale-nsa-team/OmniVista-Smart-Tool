@@ -157,7 +157,7 @@ namespace PoEWizard.Data
         {
             int skipFrames = 1;
             var method = new StackFrame(skipFrames).GetMethod();
-            while (method.DeclaringType.Name == "Logger")
+            while (method.DeclaringType.Name == "Logger" || method.Name.StartsWith("Log"))
             {
                 skipFrames++;
                 method = new StackFrame(skipFrames).GetMethod();

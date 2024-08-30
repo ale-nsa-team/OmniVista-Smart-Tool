@@ -23,7 +23,7 @@ namespace PoEWizard.Comm
             {
                 throw new Exception("TFTP Service must be run as an administrator.");
             }
-            Logger.Activity($"TFTP Server started.\nTFTP Directory: {TftpDirectory}\nListening on port 69 ...");
+            Logger.Info($"TFTP Server started.\nTFTP Directory: {TftpDirectory}\nListening on port 69 ...");
             try
             {
                 using (UdpClient udpClient = new UdpClient(TftpPort))

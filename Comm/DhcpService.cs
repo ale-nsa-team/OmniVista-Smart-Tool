@@ -22,7 +22,7 @@ namespace PoEWizard.Comm
             }
 
             PrintEthernetInterfaceInfo(); // Call to print Ethernet interface info
-            Logger.Activity("Starting DHCP server...");
+            Logger.Info("Starting DHCP server...");
             RunDHCPServer();
         }
 
@@ -46,7 +46,7 @@ namespace PoEWizard.Comm
                 txt.Append($"\n\tSpeed: ").Append(ni.Speed / 1_000_000).Append(" Mbps");
                 txt.Append($"\n\tMAC Address: ").Append(ni.GetPhysicalAddress()).Append("\n");
             }
-            Logger.Activity(txt.ToString());
+            Logger.Info(txt.ToString());
         }
 
         private void RunDHCPServer()

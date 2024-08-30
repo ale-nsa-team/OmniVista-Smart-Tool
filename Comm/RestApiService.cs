@@ -52,6 +52,7 @@ namespace PoEWizard.Comm
         {
             try
             {
+                DateTime startTime = DateTime.Now;
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
                 StartProgressBar($"Connecting to switch {SwitchModel.Name} ...", 23);
@@ -71,6 +72,7 @@ namespace PoEWizard.Comm
                 SwitchModel.LoadFromList(_dictList, DictionaryType.SwitchDebugAppList);
                 UpdateProgressBar(++progressBarCnt); //  4
                 ScanSwitch($"Connect to switch {SwitchModel.Name}", reportResult);
+                LogActivity($"Switch connected", $", duration: {Utils.CalcStringDuration(startTime)}");
             }
             catch (Exception ex)
             {
@@ -268,7 +270,7 @@ namespace PoEWizard.Comm
                 SendProgressReport($"Generating tar file");
                 Thread.Sleep(3000);
                 RunSwitchCommand(new CmdRequest(Command.DEBUG_CREATE_LOG));
-                Logger.Activity($"Generated log file in {SwitchDebugLogLevel.Debug3} level on switch {SwitchModel.Name}, duration: {Utils.CalcStringDuration(progressStartTime)}");
+                Logger.Info($"Generated log file in {SwitchDebugLogLevel.Debug3} level on switch {SwitchModel.Name}, duration: {Utils.CalcStringDuration(progressStartTime)}");
                 UpdateSwitchLogBar();
             }
             catch (Exception ex)
@@ -438,7 +440,7 @@ namespace PoEWizard.Comm
                     if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
                     UpdateProgressBarMessage($"{msg} ({(int)dur} sec) ...", dur);
                 }
-                Logger.Activity($"Write memory on switch {SwitchModel.IpAddress} completed (duration: {Utils.CalcStringDuration(progressStartTime)})");
+                LogActivity("Write memory completed", $", duration: {Utils.CalcStringDuration(progressStartTime)}");
             }
             catch (Exception ex)
             {
@@ -490,7 +492,7 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                 }
-                Logger.Activity($"Switch {SwitchModel.IpAddress} rebooted after {Utils.CalcStringDuration(progressStartTime, true)}");
+                LogActivity("Switch rebooted", $", duration: {Utils.CalcStringDuration(progressStartTime, true)}");
             }
             catch (Exception ex)
             {
@@ -592,7 +594,7 @@ namespace PoEWizard.Comm
                 GetPortsTrafficInformation();
                 DateTime startTime = DateTime.Now;
                 DateTime sampleTime = DateTime.Now;
-                Logger.Info($"Getting traffic information, traffic analysis duration: {duration} sec");
+                LogActivity($"Started traffic analysis", $" for {duration} sec");
                 while (Utils.GetTimeDuration(startTime) <= duration)
                 {
                     if (stopTrafficAnalysis != AbortType.Running) break;
@@ -611,8 +613,7 @@ namespace PoEWizard.Comm
                 {
                     Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was {stopTrafficAnalysisReason}, selected duration: {duration / 60} minutes!");
                 }
-                Activity.Log(SwitchModel, $"Traffic analysis {stopTrafficAnalysisReason}.");
-                Logger.Activity(report.Summary);
+                LogActivity($"Traffic analysis {stopTrafficAnalysisReason}.", $"\n{report.Summary}");
             }
             catch (Exception ex)
             {
@@ -672,7 +673,7 @@ namespace PoEWizard.Comm
                 //if (!string.IsNullOrEmpty(result)) Thread.Sleep(5000);
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
                 _progress.Report(progressReport);
-                Logger.Activity($"{action} on Slot {_wizardSwitchSlot.Name}\n{progressReport.Message}");
+                LogActivity($"{action} PoE on slot {_wizardSwitchSlot.Name} completed", $"\n{progressReport.Message}");
                 return true;
             }
             catch (Exception ex)
@@ -703,7 +704,7 @@ namespace PoEWizard.Comm
                 progressReport.Message += $"\n - Priority on port {port} set to {priority}";
                 progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
                 _progress.Report(progressReport);
-                Logger.Activity($"Changed priority to {priority} on port {port}\n{progressReport.Message}");
+                LogActivity($"Changed power priority to {priority} on port {port}", $"\n{progressReport.Message}");
                 return true;
             }
             catch (Exception ex)
@@ -1607,7 +1608,15 @@ namespace PoEWizard.Comm
 
         public void Close()
         {
-            Logger.Info($"Closing Rest API");
+            LogActivity("Switch disconnected");
+        }
+
+        private void LogActivity(string action, string data = null)
+        {
+            string txt = $"Switch {SwitchModel.Name} ({SwitchModel.IpAddress}), S/N {SwitchModel.SerialNumber}, model {SwitchModel.Model}: {action}";
+            if (!string.IsNullOrEmpty(data)) txt += data;
+            Logger.Activity(txt);
+            Activity.Log(SwitchModel, action.Contains(".") ? action : $"{action}.");
         }
 
         private RestUrlEntry GetRestUrlEntry(CmdRequest req)

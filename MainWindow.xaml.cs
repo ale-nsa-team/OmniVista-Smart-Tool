@@ -339,13 +339,11 @@ namespace PoEWizard
 
         private void WriteMemory_Click(object sender, RoutedEventArgs e)
         {
-            Activity.Log(device, "Write memory.");
             WriteMemory();
         }
 
         private void Reboot_Click(object sender, RoutedEventArgs e)
         {
-            Activity.Log(device, "Reboot.");
             LaunchRebootSwitch();
         }
 
@@ -353,7 +351,7 @@ namespace PoEWizard
         {
             try
             {
-                Activity.Log(device, "Collect Logs.");
+                DisableButtons();
                 bool restartPoE = ShowMessageBox("Collect Logs", $"Do you want to recycle PoE on all ports of switch {device.Name} to collect the logs?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
                 await RunCollectLogs(restartPoE);
             }
@@ -361,6 +359,7 @@ namespace PoEWizard
             {
                 Logger.Error(ex);
             }
+            EnableButtons();
         }
 
         private void Traffic_Click(object sender, RoutedEventArgs e)
@@ -544,7 +543,6 @@ namespace PoEWizard
                     await Task.Run(() => ok = restApiService.ChangePowerPriority(port.Name, port.PriorityLevel));
                     if (ok)
                     {
-                        Logger.Activity($"{txt} completed on Switch {device.Name}, S/N {device.SerialNumber}, Model {device.Model}");
                         await WaitAckProgress();
                     }
                     else
@@ -597,7 +595,6 @@ namespace PoEWizard
                 ShowProgress($"{action} {poeType} PoE on slot {selectedSlot.Name}...");
                 bool ok = false;
                 await Task.Run(() => ok = restApiService.SetPerpetualOrFastPoe(selectedSlot, cmd));
-                Logger.Activity($"{action} {poeType} PoE on slot {selectedSlot.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
                 await WaitAckProgress();
                 await RefreshChanges();
                 return ok;
@@ -651,13 +648,10 @@ namespace PoEWizard
                 {
                     string confirm = $"disconnecting the switch {device.Name}";
                     stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                    string title = $"Disconnecting switch {device.Name}";
-                    Logger.Activity($"{title} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
                     bool save = StopTrafficAnalysis(AbortType.Close, $"Disconnecting switch {device.Name}", ASK_SAVE_TRAFFIC_REPORT, confirm);
                     if (!save) return;
                     await WaitSaveTrafficAnalysis();
-                    _traffic.IsEnabled = false;
-                    ShowProgress($"{title} ...");
+                    ShowProgress($"Disconnecting switch {device.Name} ...");
                     await CloseRestApiService();
                     SetDisconnectedState();
                     return;
@@ -667,9 +661,7 @@ namespace PoEWizard
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.Connect(reportResult));
                 UpdateConnectedState(true);
-                _traffic.IsEnabled = true;
                 await CheckSwitchScanResult($"Connect to switch {device.Name}...", startTime);
-                Logger.Activity($"Connected to switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
             }
             catch (Exception ex)
             {
@@ -718,12 +710,7 @@ namespace PoEWizard
                     {
                         if (AuthorizeWriteMemory("Write Memory required"))
                         {
-                            _btnRunWiz.IsEnabled = false;
-                            _refreshSwitch.IsEnabled = false;
-                            _writeMemory.IsEnabled = false;
-                            _reboot.IsEnabled = false;
-                            _collectLogs.IsEnabled = false;
-                            _traffic.IsEnabled = false;
+                            DisableButtons();
                             _comImg.Visibility = Visibility.Collapsed;
                             await Task.Run(() => restApiService.WriteMemory());
                             _comImg.Visibility = Visibility.Visible;
@@ -748,13 +735,13 @@ namespace PoEWizard
         {
             try
             {
+                DisableButtons();
                 ProgressReport wizardProgressReport = new ProgressReport("PoE Wizard Report:");
                 reportResult = new WizardReport();
                 string barText = $"Running PoE Wizard on port {selectedPort.Name} ...";
                 ShowProgress(barText);
                 DateTime startTime = DateTime.Now;
                 await Task.Run(() => restApiService.ScanSwitch($"Running PoE Wizard on port {selectedPort.Name}...", reportResult));
-                UpdateConnectedState(false);
                 ShowProgress(barText);
                 switch (selectedDeviceType)
                 {
@@ -787,13 +774,13 @@ namespace PoEWizard
                     progress.Report(wizardProgressReport);
                     await WaitAckProgress();
                 }
-                Activity.Log(device, $"PoE Wizard execution {(result == WizardResult.Fail ? "failed" : "succeeded")} on port {selectedPort.Name}");
                 StringBuilder txt = new StringBuilder("PoE Wizard completed on port ");
                 txt.Append(selectedPort.Name).Append(" with device type ").Append(selectedDeviceType).Append(":").Append(msg).Append("\nPoE status: ").Append(selectedPort.Poe);
                 txt.Append(", Port Status: ").Append(selectedPort.Status).Append(", Power: ").Append(selectedPort.Power).Append(" Watts");
                 if (selectedPort.EndPointDevice != null) txt.Append("\n").Append(selectedPort.EndPointDevice);
                 else if (selectedPort.MacList?.Count > 0 && !string.IsNullOrEmpty(selectedPort.MacList[0])) txt.Append(", Device MAC: ").Append(selectedPort.MacList[0]);
                 Logger.Activity(txt.ToString());
+                Activity.Log(device, $"PoE Wizard execution {(result == WizardResult.Fail ? "failed" : "succeeded")} on port {selectedPort.Name}");
                 RefreshSlotAndPortsView();
                 if (result == WizardResult.Fail)
                 {
@@ -810,6 +797,7 @@ namespace PoEWizard
             }
             finally
             {
+                EnableButtons();
                 HideProgress();
                 HideInfoBox();
                 sftpService?.Disconnect();
@@ -921,6 +909,7 @@ namespace PoEWizard
                 txt.Append(")\n\tDuration of tar file creation: ").Append(strDur);
                 txt.Append("\n\tTotal duration to generate log file in ").Append(SwitchDebugLogLevel.Debug3).Append(" level: ").Append(strTotalDuration);
                 Logger.Activity(txt.ToString());
+                Activity.Log(device, "Collect Logs.");
             }
             catch (Exception ex)
             {
@@ -991,6 +980,7 @@ namespace PoEWizard
             {
                 await Task.Run(() => restApiService.GetSystemInfo());
                 if (device.SyncStatus == SyncStatusType.Synchronized) return;
+                DisableButtons();
                 await Task.Run(() => restApiService.WriteMemory());
                 await Task.Run(() => restApiService.GetSystemInfo());
                 DataContext = null;
@@ -1003,6 +993,7 @@ namespace PoEWizard
             }
             finally
             {
+                EnableButtons();
                 HideProgress();
                 HideInfoBox();
             }
@@ -1200,7 +1191,6 @@ namespace PoEWizard
         {
             try
             {
-                Activity.Log(device, "Started traffic analysis");
                 startTrafficAnalysisTime = DateTime.Now;
                 isTrafficRunning = true;
                 _trafficLabel.Content = TRAFFIC_ANALYSIS_RUNNING;
@@ -1365,15 +1355,6 @@ namespace PoEWizard
                 _switchAttributes.Text = $"Connected to: {device.Name}";
                 _btnConnect.Cursor = Cursors.Hand;
                 _switchMenuItem.IsEnabled = false;
-                _snapshotMenuItem.IsEnabled = true;
-                _vcbootMenuItem.IsEnabled = true;
-                _refreshSwitch.IsEnabled = true;
-                _writeMemory.IsEnabled = true;
-                _reboot.IsEnabled = true;
-                _collectLogs.IsEnabled = true;
-                _psMenuItem.IsEnabled = true;
-                _factoryRst.IsEnabled = true;
-                _cfgMenuItem.IsEnabled = true;
                 _disconnectMenuItem.Visibility = Visibility.Visible;
                 _tempStatus.Visibility = Visibility.Visible;
                 _cpu.Visibility = Visibility.Visible;
@@ -1399,12 +1380,18 @@ namespace PoEWizard
                 {
                     _tempWarn.Source = new BitmapImage(new Uri(@"Resources\warning.png", UriKind.Relative));
                 }
-                ReselectPort();
+                EnableButtons();
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
             }
+        }
+
+        private void EnableButtons()
+        {
+            ChangeButtonVisibility(true);
+            ReselectPort();
         }
 
         private async void LaunchRebootSwitch()
@@ -1423,7 +1410,6 @@ namespace PoEWizard
                     {
                         await Task.Run(() => restApiService.WriteMemory());
                     }
-                    Logger.Activity($"Rebooting switch {device.Name} ({device.IpAddress}), S/N {device.SerialNumber}, model {device.Model}");
                     string txt = await RebootSwitch(420);
                     if (string.IsNullOrEmpty(txt)) return;
                     if (ShowMessageBox("Reboot Switch", $"{txt}\nDo you want to reconnect to the switch {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo))
@@ -1459,16 +1445,8 @@ namespace PoEWizard
                 bool save = StopTrafficAnalysis(AbortType.Close, title, ASK_SAVE_TRAFFIC_REPORT, confirm);
                 if (!save) return null;
                 await WaitSaveTrafficAnalysis();
-                _btnRunWiz.IsEnabled = false;
-                _refreshSwitch.IsEnabled = false;
-                _writeMemory.IsEnabled = false;
-                _reboot.IsEnabled = false;
-                _collectLogs.IsEnabled = false;
-                _traffic.IsEnabled = false;
+                DisableButtons();
                 _switchMenuItem.IsEnabled = false;
-                _snapshotMenuItem.IsEnabled = false;
-                _vcbootMenuItem.IsEnabled = false;
-                _cfgMenuItem.IsEnabled = false;
                 string duration = await Task.Run(() => restApiService.RebootSwitch(waitSec));
                 SetDisconnectedState();
                 if (string.IsNullOrEmpty(duration)) return null;
@@ -1494,18 +1472,8 @@ namespace PoEWizard
             DataContext = null;
             device = new SwitchModel();
             _switchAttributes.Text = "";
-            _btnRunWiz.IsEnabled = false;
             _switchMenuItem.IsEnabled = true;
-            _snapshotMenuItem.IsEnabled = false;
-            _vcbootMenuItem.IsEnabled = false;
-            _refreshSwitch.IsEnabled = false;
-            _writeMemory.IsEnabled = false;
-            _reboot.IsEnabled = false;
-            _collectLogs.IsEnabled = false;
-            _traffic.IsEnabled = false;
-            _psMenuItem.IsEnabled = false;
-            _factoryRst.IsEnabled = false;
-            _cfgMenuItem.IsEnabled = false;
+            DisableButtons();
             _comImg.ToolTip = "Click to reconnect";
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
             _tempStatus.Visibility = Visibility.Hidden;
@@ -1520,6 +1488,26 @@ namespace PoEWizard
             restApiService = null;
         }
 
+        private void DisableButtons()
+        {
+            ChangeButtonVisibility(false);
+            _btnRunWiz.IsEnabled = false;
+        }
+
+        private void ChangeButtonVisibility(bool val)
+        {
+            _snapshotMenuItem.IsEnabled = val;
+            _vcbootMenuItem.IsEnabled = val;
+            _refreshSwitch.IsEnabled = val;
+            _writeMemory.IsEnabled = val;
+            _reboot.IsEnabled = val;
+            _traffic.IsEnabled = val;
+            _collectLogs.IsEnabled = val;
+            _psMenuItem.IsEnabled = val;
+            _factoryRst.IsEnabled = val;
+            _cfgMenuItem.IsEnabled = val;
+        }
+
         private void ReselectPort()
         {
             if (selectedPort != null && _portList.Items?.Count > selectedPortIndex)
@@ -1527,6 +1515,7 @@ namespace PoEWizard
                 _portList.SelectionChanged -= PortSelection_Changed;
                 _portList.SelectedItem = _portList.Items[selectedPortIndex];
                 _portList.SelectionChanged += PortSelection_Changed;
+                _btnRunWiz.IsEnabled = true;
             }
         }
 
