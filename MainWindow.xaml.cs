@@ -615,6 +615,7 @@ namespace PoEWizard
         {
             await Task.Run(() => restApiService.GetSystemInfo());
             RefreshSlotAndPortsView();
+            EnableButtons();
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)
@@ -660,8 +661,8 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.Connect(reportResult));
-                UpdateConnectedState(true);
                 await CheckSwitchScanResult($"Connect to switch {device.Name}...", startTime);
+                UpdateConnectedState(true);
             }
             catch (Exception ex)
             {
@@ -950,7 +951,6 @@ namespace PoEWizard
             DataContext = device;
             _slotsView.ItemsSource = device.GetChassis(selectedSlot.Name)?.Slots ?? new List<SlotModel>();
             _portList.ItemsSource = selectedSlot?.Ports ?? new List<PortModel>();
-            ReselectPort();
         }
 
         private async void RefreshSwitch()
@@ -960,8 +960,8 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.Name}", reportResult));
-                UpdateConnectedState(false);
                 await CheckSwitchScanResult($"Refresh switch {device.Name}", startTime);
+                UpdateConnectedState(false);
             }
             catch (Exception ex)
             {
@@ -985,7 +985,6 @@ namespace PoEWizard
                 await Task.Run(() => restApiService.GetSystemInfo());
                 DataContext = null;
                 DataContext = device;
-                ReselectPort();
             }
             catch (Exception ex)
             {
@@ -1034,6 +1033,7 @@ namespace PoEWizard
                         await Task.Run(() => WaitTask(20, $"Waiting Ports to come UP on Switch {device.Name}"));
                         await Task.Run(() => restApiService.RefreshSwitchPorts());
                         RefreshSlotAndPortsView();
+                        EnableButtons();
                     }
                 }
                 Logger.Debug($"{title} completed (duration: {duration})");
@@ -1143,7 +1143,7 @@ namespace PoEWizard
         private async Task RunLastWizardActions()
         {
             bool reset = false;
-            await RunWizardCommands(new List<Command>() { Command.CHECK_CAPACITOR_DETECTION }, 45);
+            await RunWizardCommands(new List<Command>() { Command.CHECK_CAPACITOR_DETECTION }, 60);
             WizardResult result = reportResult.GetReportResult(selectedPort.Name);
             if (result != WizardResult.Ok && result != WizardResult.Fail) reportResult.RemoveLastWizardReport(selectedPort.Name); else reset = true;
             await CheckDefaultMaxPower();
