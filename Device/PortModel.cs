@@ -58,8 +58,8 @@ namespace PoEWizard.Device
 
         public void LoadPoEData(Dictionary<string, string> dict)
         {
-            MaxPower = ParseNumber(Utils.GetDictValue(dict, MAXIMUM))/1000;
-            Power = ParseNumber(Utils.GetDictValue(dict, USED))/1000;
+            MaxPower = ParseNumber(Utils.GetDictValue(dict, MAXIMUM)) / 1000;
+            Power = ParseNumber(Utils.GetDictValue(dict, USED)) / 1000;
             string onOff = Utils.GetDictValue(dict, ON_OFF);
             IsPoeON = onOff == "ON";
             switch (Utils.GetDictValue(dict, STATUS))
@@ -85,7 +85,15 @@ namespace PoEWizard.Device
             }
             PriorityLevel = Enum.TryParse(Utils.GetDictValue(dict, PRIORITY), true, out PriorityLevelType res) ? res : PriorityLevelType.Low;
             string powerClass = Utils.ExtractNumber(Utils.GetDictValue(dict, CLASS));
-            Class = Poe != PoeStatus.NoPoe && !string.IsNullOrEmpty(powerClass) ? $"{powerClass} ({powerClassTable[powerClass]})" : string.Empty;
+            if (Poe != PoeStatus.NoPoe && !string.IsNullOrEmpty(powerClass))
+            {
+                Class = $"{powerClass}";
+                if (powerClassTable.ContainsKey(powerClass)) Class += $" ({powerClassTable[powerClass]})";
+            }
+            else
+            {
+                Class = string.Empty;
+            }
             Type = Utils.GetDictValue(dict, TYPE);
         }
 

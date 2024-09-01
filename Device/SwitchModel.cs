@@ -127,6 +127,7 @@ namespace PoEWizard.Device
                                 chas.Slots.Add(slot);
                             }
                             List<Dictionary<string, string>> slotList = chasList.Where(c => GetSlotId(c) == j).ToList();
+                            if (slotList?.Count == 0) continue;
                             slot.NbPorts = slotList.Count;
                             foreach (var dict in slotList)
                             {
