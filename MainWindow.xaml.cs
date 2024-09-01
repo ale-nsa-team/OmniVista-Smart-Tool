@@ -1142,22 +1142,27 @@ namespace PoEWizard
 
         private async Task RunLastWizardActions()
         {
-            bool reset = false;
             await RunWizardCommands(new List<Command>() { Command.CHECK_CAPACITOR_DETECTION }, 60);
             WizardResult result = reportResult.GetReportResult(selectedPort.Name);
+            bool reset = false;
             if (result != WizardResult.Ok && result != WizardResult.Fail) reportResult.RemoveLastWizardReport(selectedPort.Name); else reset = true;
             await CheckDefaultMaxPower();
-            if (selectedPort.Poe == PoeStatus.Off && (ShowMessageBox("Port PoE turned Off", $"The PoE on port {selectedPort.Name} is turned Off!\n Do you want to turn it On?",
-                                                                     MsgBoxIcons.Warning, MsgBoxButtons.YesNo)))
+            if (selectedPort.Poe == PoeStatus.Off)
             {
-                await RunWizardCommands(new List<Command>() { Command.RESET_POWER_PORT }, 30);
-                Logger.Info($"PoE turned Off, reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                reset = true;
+                if (ShowMessageBox("Port PoE turned Off", $"The PoE on port {selectedPort.Name} is turned Off!\n Do you want to turn it On?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo))
+                {
+                    await RunWizardCommands(new List<Command>() { Command.RESET_POWER_PORT }, 30);
+                    Logger.Info($"PoE turned Off, reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                    reset = true;
+                }
             }
-            if (!reset && ShowMessageBox("Resetting Port", $"Do you want to recycle the power on port {selectedPort.Name}?", MsgBoxIcons.Question, MsgBoxButtons.YesNo))
+            if (!reset && selectedPort.Poe == PoeStatus.On && selectedPort.Power > 0)
             {
-                await RunWizardCommands(new List<Command>() { Command.RESET_POWER_PORT }, 30);
-                Logger.Info($"Recycling the power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                if (ShowMessageBox("Recycling Power on Port", $"Do you want to recycle the power on port {selectedPort.Name}?", MsgBoxIcons.Question, MsgBoxButtons.YesNo))
+                {
+                    await RunWizardCommands(new List<Command>() { Command.RESET_POWER_PORT }, 30);
+                    Logger.Info($"Recycling the power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+                }
             }
             reportResult.UpdateResult(selectedPort.Name, reportResult.GetReportResult(selectedPort.Name));
         }
