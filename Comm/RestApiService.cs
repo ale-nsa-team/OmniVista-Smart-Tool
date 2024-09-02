@@ -1464,8 +1464,17 @@ namespace PoEWizard.Comm
 
         private void GetSlotLanPower(SlotModel slot)
         {
-            _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_LAN_POWER, ParseType.Htable, new string[1] { $"{slot.Name}" })) as List<Dictionary<string, string>>;
-            slot.LoadFromList(_dictList, DictionaryType.LanPower);
+            try
+            {
+                _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_LAN_POWER, ParseType.Htable, new string[1] { $"{slot.Name}" })) as List<Dictionary<string, string>>;
+                slot.LoadFromList(_dictList, DictionaryType.LanPower);
+            }
+            catch (Exception ex)
+            {
+                string error = ex.Message.ToLower();
+                if (error.Contains("lanpower not supported") || error.Contains("invalid entry: \"lanpower\"") || error.Contains("incorrect index")) slot.SupportsPoE = false;
+                Logger.Error(ex);
+            }
         }
 
         private void ParseException(ProgressReport progressReport, Exception ex)
