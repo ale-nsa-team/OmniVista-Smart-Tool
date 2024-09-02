@@ -947,10 +947,13 @@ namespace PoEWizard
             DataContext = null;
             _slotsView.ItemsSource = null;
             _portList.ItemsSource = null;
-            selectedSlot = device.GetSlot(selectedSlot.Name);
             DataContext = device;
-            _slotsView.ItemsSource = device.GetChassis(selectedSlot.Name)?.Slots ?? new List<SlotModel>();
-            _portList.ItemsSource = selectedSlot?.Ports ?? new List<PortModel>();
+            if (selectedSlot != null)
+            {
+                selectedSlot = device.GetSlot(selectedSlot.Name);
+                _slotsView.ItemsSource = device.GetChassis(selectedSlot.Name)?.Slots ?? new List<SlotModel>();
+                _portList.ItemsSource = selectedSlot?.Ports ?? new List<PortModel>();
+            }
         }
 
         private async void RefreshSwitch()
