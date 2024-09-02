@@ -125,7 +125,8 @@ namespace PoEWizard.Device
                     string[] split = Name.Split(',');
                     foreach (string mac in split)
                     {
-                        tip.Add($"{mac} ({Utils.GetVendorName(mac)})");
+                        string vendor = Utils.GetVendorName(mac);
+                        if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) tip.Add($"{mac} ({vendor})"); else tip.Add($"{mac}");
                     }
                     if (split.Length >= 10) tip.Add("          . . .");
                 }
