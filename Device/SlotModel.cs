@@ -32,10 +32,10 @@ namespace PoEWizard.Device
 
         public SlotModel() { }
 
-        public SlotModel(string slotString)
+        public SlotModel(ChassisSlotPort chassisSlot)
         {
-            this.Number = ParseNumber(slotString, 1);
-            this.Name = slotString.Substring(0, slotString.Length - 2);
+            this.Number = chassisSlot.SlotNr;
+            this.Name = $"{chassisSlot.ChassisNr}/{chassisSlot.SlotNr}";
             this.Ports = new List<PortModel>();
             this.SupportsPoE = true;
         }
@@ -61,6 +61,7 @@ namespace PoEWizard.Device
                 string sport = (split.Length == 3) ? split[2] : split[1];
                 if (sport == null) continue;
                 PortModel port = GetPort(sport);
+                if (port == null) continue;
                 if (dt == DictionaryType.LanPower)
                 {
                     port.LoadPoEData(dict);
@@ -71,13 +72,13 @@ namespace PoEWizard.Device
                     if (port.Protocol8023bt == ConfigType.Enable) IsPoeModeEnable = false;
                 }
             }
-            this.NbPoePorts = list.Count;
-            this.Power = Ports.Sum(p => p.Power);
             if (!this.IsInitialized)
             {
                 this.PoeStatus = SlotPoeStatus.Off;
                 return;
             }
+            this.Power = Ports.Sum(p => p.Power);
+            this.NbPoePorts = list.Count;
             double powerConsumedMetric = 100 * this.Power / this.Budget;
             double nearThreshold = 0.9 * this.Threshold;
             if (powerConsumedMetric < nearThreshold) this.PoeStatus = SlotPoeStatus.UnderThreshold;
