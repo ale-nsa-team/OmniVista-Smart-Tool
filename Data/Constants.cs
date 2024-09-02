@@ -23,7 +23,9 @@ namespace PoEWizard.Data
             [Description("Critical")]
             Critical,
             [Description("Off")]
-            Off
+            Off,
+            [Description("Not Supported")]
+            NotSupported
         }
         public enum ParseType { Htable, Htable2, Htable3, Vtable, Etable, MVTable, Text, MibTable, LldpRemoteTable, TrafficTable, NoParsing }
         public enum EType { Fiber, Copper, Unknown }

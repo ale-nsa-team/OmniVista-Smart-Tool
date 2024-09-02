@@ -1408,16 +1408,17 @@ namespace PoEWizard.Comm
                     GetSlotPowerAndConfig(slot);
                     if (!slot.IsInitialized)
                     {
-                        slot.PoeStatus = SlotPoeStatus.Off;
                         slot.IsPoeModeEnable = false;
                         if (slot.SupportsPoE)
                         {
+                            slot.PoeStatus = SlotPoeStatus.Off;
                             _wizardReportResult.CreateReportResult(slot.Name, WizardResult.Warning, $"\nSlot {slot.Name} is turned Off!");
                         }
                         else
                         {
                             slot.FPoE = ConfigType.Unavailable;
                             slot.PPoE = ConfigType.Unavailable;
+                            slot.PoeStatus = SlotPoeStatus.NotSupported;
                         }
                     }
                     chassis.PowerBudget += slot.Budget;
