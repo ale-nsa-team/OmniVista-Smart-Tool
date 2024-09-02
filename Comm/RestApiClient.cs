@@ -100,6 +100,10 @@ namespace PoEWizard.Comm
                     else
                     {
                         this._connected = false;
+                        if (!string.IsNullOrEmpty(xmlDoc.InnerXml) && xmlDoc.InnerXml.ToLower().Contains("unsupported"))
+                        {
+                            throw new SwitchRejectConnection($"Switch {this._ip_address} doesn't support Rest Api");
+                        }
                         throw new SwitchAuthenticationFailure("Invalid response body - token not found!");
                     }
                 }
