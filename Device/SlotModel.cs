@@ -54,6 +54,7 @@ namespace PoEWizard.Device
 
         public void LoadFromList(List<Dictionary<string, string>> list, DictionaryType dt)
         {
+            if (dt == DictionaryType.LanPower) this.NbPoePorts = 0;
             foreach (var dict in list)
             {
                 string[] split = (dict.TryGetValue((dt == DictionaryType.LanPower) ? PORT : CHAS_SLOT_PORT, out string s) ? s : "0").Split('/');
@@ -65,6 +66,7 @@ namespace PoEWizard.Device
                 if (dt == DictionaryType.LanPower)
                 {
                     port.LoadPoEData(dict);
+                    if (port.Poe != Constants.PoeStatus.NoPoe) this.NbPoePorts++;
                 }
                 else
                 {
@@ -78,7 +80,6 @@ namespace PoEWizard.Device
                 return;
             }
             this.Power = Ports.Sum(p => p.Power);
-            this.NbPoePorts = list.Count;
             double powerConsumedMetric = 100 * this.Power / this.Budget;
             double nearThreshold = 0.9 * this.Threshold;
             if (powerConsumedMetric < nearThreshold) this.PoeStatus = SlotPoeStatus.UnderThreshold;
