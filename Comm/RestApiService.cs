@@ -1410,7 +1410,15 @@ namespace PoEWizard.Comm
                     {
                         slot.PoeStatus = SlotPoeStatus.Off;
                         slot.IsPoeModeEnable = false;
-                        _wizardReportResult.CreateReportResult(slot.Name, WizardResult.Warning, $"\nSlot {slot.Name} is turned Off!");
+                        if (slot.SupportsPoE)
+                        {
+                            _wizardReportResult.CreateReportResult(slot.Name, WizardResult.Warning, $"\nSlot {slot.Name} is turned Off!");
+                        }
+                        else
+                        {
+                            slot.FPoE = ConfigType.Unavailable;
+                            slot.PPoE = ConfigType.Unavailable;
+                        }
                     }
                     chassis.PowerBudget += slot.Budget;
                     chassis.PowerConsumed += slot.Power;
@@ -1458,8 +1466,11 @@ namespace PoEWizard.Comm
         private void GetSlotPowerAndConfig(SlotModel slot)
         {
             GetSlotLanPower(slot);
-            _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_LAN_POWER_CONFIG, ParseType.Htable2, new string[1] { $"{slot.Name}" })) as List<Dictionary<string, string>>;
-            slot.LoadFromList(_dictList, DictionaryType.LanPowerCfg);
+            if (slot.SupportsPoE)
+            {
+                _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_LAN_POWER_CONFIG, ParseType.Htable2, new string[1] { $"{slot.Name}" })) as List<Dictionary<string, string>>;
+                slot.LoadFromList(_dictList, DictionaryType.LanPowerCfg);
+            }
         }
 
         private void GetSlotLanPower(SlotModel slot)
