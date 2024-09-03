@@ -174,7 +174,10 @@ namespace PoEWizard.Data
             [Command.SET_MGT_INTERFACE] = $"ip interface \"IBMGT-1\" address {DAT} mask {DAT} vlan 1",
             [Command.ENABLE_SPAN_TREE] = "spantree vlan 1 admin-state enable",
             [Command.CLEAR_SWLOG] = "swlog clear all",
-            [Command.SNMP_USER] = $"user {DAT} password {DAT} read-only all {DAT} priv-password {DAT}"
+            [Command.SNMP_USER] = $"user {DAT} password {DAT} read-only all {DAT} priv-password {DAT}",
+            [Command.DELETE_USER] = $"no user {DAT}",
+            [Command.DELETE_COMMUNITY] = $"no snmp community-map {DAT}",
+            [Command.DELETE_STATION] = $"no snmp station {DAT}"
             #endregion
 
         };

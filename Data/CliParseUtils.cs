@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using System.Windows.Controls;
 using System.Xml.Linq;
 using static PoEWizard.Data.Constants;
 
