@@ -313,7 +313,7 @@ namespace PoEWizard
             if (wiz.IsRebootSwitch) LaunchRebootSwitch();
             _status.Text = DEFAULT_APP_STATUS;
             HideInfoBox();
-            SetConnectedState(false);
+            SetConnectedState();
         }
 
         private void RunWiz_Click(object sender, RoutedEventArgs e)
@@ -661,8 +661,20 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.Connect(reportResult));
-                await CheckSwitchScanResult($"Connect to switch {device.Name}...", startTime);
-                UpdateConnectedState(true);
+                if (device.RunningDir == CERTIFIED_DIR)
+                {
+                    bool reboot = await AskRebootCertified();
+                    if (!reboot)
+                    {
+                        UpdateConnectedState();
+                        DisableButtons();
+                    }
+                }
+                else
+                {
+                    await CheckSwitchScanResult($"Connect to switch {device.Name}...", startTime);
+                    UpdateConnectedState();
+                }
             }
             catch (Exception ex)
             {
@@ -673,6 +685,19 @@ namespace PoEWizard
                 HideProgress();
                 HideInfoBox();
             }
+        }
+
+        private async Task<bool> AskRebootCertified()
+        {
+            string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be saved.\n" +
+                $"Do you want to reboot the switch on {WORKING_DIR} directory?";
+            bool reboot = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
+            if (reboot)
+            {
+                string txt = await RebootSwitch(420);
+                if (string.IsNullOrEmpty(txt)) ShowMessageBox("Connection", txt);
+            }
+            return reboot;
         }
 
         private void BuildOuiTable()
@@ -964,7 +989,7 @@ namespace PoEWizard
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.Name}", reportResult));
                 await CheckSwitchScanResult($"Refresh switch {device.Name}", startTime);
-                UpdateConnectedState(false);
+                UpdateConnectedState();
             }
             catch (Exception ex)
             {
@@ -981,13 +1006,21 @@ namespace PoEWizard
         {
             try
             {
-                await Task.Run(() => restApiService.GetSystemInfo());
-                if (device.SyncStatus == SyncStatusType.Synchronized) return;
-                DisableButtons();
-                await Task.Run(() => restApiService.WriteMemory());
-                await Task.Run(() => restApiService.GetSystemInfo());
-                DataContext = null;
-                DataContext = device;
+                if (device.RunningDir == CERTIFIED_DIR)
+                {
+                    bool reboot = await AskRebootCertified();
+                    if (!reboot) DisableButtons();
+                }
+                else
+                {
+                    await Task.Run(() => restApiService.GetSystemInfo());
+                    if (device.SyncStatus == SyncStatusType.Synchronized) return;
+                    DisableButtons();
+                    await Task.Run(() => restApiService.WriteMemory());
+                    await Task.Run(() => restApiService.GetSystemInfo());
+                    DataContext = null;
+                    DataContext = device;
+                }
             }
             catch (Exception ex)
             {
@@ -1334,31 +1367,19 @@ namespace PoEWizard
             _infoBox.Visibility = Visibility.Collapsed;
         }
 
-        private void UpdateConnectedState(bool checkCertified)
+        private void UpdateConnectedState()
         {
-            if (device.IsConnected) SetConnectedState(checkCertified); 
+            if (device.IsConnected) SetConnectedState(); 
             else SetDisconnectedState();
         }
 
-        private async void SetConnectedState(bool checkCertified)
+        private void SetConnectedState()
         {
             try
             {
                 DataContext = null;
                 DataContext = device;
                 Logger.Debug($"Data context set to {device.Name}");
-                if (device.RunningDir == CERTIFIED_DIR && checkCertified)
-                {
-                    string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be saved.\n" +
-                        $"Do you want to reboot the switch on {WORKING_DIR} directory?";
-                    bool res = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
-                    if (res)
-                    {
-                        string txt = await RebootSwitch(420);
-                        if (string.IsNullOrEmpty(txt)) ShowMessageBox("Connection", txt);
-                        return;
-                    }
-                }
                 _comImg.Source = (ImageSource)currentDict["connected"];
                 _switchAttributes.Text = $"Connected to: {device.Name}";
                 _btnConnect.Cursor = Cursors.Hand;
