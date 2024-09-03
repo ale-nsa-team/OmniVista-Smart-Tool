@@ -278,7 +278,7 @@ namespace PoEWizard
             ShowProgress("Applying factory default...");
             FactoryDefault.Progress = progress;
             await Task.Run(() => FactoryDefault.Reset(device));
-            string tout = await RebootSwitch(300);
+            string tout = await RebootSwitch(420);
             SetDisconnectedState();
             if (string.IsNullOrEmpty(tout)) return;
             if (ShowMessageBox("Reboot Switch", $"{tout}\nDo you want to reconnect to the switch {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo))
@@ -661,19 +661,12 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.Connect(reportResult));
+                await CheckSwitchScanResult($"Connect to switch {device.Name}...", startTime);
+                UpdateConnectedState();
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
                     bool reboot = await AskRebootCertified();
-                    if (!reboot)
-                    {
-                        UpdateConnectedState();
-                        DisableButtons();
-                    }
-                }
-                else
-                {
-                    await CheckSwitchScanResult($"Connect to switch {device.Name}...", startTime);
-                    UpdateConnectedState();
+                    if (!reboot) _writeMemory.IsEnabled = false;
                 }
             }
             catch (Exception ex)
@@ -695,7 +688,10 @@ namespace PoEWizard
             if (reboot)
             {
                 string txt = await RebootSwitch(420);
-                if (string.IsNullOrEmpty(txt)) ShowMessageBox("Connection", txt);
+                if (ShowMessageBox("Reboot Switch", $"{txt}\nDo you want to reconnect to the switch {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo))
+                {
+                    Connect();
+                }
             }
             return reboot;
         }
@@ -732,7 +728,7 @@ namespace PoEWizard
                 if (restApiService != null && !isClosing)
                 {
                     isClosing = true;
-                    if (device.SyncStatus == SyncStatusType.NotSynchronized)
+                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized)
                     {
                         if (AuthorizeWriteMemory("Write Memory required"))
                         {
@@ -990,6 +986,11 @@ namespace PoEWizard
                 await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.Name}", reportResult));
                 await CheckSwitchScanResult($"Refresh switch {device.Name}", startTime);
                 UpdateConnectedState();
+                if (device.RunningDir == CERTIFIED_DIR)
+                {
+                    bool reboot = await AskRebootCertified();
+                    if (!reboot) _writeMemory.IsEnabled = false;
+                }
             }
             catch (Exception ex)
             {
@@ -1006,21 +1007,13 @@ namespace PoEWizard
         {
             try
             {
-                if (device.RunningDir == CERTIFIED_DIR)
-                {
-                    bool reboot = await AskRebootCertified();
-                    if (!reboot) DisableButtons();
-                }
-                else
-                {
-                    await Task.Run(() => restApiService.GetSystemInfo());
-                    if (device.SyncStatus == SyncStatusType.Synchronized) return;
-                    DisableButtons();
-                    await Task.Run(() => restApiService.WriteMemory());
-                    await Task.Run(() => restApiService.GetSystemInfo());
-                    DataContext = null;
-                    DataContext = device;
-                }
+                await Task.Run(() => restApiService.GetSystemInfo());
+                if (device.SyncStatus == SyncStatusType.Synchronized) return;
+                DisableButtons();
+                await Task.Run(() => restApiService.WriteMemory());
+                await Task.Run(() => restApiService.GetSystemInfo());
+                DataContext = null;
+                DataContext = device;
             }
             catch (Exception ex)
             {
@@ -1435,7 +1428,7 @@ namespace PoEWizard
                         ShowMessageBox("Reboot Switch", $"Cannot reboot the switch {device.Name} because it's not certified!", MsgBoxIcons.Error);
                         return;
                     }
-                    if (device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory("Reboot Switch"))
+                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory("Reboot Switch"))
                     {
                         await Task.Run(() => restApiService.WriteMemory());
                     }
