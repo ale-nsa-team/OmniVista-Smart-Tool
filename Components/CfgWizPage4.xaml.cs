@@ -90,7 +90,7 @@ namespace PoEWizard.Components
             }
         }
 
-        private async void DeleteUser(object sender, RoutedEventArgs e)
+        private void DeleteUser(object sender, RoutedEventArgs e)
         {
             if (_users.CurrentItem is SnmpUser user)
             {
@@ -110,23 +110,22 @@ namespace PoEWizard.Components
                     };
                     if (box.ShowDialog() == true)
                     {
-                        await Task.Run(() =>
+                        foreach (var c in coms)
                         {
-                            foreach (var c in coms)
-                            {
-                                restSrv.RunSwitchCommand(new CmdRequest(Command.DELETE_COMMUNITY, c.Name));
-                                Application.Current.Dispatcher.Invoke(() => data.DeleteCommunity(c));
-                            }
-                            foreach (var s in sts)
-                            {
-                                restSrv.RunSwitchCommand(new CmdRequest(Command.DELETE_STATION, s.IpAddress));
-                                Application.Current.Dispatcher.Invoke(() => data.DeleteStation(s));
-                            }
-                        });
+                            RunCommand(new CmdRequest(Command.DELETE_COMMUNITY, c.Name));
+                            data.DeleteCommunity(c);
+                        }
+
+                        foreach (var s in sts)
+                        {
+                            RunCommand(new CmdRequest(Command.DELETE_STATION, s.IpAddress));
+                            data.DeleteStation(s);
+
+                        }
                     }
                     else return;
                 }
-                await Task.Run(() => restSrv.RunSwitchCommand(new CmdRequest(Command.DELETE_USER, user.Name)));
+                RunCommand((new CmdRequest(Command.DELETE_USER, user.Name)));
                 data.DeleteUser(user);
             }
         }
@@ -153,7 +152,7 @@ namespace PoEWizard.Components
             }
         }
 
-        private async void DeleteCommunity(object sender, RoutedEventArgs e)
+        private void DeleteCommunity(object sender, RoutedEventArgs e)
         {
             if (_communities.CurrentItem is SnmpCommunity cmy)
             {
@@ -168,24 +167,20 @@ namespace PoEWizard.Components
                     };
                     if (box.ShowDialog() == true)
                     {
-                        await Task.Run(() =>
+                        foreach (var s in sts)
                         {
-                            foreach (var s in sts)
-                            {
-                                restSrv.RunSwitchCommand(new CmdRequest(Command.DELETE_STATION, s.IpAddress));
-                                Application.Current.Dispatcher.Invoke(() => data.DeleteStation(s));
-                            }
-                        });
+                            RunCommand(new CmdRequest(Command.DELETE_STATION, s.IpAddress));
+                            data.DeleteStation(s);
+                        }
                     }
                     else return;
-
                 }
-                await Task.Run(() => restSrv.RunSwitchCommand(new CmdRequest(Command.DELETE_COMMUNITY, cmy.Name)));
+                RunCommand(new CmdRequest(Command.DELETE_COMMUNITY, cmy.Name));
                 data.DeleteCommunity(cmy);
             }
         }
 
-        private async void AddStation(object sender, RoutedEventArgs e)
+        private void AddStation(object sender, RoutedEventArgs e)
         {
             NewTrapReceiver recv = new NewTrapReceiver()
             {
@@ -210,21 +205,33 @@ namespace PoEWizard.Components
                     user = recv.SelectedUser;
                     version = "v3";
                 }
-                await Task.Run(() =>
-                {
-                    MainWindow.restApiService.RunSwitchCommand(new CmdRequest(Command.SNMP_STATION, recv.IpAddress, user, version));
-                });
+                RunCommand(new CmdRequest(Command.SNMP_STATION, recv.IpAddress, user, version));
                 data.AddStation(recv.IpAddress, version, user, recv.SelectedCommunity);
             }
         }
 
-        private async void DeleteStation(object sender, RoutedEventArgs e)
+        private void DeleteStation(object sender, RoutedEventArgs e)
         {
             if (_stations.CurrentItem is SnmpStation station)
             {
-                await Task.Run(() => restSrv.RunSwitchCommand(new CmdRequest(Command.DELETE_STATION, station.IpAddress)));
+                RunCommand(new CmdRequest(Command.DELETE_STATION, station.IpAddress));
                 data.DeleteStation(station);
             }
+        }
+
+        private async void RunCommand(CmdRequest req)
+        {
+            await Task.Run(() =>
+            {
+                try
+                {
+                    restSrv.RunSwitchCommand(req);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            });
         }
     }
 }
