@@ -665,8 +665,7 @@ namespace PoEWizard
                 UpdateConnectedState();
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
-                    bool reboot = await AskRebootCertified();
-                    if (!reboot) _writeMemory.IsEnabled = false;
+                    await AskRebootCertified();
                 }
             }
             catch (Exception ex)
@@ -680,7 +679,7 @@ namespace PoEWizard
             }
         }
 
-        private async Task<bool> AskRebootCertified()
+        private async Task AskRebootCertified()
         {
             string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be saved.\n" +
                 $"Do you want to reboot the switch on {WORKING_DIR} directory?";
@@ -693,7 +692,11 @@ namespace PoEWizard
                     Connect();
                 }
             }
-            return reboot;
+            else
+            {
+                _writeMemory.IsEnabled = false;
+                _cfgMenuItem.IsEnabled = false;
+            }
         }
 
         private void BuildOuiTable()
@@ -988,8 +991,7 @@ namespace PoEWizard
                 UpdateConnectedState();
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
-                    bool reboot = await AskRebootCertified();
-                    if (!reboot) _writeMemory.IsEnabled = false;
+                    await AskRebootCertified();
                 }
             }
             catch (Exception ex)
