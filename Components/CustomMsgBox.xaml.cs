@@ -20,6 +20,8 @@ namespace PoEWizard.Components
         public MsgBoxButtons Buttons { get; set; }
         public MsgBoxIcons Img { get; set; }
 
+        public CustomMsgBox(Window owner) : this(owner, MsgBoxButtons.Ok) { }
+
         public CustomMsgBox(Window owner, MsgBoxButtons buttons)
         {
             InitializeComponent();

@@ -60,40 +60,20 @@ namespace PoEWizard.Components
             };
             if (usr.ShowDialog() == true)
             {
-                string err = null;
+                bool noErrors = true;
                 await Task.Run(() =>
                 {
-                    try
-                    {
-                        restSrv.RunSwitchCommand(new CmdRequest(Command.SNMP_USER, usr.Username, usr.Password, "md5+des", usr.Password));
-                    }
-                    catch (Exception ex)
-                    {
-                        err = ex.Message;
-                    }
-
+                    noErrors = RunCommand(new CmdRequest(Command.SNMP_USER, usr.Username, usr.Password, "md5+des", usr.Password));
                 });
-                if (err != null)
-                {
-                    CustomMsgBox box = new CustomMsgBox(MainWindow.Instance, MsgBoxButtons.Ok)
-                    {
-                        Message = err,
-                        Img = MsgBoxIcons.Error
-                    };
-                    box.ShowDialog();
-
-                }
-                else
-                {
-                    data.AddUser(usr.Username, usr.Password);
-                }
+                if (noErrors) data.AddUser(usr.Username, usr.Password);
             }
         }
 
-        private void DeleteUser(object sender, RoutedEventArgs e)
+        private async void DeleteUser(object sender, RoutedEventArgs e)
         {
             if (_users.CurrentItem is SnmpUser user)
             {
+                bool ok = true;
                 var coms = data.GetUserCommunities(user.Name);
                 var sts = data.GetUserStations(user.Name);
                 List<string> msg = new List<string>();
@@ -102,94 +82,89 @@ namespace PoEWizard.Components
                 if (msg.Count > 0)
                 {
                     msg.Add("related to this user will also be deleted\nPlease confirm your action.");
-                    CustomMsgBox box = new CustomMsgBox(MainWindow.Instance, MsgBoxButtons.OkCancel)
+                    if (ShowMsgBox(string.Join(" ", msg), false))
                     {
-                        Title = "Delete user",
-                        Message = string.Join(" ", msg),
-                        Img = MsgBoxIcons.Question
-                    };
-                    if (box.ShowDialog() == true)
-                    {
-                        foreach (var c in coms)
+                        await Task.Run(() =>
                         {
-                            RunCommand(new CmdRequest(Command.DELETE_COMMUNITY, c.Name));
-                            data.DeleteCommunity(c);
-                        }
+                            foreach (var c in coms)
+                            {
+                                ok = ok && RunCommand(new CmdRequest(Command.DELETE_COMMUNITY, c.Name));
+                                Application.Current.Dispatcher.Invoke(() => data.DeleteCommunity(c));
+                            }
 
-                        foreach (var s in sts)
-                        {
-                            RunCommand(new CmdRequest(Command.DELETE_STATION, s.IpAddress));
-                            data.DeleteStation(s);
+                            foreach (var s in sts)
+                            {
+                                ok = ok && RunCommand(new CmdRequest(Command.DELETE_STATION, s.IpAddress));
+                                Application.Current.Dispatcher.Invoke(() => data.DeleteStation(s));
 
-                        }
+                            }
+                        });
                     }
                     else return;
                 }
-                RunCommand((new CmdRequest(Command.DELETE_USER, user.Name)));
-                data.DeleteUser(user);
+                ok = ok && RunCommand((new CmdRequest(Command.DELETE_USER, user.Name)));
+                if (ok) data.DeleteUser(user);
             }
         }
 
         private async void AddCommunity(object sender, RoutedEventArgs e)
         {
-            NewCommunity cmy = new NewCommunity()
+            bool ok = true;
+            NewCommunity cmy = new NewCommunity
             {
                 Owner = MainWindow.Instance,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Users = data.Users.Select(u => u.Name).ToList()
             };
-            cmy.Users = data.Users.Select(u => u.Name).ToList();
             if (cmy.ShowDialog() == true)
             {
                 await Task.Run(() =>
                 {
                     foreach (var cmd in enableSnmp)
                     {
-                        restSrv.RunSwitchCommand(new CmdRequest(cmd));
+                        ok = ok && RunCommand(new CmdRequest(cmd));
                     }
-                    restSrv.RunSwitchCommand(new CmdRequest(Command.SNMP_COMMUNITY_MAP, cmy.CommunityName, cmy.SelectedUser));
+                    ok = ok && RunCommand(new CmdRequest(Command.SNMP_COMMUNITY_MAP, cmy.CommunityName, cmy.SelectedUser));
                 });
-                data.AddCommunity(cmy.CommunityName, cmy.SelectedUser);
+                if (ok) data.AddCommunity(cmy.CommunityName, cmy.SelectedUser);
             }
         }
 
-        private void DeleteCommunity(object sender, RoutedEventArgs e)
+        private async void DeleteCommunity(object sender, RoutedEventArgs e)
         {
             if (_communities.CurrentItem is SnmpCommunity cmy)
             {
+                bool ok = true;
                 var sts = data.GetCommunityStations(cmy.Name);
                 if (sts.Count > 0)
                 {
-                    CustomMsgBox box = new CustomMsgBox(MainWindow.Instance, MsgBoxButtons.OkCancel)
+                    if (ShowMsgBox("Related stations will also be deleted.\nPlease confirm your action.", false))
                     {
-                        Title = "Delete Community",
-                        Message = "Related stations will also be deleted.\nPlease confirm your action.",
-                        Img = MsgBoxIcons.Question
-                    };
-                    if (box.ShowDialog() == true)
-                    {
-                        foreach (var s in sts)
+                        await Task.Run(() =>
                         {
-                            RunCommand(new CmdRequest(Command.DELETE_STATION, s.IpAddress));
-                            data.DeleteStation(s);
-                        }
+                            foreach (var s in sts)
+                            {
+                                ok = ok && RunCommand(new CmdRequest(Command.DELETE_STATION, s.IpAddress));
+                                Application.Current.Dispatcher.Invoke(() => data.DeleteStation(s));
+                            }
+                        });
                     }
                     else return;
                 }
-                RunCommand(new CmdRequest(Command.DELETE_COMMUNITY, cmy.Name));
-                data.DeleteCommunity(cmy);
+                ok = await Task.Run(() => RunCommand(new CmdRequest(Command.DELETE_COMMUNITY, cmy.Name)));
+                if (ok) data.DeleteCommunity(cmy);
             }
         }
 
-        private void AddStation(object sender, RoutedEventArgs e)
+        private async void AddStation(object sender, RoutedEventArgs e)
         {
-            NewTrapReceiver recv = new NewTrapReceiver()
+            NewTrapReceiver recv = new NewTrapReceiver
             {
                 Owner = MainWindow.Instance,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Users = data.Users.Select(u => u.Name).ToList(),
+                Communities = data.Communities.Select(c => c.Name).ToList()
             };
-
-            recv.Users = data.Users.Select(u => u.Name).ToList();
-            recv.Communities = data.Communities.Select(c => c.Name).ToList();
             if (recv.ShowDialog() == true)
             {
                 string user;
@@ -205,33 +180,45 @@ namespace PoEWizard.Components
                     user = recv.SelectedUser;
                     version = "v3";
                 }
-                RunCommand(new CmdRequest(Command.SNMP_STATION, recv.IpAddress, user, version));
-                data.AddStation(recv.IpAddress, version, user, recv.SelectedCommunity);
+                bool ok = await Task.Run(() => RunCommand(new CmdRequest(Command.SNMP_STATION, recv.IpAddress, user, version)));
+                if (ok) data.AddStation(recv.IpAddress, version, user, recv.SelectedCommunity);
             }
         }
 
-        private void DeleteStation(object sender, RoutedEventArgs e)
+        private async void DeleteStation(object sender, RoutedEventArgs e)
         {
             if (_stations.CurrentItem is SnmpStation station)
             {
-                RunCommand(new CmdRequest(Command.DELETE_STATION, station.IpAddress));
-                data.DeleteStation(station);
+                bool ok = await Task.Run(() => RunCommand(new CmdRequest(Command.DELETE_STATION, station.IpAddress)));
+                if (ok) data.DeleteStation(station);
             }
         }
 
-        private async void RunCommand(CmdRequest req)
+        private bool RunCommand(CmdRequest req)
         {
-            await Task.Run(() =>
+            try
             {
-                try
-                {
-                    restSrv.RunSwitchCommand(req);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                }
-            });
+                restSrv.RunSwitchCommand(req);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                Application.Current.Dispatcher.Invoke(() => ShowMsgBox(ex.Message, true));
+                return false;
+            }
+        }
+
+        private bool ShowMsgBox(string message, bool isError)
+        {
+            CustomMsgBox box = new CustomMsgBox(MainWindow.Instance)
+            {
+                Title = "SNMP management",
+                Message = message,
+                Img = isError ? MsgBoxIcons.Error : MsgBoxIcons.Question,
+                Buttons = isError ? MsgBoxButtons.Ok : MsgBoxButtons.OkCancel
+            };
+            return box.ShowDialog() == true;
         }
     }
 }
