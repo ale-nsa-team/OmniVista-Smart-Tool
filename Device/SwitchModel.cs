@@ -78,7 +78,7 @@ namespace PoEWizard.Device
                     SyncStatus = sync == "1" ? cert == "3" ? SyncStatusType.Synchronized :
                                  cert == "2" ? SyncStatusType.SynchronizedNeedCertified : SyncStatusType.SynchronizedUnknownCertified :
                                  SyncStatusType.NotSynchronized;
-                    RunningDir = Utils.GetDictValue(dict, SYS_RUNNING_CONFIGURATION);
+                    RunningDir = Utils.ToPascalCase(Utils.GetDictValue(dict, SYS_RUNNING_CONFIGURATION));
                     break;
 
                 case DictionaryType.MicroCode:
