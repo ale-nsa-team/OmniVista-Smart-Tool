@@ -1484,8 +1484,15 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 string error = ex.Message.ToLower();
-                if (error.Contains("lanpower not supported") || error.Contains("invalid entry: \"lanpower\"") || error.Contains("incorrect index")) slot.SupportsPoE = false;
-                Logger.Error(ex);
+                if (error.Contains("lanpower not supported") || error.Contains("invalid entry: \"lanpower\"") || error.Contains("incorrect index"))
+                {
+                    slot.SupportsPoE = false;
+                    Logger.Warn(ex.Message);
+                }
+                else
+                {
+                    Logger.Error(ex);
+                }
             }
         }
 

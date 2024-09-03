@@ -148,6 +148,7 @@ namespace PoEWizard.Components
                 string versionType = parameter?.ToString() ?? FPGA;
                 string model = values[0].ToString();
                 string versions = values[1].ToString();
+                if (string.IsNullOrEmpty(versions)) return Colors.Unknown;
                 int[] minversion = Utils.GetMinimunVersion(model, versionType);
                 if (minversion == null) return Colors.Default;
                 string[] s = versions.Split('.');
