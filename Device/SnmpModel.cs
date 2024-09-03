@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Documents;
 
 namespace PoEWizard.Device
 {
@@ -28,15 +30,50 @@ namespace PoEWizard.Device
             });
         }
 
+        public void DeleteUser(SnmpUser user)
+        {
+            Users.Remove(user);
+        }
+
         public void AddCommunity(string name, string user)
         {
             Communities.Add(new SnmpCommunity(name, user, null));
+        }
+
+        public void DeleteCommunity(SnmpCommunity community)
+        {
+            Communities.Remove(community);
         }
 
         public void AddStation(string ipAddress, string version, string user, string community)
         {
             string ip_port = $"{ipAddress}/162";
             Stations.Add(new SnmpStation(ip_port, null, version, user, community));
+        }
+
+        public void DeleteStation(SnmpStation station)
+        {
+            Stations.Remove(station);
+        }
+
+        public List<SnmpCommunity> GetUserCommunities(string user)
+        {
+            return Communities.ToList().FindAll(c => c.User == user);
+        }
+
+        public List<SnmpStation> GetUserStations(string user)
+        {
+            List<SnmpStation> list = new List<SnmpStation>();
+
+            list.AddRange(Stations.ToList().FindAll(s => s.User == user));
+            List<SnmpCommunity> cms = GetUserCommunities(user);
+            list.AddRange(Stations.ToList().FindAll(s => cms.Find(c => c.Name == s.Community) != null));
+            return list;
+        }
+
+        public List<SnmpStation> GetCommunityStations(string community)
+        {
+            return Stations.ToList().FindAll(s => s.Community == community);
         }
 
         public object Clone()

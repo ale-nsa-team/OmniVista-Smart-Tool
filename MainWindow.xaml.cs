@@ -1297,7 +1297,7 @@ namespace PoEWizard
                 Message = message,
                 Img = icon
             };
-            return (bool)msgBox.ShowDialog();
+            return (bool?)msgBox.ShowDialog() == true;
         }
 
         private void StartProgressBar(string barText)

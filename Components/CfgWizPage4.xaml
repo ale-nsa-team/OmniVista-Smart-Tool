@@ -40,7 +40,7 @@
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Style="{DynamicResource deleteButton}" >
+                                <Button Style="{DynamicResource deleteButton}" Click="DeleteUser">
                                     <Image Source="../Resources/Img/remove.png" />
                                 </Button>
                             </DataTemplate>
@@ -66,7 +66,7 @@
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Style="{DynamicResource deleteButton}">
+                                <Button Style="{DynamicResource deleteButton}" Click="DeleteCommunity">
                                     <Image Source="../Resources/Img/remove.png" />
                                 </Button>
                             </DataTemplate>
@@ -93,7 +93,7 @@
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Style="{DynamicResource deleteButton}">
+                                <Button Style="{DynamicResource deleteButton}" Click="DeleteStation">
                                     <Image Source="../Resources/Img/remove.png" />
                                 </Button>
                             </DataTemplate>
