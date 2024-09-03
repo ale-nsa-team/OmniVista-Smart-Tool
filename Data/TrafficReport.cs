@@ -130,7 +130,7 @@ namespace PoEWizard.Data
                 this.txUniCast = GetDiffTrafficSamples(this.trafficPort.TxUnicastFrames);
                 this.Data.Append(",").Append(this.txUniCast);
                 this.txMultiCast = GetDiffTrafficSamples(this.trafficPort.TxMulticastFrames);
-                this.txBroadCastPercent = GetBroadcastPercent(this.rxBroadCast, this.rxUniCast, this.rxMultiCast);
+                this.txBroadCastPercent = GetBroadcastPercent(this.txBroadCast, this.txUniCast, this.txMultiCast);
                 this.Data.Append(",").Append(this.txBroadCastPercent);
                 this.Data.Append(",").Append(this.txMultiCast);
                 this.txLostFrames = GetDiffTrafficSamples(this.trafficPort.TxLostFrames);
@@ -169,22 +169,10 @@ namespace PoEWizard.Data
 
         private void ParseAlertConditions()
         {
-            if (this.rxBroadCast > MIN_NB_BROADCAST_FRAMES && this.trafficPort.IsUplink && !string.IsNullOrEmpty(this.rxBroadCastPercent))
-            {
-                AddPortAlert($"#Rx Broadcast Frames ({this.rxUniCast}) > {MAX_PERCENT_BROADCAST}% of #Rx Unicast Frames ({this.rxUniCast}), Percentage: {this.rxBroadCastPercent}%");
-            }
-            if (!AddAlertPercent(this.rxLostFrames, "Critical #Rx Lost Frames", this.rxUniCast + this.rxMultiCast, "#Rx Unicast and #Rx Multicast Frames", MAX_PERCENT_CRITICAL_LOST_FRAMES))
-            {
-                AddAlertPercent(this.rxLostFrames, "Warning #Rx Lost Frames", this.rxUniCast + this.rxMultiCast, "#Rx Unicast and #Rx Multicast Frames", MAX_PERCENT_WARNING_LOST_FRAMES);
-            }
-            if (this.txBroadCast > MIN_NB_BROADCAST_FRAMES && this.trafficPort.IsUplink && !string.IsNullOrEmpty(this.txBroadCastPercent))
-            {
-                AddPortAlert($"#Tx Broadcast Frames ({this.txUniCast}) > {MAX_PERCENT_BROADCAST}% of #Tx Unicast Frames ({this.txUniCast}), Percentage: {this.txBroadCastPercent}%");
-            }
-            if (!AddAlertPercent(this.txLostFrames, "Critical #Tx Lost Frames", this.txUniCast + this.txMultiCast, "#Tx Unicast and #Tx Multicast Frames", MAX_PERCENT_CRITICAL_LOST_FRAMES))
-            {
-                AddAlertPercent(this.rxLostFrames, "Warning #Tx Lost Frames", this.txUniCast + this.txMultiCast, "#Tx Unicast and #Rx Multicast Frames", MAX_PERCENT_WARNING_LOST_FRAMES);
-            }
+            AddBroadcastAlert("Rx");
+            AddLostFramesAlert("Rx");
+            AddBroadcastAlert("Tx");
+            AddLostFramesAlert("Tx");
             if (this.rxCrcError > 1) AddPortAlert($"#Rx CRC Error detected: {this.rxCrcError}");
             if (this.txCollisions > 0) AddPortAlert($"#Tx Collisions detected: {this.txCollisions}");
             if (this.rxAlignments > 1) AddPortAlert($"#Rx Alignments Error detected: {this.rxAlignments}");
@@ -194,9 +182,67 @@ namespace PoEWizard.Data
             }
         }
 
-        private string PrintVendor()
+        private void AddBroadcastAlert(string source)
         {
-            return this.trafficPort.MacList?.Count == 1 ? Utils.GetVendorName(this.trafficPort.MacList[0]) : string.Empty;
+            if (!this.trafficPort.IsUplink) return;
+            double val1;
+            double val2;
+            string percent;
+            if (source == "Rx")
+            {
+                val1 = this.rxBroadCast;
+                val2 = this.rxUniCast;
+                percent = this.rxBroadCastPercent;
+            }
+            else if (source == "Tx")
+            {
+                val1 = this.txBroadCast;
+                val2 = this.txUniCast;
+                percent = this.txBroadCastPercent;
+            }
+            else
+            {
+                return;
+            }
+            if (!string.IsNullOrEmpty(percent) && val1 > MIN_NB_BROADCAST_FRAMES && Utils.StringToDouble(percent) > MAX_PERCENT_BROADCAST)
+            {
+                AddPortAlert($"#{source} Broadcast Frames ({val1}) > {MAX_PERCENT_BROADCAST}% of #{source} Unicast Frames ({val2}), Percentage: {percent}%");
+            }
+        }
+
+        private void AddLostFramesAlert(string source)
+        {
+            double val1;
+            double val2;
+            if (source == "Rx")
+            {
+                val1 = this.rxLostFrames;
+                val2 = this.rxUniCast + this.rxMultiCast;
+            }
+            else if (source == "Tx")
+            {
+                val1 = this.txLostFrames;
+                val2 = this.txUniCast + this.txMultiCast;
+            }
+            else
+            {
+                return;
+            }
+            if (!AddAlertPercent(val1, $"#Critical {source} Lost Frames", val2, $"#{source} Unicast and Multicast Frames", MAX_PERCENT_CRITICAL_LOST_FRAMES))
+            {
+                AddAlertPercent(val1, $"#Warning {source} Lost Frames", val2, $"#{source} Unicast and Multicast Frames", MAX_PERCENT_WARNING_LOST_FRAMES);
+            }
+        }
+
+        private bool AddAlertPercent(double val1, string label1, double val2, string label2, double maxPercent)
+        {
+            double percent = Utils.CalcPercent(val1, val2, 2);
+            if (percent >= maxPercent)
+            {
+                AddPortAlert($"{label1} ({val1}) > {maxPercent}% of {label2} ({val2}), Percentage: {percent}%");
+                return true;
+            }
+            return false;
         }
 
         private string PrintMacAdresses(string title = null)
@@ -234,13 +280,13 @@ namespace PoEWizard.Data
             return text;
         }
 
-        private string AddVendorName(string txt, string mac)
+        private string AddVendorName(string text, string mac)
         {
-            txt += mac;
+            text += mac;
             string vendor = string.Empty;
             if (string.IsNullOrEmpty(this.trafficPort.EndPointDevice.Vendor) || this.trafficPort.MacList?.Count > 1) vendor = Utils.GetVendorName(mac);
-            if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) txt += $" ({vendor})";
-            return txt;
+            if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) text += $" ({vendor})";
+            return text;
         }
 
         private void ParseTrafficRate(string title, List<double> samples)
@@ -265,17 +311,6 @@ namespace PoEWizard.Data
                     AddPortAlert($"{title} ({txt1}) > {MAX_PERCENT_RATE}% of Bandwidth ({txt2}), Percentage: {percent}%");
                 }
             }
-        }
-
-        private bool AddAlertPercent(double val1, string label1, double val2, string label2, double maxPercent)
-        {
-            double percent = Utils.CalcPercent(val1, val2, 2);
-            if (percent >= maxPercent)
-            {
-                AddPortAlert($"{label1} ({val1}) > {maxPercent}% of {label2} ({val2}), Percentage: {percent}%");
-                return true;
-            }
-            return false;
         }
 
         private void AddPortAlert(string alertMsg)
