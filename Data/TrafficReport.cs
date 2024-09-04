@@ -18,6 +18,7 @@ namespace PoEWizard.Data
         const double MAX_PERCENT_WARNING_LOST_FRAMES = 5;
         const double MAX_PERCENT_CRITICAL_LOST_FRAMES = 8;
         const double MIN_UNICAST_RATE_KBPS = 301;
+        const double MIN_NB_BROADCAST_FRAMES = 300;
 
         private PortTrafficModel trafficPort;
         private Dictionary<string, string> alertReport;
@@ -112,7 +113,7 @@ namespace PoEWizard.Data
                 // #Rx Broadcast Frames,#Rx Unicast Frames,Rx Broadcast/Unicast (%),#Rx Multicast Frames,Rx Unicast+Multicast Rate (Kbps),#Rx Lost Frames,#Rx CRC Error,#Rx Alignments Error
                 this.Data.Append(",").Append(this.rxBroadCast);
                 this.Data.Append(",").Append(this.rxUniCast);
-                if (this.rxUnicastMultiCastRate >= MIN_UNICAST_RATE_KBPS) this.Data.Append(",").Append(this.rxBroadCastPercent); else this.Data.Append(",");
+                if (this.rxBroadCastPercent > 0 && this.rxUnicastMultiCastRate >= MIN_UNICAST_RATE_KBPS) this.Data.Append(",").Append(this.rxBroadCastPercent); else this.Data.Append(",");
                 this.Data.Append(",").Append(this.rxMultiCast);
                 this.Data.Append(",").Append(this.rxUnicastMultiCastRate);
                 this.Data.Append(",").Append(this.rxLostFrames);
@@ -124,7 +125,7 @@ namespace PoEWizard.Data
                 // #Tx Broadcast Frames,#Tx Unicast Frames,Tx Broadcast/Unicast (%),#Tx Multicast Frames,Tx Unicast+Multicast Rate (Kbps),#Tx Lost Frames,#Tx Collided Frames,#Tx Collisions,#Tx Late Collisions,#Tx Excessive Collisions
                 this.Data.Append(",").Append(this.txBroadCast);
                 this.Data.Append(",").Append(this.txUniCast);
-                if (this.txUnicastMultiCastRate >= MIN_UNICAST_RATE_KBPS) this.Data.Append(",").Append(this.txBroadCastPercent); else this.Data.Append(",");
+                if (this.txBroadCastPercent > 0 && this.txUnicastMultiCastRate >= MIN_UNICAST_RATE_KBPS) this.Data.Append(",").Append(this.txBroadCastPercent); else this.Data.Append(",");
                 this.Data.Append(",").Append(this.txBroadCastPercent);
                 this.Data.Append(",").Append(this.txMultiCast);
                 this.Data.Append(",").Append(this.txUnicastMultiCastRate);
@@ -215,7 +216,7 @@ namespace PoEWizard.Data
                     val2 = this.txUniCast;
                     percent = this.txUnicastMultiCastRate < MIN_UNICAST_RATE_KBPS ? 0 : this.txBroadCastPercent;
                 }
-                if (percent > MAX_PERCENT_BROADCAST)
+                if (percent > MAX_PERCENT_BROADCAST && val1 > MIN_NB_BROADCAST_FRAMES)
                 {
                     AddPortAlert($"#{source} Broadcast Frames ({val1}) > {MAX_PERCENT_BROADCAST}% of #{source} Unicast Frames ({val2}), Percentage: {percent}%");
                 }
