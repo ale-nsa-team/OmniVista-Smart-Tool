@@ -169,10 +169,8 @@ namespace PoEWizard.Data
 
         private void ParseAlertConditions()
         {
-            AddBroadcastAlert("Rx");
-            AddLostFramesAlert("Rx");
-            AddBroadcastAlert("Tx");
-            AddLostFramesAlert("Tx");
+            AddAlertBroadcastLostFrames("Rx");
+            AddAlertBroadcastLostFrames("Tx");
             if (this.rxCrcError > 1) AddPortAlert($"#Rx CRC Error detected: {this.rxCrcError}");
             if (this.txCollisions > 0) AddPortAlert($"#Tx Collisions detected: {this.txCollisions}");
             if (this.rxAlignments > 1) AddPortAlert($"#Rx Alignments Error detected: {this.rxAlignments}");
@@ -182,38 +180,30 @@ namespace PoEWizard.Data
             }
         }
 
-        private void AddBroadcastAlert(string source)
+        private void AddAlertBroadcastLostFrames(string source)
         {
-            if (!this.trafficPort.IsUplink) return;
-            double val1;
-            double val2;
-            string percent;
-            if (source == "Rx")
+            double val1 = 0;
+            double val2 = 0;
+            if (this.trafficPort.IsUplink)
             {
-                val1 = this.rxBroadCast;
-                val2 = this.rxUniCast;
-                percent = this.rxBroadCastPercent;
+                string percent = string.Empty;
+                if (source == "Rx")
+                {
+                    val1 = this.rxBroadCast;
+                    val2 = this.rxUniCast;
+                    percent = this.rxBroadCastPercent;
+                }
+                else if (source == "Tx")
+                {
+                    val1 = this.txBroadCast;
+                    val2 = this.txUniCast;
+                    percent = this.txBroadCastPercent;
+                }
+                if (!string.IsNullOrEmpty(percent) && val1 > MIN_NB_BROADCAST_FRAMES && Utils.StringToDouble(percent) > MAX_PERCENT_BROADCAST)
+                {
+                    AddPortAlert($"#{source} Broadcast Frames ({val1}) > {MAX_PERCENT_BROADCAST}% of #{source} Unicast Frames ({val2}), Percentage: {percent}%");
+                }
             }
-            else if (source == "Tx")
-            {
-                val1 = this.txBroadCast;
-                val2 = this.txUniCast;
-                percent = this.txBroadCastPercent;
-            }
-            else
-            {
-                return;
-            }
-            if (!string.IsNullOrEmpty(percent) && val1 > MIN_NB_BROADCAST_FRAMES && Utils.StringToDouble(percent) > MAX_PERCENT_BROADCAST)
-            {
-                AddPortAlert($"#{source} Broadcast Frames ({val1}) > {MAX_PERCENT_BROADCAST}% of #{source} Unicast Frames ({val2}), Percentage: {percent}%");
-            }
-        }
-
-        private void AddLostFramesAlert(string source)
-        {
-            double val1;
-            double val2;
             if (source == "Rx")
             {
                 val1 = this.rxLostFrames;
@@ -228,13 +218,13 @@ namespace PoEWizard.Data
             {
                 return;
             }
-            if (!AddAlertPercent(val1, $"#Critical {source} Lost Frames", val2, $"#{source} Unicast and Multicast Frames", MAX_PERCENT_CRITICAL_LOST_FRAMES))
+            if (!AddAlertPercent($"#Critical {source} Lost Frames", val1, $"#{source} Unicast and Multicast Frames", val2, MAX_PERCENT_CRITICAL_LOST_FRAMES))
             {
-                AddAlertPercent(val1, $"#Warning {source} Lost Frames", val2, $"#{source} Unicast and Multicast Frames", MAX_PERCENT_WARNING_LOST_FRAMES);
+                AddAlertPercent($"#Warning {source} Lost Frames", val1, $"#{source} Unicast and Multicast Frames", val2, MAX_PERCENT_WARNING_LOST_FRAMES);
             }
         }
 
-        private bool AddAlertPercent(double val1, string label1, double val2, string label2, double maxPercent)
+        private bool AddAlertPercent(string label1, double val1, string label2, double val2, double maxPercent)
         {
             double percent = Utils.CalcPercent(val1, val2, 2);
             if (percent >= maxPercent)
