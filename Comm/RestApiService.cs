@@ -135,14 +135,19 @@ namespace PoEWizard.Comm
         public void GetSystemInfo()
         {
             SendProgressReport("Reading system information");
-            _dict = RunSwitchCommand(new CmdRequest(Command.SHOW_SYSTEM_RUNNING_DIR, ParseType.MibTable, DictionaryType.SystemRunningDir)) as Dictionary<string, string>;
-            SwitchModel.LoadFromDictionary(_dict, DictionaryType.SystemRunningDir);
+            GetSyncStatus();
             _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
             _dict = _dictList.FirstOrDefault(d => d[IP_ADDR] == SwitchModel.IpAddress);
             if (_dict != null) SwitchModel.NetMask = _dict[SUBNET_MASK];
             _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
             _dict = _dictList.FirstOrDefault(d => d[DNS_DEST] == "0.0.0.0/0");
             if (_dict != null) SwitchModel.DefaultGwy = _dict[GATEWAY];
+        }
+
+        public void GetSyncStatus()
+        {
+            _dict = RunSwitchCommand(new CmdRequest(Command.SHOW_SYSTEM_RUNNING_DIR, ParseType.MibTable, DictionaryType.SystemRunningDir)) as Dictionary<string, string>;
+            SwitchModel.LoadFromDictionary(_dict, DictionaryType.SystemRunningDir);
         }
 
         public void GetSnapshot()
