@@ -213,7 +213,7 @@ namespace PoEWizard.Components
         {
             CustomMsgBox box = new CustomMsgBox(MainWindow.Instance)
             {
-                Title = "SNMP management",
+                Header = "SNMP management",
                 Message = message,
                 Img = isError ? MsgBoxIcons.Error : MsgBoxIcons.Question,
                 Buttons = isError ? MsgBoxButtons.Ok : MsgBoxButtons.OkCancel

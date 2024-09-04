@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
+        Closing="OnWindowClosing"
         Title="Basic Config" Height="560" Width="500" ShowInTaskbar="False" WindowStyle="None">
     <Window.Resources>
         <ResourceDictionary>

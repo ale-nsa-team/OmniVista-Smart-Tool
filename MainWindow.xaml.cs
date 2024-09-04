@@ -311,6 +311,7 @@ namespace PoEWizard
                 Activity.Log(device, "Config Wizard applied");
             }
             if (wiz.IsRebootSwitch) LaunchRebootSwitch();
+            else if (device.SyncStatus == SyncStatusType.Synchronized) device.SyncStatus = SyncStatusType.NotSynchronized;
             _status.Text = DEFAULT_APP_STATUS;
             HideInfoBox();
             SetConnectedState();

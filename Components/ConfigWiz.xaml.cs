@@ -82,6 +82,14 @@ namespace PoEWizard.Components
             HideInfoBox();
         }
 
+        private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (snmpData.HasChanges(snmpOrig))
+            {
+                DialogResult = true;
+            }
+        }
+
         private void CfgBack_Click(object sender, RoutedEventArgs e)
         {
             pageNo = Math.Max(1, pageNo - 1);

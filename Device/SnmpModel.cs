@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows.Documents;
 
 namespace PoEWizard.Device
 {
@@ -86,6 +85,14 @@ namespace PoEWizard.Device
             foreach(SnmpCommunity community in Communities) clone.Communities.Add(community.Clone() as SnmpCommunity);
             foreach (SnmpStation station in Stations) clone.Stations.Add(station.Clone() as SnmpStation);
             return clone;
+        }
+
+        public bool HasChanges(SnmpModel orig)
+        {
+            bool usr = this.Users.Count != orig.Users.Count;
+            bool comm = this.Communities.Count != orig.Communities.Count;
+            bool st = this.Stations.Count != orig.Stations.Count;
+            return usr || comm || st;
         }
     }
 }
