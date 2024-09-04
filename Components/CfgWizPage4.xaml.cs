@@ -60,6 +60,11 @@ namespace PoEWizard.Components
             };
             if (usr.ShowDialog() == true)
             {
+                if (data.UserExists(usr.Username))
+                {
+                    ShowMsgBox($"User {usr.Username} already created.", true);
+                    return;
+                }
                 bool noErrors = true;
                 await Task.Run(() =>
                 {
@@ -118,6 +123,11 @@ namespace PoEWizard.Components
             };
             if (cmy.ShowDialog() == true)
             {
+                if (data.CommunityExists(cmy.CommunityName))
+                {
+                    ShowMsgBox($"Community {cmy.CommunityName} already created.", true);
+                    return;
+                }
                 await Task.Run(() =>
                 {
                     foreach (var cmd in enableSnmp)
@@ -167,6 +177,11 @@ namespace PoEWizard.Components
             };
             if (recv.ShowDialog() == true)
             {
+                if (data.StationExists(recv.IpAddress))
+                {
+                    ShowMsgBox($"Station with IP address {recv.IpAddress} already created", true);
+                    return;
+                }
                 string user;
                 string version;
                 if (recv.Version.Contains("v2"))
