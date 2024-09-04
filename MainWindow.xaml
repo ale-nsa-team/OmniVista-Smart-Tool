@@ -325,13 +325,13 @@
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
                                 <TextBlock Text="Power (Watts)" Style="{DynamicResource toolTip}"
-                                           ToolTip="It's the actual power consumed by the device connected to the port" />
+                                           ToolTip="Actual power consumed by the device connected to the port" />
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Power}"
-                                           ToolTip="It's the actual power consumed by the device connected to the port" />
+                                           ToolTip="Actual power consumed by the device connected to the port" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -339,13 +339,13 @@
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
                                 <TextBlock Text="Max Power (Watts)" Style="{DynamicResource toolTip}"
-                                           ToolTip="It's the maximum power allowed by the hardware" />
+                                           ToolTip="Maximum power allowed by the hardware" />
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=MaxPower}"
-                                           ToolTip="It's the maximum power allowed by the hardware" />
+                                           ToolTip="Maximum power allowed by the hardware" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
