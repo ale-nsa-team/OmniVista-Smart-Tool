@@ -9,15 +9,14 @@ namespace PoEWizard.Data
     public class TrafficReport
     {
 
-        const string HEADER = "Port,Rx Rate (Kbps),Tx Rate (Kbps),#Rx Broadcast Frames,#Rx Unicast Frames,Rx Broadcast/Unicast (%),#Rx Multicast Frames,#Rx Lost Frames,#Rx CRC Error,#Rx Alignments Error," +
-            "#Tx Broadcast Frames,#Tx Unicast Frames,Tx Broadcast/Unicast (%),#Tx Multicast Frames,#Tx Lost Frames,#Tx Collided Frames,#Tx Collisions,#Tx Late Collisions,#Tx Excessive Collisions," +
+        const string HEADER = "Port,Rx Rate (Kbps),Tx Rate (Kbps),#Rx Broadcast Frames,#Rx Unicast Frames,Rx Broadcast/Unicast (%),#Rx Multicast Frames,Rx Unicast+Multicast Rate (Kbps),#Rx Lost Frames,#Rx CRC Error,#Rx Alignments Error," +
+            "#Tx Broadcast Frames,#Tx Unicast Frames,Tx Broadcast/Unicast (%),#Tx Multicast Frames,Tx Unicast+Multicast Rate (Kbps),#Tx Lost Frames,#Tx Collided Frames,#Tx Collisions,#Tx Late Collisions,#Tx Excessive Collisions," +
             "Device Type,Vendor,MAC Address List";
         const string HEADER_DEVICE = "Port,Type,Name,Description,IP Address,Vendor,Model,Software Version,Serial Number,MAC Address";
         const double MAX_PERCENT_BROADCAST = 0.5;
         const double MAX_PERCENT_RATE = 70;
         const double MAX_PERCENT_WARNING_LOST_FRAMES = 5;
         const double MAX_PERCENT_CRITICAL_LOST_FRAMES = 8;
-        const double MIN_NB_BROADCAST_FRAMES = 300;
         const double MIN_UNICAST_RATE_KBPS = 301;
 
         private PortTrafficModel trafficPort;
@@ -26,16 +25,18 @@ namespace PoEWizard.Data
 
         private double rxBroadCast = 0;
         private double rxUniCast = 0;
-        private string rxBroadCastPercent = string.Empty;
+        private double rxBroadCastPercent = 0;
         private double rxMultiCast = 0;
+        private double rxUnicastMultiCastRate = 0;
         private double rxLostFrames = 0;
         private double rxCrcError = 0;
         private double rxAlignments = 0;
 
         private double txBroadCast = 0;
         private double txUniCast = 0;
-        private string txBroadCastPercent = string.Empty;
+        private double txBroadCastPercent = 0;
         private double txMultiCast = 0;
+        private double txUnicastMultiCastRate = 0;
         private double txLostFrames = 0;
 
         private double txCollisions = 0;
@@ -105,42 +106,33 @@ namespace PoEWizard.Data
                 this.Data.Append("\r\n ").Append(this.trafficPort.Port);
                 ParseTrafficRate("Rx Rate", this.trafficPort.RxBytes);
                 ParseTrafficRate("Tx Rate", this.trafficPort.TxBytes);
+                CalculateTrafficData();
 
                 #region RX Traffic data
-                // #Rx Broadcast Frames,#Rx Unicast Frames,Rx Broadcast/Unicast (%),#Rx Multicast Frames,#Rx Lost Frames,#Rx CRC Error,#Rx Alignments Error,
-                this.rxBroadCast = GetDiffTrafficSamples(this.trafficPort.RxBroadcastFrames);
+                // #Rx Broadcast Frames,#Rx Unicast Frames,Rx Broadcast/Unicast (%),#Rx Multicast Frames,Rx Unicast+Multicast Rate (Kbps),#Rx Lost Frames,#Rx CRC Error,#Rx Alignments Error
                 this.Data.Append(",").Append(this.rxBroadCast);
-                this.rxUniCast = GetDiffTrafficSamples(this.trafficPort.RxUnicastFrames);
                 this.Data.Append(",").Append(this.rxUniCast);
-                this.rxMultiCast = GetDiffTrafficSamples(this.trafficPort.RxMulticastFrames);
-                this.rxBroadCastPercent = GetBroadcastPercent(this.rxBroadCast, this.rxUniCast, this.rxMultiCast);
-                this.Data.Append(",").Append(this.rxBroadCastPercent);
+                if (this.rxUnicastMultiCastRate >= MIN_UNICAST_RATE_KBPS) this.Data.Append(",").Append(this.rxBroadCastPercent); else this.Data.Append(",");
                 this.Data.Append(",").Append(this.rxMultiCast);
-                this.rxLostFrames = GetDiffTrafficSamples(this.trafficPort.RxLostFrames);
+                this.Data.Append(",").Append(this.rxUnicastMultiCastRate);
                 this.Data.Append(",").Append(this.rxLostFrames);
-                this.rxCrcError = GetDiffTrafficSamples(this.trafficPort.RxCrcErrorFrames);
                 this.Data.Append(",").Append(this.rxCrcError);
-                this.rxAlignments = GetDiffTrafficSamples(this.trafficPort.RxAlignmentsError);
                 this.Data.Append(",").Append(this.rxAlignments);
                 #endregion
 
                 #region TX Traffic data
-                this.txBroadCast = GetDiffTrafficSamples(this.trafficPort.TxBroadcastFrames);
+                // #Tx Broadcast Frames,#Tx Unicast Frames,Tx Broadcast/Unicast (%),#Tx Multicast Frames,Tx Unicast+Multicast Rate (Kbps),#Tx Lost Frames,#Tx Collided Frames,#Tx Collisions,#Tx Late Collisions,#Tx Excessive Collisions
                 this.Data.Append(",").Append(this.txBroadCast);
-                this.txUniCast = GetDiffTrafficSamples(this.trafficPort.TxUnicastFrames);
                 this.Data.Append(",").Append(this.txUniCast);
-                this.txMultiCast = GetDiffTrafficSamples(this.trafficPort.TxMulticastFrames);
-                this.txBroadCastPercent = GetBroadcastPercent(this.txBroadCast, this.txUniCast, this.txMultiCast);
+                if (this.txUnicastMultiCastRate >= MIN_UNICAST_RATE_KBPS) this.Data.Append(",").Append(this.txBroadCastPercent); else this.Data.Append(",");
                 this.Data.Append(",").Append(this.txBroadCastPercent);
                 this.Data.Append(",").Append(this.txMultiCast);
-                this.txLostFrames = GetDiffTrafficSamples(this.trafficPort.TxLostFrames);
+                this.Data.Append(",").Append(this.txUnicastMultiCastRate);
                 this.Data.Append(",").Append(this.txLostFrames);
                 this.Data.Append(",").Append(GetDiffTrafficSamples(this.trafficPort.TxCollidedFrames));
                 this.Data.Append(",").Append(GetDiffTrafficSamples(this.trafficPort.TxCollisions));
                 this.Data.Append(",").Append(GetDiffTrafficSamples(this.trafficPort.TxLateCollisions));
                 this.Data.Append(",").Append(GetDiffTrafficSamples(this.trafficPort.TxExcCollisions));
-                this.txCollisions = GetDiffTrafficSamples(this.trafficPort.TxCollidedFrames) + GetDiffTrafficSamples(this.trafficPort.TxCollisions) +
-                                    GetDiffTrafficSamples(this.trafficPort.TxLateCollisions) + GetDiffTrafficSamples(this.trafficPort.TxExcCollisions);
                 #endregion
 
                 this.Data.Append(",\"");
@@ -160,11 +152,35 @@ namespace PoEWizard.Data
             this.Summary += "\n";
         }
 
-        private string GetBroadcastPercent(double broadCast, double uniCast, double multicast)
+        private void CalculateTrafficData()
         {
-            double rate = ((uniCast + multicast) * 8) / this.TrafficDuration;
-            if (uniCast > 0 && rate >= MIN_UNICAST_RATE_KBPS) return Utils.CalcPercent(broadCast, uniCast, 2).ToString();
-            return string.Empty;
+
+            #region Calculation of RX Traffic data
+            this.rxBroadCast = GetDiffTrafficSamples(this.trafficPort.RxBroadcastFrames);
+            this.rxUniCast = GetDiffTrafficSamples(this.trafficPort.RxUnicastFrames);
+            this.rxMultiCast = GetDiffTrafficSamples(this.trafficPort.RxMulticastFrames);
+            this.rxUnicastMultiCastRate = GetUnicastMulticastRate(this.rxUniCast, this.rxMultiCast);
+            this.rxBroadCastPercent = Utils.CalcPercent(this.rxBroadCast, this.rxUniCast, 2);
+            this.rxLostFrames = GetDiffTrafficSamples(this.trafficPort.RxLostFrames);
+            this.rxCrcError = GetDiffTrafficSamples(this.trafficPort.RxCrcErrorFrames);
+            this.rxAlignments = GetDiffTrafficSamples(this.trafficPort.RxAlignmentsError);
+            #endregion
+
+            #region Calculation of TX Traffic data
+            this.txBroadCast = GetDiffTrafficSamples(this.trafficPort.TxBroadcastFrames);
+            this.txUniCast = GetDiffTrafficSamples(this.trafficPort.TxUnicastFrames);
+            this.txMultiCast = GetDiffTrafficSamples(this.trafficPort.TxMulticastFrames);
+            this.txUnicastMultiCastRate = GetUnicastMulticastRate(this.txUniCast, this.txMultiCast);
+            this.txBroadCastPercent = Utils.CalcPercent(this.txBroadCast, this.txUniCast, 2);
+            this.txLostFrames = GetDiffTrafficSamples(this.trafficPort.TxLostFrames);
+            this.txCollisions = GetDiffTrafficSamples(this.trafficPort.TxCollidedFrames) + GetDiffTrafficSamples(this.trafficPort.TxCollisions) +
+                                GetDiffTrafficSamples(this.trafficPort.TxLateCollisions) + GetDiffTrafficSamples(this.trafficPort.TxExcCollisions);
+            #endregion
+        }
+
+        private double GetUnicastMulticastRate(double uniCast, double multicast)
+        {
+            return Utils.RoundUp((uniCast + multicast) * 8 / this.TrafficDuration, 2);
         }
 
         private void ParseAlertConditions()
@@ -186,20 +202,20 @@ namespace PoEWizard.Data
             double val2 = 0;
             if (this.trafficPort.IsUplink)
             {
-                string percent = string.Empty;
+                double percent = 0;
                 if (source == "Rx")
                 {
                     val1 = this.rxBroadCast;
                     val2 = this.rxUniCast;
-                    percent = this.rxBroadCastPercent;
+                    percent = this.rxUnicastMultiCastRate < MIN_UNICAST_RATE_KBPS ? 0 : this.rxBroadCastPercent;
                 }
                 else if (source == "Tx")
                 {
                     val1 = this.txBroadCast;
                     val2 = this.txUniCast;
-                    percent = this.txBroadCastPercent;
+                    percent = this.txUnicastMultiCastRate < MIN_UNICAST_RATE_KBPS ? 0 : this.txBroadCastPercent;
                 }
-                if (!string.IsNullOrEmpty(percent) && val1 > MIN_NB_BROADCAST_FRAMES && Utils.StringToDouble(percent) > MAX_PERCENT_BROADCAST)
+                if (percent > MAX_PERCENT_BROADCAST)
                 {
                     AddPortAlert($"#{source} Broadcast Frames ({val1}) > {MAX_PERCENT_BROADCAST}% of #{source} Unicast Frames ({val2}), Percentage: {percent}%");
                 }
