@@ -66,7 +66,7 @@ namespace PoEWizard.Components
         private bool HasErrors()
         {
             BindingExpression b = BindingOperations.GetBindingExpression(_ipAddress, TextBox.TextProperty);
-            return b?.HasValidationError ?? false;
+            return string.IsNullOrEmpty(IpAddress) || b?.HasValidationError == true;
         }
     }
 }

@@ -87,6 +87,21 @@ namespace PoEWizard.Device
             return clone;
         }
 
+        public bool UserExists(string username)
+        {
+            return Users.FirstOrDefault(u => u.Name == username) != null;
+        }
+
+        public bool CommunityExists(string name)
+        {
+            return Communities.FirstOrDefault(c => c.Name == name) != null;
+        }
+
+        public bool StationExists(string ipAddr)
+        {
+            return Stations.FirstOrDefault(s => s.IpAddress == ipAddr) != null;
+        }
+
         public bool HasChanges(SnmpModel orig)
         {
             bool usr = this.Users.Count != orig.Users.Count;
