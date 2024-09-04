@@ -66,7 +66,7 @@ namespace PoEWizard.Components
         #region Event Handlers
         private async void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            ShowInfoBox("Loading current paramaeters, please wait...");
+            ShowInfoBox("Loading current parameters, please wait...");
             await Task.Run(() => 
             {
                 GetServerData();
