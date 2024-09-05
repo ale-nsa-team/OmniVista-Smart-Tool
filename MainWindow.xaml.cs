@@ -320,6 +320,7 @@ namespace PoEWizard
 
         private void RunWiz_Click(object sender, RoutedEventArgs e)
         {
+            if (selectedPort == null) return;
             var ds = new DeviceSelection(selectedPort.Name)
             {
                 Owner = this,
@@ -1019,12 +1020,19 @@ namespace PoEWizard
             try
             {
                 await GetSyncStatus(null);
-                if (device.SyncStatus == SyncStatusType.Synchronized) return;
-                DisableButtons();
-                await Task.Run(() => restApiService.WriteMemory());
-                await Task.Run(() => restApiService.GetSyncStatus());
-                DataContext = null;
-                DataContext = device;
+                if (device.SyncStatus == SyncStatusType.Synchronized)
+                {
+                    ShowMessageBox("Write Memory", $"There are no configuration changes on switch {device.Name}", MsgBoxIcons.Info, MsgBoxButtons.Ok);
+                    return;
+                }
+                if (AuthorizeWriteMemory("Write Memory required"))
+                {
+                    DisableButtons();
+                    await Task.Run(() => restApiService.WriteMemory());
+                    await Task.Run(() => restApiService.GetSyncStatus());
+                    DataContext = null;
+                    DataContext = device;
+                }
             }
             catch (Exception ex)
             {
@@ -1426,6 +1434,7 @@ namespace PoEWizard
             ChangeButtonVisibility(true);
             ReselectPort();
             ReselectSlot();
+            if (selectedPort == null) _btnRunWiz.IsEnabled = false;
         }
 
         private async void LaunchRebootSwitch()
