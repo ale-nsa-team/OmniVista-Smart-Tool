@@ -980,9 +980,11 @@ namespace PoEWizard
             _slotsView.ItemsSource = null;
             _portList.ItemsSource = null;
             DataContext = device;
+            slotView = new SlotView(device);
+            _slotsView.ItemsSource = slotView.Slots;
             if (selectedSlot != null)
             {
-                _slotsView.ItemsSource = device.GetChassis(selectedSlot.Name)?.Slots ?? new List<SlotModel>();
+                _slotsView.SelectedItem = selectedSlot;
                 _portList.ItemsSource = selectedSlot?.Ports ?? new List<PortModel>();
             }
         }
