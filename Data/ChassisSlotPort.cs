@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PoEWizard.Data
+﻿namespace PoEWizard.Data
 {
     public class ChassisSlotPort
     {
