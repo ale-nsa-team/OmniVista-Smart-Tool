@@ -25,6 +25,9 @@ namespace PoEWizard.Device
         public string MacAddress { get; set; }
         public SwitchTemperature Temperature { get; set; }
         public bool SupportsPoE { get; set; }
+        public string Fpga { get; set; }
+        public string Cpld { get; set; }
+        public int Cpu { get; set; }
 
         public ChassisModel(Dictionary<string, string> dict)
         {

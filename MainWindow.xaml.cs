@@ -42,6 +42,7 @@ namespace PoEWizard
         private PortModel selectedPort;
         private int selectedPortIndex;
         private SlotModel selectedSlot;
+        private int selectedSlotIndex;
         private WizardReport reportResult = new WizardReport();
         private bool isClosing = false;
         private DeviceType selectedDeviceType;
@@ -319,6 +320,7 @@ namespace PoEWizard
 
         private void RunWiz_Click(object sender, RoutedEventArgs e)
         {
+            if (selectedPort == null) return;
             var ds = new DeviceSelection(selectedPort.Name)
             {
                 Owner = this,
@@ -518,6 +520,11 @@ namespace PoEWizard
             if (_slotsView.SelectedItem is SlotModel slot)
             {
                 selectedSlot = slot;
+                device.SelectedSlot = slot.Name;
+                selectedSlotIndex = _slotsView.SelectedIndex;
+                device.UpdateSelectedSlotData(slot.Name);
+                DataContext = null;
+                DataContext = device;
                 _portList.ItemsSource = slot.Ports;
             }
 
@@ -738,6 +745,7 @@ namespace PoEWizard
             {
                 if (restApiService != null && !isClosing)
                 {
+                    await GetSyncStatus("Closing Rest Api Service");
                     isClosing = true;
                     if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized)
                     {
@@ -822,7 +830,7 @@ namespace PoEWizard
                     if (!res) return;
                     barText = await RunCollectLogs(true, selectedPort.Name);
                 }
-                await Task.Run(() => restApiService.GetSystemInfo());
+                await GetSyncStatus(null);
             }
             catch (Exception ex)
             {
@@ -980,10 +988,11 @@ namespace PoEWizard
             _slotsView.ItemsSource = null;
             _portList.ItemsSource = null;
             DataContext = device;
+            slotView = new SlotView(device);
+            _slotsView.ItemsSource = slotView.Slots;
             if (selectedSlot != null)
             {
-                selectedSlot = device.GetSlot(selectedSlot.Name);
-                _slotsView.ItemsSource = device.GetChassis(selectedSlot.Name)?.Slots ?? new List<SlotModel>();
+                _slotsView.SelectedItem = selectedSlot;
                 _portList.ItemsSource = selectedSlot?.Ports ?? new List<PortModel>();
             }
         }
@@ -1017,13 +1026,20 @@ namespace PoEWizard
         {
             try
             {
-                await Task.Run(() => restApiService.GetSystemInfo());
-                if (device.SyncStatus == SyncStatusType.Synchronized) return;
-                DisableButtons();
-                await Task.Run(() => restApiService.WriteMemory());
-                await Task.Run(() => restApiService.GetSystemInfo());
-                DataContext = null;
-                DataContext = device;
+                await GetSyncStatus(null);
+                if (device.SyncStatus == SyncStatusType.Synchronized)
+                {
+                    ShowMessageBox("Write Memory", $"There are no configuration changes on switch {device.Name}", MsgBoxIcons.Info, MsgBoxButtons.Ok);
+                    return;
+                }
+                if (AuthorizeWriteMemory("Write Memory required"))
+                {
+                    DisableButtons();
+                    await Task.Run(() => restApiService.WriteMemory());
+                    await Task.Run(() => restApiService.GetSyncStatus());
+                    DataContext = null;
+                    DataContext = device;
+                }
             }
             catch (Exception ex)
             {
@@ -1393,11 +1409,11 @@ namespace PoEWizard
                 slotView = new SlotView(device);
                 _slotsView.ItemsSource = slotView.Slots;
                 Logger.Debug($"Slots view items source: {slotView.Slots.Count} slot(s)");
-                _slotsView.SelectedIndex = 0;
                 if (slotView.Slots.Count == 1) //do not highlight if only one row
                 {
                     _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
                 }
+                _slotsView.SelectedIndex = selectedSlotIndex >= 0 && _slotsView.Items?.Count > selectedSlotIndex ? selectedSlotIndex : 0;
                 _slotsView.Visibility = Visibility.Visible;
                 _portList.Visibility = Visibility.Visible;
                 _fpgaLbl.Visibility = string.IsNullOrEmpty(device.Fpga) ? Visibility.Collapsed : Visibility.Visible;
@@ -1424,15 +1440,17 @@ namespace PoEWizard
         {
             ChangeButtonVisibility(true);
             ReselectPort();
+            ReselectSlot();
+            if (selectedPort == null) _btnRunWiz.IsEnabled = false;
         }
 
         private async void LaunchRebootSwitch()
         {
             try
             {
+                await GetSyncStatus("Rebooting Switch");
                 if (ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo))
                 {
-                    await Task.Run(() => restApiService.GetSystemInfo());
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
                     {
                         ShowMessageBox("Reboot Switch", $"Cannot reboot the switch {device.Name} because it's not certified!", MsgBoxIcons.Error);
@@ -1459,6 +1477,15 @@ namespace PoEWizard
                 HideInfoBox();
                 HideProgress();
             }
+        }
+
+        private async Task GetSyncStatus(string title)
+        {
+            if (!string.IsNullOrEmpty(title)) ShowInfoBox($"{title} ...");
+            await Task.Run(() => restApiService?.GetSyncStatus());
+            DataContext = null;
+            DataContext = device;
+            HideInfoBox();
         }
 
         private bool AuthorizeWriteMemory(string title)
@@ -1516,6 +1543,7 @@ namespace PoEWizard
             _cpldLbl.Visibility = Visibility.Collapsed;
             selectedPort = null;
             selectedPortIndex = -1;
+            selectedSlotIndex = -1;
             DataContext = device;
             restApiService = null;
         }
@@ -1547,6 +1575,17 @@ namespace PoEWizard
                 _portList.SelectionChanged -= PortSelection_Changed;
                 _portList.SelectedItem = _portList.Items[selectedPortIndex];
                 _portList.SelectionChanged += PortSelection_Changed;
+                _btnRunWiz.IsEnabled = true;
+            }
+        }
+
+        private void ReselectSlot()
+        {
+            if (selectedSlot != null && _slotsView.Items?.Count > selectedSlotIndex)
+            {
+                _slotsView.SelectionChanged -= SlotSelection_Changed;
+                _slotsView.SelectedItem = _slotsView.Items[selectedSlotIndex];
+                _slotsView.SelectionChanged += SlotSelection_Changed;
                 _btnRunWiz.IsEnabled = true;
             }
         }

@@ -13,6 +13,7 @@ namespace PoEWizard.Data
         private static readonly Regex etableRegex = new Regex(MATCH_EQUALS);
         private static readonly Regex htableRegex = new Regex(MATCH_TABLE_SEP);
         private static readonly Regex chassisRegex = new Regex(MATCH_CHASSIS);
+        private static readonly Regex cmmRegex = new Regex(MATCH_CMM);
         private static readonly Regex userRegex = new Regex(MATCH_USER);
 
         public static List<Dictionary<string, string>> ParseListFromDictionary(Dictionary<string, string> inputDict, string match = null)
@@ -112,6 +113,12 @@ namespace PoEWizard.Data
             string[] headerKeys; 
             switch (dtype)
             {
+                case DictionaryType.Cmm:
+                    headerRegex = cmmRegex;
+                    bodyRegex = vtableRegex;
+                    headerKeys = new string[] { "ID" };
+                    break;
+
                 case DictionaryType.Chassis:
                     headerRegex = chassisRegex;
                     bodyRegex = vtableRegex;
@@ -149,6 +156,7 @@ namespace PoEWizard.Data
                     else if ((match = bodyRegex.Match(line)).Success)
                     {
                         string key = match.Groups[1].Value.Trim();
+                        if (key.StartsWith(FPGA)) key = FPGA; else if (key.StartsWith(CPLD)) key = CPLD;
                         string value = match.Groups[2].Value.Trim();
                         value = value.EndsWith(",") ? value.Substring(0, value.Length - 1) : value;
                         dict[key] = value;
