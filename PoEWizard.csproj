@@ -432,5 +432,8 @@
   <ItemGroup>
     <Resource Include="Resources\Help\Img\poe-device.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Help\help-light.html" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

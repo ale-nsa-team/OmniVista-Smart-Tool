@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32.SafeHandles;
-using PoEWizard.Data;
+﻿using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
 using System.Collections.Generic;

@@ -6,6 +6,8 @@ using System;
 using System.Windows.Media.Imaging;
 using System.IO;
 using PoEWizard.Data;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 namespace PoEWizard.Components
 {
@@ -14,6 +16,9 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class HelpViewer : Window
     {
+        [DllImport("dwmapi.dll", PreserveSig = true)]
+        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
         public HelpViewer(string hlpFile)
         {
             InitializeComponent();
@@ -58,6 +63,11 @@ namespace PoEWizard.Components
             _hlpBrowser.NavigateToStream(modified);
         }
 
+        private void OnWindowLoaded(object sender, RoutedEventArgs e)
+        {
+            SetTitleColor();
+        }
+
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
             Close();
@@ -97,6 +107,15 @@ namespace PoEWizard.Components
                 }
             }
             return data;
+        }
+
+        private void SetTitleColor()
+        {
+            IntPtr handle = new WindowInteropHelper(this).Handle;
+            int bckgndColor = MainWindow.theme == ThemeType.Dark ? 0x333333 : 0xFFFFFF;
+            int textColor = MainWindow.theme == ThemeType.Dark ? 0xFFFFFF : 0x000000;
+            DwmSetWindowAttribute(handle, 35, ref bckgndColor, Marshal.SizeOf(bckgndColor));
+            DwmSetWindowAttribute(handle, 36, ref textColor, Marshal.SizeOf(textColor));
         }
     }
 }
