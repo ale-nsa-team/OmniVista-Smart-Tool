@@ -357,7 +357,7 @@ namespace PoEWizard.Data
             string m = model;
             while (m.Length > 2)
             {
-                if (Constants.fpgaVersions.TryGetValue(m, out string val))
+                if (fpgaVersions.TryGetValue(m, out string val))
                 {
                     string[] vals = val.Split('.');
                     return Array.ConvertAll(vals, int.Parse);
@@ -369,7 +369,7 @@ namespace PoEWizard.Data
 
         public static int[] GetMinimunVersion(string model, string versionType)
         {
-            Dictionary<string, string> dict = (versionType == Constants.FPGA) ? Constants.fpgaVersions : Constants.cpldVersions;
+            Dictionary<string, string> dict = (versionType == FPGA) ? fpgaVersions : cpldVersions;
 
             string m = model;
             while (m.Length > 2)

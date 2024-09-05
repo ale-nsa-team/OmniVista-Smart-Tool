@@ -137,7 +137,7 @@ namespace PoEWizard.Data
             [Command.SET_LOOPBACK_DET] = "loopback-detection enable",
             [Command.SET_PASSWORD] = $"user {DAT} password {DAT}",
             [Command.SET_CONTACT] = $"system contact {DAT}",
-            [Command.SET_LOCATION] = $"system location {DAT}",
+            [Command.SET_LOCATION] = $"system location \"{DAT}\"",
             [Command.SET_DEFAULT_GATEWAY] = $"ip static-route 0.0.0.0/0 gateway {DAT}",
             [Command.SHOW_IP_SERVICE] = "show ip service",
             [Command.SHOW_DNS_CONFIG] = "urn=systemDNS&mibObject0=systemDNSEnableDnsResolver&mibObject1=systemDNSDomainName&mibObject2=systemDNSNsAddr1&mibObject3=systemDNSNsAddr2&mibObject4=systemDNSNsAddr3",
