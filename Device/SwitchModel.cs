@@ -270,8 +270,9 @@ namespace PoEWizard.Device
             }
         }
 
-        public void UpdateSelectedSlotData()
+        public void UpdateSelectedSlotData(string slotNr)
         {
+            if (!string.IsNullOrEmpty(slotNr)) SelectedSlot = slotNr;
             UpdateChassisSelectedSlot();
             UpdateTemperatureSelectedSlot();
             UpdateCpuSelectedSlot();

@@ -42,6 +42,7 @@ namespace PoEWizard
         private PortModel selectedPort;
         private int selectedPortIndex;
         private SlotModel selectedSlot;
+        private int selectedSlotIndex;
         private WizardReport reportResult = new WizardReport();
         private bool isClosing = false;
         private DeviceType selectedDeviceType;
@@ -512,7 +513,8 @@ namespace PoEWizard
             {
                 selectedSlot = slot;
                 device.SelectedSlot = slot.Name;
-                device.UpdateSelectedSlotData();
+                selectedSlotIndex = _slotsView.SelectedIndex;
+                device.UpdateSelectedSlotData(slot.Name);
                 DataContext = null;
                 DataContext = device;
                 _portList.ItemsSource = slot.Ports;
@@ -980,7 +982,6 @@ namespace PoEWizard
             DataContext = device;
             if (selectedSlot != null)
             {
-                selectedSlot = device.GetSlot(selectedSlot.Name);
                 _slotsView.ItemsSource = device.GetChassis(selectedSlot.Name)?.Slots ?? new List<SlotModel>();
                 _portList.ItemsSource = selectedSlot?.Ports ?? new List<PortModel>();
             }
@@ -1391,11 +1392,11 @@ namespace PoEWizard
                 slotView = new SlotView(device);
                 _slotsView.ItemsSource = slotView.Slots;
                 Logger.Debug($"Slots view items source: {slotView.Slots.Count} slot(s)");
-                _slotsView.SelectedIndex = 0;
                 if (slotView.Slots.Count == 1) //do not highlight if only one row
                 {
                     _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
                 }
+                _slotsView.SelectedIndex = selectedSlotIndex >= 0 && _slotsView.Items?.Count > selectedSlotIndex ? selectedSlotIndex : 0;
                 _slotsView.Visibility = Visibility.Visible;
                 _portList.Visibility = Visibility.Visible;
                 _fpgaLbl.Visibility = string.IsNullOrEmpty(device.Fpga) ? Visibility.Collapsed : Visibility.Visible;
@@ -1422,6 +1423,7 @@ namespace PoEWizard
         {
             ChangeButtonVisibility(true);
             ReselectPort();
+            ReselectSlot();
         }
 
         private async void LaunchRebootSwitch()
@@ -1523,6 +1525,7 @@ namespace PoEWizard
             _cpldLbl.Visibility = Visibility.Collapsed;
             selectedPort = null;
             selectedPortIndex = -1;
+            selectedSlotIndex = -1;
             DataContext = device;
             restApiService = null;
         }
@@ -1554,6 +1557,17 @@ namespace PoEWizard
                 _portList.SelectionChanged -= PortSelection_Changed;
                 _portList.SelectedItem = _portList.Items[selectedPortIndex];
                 _portList.SelectionChanged += PortSelection_Changed;
+                _btnRunWiz.IsEnabled = true;
+            }
+        }
+
+        private void ReselectSlot()
+        {
+            if (selectedSlot != null && _slotsView.Items?.Count > selectedSlotIndex)
+            {
+                _slotsView.SelectionChanged -= SlotSelection_Changed;
+                _slotsView.SelectedItem = _slotsView.Items[selectedSlotIndex];
+                _slotsView.SelectionChanged += SlotSelection_Changed;
                 _btnRunWiz.IsEnabled = true;
             }
         }
