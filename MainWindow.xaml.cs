@@ -447,7 +447,14 @@ namespace PoEWizard
 
         private void Help_Click(object sender, RoutedEventArgs e)
         {
+            string hlpFile = theme == ThemeType.Dark ? "help-dark.html" : "help-light.html";
+            HelpViewer hv = new HelpViewer(hlpFile)
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
 
+            hv.Show();
         }
 
         private void LogLevelItem_Click(object sender, RoutedEventArgs e)

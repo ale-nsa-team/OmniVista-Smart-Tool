@@ -140,7 +140,7 @@ namespace PoEWizard.Components
         #region Private Methods
         private void NavigateToPage()
         {
-            Page page = null; ;
+            Page page = null; 
             switch (pageNo)
             {
                 case 1:

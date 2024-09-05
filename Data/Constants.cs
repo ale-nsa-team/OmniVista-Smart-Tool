@@ -14,7 +14,7 @@ namespace PoEWizard.Data
         public enum GridBorderions { Dhcp, Edge, Core, Lps, Lldp, Security, MaxConfigs };
         public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
         public enum PortStatus { Unknown, Up, Down }
-        public enum PoeStatus { On, Off, Searching, Fault, Deny, Conflict, PoweredOff, NoPoe }
+        public enum PoeStatus { On, Off, Searching, Fault, Deny, Conflict, PoweredOff, Test, NoPoe }
         public enum SlotPoeStatus {
             [Description("Under Threshold")]
             UnderThreshold,
