@@ -55,7 +55,7 @@ namespace PoEWizard.Comm
                 DateTime startTime = DateTime.Now;
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
-                StartProgressBar($"Connecting to switch {SwitchModel.Name} ...", 23);
+                StartProgressBar($"Connecting to switch {SwitchModel.Name} ...", 25);
                 _progress.Report(new ProgressReport($"Connecting to switch {SwitchModel.Name} ..."));
                 RestApiClient.Login();
                 UpdateProgressBar(++progressBarCnt); //  1
@@ -65,12 +65,12 @@ namespace PoEWizard.Comm
                 _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_MICROCODE, ParseType.Htable)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromDictionary(_dictList[0], DictionaryType.MicroCode);
                 UpdateProgressBar(++progressBarCnt); //  2
-                _dict = RunSwitchCommand(new CmdRequest(Command.SHOW_CMM, ParseType.Vtable)) as Dictionary<string, string>;
-                SwitchModel.LoadFromDictionary(_dict, DictionaryType.Cmm);
-                UpdateProgressBar(++progressBarCnt); //  3
                 _dictList = RunSwitchCommand(new CmdRequest(Command.DEBUG_SHOW_APP_LIST, ParseType.MibTable, DictionaryType.SwitchDebugAppList)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.SwitchDebugAppList);
-                UpdateProgressBar(++progressBarCnt); //  4
+                UpdateProgressBar(++progressBarCnt); //  3
+                _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_CHASSIS, ParseType.MVTable, DictionaryType.Chassis)) as List<Dictionary<string, string>>;
+                SwitchModel.LoadFromList(_dictList, DictionaryType.Chassis);
+                UpdateProgressBar(++progressBarCnt); // 4
                 ScanSwitch($"Connect to switch {SwitchModel.Name}", reportResult);
                 LogActivity($"Switch connected", $", duration: {Utils.CalcStringDuration(startTime)}");
             }
@@ -86,7 +86,7 @@ namespace PoEWizard.Comm
         {
             try
             {
-                if (totalProgressBar == 0) StartProgressBar($"Scanning switch {SwitchModel.Name} ...", 18);
+                if (totalProgressBar == 0) StartProgressBar($"Scanning switch {SwitchModel.Name} ...", 21);
                 GetCurrentSwitchDebugLevel();
                 progressBarCnt += 2;
                 UpdateProgressBar(progressBarCnt); //  5 , 6
@@ -98,9 +98,9 @@ namespace PoEWizard.Comm
                 GetSystemInfo();
                 UpdateProgressBar(++progressBarCnt); //  9
                 SendProgressReport("Reading chassis and port information");
-                _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_CHASSIS, ParseType.MVTable, DictionaryType.Chassis)) as List<Dictionary<string, string>>;
-                SwitchModel.LoadFromList(_dictList, DictionaryType.Chassis);
-                UpdateProgressBar(++progressBarCnt); // 10
+                _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_CMM, ParseType.MVTable, DictionaryType.Cmm)) as List<Dictionary<string, string>>;
+                SwitchModel.LoadFromList(_dictList, DictionaryType.Cmm);
+                UpdateProgressBar(++progressBarCnt); //  10
                 _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_TEMPERATURE, ParseType.Htable)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.TemperatureList);
                 UpdateProgressBar(++progressBarCnt); // 11

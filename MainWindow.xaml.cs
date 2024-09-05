@@ -511,6 +511,10 @@ namespace PoEWizard
             if (_slotsView.SelectedItem is SlotModel slot)
             {
                 selectedSlot = slot;
+                device.SelectedSlot = slot.Name;
+                device.UpdateSelectedSlotData();
+                DataContext = null;
+                DataContext = device;
                 _portList.ItemsSource = slot.Ports;
             }
 
@@ -731,7 +735,7 @@ namespace PoEWizard
             {
                 if (restApiService != null && !isClosing)
                 {
-                    await GetSyncStatus();
+                    await GetSyncStatus("Closing Rest Api Service");
                     isClosing = true;
                     if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized)
                     {
@@ -816,7 +820,7 @@ namespace PoEWizard
                     if (!res) return;
                     barText = await RunCollectLogs(true, selectedPort.Name);
                 }
-                await GetSyncStatus();
+                await GetSyncStatus(null);
             }
             catch (Exception ex)
             {
@@ -1011,7 +1015,7 @@ namespace PoEWizard
         {
             try
             {
-                await GetSyncStatus();
+                await GetSyncStatus(null);
                 if (device.SyncStatus == SyncStatusType.Synchronized) return;
                 DisableButtons();
                 await Task.Run(() => restApiService.WriteMemory());
@@ -1424,7 +1428,7 @@ namespace PoEWizard
         {
             try
             {
-                await GetSyncStatus();
+                await GetSyncStatus("Rebooting Switch");
                 if (ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo))
                 {
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
@@ -1455,11 +1459,13 @@ namespace PoEWizard
             }
         }
 
-        private async Task GetSyncStatus()
+        private async Task GetSyncStatus(string title)
         {
+            if (!string.IsNullOrEmpty(title)) ShowInfoBox($"{title} ...");
             await Task.Run(() => restApiService?.GetSyncStatus());
             DataContext = null;
             DataContext = device;
+            HideInfoBox();
         }
 
         private bool AuthorizeWriteMemory(string title)
