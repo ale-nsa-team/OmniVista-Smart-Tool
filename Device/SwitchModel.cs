@@ -163,7 +163,10 @@ namespace PoEWizard.Device
                         chassis = GetChassis(ParseId(dic[CHAS_PS], 0));
                         if (chassis == null) continue;
                         int psId = GetPsId(dic[CHAS_PS]);
-                        chassis.PowerSupplies.Add(new PowerSupplyModel(psId, dic[LOCATION]) { Name = $"{chassis.Number}/{psId}" });
+                        PowerSupplyModel newPsm = new PowerSupplyModel(psId, dic[LOCATION]) { Name = $"{chassis.Number}/{psId}" };
+                        PowerSupplyModel psm = chassis.PowerSupplies.FirstOrDefault(p => p.Id == psId);
+                        if (psm == null) chassis.PowerSupplies.Add(newPsm);
+                        else psm = newPsm;
                     }
                     break;
 

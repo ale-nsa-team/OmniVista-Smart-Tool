@@ -1,7 +1,6 @@
 ﻿using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
-using System.Security.Policy;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Device
