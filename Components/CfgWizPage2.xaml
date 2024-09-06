@@ -128,7 +128,9 @@
                 </TextBox>
             </StackPanel>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Style="{DynamicResource cfgWindow}" Margin="0,10,0,0">
+        <StackPanel Orientation="Horizontal" 
+                    Style="{DynamicResource cfgWindow}" Margin="0,10,0,0"
+                    Visibility="{Binding Path=IsNtp, Converter={StaticResource BoolToVisibilityConverter}}">
             <Label>Set timezone</Label>
             <CheckBox x:Name="_setTZ" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsTimezone}"/>
             <Label Margin="15,2,0,0" Visibility="{Binding Path=IsTimezone, Converter={StaticResource BoolToVisibilityConverter}}">Timezone:</Label>
