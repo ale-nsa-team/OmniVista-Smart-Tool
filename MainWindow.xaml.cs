@@ -990,6 +990,7 @@ namespace PoEWizard
         {
             try
             {
+                DisableButtons();
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.Name}", reportResult));
@@ -1006,6 +1007,7 @@ namespace PoEWizard
             }
             finally
             {
+                EnableButtons();
                 HideProgress();
                 HideInfoBox();
             }
