@@ -145,7 +145,7 @@ namespace PoEWizard
                 if (!save) return;
                 sftpService?.Disconnect();
                 sftpService = null;
-                await CloseRestApiService();
+                await CloseRestApiService("Closing the application");
                 this.Closing -= OnWindowClosing;
                 this.Close();
             }
@@ -657,7 +657,7 @@ namespace PoEWizard
                     if (!save) return;
                     await WaitSaveTrafficAnalysis();
                     ShowProgress($"Disconnecting switch {device.Name} ...");
-                    await CloseRestApiService();
+                    await CloseRestApiService($"Disconnecting switch {device.Name} ...");
                     SetDisconnectedState();
                     return;
                 }
@@ -728,13 +728,13 @@ namespace PoEWizard
             }
         }
 
-        private async Task CloseRestApiService()
+        private async Task CloseRestApiService(string title)
         {
             try
             {
                 if (restApiService != null && !isClosing)
                 {
-                    await GetSyncStatus("Closing Rest Api Service");
+                    await GetSyncStatus(title);
                     isClosing = true;
                     if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized)
                     {
@@ -752,7 +752,7 @@ namespace PoEWizard
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                Logger.Warn(ex.Message);
             }
             finally
             {
