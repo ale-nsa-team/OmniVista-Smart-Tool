@@ -110,12 +110,6 @@
                 </Binding>
             </TextBox.Text>
         </TextBox>
-        <StackPanel Orientation="Horizontal" Style="{DynamicResource cfgWindow}" Margin="0,10,0,0">
-            <Label>Set date and time</Label>
-            <CheckBox x:Name="_setDate" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsDateAndTime}"/>
-        </StackPanel>
-                    
-
     </StackPanel>
 </Page>
 

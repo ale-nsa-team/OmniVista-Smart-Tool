@@ -97,6 +97,10 @@ namespace PoEWizard.Data
         #endregion
 
         #region strings
+        public static readonly string[] timezones =
+        {
+            "EST", "CST", "PST", "MST", "AKST", "AST", "HST", "UTC", "GMT", "CET", "NST"
+        };
         public const string DEFAULT_APP_STATUS = "Idle";
         public const string DEFAULT_PASSWORD = "switch";
         public const string DEFAULT_USERNAME = "admin";

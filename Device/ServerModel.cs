@@ -22,6 +22,9 @@ namespace PoEWizard.Device
         public string Ntp1 { get; set; }
         public string Ntp2 { get; set; }
         public string Ntp3 { get; set; }
+        public bool IsTimezone { get; set; } = false;
+        public string[] Timezones { get; } = Constants.timezones;
+        public string Timezone { get; set; } = Constants.timezones[0];
 
         public ServerModel() { }
 
@@ -59,6 +62,13 @@ namespace PoEWizard.Device
                 {
                     if (IsNtp) cmdList.Add(new CmdRequest(Command.ENABLE_NTP));
                     else cmdList.Add(new CmdRequest(Command.DISABLE_NTP));
+                }
+                if (prop.Name == "IsTimezone")
+                {
+                    if (IsTimezone)
+                    {
+                        cmdList.Add(new CmdRequest(Command.SET_SYSTEM_TIMEZONE, Timezone));
+                    }
                 }
             }
             foreach (string dns in dnsRemove)
