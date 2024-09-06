@@ -9,14 +9,12 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static PoEWizard.Data.Constants;
@@ -28,8 +26,7 @@ namespace PoEWizard
     /// </summary>
     public partial class MainWindow : Window
     {
-        [DllImport("dwmapi.dll", PreserveSig = true)]
-        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
         #region Private Variables
         private readonly ResourceDictionary darkDict;
         private readonly ResourceDictionary lightDict;
@@ -132,7 +129,7 @@ namespace PoEWizard
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            SetTitleColor();
+            Utils.SetTitleColor(this);
             _btnConnect.IsEnabled = false;
         }
 
@@ -201,7 +198,7 @@ namespace PoEWizard
 
         private void ViewActivities_Click(object sender, RoutedEventArgs e)
         {
-            TextViewer tv = new TextViewer("Activity Log")
+            TextViewer tv = new TextViewer("Activity Log", canClear: true)
             {
                 Owner = this,
                 Filename = Activity.FilePath
@@ -499,7 +496,7 @@ namespace PoEWizard
             {
                 _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
             }
-            SetTitleColor();
+            Utils.SetTitleColor(this);
             //force color converters to run
             DataContext = null;
             DataContext = device;
@@ -640,14 +637,6 @@ namespace PoEWizard
         #endregion event handlers
 
         #region private methods
-        private void SetTitleColor()
-        {
-            IntPtr handle = new WindowInteropHelper(this).Handle;
-            int bckgndColor = theme == ThemeType.Dark ? 0x333333 : 0xFFFFFF;
-            int textColor = theme == ThemeType.Dark ? 0xFFFFFF : 0x000000;
-            DwmSetWindowAttribute(handle, 35, ref bckgndColor, Marshal.SizeOf(bckgndColor));
-            DwmSetWindowAttribute(handle, 36, ref textColor, Marshal.SizeOf(textColor));
-        }
 
         private async void Connect()
         {

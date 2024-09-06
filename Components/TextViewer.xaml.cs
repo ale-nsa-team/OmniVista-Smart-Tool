@@ -46,6 +46,8 @@ namespace PoEWizard.Components
 
         private void OnWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            Utils.SetTitleColor(this);
+
             double h = Owner.ActualHeight;
             double w = Owner.ActualWidth;
             Width = w - 20;
@@ -97,7 +99,8 @@ namespace PoEWizard.Components
 
         private void ClearLog_Click(object sender, RoutedEventArgs e)
         {
-            Logger.Clear();
+            if (Filename == Logger.LogPath) Logger.Clear();
+            else if (Filename == Activity.FilePath) Activity.Clear(); 
             _content.Document.Blocks.Clear();
         }
 
