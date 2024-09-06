@@ -36,5 +36,24 @@ namespace PoEWizard.Data
             }
             catch { }
         }
+
+        public static void Clear()
+        {
+            if (File.Exists(FilePath))
+            {
+                try
+                {
+                    lock(lockObj)
+                    {
+                        File.Create(FilePath);
+                        Logger.Info("Activity Log cleared by user");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("Failed to clear activity log", ex);
+                }
+            }
+        }
     }
 }

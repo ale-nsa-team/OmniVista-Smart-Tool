@@ -8,11 +8,12 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Security.Cryptography;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
+using System.Windows.Interop;
 using System.Xml;
 using System.Xml.Linq;
 using static PoEWizard.Data.Constants;
@@ -21,7 +22,17 @@ namespace PoEWizard.Data
 {
     public static class Utils
     {
-        private const string ENCRYPT_KEY = "a9cd76210f6e0bb4fdbd23a9cda9831a";
+        [DllImport("dwmapi.dll", PreserveSig = true)]
+        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
+        public static void SetTitleColor(Window window)
+        {
+            IntPtr handle = new WindowInteropHelper(window).Handle;
+            int bckgndColor = MainWindow.theme == ThemeType.Dark ? 0x333333 : 0xF0F0F0;
+            int textColor = MainWindow.theme == ThemeType.Dark ? 0xFFFFFF : 0x000000;
+            DwmSetWindowAttribute(handle, 35, ref bckgndColor, Marshal.SizeOf(bckgndColor));
+            DwmSetWindowAttribute(handle, 36, ref textColor, Marshal.SizeOf(textColor));
+        }
 
         public static string CalcStringDuration(DateTime? startTime, bool skipMs = false)
         {
@@ -312,7 +323,7 @@ namespace PoEWizard.Data
 
         public static bool IsInvalid(object[] values)
         {
-            bool res = values == null || values.Length < 2 
+            bool res = values == null || values.Length < 2
                 || values[0] == null || values[0] == DependencyProperty.UnsetValue
                 || values[1] == null || values[1] == DependencyProperty.UnsetValue;
             return res;
@@ -330,7 +341,7 @@ namespace PoEWizard.Data
             Match version = Regex.Match(aos.ToString(), Constants.MATCH_AOS_VERSION);
             if (version.Success && version.Groups.Count > 5)
             {
-                int v1 = int.TryParse(version.Groups[1].ToString(),out int i) ? i : 9;
+                int v1 = int.TryParse(version.Groups[1].ToString(), out int i) ? i : 9;
                 int v2 = int.TryParse(version.Groups[2].ToString(), out i) ? i : 9;
                 int r = int.TryParse(version.Groups[5].ToString(), out i) ? i : 9;
                 string[] minver = Constants.MIN_AOS_VERSION.Split(' ');
@@ -430,54 +441,6 @@ namespace PoEWizard.Data
         {
             if (!string.IsNullOrEmpty(logLevel) && Enum.TryParse(logLevel, true, out SwitchDebugLogLevel parsedLogLevel)) return parsedLogLevel;
             return SwitchDebugLogLevel.Unknown;
-        }
-
-        public static string EncryptString(string plaintext)
-        {
-            if (string.IsNullOrEmpty(plaintext)) return plaintext;
-            byte[] key = Encoding.UTF8.GetBytes(ENCRYPT_KEY);
-
-            using (Aes aes = Aes.Create())
-            {
-                ICryptoTransform encryptor = aes.CreateEncryptor(key, aes.IV);
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
-                    {
-                        using (StreamWriter streamWriter = new StreamWriter(cryptoStream))
-                        {
-                            streamWriter.Write(plaintext);
-                        }
-                    }
-                    byte[] cyphertextBytes = memoryStream.ToArray();
-
-                    return Convert.ToBase64String(aes.IV.Concat(cyphertextBytes).ToArray());
-                }
-            }
-        }
-
-        public static string DecryptString(string cipherText)
-        {
-            if (string.IsNullOrEmpty(cipherText)) return cipherText;
-            byte[] dataBytes = Convert.FromBase64String(cipherText);
-            byte[] iv = dataBytes.Take(16).ToArray();
-            byte[] cipherBytes = dataBytes.Skip(16).ToArray();
-            byte[] key = Encoding.UTF8.GetBytes(ENCRYPT_KEY);
-
-            using (Aes aes = Aes.Create())
-            {
-                ICryptoTransform decryptor = aes.CreateDecryptor(key, iv);
-                using (MemoryStream memoryStream = new MemoryStream(cipherBytes))
-                {
-                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
-                    {
-                        using (StreamReader streamReader = new StreamReader(cryptoStream))
-                        {
-                            return streamReader.ReadToEnd();
-                        }
-                    }
-                }
-            }
         }
 
         public static double CalcPercent(double val1, double val2, int dec)
