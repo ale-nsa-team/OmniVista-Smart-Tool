@@ -4,6 +4,7 @@
 
     <converters:ValueToColorConverter x:Key="ValueToColorConverter" />
     <converters:BoolToSymbolConverter x:Key="BoolToSymbolConverter" />
+    <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
     <converters:SnmpVersionToVisibilityConverter x:Key="SnmpVersionToVisibilityConverter" />
     <converters:BoolToVisibilityConvertter x:Key="BoolToVisibilityConverter" />
     <converters:PoeToPriorityLevelConverter x:Key="PoeToPriorityLevelConverter" />
@@ -1063,6 +1064,7 @@
     <Style x:Key="toggleSwitch" TargetType="{x:Type CheckBox}">
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Margin" Value="0,10,0,0" />
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CheckBox}">
@@ -1161,6 +1163,12 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Resources>
+            <Style TargetType="ToolTip">
+                <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+                <Setter Property="Background" Value="{StaticResource barBackground}" />
+            </Style>
+        </Style.Resources>
     </Style>
 
 </ResourceDictionary>
