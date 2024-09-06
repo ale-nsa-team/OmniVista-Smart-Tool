@@ -509,16 +509,15 @@ namespace PoEWizard.Components
         {
             try
             {
+                if (Utils.IsInvalid(value)) return DependencyProperty.UnsetValue;
                 PoeStatus poe = (PoeStatus)value;
-                if (Utils.IsInvalid(value) || !toolTip.ContainsKey(poe)) return DependencyProperty.UnsetValue;
-                return toolTip[poe];
+                if (toolTip.ContainsKey(poe)) return toolTip[poe];
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                return DependencyProperty.UnsetValue;
             }
-
+            return DependencyProperty.UnsetValue;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
