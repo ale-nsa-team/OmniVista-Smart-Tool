@@ -235,10 +235,10 @@ namespace PoEWizard.Components
             if (dicList.Count > 0)
             {
                 dict = dicList.FirstOrDefault(d => d["Name"] == "ftp");
-                bool isftp = dict != null && dict["Status"] == "enabled";
+                bool noftp = dict != null && dict["Status"] == "disabled";
                 dict = dicList.FirstOrDefault(d => d["Name"] == "telnet");
-                bool istelnet = dict != null && dict["Status"] == "enabled";
-                features.IsInsecureProtos = isftp || istelnet;
+                bool notelnet = dict != null && dict["Status"] == "disabled";
+                features.NoInsecureProtos = noftp && notelnet;
                 dict = dicList.FirstOrDefault(d => d["Name"] == "ssh");
                 features.IsSsh = dict != null && dict["Status"] == "enabled";
             }

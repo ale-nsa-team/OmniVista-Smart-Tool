@@ -116,7 +116,7 @@ namespace PoEWizard.Data
             [Command.ENABLE_MULTICAST] = "ip multicast admin-state enable",
             [Command.ENABLE_QUERYING] = "ip multicast querying enable",
             [Command.ENABLE_QUERIER_FWD] = "ip multicast querier-forwarding enable",
-            [Command.ENABLE_MULTICAST_VLAN1] = "ip multicast vlan 1 admin-state enable",
+            [Command.ENABLE_MULTICAST_VLAN] = $"ip multicast vlan {DAT} admin-state enable",
             [Command.ENABLE_DHCP_RELAY] = "ip dhcp relay admin-state enable",
             [Command.DISABLE_DHCP_RELAY] = "ip dhcp relay admin-state disable",
             [Command.DHCP_RELAY_DEST] = $"ip dhcp relay destination {DAT}",

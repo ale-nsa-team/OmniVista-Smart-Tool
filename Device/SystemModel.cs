@@ -44,7 +44,7 @@ namespace PoEWizard.Device
                 if (prop.Name != "IsDateAndTime" && string.IsNullOrEmpty((string)prop.GetValue(this, null))) continue;
                 switch (prop.Name)
                 {
-                    case "MtgIpAddr":
+                    case "MgtIpAddr":
                         cmdList.Add(new CmdRequest(Command.SET_MGT_INTERFACE, MgtIpAddr, NetMask));
                         device.IpAddress = MgtIpAddr;
                         break;

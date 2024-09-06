@@ -10,7 +10,7 @@ namespace PoEWizard.Device
         private readonly SwitchModel device;
         
         public bool IsPoe { get; set; } = false;
-        public bool IsInsecureProtos { get; set; } = false;
+        public bool NoInsecureProtos { get; set; } = true;
         public bool IsSsh { get; set; } = true;
         public bool IsMulticast { get; set; } = true;
         public bool IsDhcpRelay { get; set; } = false;
@@ -60,8 +60,8 @@ namespace PoEWizard.Device
                             }
                         }
                         break;
-                    case "IsInsecureProtos":
-                        if (IsInsecureProtos)
+                    case "NoInsecureProtos":
+                        if (NoInsecureProtos)
                         {
                             cmdList.Add(new CmdRequest(Command.DISABLE_TELNET));
                             cmdList.Add(new CmdRequest(Command.DISABLE_FTP));
@@ -90,7 +90,7 @@ namespace PoEWizard.Device
                         {
                             cmdList.Add(new CmdRequest(Command.ENABLE_MULTICAST));
                             cmdList.Add(new CmdRequest(Command.ENABLE_QUERYING));
-                            cmdList.Add(new CmdRequest(Command.ENABLE_MULTICAST_VLAN1));
+                            cmdList.Add(new CmdRequest(Command.ENABLE_MULTICAST_VLAN, ""));
                         }
                         break;
                     case "IsDhcpRelay":

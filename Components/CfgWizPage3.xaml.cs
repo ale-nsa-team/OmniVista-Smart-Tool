@@ -28,7 +28,7 @@ namespace PoEWizard.Components
             DataContext = features;
         }
 
-        private void Option_Changed(object sender, RoutedEventArgs e)
+        private void PoE_Changed(object sender, RoutedEventArgs e)
         {
             CheckBox cb = sender as CheckBox;
             if (cb.IsKeyboardFocusWithin)
@@ -43,7 +43,7 @@ namespace PoEWizard.Components
                     };
                     if (dlg.ShowDialog() == false)
                     {
-                        cb.IsChecked = true;
+                        cb.IsChecked = false;
                     }
                 }
             }

@@ -24,15 +24,15 @@
     <StackPanel Style="{DynamicResource cfgWindow}">
         <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
             <Label Margin="82,0,0,0">Enable PoE</Label>
-            <CheckBox x:Name="_poE" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsPoe}" Checked="Option_Changed" Unchecked="Option_Changed"/>
+            <CheckBox x:Name="_poE" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsPoe}" Checked="PoE_Changed" Unchecked="PoE_Changed"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <Label>Disable Insecure Protocols</Label>
-            <CheckBox x:Name="_disableFtp" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsInsecureProtos}" Checked="Option_Changed" Unchecked="Option_Changed" />
+            <CheckBox x:Name="_disableFtp" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding NoInsecureProtos}" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal"> 
             <Label Margin="79,0,0,0">Enable SSH</Label>
-            <CheckBox x:Name="_ssh" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsSsh}" Checked="Option_Changed" Unchecked="Option_Changed" />
+            <CheckBox x:Name="_ssh" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsSsh}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <Label Margin="51,0,0,0">Enable Multicast</Label>
