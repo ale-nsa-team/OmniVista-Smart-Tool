@@ -299,7 +299,7 @@
                                     Foreground="{Binding Path=Poe, 
                                         Converter={StaticResource ValueToColorConverter}, 
                                         ConverterParameter=Poe}"
-                                    ToolTip="On: PoE power activation is complete, and the attached device is receiving power.&#10;Off: PoE has been disabled for this port.&#10;Searching: PoE is enabled, and the switch is sending PoE probes looking for a device, but activation or class detection is incomplete.&#10;Fault: PoE activation or class detection has failed.&#10;Deny: PoE power management has denied power to the port due to priority disconnect or over subscription.&#10;Test: Port has been forced on and will remain on until it is forced off by RTP functions.&#10;Delayed: Delayed start is enabled.&#10;Conflict: Two PoE ports have been connected and failed to disable PoE on one port.&#10;NoPoe: Port doesn't support PoE."  />
+                                        ToolTip="{Binding Path=Poe, Converter={StaticResource PoeToTooltipConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

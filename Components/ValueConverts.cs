@@ -488,4 +488,44 @@ namespace PoEWizard.Components
             return s.Split('\n').Max(l => l.Length);
         }
     }
+
+    public class PoeToTooltipConverter : IValueConverter
+    {
+
+        static readonly Dictionary<PoeStatus, string> toolTip = new Dictionary<PoeStatus, string>
+        {
+            [PoeStatus.On] = "PoE power activation is complete, and the attached device is receiving power.",
+            [PoeStatus.Off] = "PoE has been disabled for this port.",
+            [PoeStatus.Searching] = "PoE is enabled, and the switch is sending PoE probes looking for a device, but activation or class detection is incomplete.",
+            [PoeStatus.Fault] = "PoE activation or class detection has failed.",
+            [PoeStatus.Deny] = "PoE power management has denied power to the port due to priority disconnect or over subscription.",
+            [PoeStatus.Test] = "Port has been forced on and will remain on until it is forced off by RTP functions.",
+            [PoeStatus.Delayed] = "Delayed start is enabled.",
+            [PoeStatus.Conflict] = "Two PoE ports have been connected and failed to disable PoE on one port.",
+            [PoeStatus.NoPoe] = "Port doesn't support PoE."
+        };
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                PoeStatus poe = (PoeStatus)value;
+                if (Utils.IsInvalid(value) || !toolTip.ContainsKey(poe)) return DependencyProperty.UnsetValue;
+                return toolTip[poe];
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return DependencyProperty.UnsetValue;
+            }
+
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+
+    }
+
 }

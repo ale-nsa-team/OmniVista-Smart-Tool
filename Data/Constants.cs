@@ -14,7 +14,7 @@ namespace PoEWizard.Data
         public enum GridBorderions { Dhcp, Edge, Core, Lps, Lldp, Security, MaxConfigs };
         public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
         public enum PortStatus { Unknown, Up, Down }
-        public enum PoeStatus { On, Off, Searching, Fault, Deny, Conflict, PoweredOff, Test, NoPoe }
+        public enum PoeStatus { On, Off, Searching, Fault, Deny, Conflict, PoweredOff, Test, Delayed, NoPoe }
         public enum SlotPoeStatus {
             [Description("Under Threshold")]
             UnderThreshold,
@@ -142,6 +142,8 @@ namespace PoEWizard.Data
         public const string FAULT = "Fault";
         public const string DENY = "Deny";
         public const string BAD_VOLTAGE_INJECTION = "Bad!VoltInj";
+        public const string TEST = "Test";
+        public const string DELAYED = "Delayed";
         public const string ON_OFF= "On/Off";
         // Used by "SHOW_CHASSIS"
         public const string ID = "ID";

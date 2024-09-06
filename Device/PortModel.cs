@@ -76,6 +76,12 @@ namespace PoEWizard.Device
                 case FAULT:
                     Poe = PoeStatus.Fault;
                     break;
+                case TEST:
+                    Poe = PoeStatus.Test;
+                    break;
+                case DELAYED:
+                    Poe = PoeStatus.Delayed;
+                    break;
                 case BAD_VOLTAGE_INJECTION:
                     Poe = PoeStatus.Conflict;
                     break;

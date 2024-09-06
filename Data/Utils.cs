@@ -71,16 +71,6 @@ namespace PoEWizard.Data
             return -1;
         }
 
-        public static double GetTimeDurationMs(DateTime startTime)
-        {
-            try
-            {
-                return DateTime.Now.Subtract(startTime).TotalMilliseconds;
-            }
-            catch { }
-            return -1;
-        }
-
         public static int StringToInt(string strNumber)
         {
             if (string.IsNullOrEmpty(strNumber)) return -1;
@@ -352,21 +342,6 @@ namespace PoEWizard.Data
             return false;
         }
 
-        public static int[] GetMinFpga(string model)
-        {
-            string m = model;
-            while (m.Length > 2)
-            {
-                if (fpgaVersions.TryGetValue(m, out string val))
-                {
-                    string[] vals = val.Split('.');
-                    return Array.ConvertAll(vals, int.Parse);
-                }
-                m = m.Substring(0, m.Length - 1);
-            }
-            return null;
-        }
-
         public static int[] GetMinimunVersion(string model, string versionType)
         {
             Dictionary<string, string> dict = (versionType == FPGA) ? fpgaVersions : cpldVersions;
@@ -505,34 +480,6 @@ namespace PoEWizard.Data
             }
         }
 
-        public static double CalculateTraffic(double currBytes, double prevBytes, double period)
-        {
-            if (period < 5 || prevBytes == 0) return 0;
-            double dVal = (((currBytes - prevBytes) / period) * 8) / 1024;
-            return Math.Round(dVal, 0, MidpointRounding.ToEven);
-        }
-
-        public static string CalcPercentTotal(double lowerVal, double higherVal, int dec)
-        {
-            try
-            {
-                string format = "{0:0.";
-                for (int idx = 0; idx < dec; idx++) { format += "0"; }
-                format += "}";
-                double remaining = lowerVal;
-                double total = higherVal;
-                if (lowerVal > higherVal)
-                {
-                    total = lowerVal;
-                    remaining = higherVal;
-                }
-                string percent = string.Format(format, CalcPercent((total - remaining), total, dec));
-                return percent;
-            }
-            catch { }
-            return "0";
-        }
-
         public static double CalcPercent(double val1, double val2, int dec)
         {
             try
@@ -557,12 +504,6 @@ namespace PoEWizard.Data
         {
             progress.Report(new ProgressReport(barText));
             progress.Report(new ProgressReport(ReportType.Value, barText, "0"));
-        }
-
-        public static void UpdateProgressBarMessage(IProgress<ProgressReport> progress, string txt, double currVal, double totalVal)
-        {
-            progress.Report(new ProgressReport(txt));
-            UpdateProgressBar(progress, currVal, totalVal);
         }
 
         public static void UpdateProgressBar(IProgress<ProgressReport> progress, double currVal, double totalVal)

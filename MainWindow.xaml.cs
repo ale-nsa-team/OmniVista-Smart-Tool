@@ -1029,7 +1029,7 @@ namespace PoEWizard
                 await GetSyncStatus(null);
                 if (device.SyncStatus == SyncStatusType.Synchronized)
                 {
-                    ShowMessageBox("Write Memory", $"There are no configuration changes on switch {device.Name}", MsgBoxIcons.Info, MsgBoxButtons.Ok);
+                    ShowMessageBox("Write Memory", $"No configuration changes on switch {device.Name}", MsgBoxIcons.Info, MsgBoxButtons.Ok);
                     return;
                 }
                 if (AuthorizeWriteMemory("Write Memory required"))
