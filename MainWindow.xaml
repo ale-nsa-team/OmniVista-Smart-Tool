@@ -295,11 +295,10 @@
                     <DataGridTemplateColumn Header="PoE Status" Width="0.8*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Poe}"
+                                <TextBlock Text="{Binding Path=Poe}" Style="{DynamicResource toolTip}"
                                     Foreground="{Binding Path=Poe, 
                                         Converter={StaticResource ValueToColorConverter}, 
-                                        ConverterParameter=Poe}"
-                                        ToolTip="{Binding Path=Poe, Converter={StaticResource PoeToTooltipConverter}}" />
+                                        ConverterParameter=Poe}" ToolTip="{Binding Path=Poe, Converter={StaticResource PoeToTooltipConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -331,7 +330,7 @@
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Power}"
+                                <TextBlock Text="{Binding Path=Power}" Style="{DynamicResource toolTip}"
                                            ToolTip="Actual power consumed by the device connected to the port" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -345,7 +344,7 @@
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=MaxPower}"
+                                <TextBlock Text="{Binding Path=MaxPower}" Style="{DynamicResource toolTip}"
                                            ToolTip="Maximum power allowed by the hardware" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
