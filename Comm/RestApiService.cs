@@ -720,11 +720,46 @@ namespace PoEWizard.Comm
             return false;
         }
 
+        public void RestartPowerOnPort(string port, int waitSec)
+        {
+            try
+            {
+                GetSwitchSlotPort(port);
+                if (_wizardSwitchPort == null) return;
+                string progressMessage = $"Restarting power on port {_wizardSwitchSlot.Name}";
+                RefreshPoEData();
+                UpdatePortData();
+                DateTime startTime = DateTime.Now;
+                RestartDeviceOnPort(progressMessage, 10);
+                WaitPortUp(waitSec, !string.IsNullOrEmpty(progressMessage) ? progressMessage : string.Empty);
+                RefreshPortsInformation();
+                ProgressReport progressReport = new ProgressReport("");
+                if (_wizardSwitchPort.Status == PortStatus.Up)
+                {
+                    progressReport.Message = $"Power restarted on port {port}.";
+                    progressReport.Type = ReportType.Info;
+                }
+                else
+                {
+                    progressReport.Message = $"Port {port} failed to restart!";
+                    progressReport.Type = ReportType.Warning;
+                }
+                progressReport.Message += $"\nStatus: {_wizardSwitchPort.Status}, PoE Status: {_wizardSwitchPort.Poe}, Duration: {Utils.CalcStringDuration(startTime, true)}";
+                _progress.Report(progressReport);
+                LogActivity($"Restarted power on port {port}", $"\n{progressReport.Message}");
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError("Change power priority", ex);
+            }
+        }
+
         public void RefreshSwitchPorts()
         {
             GetSystemInfo();
             GetLanPower();
             RefreshPortsInformation();
+            GetMacAndLldpInfo();
         }
 
         private void RefreshPortsInformation()

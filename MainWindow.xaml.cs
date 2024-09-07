@@ -332,6 +332,31 @@ namespace PoEWizard
             }
         }
 
+        private async void ResetPort_Click(object sender, RoutedEventArgs e)
+        {
+            if (selectedPort == null) return;
+            try
+            {
+                DisableButtons();
+                string barText = $"Restarting power on port {selectedPort.Name} ...";
+                ShowInfoBox(barText);
+                ShowProgress(barText);
+                await Task.Run(() => restApiService.RestartPowerOnPort(selectedPort.Name, 60));
+                HideProgress();
+                HideInfoBox();
+                await RefreshChanges();
+                HideInfoBox();
+                await WaitAckProgress();
+            }
+            catch (Exception ex)
+            {
+                HideProgress();
+                HideInfoBox();
+                Logger.Error(ex);
+            }
+            EnableButtons();
+        }
+
         private void RefreshSwitch_Click(object sender, RoutedEventArgs e)
         {
             RefreshSwitch();
@@ -534,6 +559,7 @@ namespace PoEWizard
                 selectedPort = port;
                 selectedPortIndex = _portList.SelectedIndex;
                 _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
+                _btnResetPort.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
             }
         }
 
@@ -1432,7 +1458,11 @@ namespace PoEWizard
             ChangeButtonVisibility(true);
             ReselectPort();
             ReselectSlot();
-            if (selectedPort == null) _btnRunWiz.IsEnabled = false;
+            if (selectedPort == null)
+            {
+                _btnRunWiz.IsEnabled = false;
+                _btnResetPort.IsEnabled = false;
+            }
         }
 
         private async void LaunchRebootSwitch()
@@ -1543,6 +1573,7 @@ namespace PoEWizard
         {
             ChangeButtonVisibility(false);
             _btnRunWiz.IsEnabled = false;
+            _btnResetPort.IsEnabled = false;
         }
 
         private void ChangeButtonVisibility(bool val)
@@ -1567,6 +1598,7 @@ namespace PoEWizard
                 _portList.SelectedItem = _portList.Items[selectedPortIndex];
                 _portList.SelectionChanged += PortSelection_Changed;
                 _btnRunWiz.IsEnabled = true;
+                _btnResetPort.IsEnabled = true;
             }
         }
 
@@ -1578,6 +1610,7 @@ namespace PoEWizard
                 _slotsView.SelectedItem = _slotsView.Items[selectedSlotIndex];
                 _slotsView.SelectionChanged += SlotSelection_Changed;
                 _btnRunWiz.IsEnabled = true;
+                _btnResetPort.IsEnabled = true;
             }
         }
 
