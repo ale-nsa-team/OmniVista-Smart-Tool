@@ -3,6 +3,7 @@ using PoEWizard.Device;
 using PoEWizard.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -144,10 +145,55 @@ namespace PoEWizard.Comm
             if (_dict != null) SwitchModel.DefaultGwy = _dict[GATEWAY];
         }
 
-        public void GetSyncStatus()
+        public Dictionary<string, List<string>> GetSyncStatus()
         {
             _dict = RunSwitchCommand(new CmdRequest(Command.SHOW_SYSTEM_RUNNING_DIR, ParseType.MibTable, DictionaryType.SystemRunningDir)) as Dictionary<string, string>;
             SwitchModel.LoadFromDictionary(_dict, DictionaryType.SystemRunningDir);
+            return GetConfigChanges();
+        }
+
+        private Dictionary<string, List<string>> GetConfigChanges()
+        {
+            Dictionary<string, List<string>> diffTable = new Dictionary<string, List<string>>();
+            try
+            {
+                SwitchModel.ConfigSnapshot = RunSwitchCommand(new CmdRequest(Command.SHOW_CONFIGURATION, ParseType.NoParsing)) as string;
+                string filePath = Path.Combine(Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER), $"{SwitchModel.Name}{SNAPSHOT_SUFFIX}");
+                if (File.Exists(filePath))
+                {
+                    string prevCfgSnapshot = File.ReadAllText(filePath);
+                    if (!string.IsNullOrEmpty(prevCfgSnapshot)) diffTable = GetConfigDifferences(prevCfgSnapshot);
+                }
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError("Get Snapshot", ex);
+            }
+            return diffTable;
+        }
+
+        private Dictionary<string, List<string>> GetConfigDifferences(string prevCfgSnapshot)
+        {
+            Dictionary<string, List<string>> diffTable = new Dictionary<string, List<string>>();
+            Dictionary<string, List<string>> currConfig = CliParseUtils.ParseSwitchConfigChanges(SwitchModel.ConfigSnapshot);
+            Dictionary<string, List<string>> prevConfig = CliParseUtils.ParseSwitchConfigChanges(prevCfgSnapshot);
+            foreach (KeyValuePair<string, List<string>> keyVal in currConfig)
+            {
+                List<string> currList = keyVal.Value;
+                List<string> diff;
+                if (prevConfig.ContainsKey(keyVal.Key))
+                {
+                    List<string> prevList = prevConfig[keyVal.Key];
+                    if (prevList.Count > currList.Count) diff = prevList.Except(currList).ToList();
+                    else diff = currList.Except(prevList).ToList();
+                }
+                else
+                {
+                    diff = currList;
+                }
+                if (diff.Count > 0) diffTable[keyVal.Key] = diff;
+            }
+            return diffTable;
         }
 
         public void GetSnapshot()
@@ -448,12 +494,35 @@ namespace PoEWizard.Comm
                     UpdateProgressBarMessage($"{msg} ({(int)dur} sec) ...", dur);
                 }
                 LogActivity("Write memory completed", $", duration: {Utils.CalcStringDuration(progressStartTime)}");
+                SaveConfigSnapshot();
             }
             catch (Exception ex)
             {
                 SendSwitchError("Write memory", ex);
             }
             CloseProgressBar();
+        }
+
+        private void SaveConfigSnapshot()
+        {
+            try
+            {
+                string folder = Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER);
+                string filePath = Path.Combine(folder, $"{SwitchModel.Name}{SNAPSHOT_SUFFIX}");
+                if (Directory.Exists(folder))
+                {
+                    Utils.PurgeFiles(filePath, 5, SNAPSHOT_SUFFIX);
+                }
+                else
+                {
+                    Directory.CreateDirectory(folder);
+                }
+                File.WriteAllText(filePath, SwitchModel.ConfigSnapshot);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         public string RebootSwitch(int waitSec)
@@ -698,11 +767,10 @@ namespace PoEWizard.Comm
             try
             {
                 GetSwitchSlotPort(port);
-                if (_wizardSwitchSlot == null) return false;
+                if (_wizardSwitchSlot == null || _wizardSwitchPort == null) return false;
                 RefreshPoEData();
                 UpdatePortData();
                 DateTime startTime = DateTime.Now;
-                if (_wizardSwitchPort == null) return false;
                 if (_wizardSwitchPort.PriorityLevel == priority) return false;
                 _wizardSwitchPort.PriorityLevel = priority;
                 RunSwitchCommand(new CmdRequest(Command.POWER_PRIORITY_PORT, new string[2] { port, _wizardSwitchPort.PriorityLevel.ToString() }));
@@ -725,8 +793,8 @@ namespace PoEWizard.Comm
             try
             {
                 GetSwitchSlotPort(port);
-                if (_wizardSwitchPort == null) return;
-                string progressMessage = $"Restarting power on port {_wizardSwitchSlot.Name}";
+                if (_wizardSwitchSlot == null || _wizardSwitchPort == null) return;
+                string progressMessage = $"Restarting power on port {port}";
                 RefreshPoEData();
                 UpdatePortData();
                 DateTime startTime = DateTime.Now;

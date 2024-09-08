@@ -305,6 +305,9 @@ namespace PoEWizard.Data
         public const string SNMP_STATUS = "status";
         public const string SNMP_STATION_IP = "ipAddress/port";
         public const string SNMP_VERSION = "protocol";
+        // Sbanpshot configuration changes
+        public const string SNAPSHOT_FOLDER = "snapshot";
+        public const string SNAPSHOT_SUFFIX = "-snapshot.txt";
         #endregion
 
         #region regex patterns

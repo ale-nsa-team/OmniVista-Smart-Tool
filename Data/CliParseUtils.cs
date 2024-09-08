@@ -381,6 +381,30 @@ namespace PoEWizard.Data
             return table;
         }
 
+        public static Dictionary<string, List<string>> ParseSwitchConfigChanges(string data)
+        {
+            Dictionary<string, List<string>> table = new Dictionary<string, List<string>>();
+            using (StringReader reader = new StringReader(data))
+            {
+                string line;
+                string key = null;
+                List<string> features = new List<string>();
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if(string.IsNullOrEmpty(line)) continue;
+                    if (line.StartsWith("!"))
+                    {
+                        key = line.Replace("!", "").Replace(":", "").Trim();
+                        table[key] = new List<string>();
+                        continue;
+                    }
+                    if (string.IsNullOrEmpty(key) || !table.ContainsKey(key)) continue;
+                    table[key].Add(line);
+                }
+            }
+            return table;
+        }
+
         private static Dictionary<string, string> ParseTable(string data, Regex regex)
         {
             Dictionary<string, string> table = new Dictionary<string, string>();

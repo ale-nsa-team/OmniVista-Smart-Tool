@@ -245,7 +245,7 @@ namespace PoEWizard
                 TextViewer tv = new TextViewer("Configuration Snapshot", device.ConfigSnapshot)
                 {
                     Owner = this,
-                    SaveFilename = device.Name + "-snapshot.txt"
+                    SaveFilename = $"{device.Name}{SNAPSHOT_SUFFIX}"
                 };
                 tv.Show();
             }
@@ -760,11 +760,11 @@ namespace PoEWizard
             {
                 if (restApiService != null && !isClosing)
                 {
-                    await GetSyncStatus(title);
+                    Dictionary<string, List<string>> diffTable = await GetSyncStatus(title);
                     isClosing = true;
                     if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized)
                     {
-                        if (AuthorizeWriteMemory("Write Memory required"))
+                        if (AuthorizeWriteMemory("Write Memory required", diffTable))
                         {
                             DisableButtons();
                             _comImg.Visibility = Visibility.Collapsed;
@@ -1043,13 +1043,13 @@ namespace PoEWizard
         {
             try
             {
-                await GetSyncStatus(null);
+                Dictionary<string, List<string>> diffTable = await GetSyncStatus($"Checking configuration changes on switch {device.Name}");
                 if (device.SyncStatus == SyncStatusType.Synchronized)
                 {
                     ShowMessageBox("Write Memory", $"No configuration changes on switch {device.Name}", MsgBoxIcons.Info, MsgBoxButtons.Ok);
                     return;
                 }
-                if (AuthorizeWriteMemory("Write Memory required"))
+                if (AuthorizeWriteMemory("Write Memory required", diffTable))
                 {
                     DisableButtons();
                     await Task.Run(() => restApiService.WriteMemory());
@@ -1469,7 +1469,7 @@ namespace PoEWizard
         {
             try
             {
-                await GetSyncStatus("Rebooting Switch");
+                Dictionary<string, List<string>> diffTable = await GetSyncStatus("Rebooting Switch");
                 if (ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo))
                 {
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
@@ -1477,7 +1477,7 @@ namespace PoEWizard
                         ShowMessageBox("Reboot Switch", $"Cannot reboot the switch {device.Name} because it's not certified!", MsgBoxIcons.Error);
                         return;
                     }
-                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory("Reboot Switch"))
+                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory("Reboot Switch", diffTable))
                     {
                         await Task.Run(() => restApiService.WriteMemory());
                     }
@@ -1500,19 +1500,39 @@ namespace PoEWizard
             }
         }
 
-        private async Task GetSyncStatus(string title)
+        private async Task<Dictionary<string, List<string>>> GetSyncStatus(string title)
         {
+            Dictionary<string, List<string>> diffTable = new Dictionary<string, List<string>>();
             if (!string.IsNullOrEmpty(title)) ShowInfoBox($"{title} ...");
-            await Task.Run(() => restApiService?.GetSyncStatus());
+            await Task.Run(() => diffTable = restApiService.GetSyncStatus());
             DataContext = null;
             DataContext = device;
             HideInfoBox();
+            return diffTable;
         }
 
-        private bool AuthorizeWriteMemory(string title)
+        private bool AuthorizeWriteMemory(string title, Dictionary<string, List<string>> diffTable)
         {
-            return ShowMessageBox(title, "Flash memory is not synchronized\nDo you want to save it now?\nIt may take up to 30 sec to execute Write Memory.",
-                                  MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
+            StringBuilder text = new StringBuilder("Flash memory is not synchronized");
+            if (diffTable.Count > 0)
+            {
+                text.Append("\nSignificant configuration changes:");
+                foreach (KeyValuePair<string, List<string>> keyVal in diffTable)
+                {
+                    text.Append("\n - ").Append(keyVal.Key).Append(":\n   ");
+                    List<string> changes = keyVal.Value;
+                    foreach(string change in changes)
+                    {
+                        text.Append(" ").Append(change);
+                    }
+                }
+            }
+            else
+            {
+                text.Append("\nNo significant configuration changes.");
+            }
+            text.Append("\nDo you want to save it now?\nIt may take up to 30 sec to execute Write Memory.");
+            return ShowMessageBox(title, text.ToString(), MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
         }
 
         private async Task<string> RebootSwitch(int waitSec)
