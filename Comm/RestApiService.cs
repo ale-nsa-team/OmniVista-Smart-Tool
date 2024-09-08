@@ -509,15 +509,15 @@ namespace PoEWizard.Comm
             {
                 string folder = Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER);
                 string filePath = Path.Combine(folder, $"{SwitchModel.Name}{SNAPSHOT_SUFFIX}");
+                File.WriteAllText(filePath, SwitchModel.ConfigSnapshot);
                 if (Directory.Exists(folder))
                 {
-                    Utils.PurgeFiles(filePath, 5, SNAPSHOT_SUFFIX);
+                    Utils.PurgeFiles(filePath, MAX_NB_SNAPSHOT_SAVED);
                 }
                 else
                 {
                     Directory.CreateDirectory(folder);
                 }
-                File.WriteAllText(filePath, SwitchModel.ConfigSnapshot);
             }
             catch (Exception ex)
             {

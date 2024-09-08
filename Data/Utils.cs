@@ -489,18 +489,18 @@ namespace PoEWizard.Data
             else return MAX_COLLECT_LOGS_WIZARD_DURATION;
         }
 
-        public static void PurgeFiles(string filePath, int nbMaxFiles, string filter)
+        public static void PurgeFiles(string filePath, int nbMaxFiles)
         {
             string folder = Path.GetDirectoryName(filePath);
             if (Directory.Exists(folder))
             {
-                string[] filesInOrder = new DirectoryInfo(folder).GetFiles().OrderByDescending(f => f.LastWriteTime).Select(f => f.Name).ToArray();
-                int nbCurrentFiles = filesInOrder.Length;
-                int nbFiles = nbCurrentFiles;
-                for (int idx = nbCurrentFiles - 1; idx >= 0; idx--)
+                string[] filesList = new DirectoryInfo(folder).GetFiles().OrderByDescending(f => f.LastWriteTime).Select(f => f.Name).ToArray();
+                if (filesList.Length <= nbMaxFiles) return;
+                int nbFiles = filesList.Length;
+                for (int idx = filesList.Length - 1; idx >= 0; idx--)
                 {
                     if (nbFiles <= nbMaxFiles) break;
-                    string fPath = Path.Combine(folder, filesInOrder[idx]);
+                    string fPath = Path.Combine(folder, filesList[idx]);
                     if (File.Exists(fPath))
                     {
                         File.Delete(fPath);

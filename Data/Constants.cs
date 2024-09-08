@@ -305,7 +305,7 @@ namespace PoEWizard.Data
         public const string SNMP_STATUS = "status";
         public const string SNMP_STATION_IP = "ipAddress/port";
         public const string SNMP_VERSION = "protocol";
-        // Sbanpshot configuration changes
+        // Snapshot configuration changes
         public const string SNAPSHOT_FOLDER = "snapshot";
         public const string SNAPSHOT_SUFFIX = "-snapshot.txt";
         #endregion
@@ -327,6 +327,8 @@ namespace PoEWizard.Data
         public const double MAX_COLLECT_LOGS_WIZARD_DURATION = 65;
         public const double MAX_COLLECT_LOGS_RESET_POE_DURATION = 80;
         public const double MAX_COLLECT_LOGS_DURATION = 55;
+        // Snapshot configuration changes
+        public const int MAX_NB_SNAPSHOT_SAVED = 20;
         #endregion
     }
 }
