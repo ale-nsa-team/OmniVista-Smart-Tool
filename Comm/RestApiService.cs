@@ -498,7 +498,12 @@ namespace PoEWizard.Comm
         private void PurgeConfigSnapshotFiles()
         {
             string folder = Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER);
-            if (Directory.Exists(folder)) Utils.PurgeFiles(folder, MAX_NB_SNAPSHOT_SAVED); else Directory.CreateDirectory(folder);
+            if (Directory.Exists(folder))
+            {
+                string txt = Utils.PurgeFiles(folder, MAX_NB_SNAPSHOT_SAVED);
+                if (!string.IsNullOrEmpty(txt)) Logger.Activity(txt);
+            }
+            else Directory.CreateDirectory(folder);
         }
 
         public string RebootSwitch(int waitSec)

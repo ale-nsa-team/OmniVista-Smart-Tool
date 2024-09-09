@@ -489,12 +489,14 @@ namespace PoEWizard.Data
             else return MAX_COLLECT_LOGS_WIZARD_DURATION;
         }
 
-        public static void PurgeFiles(string folder, int nbMaxFiles)
+        public static string PurgeFiles(string folder, int nbMaxFiles)
         {
+            StringBuilder txtDelete = new StringBuilder();
             if (Directory.Exists(folder))
             {
                 string[] filesList = new DirectoryInfo(folder).GetFiles().OrderByDescending(f => f.LastWriteTime).Select(f => f.Name).ToArray();
                 int nbFiles = filesList.Length;
+                int nbFilesDeleted = 0;
                 for (int idx = filesList.Length - 1; idx >= 0; idx--)
                 {
                     string fPath = Path.Combine(folder, filesList[idx]);
@@ -505,10 +507,14 @@ namespace PoEWizard.Data
                         {
                             File.Delete(fPath);
                             nbFiles--;
+                            txtDelete.Append("\n\t").Append(fPath).Append(" (").Append(lastWriteTime.ToString("MM/dd/yyyy hh:mm:ss tt")).Append(")");
+                            nbFilesDeleted++;
                         }
                     }
                 }
+                if (txtDelete.Length > 0) return $"{nbFilesDeleted} snapshot configuration files deleted:{txtDelete}";
             }
+            return string.Empty;
         }
 
     }
