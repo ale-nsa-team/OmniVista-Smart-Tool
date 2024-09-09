@@ -1022,7 +1022,7 @@ namespace PoEWizard
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.Name}", reportResult));
                 await CheckSwitchScanResult($"Refresh switch {device.Name}", startTime);
-                UpdateConnectedState();
+                RefreshSlotAndPortsView();
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
                     await AskRebootCertified();
