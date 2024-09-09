@@ -677,13 +677,14 @@ namespace PoEWizard
                 restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
+                    string textMsg = $"Disconnecting switch {device.Name}";
                     string confirm = $"disconnecting the switch {device.Name}";
                     stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                    bool save = StopTrafficAnalysis(AbortType.Close, $"Disconnecting switch {device.Name}", ASK_SAVE_TRAFFIC_REPORT, confirm);
+                    bool save = StopTrafficAnalysis(AbortType.Close, textMsg, ASK_SAVE_TRAFFIC_REPORT, confirm);
                     if (!save) return;
                     await WaitSaveTrafficAnalysis();
-                    ShowProgress($"Disconnecting switch {device.Name} ...");
-                    await CloseRestApiService($"Disconnecting switch {device.Name} ...");
+                    ShowProgress($"{textMsg} ...");
+                    await CloseRestApiService($"{textMsg}");
                     SetDisconnectedState();
                     return;
                 }
@@ -760,11 +761,11 @@ namespace PoEWizard
             {
                 if (restApiService != null && !isClosing)
                 {
-                    Dictionary<string, List<string>> diffTable = await GetSyncStatus(title);
+                    Dictionary<string, List<string>> cfgChanges = await GetSyncStatus(title);
                     isClosing = true;
                     if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized)
                     {
-                        if (AuthorizeWriteMemory("Write Memory required", diffTable))
+                        if (AuthorizeWriteMemory("Write Memory required", cfgChanges))
                         {
                             DisableButtons();
                             _comImg.Visibility = Visibility.Collapsed;
@@ -1043,13 +1044,13 @@ namespace PoEWizard
         {
             try
             {
-                Dictionary<string, List<string>> diffTable = await GetSyncStatus($"Checking configuration changes on switch {device.Name}");
+                Dictionary<string, List<string>> cfgChanges = await GetSyncStatus($"Checking configuration changes on switch {device.Name}");
                 if (device.SyncStatus == SyncStatusType.Synchronized)
                 {
                     ShowMessageBox("Write Memory", $"No configuration changes on switch {device.Name}", MsgBoxIcons.Info, MsgBoxButtons.Ok);
                     return;
                 }
-                if (AuthorizeWriteMemory("Write Memory required", diffTable))
+                if (AuthorizeWriteMemory("Write Memory required", cfgChanges))
                 {
                     DisableButtons();
                     await Task.Run(() => restApiService.WriteMemory());
@@ -1469,7 +1470,7 @@ namespace PoEWizard
         {
             try
             {
-                Dictionary<string, List<string>> diffTable = await GetSyncStatus("Rebooting Switch");
+                Dictionary<string, List<string>> cfgChanges = await GetSyncStatus("Rebooting Switch");
                 if (ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo))
                 {
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
@@ -1477,7 +1478,7 @@ namespace PoEWizard
                         ShowMessageBox("Reboot Switch", $"Cannot reboot the switch {device.Name} because it's not certified!", MsgBoxIcons.Error);
                         return;
                     }
-                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory("Reboot Switch", diffTable))
+                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory("Reboot Switch", cfgChanges))
                     {
                         await Task.Run(() => restApiService.WriteMemory());
                     }
@@ -1502,24 +1503,30 @@ namespace PoEWizard
 
         private async Task<Dictionary<string, List<string>>> GetSyncStatus(string title)
         {
-            Dictionary<string, List<string>> diffTable = new Dictionary<string, List<string>>();
+            Dictionary<string, List<string>> cfgChanges = new Dictionary<string, List<string>>();
             if (!string.IsNullOrEmpty(title)) ShowInfoBox($"{title} ...");
-            await Task.Run(() => diffTable = restApiService.GetSyncStatus());
+            await Task.Run(() => cfgChanges = restApiService.GetSyncStatus());
             DataContext = null;
             DataContext = device;
             HideInfoBox();
-            return diffTable;
+            return cfgChanges;
         }
 
-        private bool AuthorizeWriteMemory(string title, Dictionary<string, List<string>> diffTable)
+        private bool AuthorizeWriteMemory(string title, Dictionary<string, List<string>> cfgChanges)
         {
             StringBuilder text = new StringBuilder("Flash memory is not synchronized");
-            if (diffTable.Count > 0)
+            if (cfgChanges.Count > 0)
             {
                 text.Append("\nSignificant configuration changes:");
-                foreach (KeyValuePair<string, List<string>> keyVal in diffTable)
+                int nbLines = 0;
+                foreach (KeyValuePair<string, List<string>> keyVal in cfgChanges)
                 {
+                    if (nbLines++ >= 10)
+                    {
+                        text.Append(":\n           . . .");
+                    }
                     text.Append("\n - ").Append(keyVal.Key).Append(":\n   ");
+                    nbLines += 2;
                     List<string> changes = keyVal.Value;
                     foreach(string change in changes)
                     {

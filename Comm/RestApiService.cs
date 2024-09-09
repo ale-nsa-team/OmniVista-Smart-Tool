@@ -16,7 +16,6 @@ namespace PoEWizard.Comm
 {
     public class RestApiService
     {
-        private Dictionary<string, object> _response = new Dictionary<string, object>();
         private List<Dictionary<string, string>> _dictList = new List<Dictionary<string, string>>();
         private Dictionary<string, string> _dict = new Dictionary<string, string>();
         private readonly IProgress<ProgressReport> _progress;
@@ -56,13 +55,13 @@ namespace PoEWizard.Comm
                 DateTime startTime = DateTime.Now;
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
-                StartProgressBar($"Connecting to switch {SwitchModel.Name} ...", 25);
-                _progress.Report(new ProgressReport($"Connecting to switch {SwitchModel.Name} ..."));
+                StartProgressBar($"Connecting to switch {SwitchModel.IpAddress} ...", 25);
+                _progress.Report(new ProgressReport($"Connecting to switch {SwitchModel.IpAddress} ..."));
                 RestApiClient.Login();
                 UpdateProgressBar(++progressBarCnt); //  1
-                if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to switch {SwitchModel.Name}!");
+                if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to switch {SwitchModel.IpAddress}!");
                 SwitchModel.IsConnected = true;
-                _progress.Report(new ProgressReport($"Reading system information on switch {SwitchModel.Name}"));
+                _progress.Report(new ProgressReport($"Reading system information on switch {SwitchModel.IpAddress}"));
                 _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_MICROCODE, ParseType.Htable)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromDictionary(_dictList[0], DictionaryType.MicroCode);
                 UpdateProgressBar(++progressBarCnt); //  2
@@ -72,8 +71,12 @@ namespace PoEWizard.Comm
                 _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_CHASSIS, ParseType.MVTable, DictionaryType.Chassis)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.Chassis);
                 UpdateProgressBar(++progressBarCnt); // 4
-                ScanSwitch($"Connect to switch {SwitchModel.Name}", reportResult);
+                ScanSwitch($"Connect to switch {SwitchModel.IpAddress}", reportResult);
                 LogActivity($"Switch connected", $", duration: {Utils.CalcStringDuration(startTime)}");
+                if (!File.Exists(Path.Combine(Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
+                {
+                    SaveConfigSnapshot();
+                }
             }
             catch (Exception ex)
             {
@@ -158,7 +161,7 @@ namespace PoEWizard.Comm
             try
             {
                 SwitchModel.ConfigSnapshot = RunSwitchCommand(new CmdRequest(Command.SHOW_CONFIGURATION, ParseType.NoParsing)) as string;
-                string filePath = Path.Combine(Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER), $"{SwitchModel.Name}{SNAPSHOT_SUFFIX}");
+                string filePath = Path.Combine(Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}");
                 if (File.Exists(filePath))
                 {
                     string prevCfgSnapshot = File.ReadAllText(filePath);
@@ -508,7 +511,7 @@ namespace PoEWizard.Comm
             try
             {
                 string folder = Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER);
-                string filePath = Path.Combine(folder, $"{SwitchModel.Name}{SNAPSHOT_SUFFIX}");
+                string filePath = Path.Combine(folder, $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}");
                 File.WriteAllText(filePath, SwitchModel.ConfigSnapshot);
                 if (Directory.Exists(folder))
                 {
@@ -1203,12 +1206,12 @@ namespace PoEWizard.Comm
             {
                 if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure)
                 {
-                    error = $"Switch {SwitchModel.Name} login failed (username: {SwitchModel.Login})";
+                    error = $"Switch {(string.IsNullOrEmpty(SwitchModel.Name) ? SwitchModel.IpAddress : SwitchModel.Name)} login failed (username: {SwitchModel.Login})";
                     this.SwitchModel.Status = SwitchStatus.LoginFail;
                 }
                 else
                 {
-                    error = $"Switch {SwitchModel.Name} unreachable";
+                    error = $"Switch {(string.IsNullOrEmpty(SwitchModel.Name) ? SwitchModel.IpAddress : SwitchModel.Name)} unreachable";
                     this.SwitchModel.Status = SwitchStatus.Unreachable;
                 }
             }
