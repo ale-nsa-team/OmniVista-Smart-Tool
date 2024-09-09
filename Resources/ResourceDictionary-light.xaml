@@ -449,6 +449,12 @@
         </Style.Resources>
     </Style>
 
+    <Style x:Key="infoVal" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+        <Setter Property="Padding" Value="10,2,2,2" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
     <Style TargetType="Label" x:Key="keyLabel">
         <Setter Property="Foreground" Value="{StaticResource linkColor}" />
         <Setter Property="Background" Value="Transparent" />

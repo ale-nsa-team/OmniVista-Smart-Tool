@@ -87,15 +87,15 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Label Grid.Row="0" Grid.Column="0" Style="{DynamicResource keyLabel}">Name:</Label>
-                <Label Grid.Row="0" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_name" Content="{Binding Name}" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_name" Text="{Binding Name}" />
                 <Label Grid.Row="1" Grid.Column="0" Style="{DynamicResource keyLabel}">Serial Number:</Label>
-                <Label Grid.Row="1" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_serialNo" Content="{Binding SerialNumber}"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_serialNo" Text="{Binding SerialNumber}"/>
                 <Label Grid.Row="2" Grid.Column="0" Style="{DynamicResource keyLabel}">Model:</Label>
-                <Label Grid.Row="2" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_model" Content="{Binding Model}"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_model" Text="{Binding Model}"/>
                 <Label Grid.Row="3" Grid.Column="0" Style="{DynamicResource keyLabel}">Release:</Label>
                 <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
-                    <Label Style="{DynamicResource valLabel}" x:Name="_release" 
-                       Content="{Binding Version}"
+                    <TextBlock Style="{DynamicResource infoVal}" x:Name="_release" 
+                       Text="{Binding Version}"
                        Foreground="{Binding Path=Version, Converter={StaticResource ValueToColorConverter}, ConverterParameter=AosVersion}"/>
                     <Image x:Name="_aosWarn" Style="{DynamicResource warnImg}"
                            ToolTip="Switch AOS version is too old. Please buy a support contract and upgrade your switch"
@@ -106,14 +106,14 @@
                 <Label Grid.Row="4" Grid.Column="0" x:Name="_cpldLbl" Style="{DynamicResource keyLabel}"
                        Visibility="Hidden">CPLD Version:</Label>
                 <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
-                    <Label Style="{DynamicResource valLabel}" x:Name="_fpga" Content="{Binding Fpga}">
-                        <Label.Foreground>
+                    <TextBlock Style="{DynamicResource infoVal}" x:Name="_fpga" Text="{Binding Fpga}">
+                        <TextBlock.Foreground>
                             <MultiBinding Converter="{StaticResource FpgaToColorConveter}" ConverterParameter="FPGA">
                                 <Binding Path="Model" />
                                 <Binding Path="Fpga" />
                             </MultiBinding>
-                        </Label.Foreground>
-                    </Label>
+                        </TextBlock.Foreground>
+                    </TextBlock>
                     <Image x:Name="_fpgaWarn" Style="{DynamicResource warnImg}"
                         ToolTip="Switch FPGA version is too old. Please buy a support contract and upgrade your switch">
                         <Image.Visibility>
@@ -125,14 +125,14 @@
                     </Image>
                 </StackPanel>
                 <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
-                    <Label Style="{DynamicResource valLabel}" x:Name="_cpld" Content="{Binding Cpld}">
-                        <Label.Foreground>
+                    <TextBlock Style="{DynamicResource infoVal}" x:Name="_cpld" Text="{Binding Cpld}">
+                        <TextBlock.Foreground>
                             <MultiBinding Converter="{StaticResource FpgaToColorConveter}" ConverterParameter="CPLD">
                                 <Binding Path="Model" />
                                 <Binding Path="Cpld" />
                             </MultiBinding>
-                        </Label.Foreground>
-                    </Label>
+                        </TextBlock.Foreground>
+                    </TextBlock>
                     <Image x:Name="_cpldWarn" Style="{DynamicResource warnImg}"
 		                ToolTip="Switch CPLD version is too old. Please buy a support contract and upgrade your switch">
                         <Image.Visibility>
@@ -145,8 +145,8 @@
                 </StackPanel>
                 <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}">Temperature:</Label>
                 <StackPanel x:Name="_tempStatus" Grid.Row="5" Grid.Column="1" Orientation="Horizontal" Visibility="Hidden">
-                    <Label Style="{DynamicResource valLabel}" 
-                           Content="{Binding CurrTemperature}" 
+                    <TextBlock Style="{DynamicResource infoVal}" 
+                           Text="{Binding CurrTemperature}" 
                            Foreground="{Binding Path=TemperatureStatus, Converter={StaticResource ValueToColorConverter}, ConverterParameter=Temperature}"/>
                     <Image x:Name="_tempWarn" Style="{DynamicResource warnImg}"
                            ToolTip="Switch may reduce PoE output because temperature is too high" 
@@ -154,22 +154,22 @@
                 </StackPanel>
                 <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}">CPU Usage:</Label>
                 <StackPanel x:Name="_cpu" Grid.Row="6" Grid.Column="1" Orientation="Horizontal" Visibility="Hidden">
-                    <Label Style="{DynamicResource valLabel}" Content="{Binding Cpu}">
-                        <Label.Foreground>
+                    <TextBlock Style="{DynamicResource infoVal}" Text="{Binding Cpu}">
+                        <TextBlock.Foreground>
                             <MultiBinding Converter="{StaticResource CpuUsageToColorConverter}">
                                 <Binding Path="Cpu" />
                                 <Binding Path="CpuThreshold" />
                             </MultiBinding>
-                        </Label.Foreground>
-                    </Label>
-                    <Label Style="{DynamicResource valLabel}" Margin="-10,0,0,0" Content="%">
-                        <Label.Foreground>
+                        </TextBlock.Foreground>
+                    </TextBlock>
+                    <TextBlock Style="{DynamicResource infoVal}" Margin="-10,0,0,0" Text="%">
+                        <TextBlock.Foreground>
                             <MultiBinding Converter="{StaticResource CpuUsageToColorConverter}">
                                 <Binding Path="Cpu" />
                                 <Binding Path="CpuThreshold" />
                             </MultiBinding>
-                        </Label.Foreground>                        
-                    </Label>
+                        </TextBlock.Foreground>                        
+                    </TextBlock>
                     <Image x:Name="_cpuWarn" Style="{DynamicResource warnImg}">
                         <Image.Visibility>
                             <MultiBinding Converter="{StaticResource CpuUsageToVisibilityConverter}">
@@ -186,25 +186,25 @@
                     </Image>
                 </StackPanel>
                 <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}">Location:</Label>
-                <Label Grid.Row="7" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_location" Content="{Binding Location}" />
+                <TextBlock Grid.Row="7" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_location" Text="{Binding Location}" />
                 <Label Grid.Row="8" Grid.Column="0" Style="{DynamicResource keyLabel}">Contact:</Label>
-                <Label Grid.Row="8" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_contact" Content="{Binding Contact}" />
+                <TextBlock Grid.Row="8" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_contact" Text="{Binding Contact}" />
                 <Label Grid.Row="9" Grid.Column="0" Style="{DynamicResource keyLabel}">MAC Address:</Label>
-                <Label Grid.Row="9" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_mac" Content="{Binding MacAddress}"/>
+                <TextBlock Grid.Row="9" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_mac" Text="{Binding MacAddress}"/>
                 <Label Grid.Row="10" Grid.Column="0" Style="{DynamicResource keyLabel}">IP Address:</Label>
-                <Label Grid.Row="10" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_ip" Content="{Binding IpAddress}"/>
+                <TextBlock Grid.Row="10" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_ip" Text="{Binding IpAddress}"/>
                 <Label Grid.Row="11" Grid.Column="0" Style="{DynamicResource keyLabel}">Running Directory:</Label>
-                <Label Grid.Row="11" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_runningDir" Content="{Binding RunningDir}"
+                <TextBlock Grid.Row="11" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_runningDir" Text="{Binding RunningDir}"
                        Foreground="{Binding Path=RunningDir, Converter={StaticResource ValueToColorConverter}, ConverterParameter=RunningDir}"/>
                 <Label Grid.Row="12" Grid.Column="0" Style="{DynamicResource keyLabel}">Synchronization:</Label>
-                <Label Grid.Row="12" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_syncStatus" Content="{Binding SyncStatusLabel}"
+                <TextBlock Grid.Row="12" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_syncStatus" Text="{Binding SyncStatusLabel}"
                        Foreground="{Binding Path=SyncStatus, Converter={StaticResource ValueToColorConverter}, ConverterParameter=SyncStatus}"/>
 
                 <Label Grid.Row="13" Grid.Column="0" Style="{DynamicResource keyLabel}">PoE Debug Level:</Label>
-                <Label Grid.Row="13" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_ilpni" Content="{Binding LpNiLabelDebugLevel}"
+                <TextBlock Grid.Row="13" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_ilpni" Text="{Binding LpNiLabelDebugLevel}"
                        Foreground="{Binding Path=LpNiDebugLevel, Converter={StaticResource ValueToColorConverter}, ConverterParameter=LpNiDebugLevel}"/>
                 <Label Grid.Row="14" Grid.Column="0" Style="{DynamicResource keyLabel}">CMM Debug Level:</Label>
-                <Label Grid.Row="14" Grid.Column="1" Style="{DynamicResource valLabel}" x:Name="_lpcmm" Content="{Binding LpCmmLabelDebugLevel}"
+                <TextBlock Grid.Row="14" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_lpcmm" Text="{Binding LpCmmLabelDebugLevel}"
                        Foreground="{Binding Path=LpCmmDebugLevel, Converter={StaticResource ValueToColorConverter}, ConverterParameter=LpCmmDebugLevel}"/>
 
             </Grid>
