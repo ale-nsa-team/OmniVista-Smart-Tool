@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
-        Title="About ALE Configuration Wizard" Height="400" Width="450" WindowStyle="None" ShowInTaskbar="False">
+        Title="About ALE Configuration Wizard" Height="500" Width="550" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -27,9 +27,17 @@
         <StackPanel Grid.Row="0" Grid.Column="1">
             <TextBlock x:Name="_aboutTitle" Style="{DynamicResource aboutTitle}" />
             <TextBlock x:Name="_version" Style="{DynamicResource aboutParagraph}" />
-            <TextBlock x:Name="_copyWright" Style="{DynamicResource aboutParagraph}" />
-            <TextBlock x:Name="_company" Style="{DynamicResource aboutParagraph}" />
-            <TextBlock x:Name="_aboutDescr" Style="{DynamicResource aboutParagraph}" />
+            <TextBlock x:Name="_copyRight" Style="{DynamicResource aboutParagraph}" />
+            <!--<TextBlock x:Name="_company" Style="{DynamicResource aboutParagraph}" />-->
+            <TextBox x:Name="_aboutDescr" Margin="0,10,0,0"
+                     TextWrapping="Wrap"
+                     Width="395"
+                     Height="305"
+                     IsReadOnly="True"
+                     Background="{DynamicResource popupBackgroundColor}"
+                     Foreground="{DynamicResource fontColor}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" />
         </StackPanel>
         <Border Grid.Row="1" Grid.Column="1" Style="{DynamicResource aboutBorder}">
             <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" HorizontalAlignment="Right">OK</Button>
