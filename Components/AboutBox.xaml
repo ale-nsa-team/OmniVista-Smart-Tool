@@ -28,7 +28,6 @@
             <TextBlock x:Name="_aboutTitle" Style="{DynamicResource aboutTitle}" />
             <TextBlock x:Name="_version" Style="{DynamicResource aboutParagraph}" />
             <TextBlock x:Name="_copyRight" Style="{DynamicResource aboutParagraph}" />
-            <!--<TextBlock x:Name="_company" Style="{DynamicResource aboutParagraph}" />-->
             <TextBox x:Name="_aboutDescr" Margin="0,10,0,0"
                      TextWrapping="Wrap"
                      Width="395"

@@ -42,7 +42,6 @@ namespace PoEWizard.Components
             string version = assembly.GetName().Version.ToString();
             _aboutTitle.Text = assembly.GetCustomAttribute<AssemblyTitleAttribute>().Title;
             _version.Text = "Version " + string.Join(".", version.Split('.').ToList().Take(2));
-            _company.Text = assembly.GetCustomAttribute<AssemblyCompanyAttribute>().Company;
             _copyRight.Text = $"Copyright © {year} ALE USA Inc. All Rights Reserved.";
             _aboutDescr.Text = description + disclamer;
 
