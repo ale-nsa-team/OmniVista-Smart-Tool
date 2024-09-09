@@ -1521,16 +1521,23 @@ namespace PoEWizard
                 int nbLines = 0;
                 foreach (KeyValuePair<string, List<string>> keyVal in cfgChanges)
                 {
-                    if (nbLines++ >= 10)
+                    text.Append("\n - ").Append(keyVal.Key).Append(":");
+                    nbLines++;
+                    if (nbLines >= MAX_NB_LINES_CHANGES_DISPLAYED)
                     {
-                        text.Append(":\n           . . .");
+                        text.Append(":\n                     . . .");
+                        break;
                     }
-                    text.Append("\n - ").Append(keyVal.Key).Append(":\n   ");
-                    nbLines += 2;
                     List<string> changes = keyVal.Value;
                     foreach(string change in changes)
                     {
-                        text.Append(" ").Append(change);
+                        text.Append("\n   ").Append(change);
+                        nbLines++;
+                        if (nbLines >= MAX_NB_LINES_CHANGES_DISPLAYED)
+                        {
+                            text.Append(":\n                     . . .");
+                            break;
+                        }
                     }
                 }
             }

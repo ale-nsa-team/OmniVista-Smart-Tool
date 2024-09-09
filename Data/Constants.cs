@@ -328,7 +328,8 @@ namespace PoEWizard.Data
         public const double MAX_COLLECT_LOGS_RESET_POE_DURATION = 80;
         public const double MAX_COLLECT_LOGS_DURATION = 55;
         // Snapshot configuration changes
-        public const int MAX_NB_SNAPSHOT_SAVED = 20;
+        public const int MAX_NB_SNAPSHOT_SAVED = 50;
+        public const int MAX_NB_LINES_CHANGES_DISPLAYED = 20;
         #endregion
     }
 }
