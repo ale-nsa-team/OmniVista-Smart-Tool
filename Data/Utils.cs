@@ -489,6 +489,28 @@ namespace PoEWizard.Data
             else return MAX_COLLECT_LOGS_WIZARD_DURATION;
         }
 
+        public static void PurgeFiles(string folder, int nbMaxFiles)
+        {
+            if (Directory.Exists(folder))
+            {
+                string[] filesList = new DirectoryInfo(folder).GetFiles().OrderByDescending(f => f.LastWriteTime).Select(f => f.Name).ToArray();
+                int nbFiles = filesList.Length;
+                for (int idx = filesList.Length - 1; idx >= 0; idx--)
+                {
+                    string fPath = Path.Combine(folder, filesList[idx]);
+                    if (File.Exists(fPath))
+                    {
+                        DateTime lastWriteTime = File.GetLastWriteTime(fPath);
+                        if (nbFiles > nbMaxFiles || lastWriteTime < DateTime.Now.AddDays(-MAX_NB_SNAPSHOT_DAYS))
+                        {
+                            File.Delete(fPath);
+                            nbFiles--;
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
 

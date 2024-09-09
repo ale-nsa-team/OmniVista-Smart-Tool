@@ -245,7 +245,7 @@ namespace PoEWizard
                 TextViewer tv = new TextViewer("Configuration Snapshot", device.ConfigSnapshot)
                 {
                     Owner = this,
-                    SaveFilename = device.Name + "-snapshot.txt"
+                    SaveFilename = $"{device.Name}{SNAPSHOT_SUFFIX}"
                 };
                 tv.Show();
             }
@@ -330,6 +330,31 @@ namespace PoEWizard
                 selectedDeviceType = ds.DeviceType;
                 LaunchPoeWizard();
             }
+        }
+
+        private async void ResetPort_Click(object sender, RoutedEventArgs e)
+        {
+            if (selectedPort == null) return;
+            try
+            {
+                DisableButtons();
+                string barText = $"Restarting power on port {selectedPort.Name} ...";
+                ShowInfoBox(barText);
+                ShowProgress(barText);
+                await Task.Run(() => restApiService.RestartPowerOnPort(selectedPort.Name, 60));
+                HideProgress();
+                HideInfoBox();
+                await RefreshChanges();
+                HideInfoBox();
+                await WaitAckProgress();
+            }
+            catch (Exception ex)
+            {
+                HideProgress();
+                HideInfoBox();
+                Logger.Error(ex);
+            }
+            EnableButtons();
         }
 
         private void RefreshSwitch_Click(object sender, RoutedEventArgs e)
@@ -534,6 +559,7 @@ namespace PoEWizard
                 selectedPort = port;
                 selectedPortIndex = _portList.SelectedIndex;
                 _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
+                _btnResetPort.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
             }
         }
 
@@ -651,13 +677,14 @@ namespace PoEWizard
                 restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
+                    string textMsg = $"Disconnecting switch {device.Name}";
                     string confirm = $"disconnecting the switch {device.Name}";
                     stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                    bool save = StopTrafficAnalysis(AbortType.Close, $"Disconnecting switch {device.Name}", ASK_SAVE_TRAFFIC_REPORT, confirm);
+                    bool save = StopTrafficAnalysis(AbortType.Close, textMsg, ASK_SAVE_TRAFFIC_REPORT, confirm);
                     if (!save) return;
                     await WaitSaveTrafficAnalysis();
-                    ShowProgress($"Disconnecting switch {device.Name} ...");
-                    await CloseRestApiService($"Disconnecting switch {device.Name} ...");
+                    ShowProgress($"{textMsg} ...");
+                    await CloseRestApiService($"{textMsg}");
                     SetDisconnectedState();
                     return;
                 }
@@ -734,11 +761,11 @@ namespace PoEWizard
             {
                 if (restApiService != null && !isClosing)
                 {
-                    await GetSyncStatus(title);
+                    string cfgChanges = await GetSyncStatus(title);
                     isClosing = true;
                     if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized)
                     {
-                        if (AuthorizeWriteMemory("Write Memory required"))
+                        if (AuthorizeWriteMemory("Write Memory required", cfgChanges))
                         {
                             DisableButtons();
                             _comImg.Visibility = Visibility.Collapsed;
@@ -995,7 +1022,7 @@ namespace PoEWizard
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.Name}", reportResult));
                 await CheckSwitchScanResult($"Refresh switch {device.Name}", startTime);
-                UpdateConnectedState();
+                RefreshSlotAndPortsView();
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
                     await AskRebootCertified();
@@ -1017,13 +1044,13 @@ namespace PoEWizard
         {
             try
             {
-                await GetSyncStatus(null);
+                string cfgChanges = await GetSyncStatus($"Checking configuration changes on switch {device.Name}");
                 if (device.SyncStatus == SyncStatusType.Synchronized)
                 {
                     ShowMessageBox("Write Memory", $"No configuration changes on switch {device.Name}", MsgBoxIcons.Info, MsgBoxButtons.Ok);
                     return;
                 }
-                if (AuthorizeWriteMemory("Write Memory required"))
+                if (AuthorizeWriteMemory("Write Memory required", cfgChanges))
                 {
                     DisableButtons();
                     await Task.Run(() => restApiService.WriteMemory());
@@ -1432,14 +1459,18 @@ namespace PoEWizard
             ChangeButtonVisibility(true);
             ReselectPort();
             ReselectSlot();
-            if (selectedPort == null) _btnRunWiz.IsEnabled = false;
+            if (selectedPort == null)
+            {
+                _btnRunWiz.IsEnabled = false;
+                _btnResetPort.IsEnabled = false;
+            }
         }
 
         private async void LaunchRebootSwitch()
         {
             try
             {
-                await GetSyncStatus("Rebooting Switch");
+                string cfgChanges = await GetSyncStatus("Rebooting Switch");
                 if (ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo))
                 {
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
@@ -1447,7 +1478,7 @@ namespace PoEWizard
                         ShowMessageBox("Reboot Switch", $"Cannot reboot the switch {device.Name} because it's not certified!", MsgBoxIcons.Error);
                         return;
                     }
-                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory("Reboot Switch"))
+                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory("Reboot Switch", cfgChanges))
                     {
                         await Task.Run(() => restApiService.WriteMemory());
                     }
@@ -1470,19 +1501,31 @@ namespace PoEWizard
             }
         }
 
-        private async Task GetSyncStatus(string title)
+        private async Task<string> GetSyncStatus(string title)
         {
+            string cfgChanges = null;
             if (!string.IsNullOrEmpty(title)) ShowInfoBox($"{title} ...");
-            await Task.Run(() => restApiService?.GetSyncStatus());
+            await Task.Run(() => cfgChanges = restApiService.GetSyncStatus());
             DataContext = null;
             DataContext = device;
             HideInfoBox();
+            return cfgChanges;
         }
 
-        private bool AuthorizeWriteMemory(string title)
+        private bool AuthorizeWriteMemory(string title, string cfgChanges)
         {
-            return ShowMessageBox(title, "Flash memory is not synchronized\nDo you want to save it now?\nIt may take up to 30 sec to execute Write Memory.",
-                                  MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
+            StringBuilder text = new StringBuilder("Flash memory is not synchronized");
+            if (!string.IsNullOrEmpty(cfgChanges))
+            {
+                text.Append("\nSignificant configuration changes:");
+                text.Append(cfgChanges);
+            }
+            else
+            {
+                text.Append("\nNo significant configuration changes.");
+            }
+            text.Append("\nDo you want to save it now?\nIt may take up to 30 sec to execute Write Memory.");
+            return ShowMessageBox(title, text.ToString(), MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
         }
 
         private async Task<string> RebootSwitch(int waitSec)
@@ -1543,6 +1586,7 @@ namespace PoEWizard
         {
             ChangeButtonVisibility(false);
             _btnRunWiz.IsEnabled = false;
+            _btnResetPort.IsEnabled = false;
         }
 
         private void ChangeButtonVisibility(bool val)
@@ -1567,6 +1611,7 @@ namespace PoEWizard
                 _portList.SelectedItem = _portList.Items[selectedPortIndex];
                 _portList.SelectionChanged += PortSelection_Changed;
                 _btnRunWiz.IsEnabled = true;
+                _btnResetPort.IsEnabled = true;
             }
         }
 
@@ -1578,6 +1623,7 @@ namespace PoEWizard
                 _slotsView.SelectedItem = _slotsView.Items[selectedSlotIndex];
                 _slotsView.SelectionChanged += SlotSelection_Changed;
                 _btnRunWiz.IsEnabled = true;
+                _btnResetPort.IsEnabled = true;
             }
         }
 

@@ -3,6 +3,7 @@ using PoEWizard.Device;
 using PoEWizard.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -15,7 +16,6 @@ namespace PoEWizard.Comm
 {
     public class RestApiService
     {
-        private Dictionary<string, object> _response = new Dictionary<string, object>();
         private List<Dictionary<string, string>> _dictList = new List<Dictionary<string, string>>();
         private Dictionary<string, string> _dict = new Dictionary<string, string>();
         private readonly IProgress<ProgressReport> _progress;
@@ -55,13 +55,13 @@ namespace PoEWizard.Comm
                 DateTime startTime = DateTime.Now;
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
-                StartProgressBar($"Connecting to switch {SwitchModel.Name} ...", 25);
-                _progress.Report(new ProgressReport($"Connecting to switch {SwitchModel.Name} ..."));
+                StartProgressBar($"Connecting to switch {SwitchModel.IpAddress} ...", 25);
+                _progress.Report(new ProgressReport($"Connecting to switch {SwitchModel.IpAddress} ..."));
                 RestApiClient.Login();
                 UpdateProgressBar(++progressBarCnt); //  1
-                if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to switch {SwitchModel.Name}!");
+                if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to switch {SwitchModel.IpAddress}!");
                 SwitchModel.IsConnected = true;
-                _progress.Report(new ProgressReport($"Reading system information on switch {SwitchModel.Name}"));
+                _progress.Report(new ProgressReport($"Reading system information on switch {SwitchModel.IpAddress}"));
                 _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_MICROCODE, ParseType.Htable)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromDictionary(_dictList[0], DictionaryType.MicroCode);
                 UpdateProgressBar(++progressBarCnt); //  2
@@ -71,8 +71,16 @@ namespace PoEWizard.Comm
                 _dictList = RunSwitchCommand(new CmdRequest(Command.SHOW_CHASSIS, ParseType.MVTable, DictionaryType.Chassis)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.Chassis);
                 UpdateProgressBar(++progressBarCnt); // 4
-                ScanSwitch($"Connect to switch {SwitchModel.Name}", reportResult);
+                ScanSwitch($"Connect to switch {SwitchModel.IpAddress}", reportResult);
                 LogActivity($"Switch connected", $", duration: {Utils.CalcStringDuration(startTime)}");
+                if (!File.Exists(Path.Combine(Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
+                {
+                    SaveConfigSnapshot();
+                }
+                else
+                {
+                    PurgeConfigSnapshotFiles();
+                }
             }
             catch (Exception ex)
             {
@@ -144,10 +152,25 @@ namespace PoEWizard.Comm
             if (_dict != null) SwitchModel.DefaultGwy = _dict[GATEWAY];
         }
 
-        public void GetSyncStatus()
+        public string GetSyncStatus()
         {
             _dict = RunSwitchCommand(new CmdRequest(Command.SHOW_SYSTEM_RUNNING_DIR, ParseType.MibTable, DictionaryType.SystemRunningDir)) as Dictionary<string, string>;
             SwitchModel.LoadFromDictionary(_dict, DictionaryType.SystemRunningDir);
+            try
+            {
+                SwitchModel.ConfigSnapshot = RunSwitchCommand(new CmdRequest(Command.SHOW_CONFIGURATION, ParseType.NoParsing)) as string;
+                string filePath = Path.Combine(Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}");
+                if (File.Exists(filePath))
+                {
+                    string prevCfgSnapshot = File.ReadAllText(filePath);
+                    if (!string.IsNullOrEmpty(prevCfgSnapshot)) return new ConfigChanges(SwitchModel, prevCfgSnapshot).ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError("Get Snapshot", ex);
+            }
+            return null;
         }
 
         public void GetSnapshot()
@@ -448,12 +471,34 @@ namespace PoEWizard.Comm
                     UpdateProgressBarMessage($"{msg} ({(int)dur} sec) ...", dur);
                 }
                 LogActivity("Write memory completed", $", duration: {Utils.CalcStringDuration(progressStartTime)}");
+                SaveConfigSnapshot();
             }
             catch (Exception ex)
             {
                 SendSwitchError("Write memory", ex);
             }
             CloseProgressBar();
+        }
+
+        private void SaveConfigSnapshot()
+        {
+            try
+            {
+                string folder = Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER);
+                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+                File.WriteAllText(Path.Combine(folder, $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}"), SwitchModel.ConfigSnapshot);
+                PurgeConfigSnapshotFiles();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
+        private void PurgeConfigSnapshotFiles()
+        {
+            string folder = Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER);
+            if (Directory.Exists(folder)) Utils.PurgeFiles(folder, MAX_NB_SNAPSHOT_SAVED); else Directory.CreateDirectory(folder);
         }
 
         public string RebootSwitch(int waitSec)
@@ -698,11 +743,10 @@ namespace PoEWizard.Comm
             try
             {
                 GetSwitchSlotPort(port);
-                if (_wizardSwitchSlot == null) return false;
+                if (_wizardSwitchSlot == null || _wizardSwitchPort == null) return false;
                 RefreshPoEData();
                 UpdatePortData();
                 DateTime startTime = DateTime.Now;
-                if (_wizardSwitchPort == null) return false;
                 if (_wizardSwitchPort.PriorityLevel == priority) return false;
                 _wizardSwitchPort.PriorityLevel = priority;
                 RunSwitchCommand(new CmdRequest(Command.POWER_PRIORITY_PORT, new string[2] { port, _wizardSwitchPort.PriorityLevel.ToString() }));
@@ -720,11 +764,46 @@ namespace PoEWizard.Comm
             return false;
         }
 
+        public void RestartPowerOnPort(string port, int waitSec)
+        {
+            try
+            {
+                GetSwitchSlotPort(port);
+                if (_wizardSwitchSlot == null || _wizardSwitchPort == null) return;
+                string progressMessage = $"Restarting power on port {port}";
+                RefreshPoEData();
+                UpdatePortData();
+                DateTime startTime = DateTime.Now;
+                RestartDeviceOnPort(progressMessage, 10);
+                WaitPortUp(waitSec, !string.IsNullOrEmpty(progressMessage) ? progressMessage : string.Empty);
+                RefreshPortsInformation();
+                ProgressReport progressReport = new ProgressReport("");
+                if (_wizardSwitchPort.Status == PortStatus.Up)
+                {
+                    progressReport.Message = $"Power restarted on port {port}.";
+                    progressReport.Type = ReportType.Info;
+                }
+                else
+                {
+                    progressReport.Message = $"Port {port} failed to restart!";
+                    progressReport.Type = ReportType.Warning;
+                }
+                progressReport.Message += $"\nStatus: {_wizardSwitchPort.Status}, PoE Status: {_wizardSwitchPort.Poe}, Duration: {Utils.CalcStringDuration(startTime, true)}";
+                _progress.Report(progressReport);
+                LogActivity($"Restarted power on port {port}", $"\n{progressReport.Message}");
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError("Change power priority", ex);
+            }
+        }
+
         public void RefreshSwitchPorts()
         {
             GetSystemInfo();
             GetLanPower();
             RefreshPortsInformation();
+            GetMacAndLldpInfo();
         }
 
         private void RefreshPortsInformation()
@@ -1100,12 +1179,12 @@ namespace PoEWizard.Comm
             {
                 if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure)
                 {
-                    error = $"Switch {SwitchModel.Name} login failed (username: {SwitchModel.Login})";
+                    error = $"Switch {(string.IsNullOrEmpty(SwitchModel.Name) ? SwitchModel.IpAddress : SwitchModel.Name)} login failed (username: {SwitchModel.Login})";
                     this.SwitchModel.Status = SwitchStatus.LoginFail;
                 }
                 else
                 {
-                    error = $"Switch {SwitchModel.Name} unreachable";
+                    error = $"Switch {(string.IsNullOrEmpty(SwitchModel.Name) ? SwitchModel.IpAddress : SwitchModel.Name)} unreachable";
                     this.SwitchModel.Status = SwitchStatus.Unreachable;
                 }
             }
