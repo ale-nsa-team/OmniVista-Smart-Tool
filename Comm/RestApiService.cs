@@ -77,6 +77,10 @@ namespace PoEWizard.Comm
                 {
                     SaveConfigSnapshot();
                 }
+                else
+                {
+                    PurgeConfigSnapshotFiles();
+                }
             }
             catch (Exception ex)
             {
@@ -481,21 +485,20 @@ namespace PoEWizard.Comm
             try
             {
                 string folder = Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER);
-                string filePath = Path.Combine(folder, $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}");
-                File.WriteAllText(filePath, SwitchModel.ConfigSnapshot);
-                if (Directory.Exists(folder))
-                {
-                    Utils.PurgeFiles(filePath, MAX_NB_SNAPSHOT_SAVED);
-                }
-                else
-                {
-                    Directory.CreateDirectory(folder);
-                }
+                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+                File.WriteAllText(Path.Combine(folder, $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}"), SwitchModel.ConfigSnapshot);
+                PurgeConfigSnapshotFiles();
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
             }
+        }
+
+        private void PurgeConfigSnapshotFiles()
+        {
+            string folder = Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER);
+            if (Directory.Exists(folder)) Utils.PurgeFiles(folder, MAX_NB_SNAPSHOT_SAVED); else Directory.CreateDirectory(folder);
         }
 
         public string RebootSwitch(int waitSec)

@@ -330,6 +330,7 @@ namespace PoEWizard.Data
         // Snapshot configuration changes
         public const int MAX_NB_SNAPSHOT_SAVED = 50;
         public const int MAX_NB_LINES_CHANGES_DISPLAYED = 20;
+        public const int MAX_NB_SNAPSHOT_DAYS = 30;
         #endregion
     }
 }
