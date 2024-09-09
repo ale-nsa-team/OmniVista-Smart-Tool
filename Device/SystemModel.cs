@@ -75,7 +75,7 @@ namespace PoEWizard.Device
             var props = this.GetType().GetProperties();
             foreach (var prop in props)
             {
-                if (prop.GetValue(this, null) != prop.GetValue(orig, null))
+                if ((string)prop.GetValue(this, null) != (string)prop.GetValue(orig, null))
                     changes.Add(prop);
             }
             return changes;
