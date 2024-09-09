@@ -112,7 +112,7 @@
                                 <RepeatButton Template="{StaticResource scroll_background}" Command="ScrollBar.LineDownCommand" />
                             </Track.IncreaseRepeatButton>
                             <Track.Thumb>
-                                <Thumb Style="{StaticResource scroll_thumb_style}" >
+                                <Thumb Style="{StaticResource scroll_thumb_style}">
                                 </Thumb>
                             </Track.Thumb>
                         </Track>
@@ -510,7 +510,7 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
     <!-- end menu style-->
-    
+
     <ControlTemplate x:Key="validationTemplate">
         <Grid>
             <Ellipse Fill="Red" Opacity="0.8" Width="12" Height="12"
@@ -693,7 +693,7 @@
         <Setter Property="Margin" Value="0,0,0,4" />
         <Setter Property="FontSize" Value="14" />
     </Style>
-    
+
     <Style x:Key="fileBox" TargetType="RichTextBox">
         <Setter Property="Background" Value="{StaticResource popupBackgroundColor}" />
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
@@ -712,6 +712,8 @@
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="Margin" Value="0,10,10,5" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible" />
     </Style>
 
     <Style TargetType="TextBlock" x:Key="popupTitle">
@@ -728,7 +730,7 @@
                 <Setter Property="Foreground" Value="{StaticResource fontColor}" />
                 <Setter Property="Background" Value="{StaticResource barBackground}" />
             </Style>
-        </Style.Resources>        
+        </Style.Resources>
     </Style>
 
     <Style TargetType="TextBlock" x:Key="devToolTip">
@@ -742,7 +744,7 @@
             </Style>
         </Style.Resources>
     </Style>
-    
+
     <Style TargetType="Button" x:Key="defaultButton">
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Background" Value="{StaticResource buttonGradientBrush}"/>
