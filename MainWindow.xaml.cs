@@ -761,7 +761,7 @@ namespace PoEWizard
             {
                 if (restApiService != null && !isClosing)
                 {
-                    Dictionary<string, List<string>> cfgChanges = await GetSyncStatus(title);
+                    string cfgChanges = await GetSyncStatus(title);
                     isClosing = true;
                     if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized)
                     {
@@ -1044,7 +1044,7 @@ namespace PoEWizard
         {
             try
             {
-                Dictionary<string, List<string>> cfgChanges = await GetSyncStatus($"Checking configuration changes on switch {device.Name}");
+                string cfgChanges = await GetSyncStatus($"Checking configuration changes on switch {device.Name}");
                 if (device.SyncStatus == SyncStatusType.Synchronized)
                 {
                     ShowMessageBox("Write Memory", $"No configuration changes on switch {device.Name}", MsgBoxIcons.Info, MsgBoxButtons.Ok);
@@ -1470,7 +1470,7 @@ namespace PoEWizard
         {
             try
             {
-                Dictionary<string, List<string>> cfgChanges = await GetSyncStatus("Rebooting Switch");
+                string cfgChanges = await GetSyncStatus("Rebooting Switch");
                 if (ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo))
                 {
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
@@ -1501,9 +1501,9 @@ namespace PoEWizard
             }
         }
 
-        private async Task<Dictionary<string, List<string>>> GetSyncStatus(string title)
+        private async Task<string> GetSyncStatus(string title)
         {
-            Dictionary<string, List<string>> cfgChanges = new Dictionary<string, List<string>>();
+            string cfgChanges = null;
             if (!string.IsNullOrEmpty(title)) ShowInfoBox($"{title} ...");
             await Task.Run(() => cfgChanges = restApiService.GetSyncStatus());
             DataContext = null;
@@ -1512,34 +1512,13 @@ namespace PoEWizard
             return cfgChanges;
         }
 
-        private bool AuthorizeWriteMemory(string title, Dictionary<string, List<string>> cfgChanges)
+        private bool AuthorizeWriteMemory(string title, string cfgChanges)
         {
             StringBuilder text = new StringBuilder("Flash memory is not synchronized");
-            if (cfgChanges.Count > 0)
+            if (!string.IsNullOrEmpty(cfgChanges))
             {
                 text.Append("\nSignificant configuration changes:");
-                int nbLines = 0;
-                foreach (KeyValuePair<string, List<string>> keyVal in cfgChanges)
-                {
-                    text.Append("\n - ").Append(keyVal.Key).Append(":");
-                    nbLines++;
-                    if (nbLines >= MAX_NB_LINES_CHANGES_DISPLAYED)
-                    {
-                        text.Append(":\n                     . . .");
-                        break;
-                    }
-                    List<string> changes = keyVal.Value;
-                    foreach(string change in changes)
-                    {
-                        text.Append("\n   ").Append(change);
-                        nbLines++;
-                        if (nbLines >= MAX_NB_LINES_CHANGES_DISPLAYED)
-                        {
-                            text.Append(":\n                     . . .");
-                            break;
-                        }
-                    }
-                }
+                text.Append(cfgChanges);
             }
             else
             {

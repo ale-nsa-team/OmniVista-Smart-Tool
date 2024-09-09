@@ -148,16 +148,10 @@ namespace PoEWizard.Comm
             if (_dict != null) SwitchModel.DefaultGwy = _dict[GATEWAY];
         }
 
-        public Dictionary<string, List<string>> GetSyncStatus()
+        public string GetSyncStatus()
         {
             _dict = RunSwitchCommand(new CmdRequest(Command.SHOW_SYSTEM_RUNNING_DIR, ParseType.MibTable, DictionaryType.SystemRunningDir)) as Dictionary<string, string>;
             SwitchModel.LoadFromDictionary(_dict, DictionaryType.SystemRunningDir);
-            return GetConfigChanges();
-        }
-
-        private Dictionary<string, List<string>> GetConfigChanges()
-        {
-            Dictionary<string, List<string>> diffTable = new Dictionary<string, List<string>>();
             try
             {
                 SwitchModel.ConfigSnapshot = RunSwitchCommand(new CmdRequest(Command.SHOW_CONFIGURATION, ParseType.NoParsing)) as string;
@@ -165,38 +159,14 @@ namespace PoEWizard.Comm
                 if (File.Exists(filePath))
                 {
                     string prevCfgSnapshot = File.ReadAllText(filePath);
-                    if (!string.IsNullOrEmpty(prevCfgSnapshot)) diffTable = GetConfigDifferences(prevCfgSnapshot);
+                    if (!string.IsNullOrEmpty(prevCfgSnapshot)) return new ConfigChanges(SwitchModel, prevCfgSnapshot).ToString();
                 }
             }
             catch (Exception ex)
             {
                 SendSwitchError("Get Snapshot", ex);
             }
-            return diffTable;
-        }
-
-        private Dictionary<string, List<string>> GetConfigDifferences(string prevCfgSnapshot)
-        {
-            Dictionary<string, List<string>> diffTable = new Dictionary<string, List<string>>();
-            Dictionary<string, List<string>> currConfig = CliParseUtils.ParseSwitchConfigChanges(SwitchModel.ConfigSnapshot);
-            Dictionary<string, List<string>> prevConfig = CliParseUtils.ParseSwitchConfigChanges(prevCfgSnapshot);
-            foreach (KeyValuePair<string, List<string>> keyVal in currConfig)
-            {
-                List<string> currList = keyVal.Value;
-                List<string> diff;
-                if (prevConfig.ContainsKey(keyVal.Key))
-                {
-                    List<string> prevList = prevConfig[keyVal.Key];
-                    if (prevList.Count > currList.Count) diff = prevList.Except(currList).ToList();
-                    else diff = currList.Except(prevList).ToList();
-                }
-                else
-                {
-                    diff = currList;
-                }
-                if (diff.Count > 0) diffTable[keyVal.Key] = diff;
-            }
-            return diffTable;
+            return null;
         }
 
         public void GetSnapshot()
