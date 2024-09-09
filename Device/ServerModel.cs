@@ -23,7 +23,7 @@ namespace PoEWizard.Device
         public string Ntp2 { get; set; }
         public string Ntp3 { get; set; }
         public bool IsTimezone { get; set; } = false;
-        public string[] Timezones { get; } = Constants.timezones;
+        public List<string> Timezones { get; } = Constants.timezones;
         public string Timezone { get; set; } = Constants.timezones[0];
 
         public ServerModel() { }
@@ -67,7 +67,7 @@ namespace PoEWizard.Device
                 {
                     if (IsTimezone)
                     {
-                        cmdList.Add(new CmdRequest(Command.SET_SYSTEM_TIMEZONE, Timezone));
+                        cmdList.Add(new CmdRequest(Command.SYSTEM_TIMEZONE, Timezone));
                     }
                 }
             }

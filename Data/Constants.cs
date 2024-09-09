@@ -97,7 +97,7 @@ namespace PoEWizard.Data
         #endregion
 
         #region strings
-        public static readonly string[] timezones =
+        public static readonly List<string> timezones = new List<string>()
         {
             "EST", "CST", "PST", "MST", "AKST", "AST", "HST", "UTC", "GMT", "CET", "NST"
         };

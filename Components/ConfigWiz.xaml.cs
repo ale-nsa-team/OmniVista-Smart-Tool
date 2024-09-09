@@ -67,7 +67,7 @@ namespace PoEWizard.Components
         private async void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
             ShowInfoBox("Loading current parameters, please wait...");
-            await Task.Run(() => 
+            await Task.Run(() =>
             {
                 GetServerData();
                 GetFeaturesData();
@@ -140,7 +140,7 @@ namespace PoEWizard.Components
         #region Private Methods
         private void NavigateToPage()
         {
-            Page page = null; 
+            Page page = null;
             switch (pageNo)
             {
                 case 1:
@@ -213,6 +213,10 @@ namespace PoEWizard.Components
                     if (i == 2) srvData.Ntp3 = dicList[i].TryGetValue(NTP_SERVER, out string v) ? v : "";
                 }
             }
+            dict = restSrv.RunSwitchCommand(new CmdRequest(Command.SYSTEM_TIMEZONE, ParseType.Vtable, "")) as Dictionary<string, string>;
+            string tz = dict.Keys.FirstOrDefault();
+            if (!srvData.Timezones.Contains(tz)) timezones.Prepend(tz);
+            srvData.Timezone = tz;
         }
 
         private string GetDnsAddr(string dns)
@@ -222,7 +226,7 @@ namespace PoEWizard.Components
 
         private void GetFeaturesData()
         {
-            List<Dictionary<string,string>> dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_DHCP_CONFIG, ParseType.MibTable, DictionaryType.MibList)) as List<Dictionary<string, string>>;
+            List<Dictionary<string, string>> dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_DHCP_CONFIG, ParseType.MibTable, DictionaryType.MibList)) as List<Dictionary<string, string>>;
             if (dicList?.Count > 0) features.IsDhcpRelay = dicList[0][DHCP_ENABLE] == "1";
             if (features.IsDhcpRelay)
             {
@@ -264,16 +268,16 @@ namespace PoEWizard.Components
             }
 
             dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_SNMP_COMMUNITY, ParseType.Htable)) as List<Dictionary<string, string>>;
-            if ( dicList.Count > 0)
+            if (dicList.Count > 0)
             {
-                foreach(var dic in dicList)
+                foreach (var dic in dicList)
                 {
                     snmpData.Communities.Add(new SnmpCommunity(dic[SNMP_COMMUNITY], dic["user name"], dic[SNMP_STATUS]));
                 }
             }
 
             dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_SNMP_STATION, ParseType.Htable)) as List<Dictionary<string, string>>;
-            if ( dicList.Count > 0)
+            if (dicList.Count > 0)
             {
                 foreach (var dic in dicList)
                 {
