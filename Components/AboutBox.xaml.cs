@@ -11,10 +11,11 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class AboutBox : Window
     {
-        private string description = "This application allows you to troubleshoot PoE issues on an Alcatel-Lucent Enterprise OmniSwitch®, " +
-            "equipped with AOS 8 version.\nThe application communicates with the switch via REST API, to gather information on the power " +
-            "supplies and PoE ports, and allows the user to perform some configuration changes to mitigate common PoE issues. " +
-            "In case the wizard is unable to fix the problem, it allows the user to collect relevant information to be sent to TAC.\r\n";
+        private string description = "This application allows you to apply basic cocnfiguration and troubleshoot PoE issues on an " + 
+            "Alcatel-Lucent Enterprise OmniSwitch®, equipped with AOS 8 version.\nThe application communicates with the switch via " + 
+            "REST API, to gather information on the power supplies and PoE ports, and allows the user to perform some configuration " + 
+            "changes to mitigate common PoE issues. In case the wizard is unable to fix the problem, it allows the user to collect " + 
+            "relevant information to be sent to TAC.\r\n";
 
         private string disclamer = "\r\nPermission to use, copy, modify, and distribute this source code, product, " +
             "and its documentation without a fee and without a signed license agreement is hereby granted, provided that the copyright notice, this " +

@@ -44,14 +44,28 @@
     </style>
 </head>
 <body>
-    <p class="header">Power over Ethernet (PoE) Wizard Help</p>
+    <p class="header">Alcatel-Lucent Enterprise Installer's Toolkit Help</p>
     <p>
         Power over Ethernet (PoE) is a technology that allows Ethernet cables to transmit both data and electrical power to devices over a single network cable.
         This simplifies the installation of networked devices such as wireless access points, IP cameras, VoIP phones, and other network devices by eliminating
         the need for separate power supplies.
         Before we start, the minimum AOS supported by this Wizard is 8.9 R1. Switches running AOS 5.X or 6.X are not supported.
-        The PoE Wizard attempts to diagnose and repair PoE devices that will not boot.
+        The Application attempts to diagnose and repair PoE devices that will not boot.
     </p>
+    <p class="topic">Help Topoics</p>
+    <ul>
+        <li><a href="#connection">Connectig to a Switch</a></li>
+        <li><a href="#wizard">Running the PoE Wizard</a></li>
+        <li><a href="#cfg-wiz">Configuration Wizard</a></li>
+        <li><a href="#faq">Frequently Asked Questions</a></li>
+        <li><a href="#support">Obtaining more support</a></li>
+        <li><a href="#std">PoE Standards</a></li>
+        <li><a href="#hp">High Power PoE</a></li>
+        <li><a href="#neg">PoE Detection and Class Negotiation</a></li>
+        <li><a href="#lldp">Role of LLDP in PoE</a></li>
+        <li><a href="#poe-tech">Additional Technologies Related to PoE</a></li>
+    </ul>
+    <p id="connection" class="topic">Connecting to a Switch</p>
     <p> Start by clicking Connection at the upper left of the tool and select Switch.</p>
     <img src="connection.png" />
     <p>
@@ -60,7 +74,7 @@
     </p>
     <img src="login.png" />
     <p>
-        Upon successful completion of the login, the PoE Wizard will gather important information about the switch
+        Upon successful completion of the login, the Application will gather important information about the switch
         including the serial number, model, software release and more.
     </p>
     <img src="connected.png" />
@@ -96,7 +110,7 @@
         <li>Conflict: Two PoE ports have been connected and failed to disable PoE on one port.</li>
         <li>NoPoe: Port doesn't support PoE.</li>
     </ul>
-    <p class="title">Running the Wizard on a Port</p>
+    <p id="wizard" class="title">Running the Wizard on a Port</p>
     <p>
         The Wizard attempts to repair a PoE device that is physically connected to an ALE switch but not booting.
         In this example a 3rd party PoE splitter was connected to port 48 which supplies 802.3bt power and an IP camera that
@@ -121,11 +135,66 @@
         any extra information such as name, IP address, or firmware.
     </p>
     <img src="wiz-result.png" />
-    <p>Exiting the PoE Wizard will prompt you to save your changes. Click OK and wait for it to be completed. This can take some time</p>
+    <p>Exiting the Application will prompt you to save your changes. Click OK and wait for it to be completed. This can take some time</p>
     <img src="save-prompt.png" />
     <br />
     <img src="save-progress.png" />
-    <p class="header">Frequently Asked Questions</p>
+    <p id="cfg-wiz" class="header">Configuration Wizard</p>
+    <p>
+        If you need to reconfigure your switch, starting from scratch and adding some basic recommended setup,
+        you can do so by going to the Configuration menu option.
+    </p>
+    <img src="config-wiz.png" />
+    <p class="topic">Factory Reset</p>
+    <p>
+        Use this options to reset your switch configuration to factory default. The wizard will completely erase the switch configuration
+        and will set vlan 1 IP inteface with the same IP address you used to connect to the switch originally, so you can reconnect to
+        it with the application after the switch reboots. You can then proceed to run the congif wizard to add some additional configuration.
+    </p>
+    <p class="topic">Basic Config Wizard</p>
+    <p>The wizard presents a few configuration windows, you can navigate back and forth using the "Next >" and "< Back" buttons.</p>
+    <p>The first window lets you configure the management IP address and netmask, as well as some switch system parameters</p>
+    <img src="cfg-wiz-sys.png" />
+    <p>
+        Clicking "Next >" will nagivate to the next window where you can configure the Default Gateway, DNS and NTP servers.
+        When NTP option is enabled, you can select the switch's timezone from the drop-down menu.
+    </p>
+    <img src="cfg-wiz-srv.png" />
+    <p>
+        Click "Next >" to navigate to the next window, which allows you to configure some features, like Disabling insecure protocols
+        (telnet, ftp) enable SSH, etc. Note that if you toggle the Enable PoE switch off, you will be prompted to confirm your action,
+        because it will turn off power on all PoE ports on the switch. If you confirm, the operation will take effect after you press
+        the Submit button.
+    </p>
+    <img src="cfg-wiz-feature.png" />
+    <p>The last page on the configuration wizard allows you to configure the switch to send SNMP traps to trap receivers</p>
+    <img src="cfg-wiz-snmp.png" />
+    <p>To add an snmp user, click the "+" button to the left of the table's '"Name" column</p>
+    <img src="cfg-wiz-add-user.png" />
+    <p>Enter the username and password and click Create</p>
+    <p>To delete a user, click the "x" button on the left of the username on the table.</p>
+    <p>If you are using SNMP v2, you can create a community by clicking the "+" sign on the Communities table</p>
+    <img src="cfg-wiz-add-comm.png" />
+    <p>
+        Since on the ALE OmniWwitches an SNMP community is associated with a user, enter the community name and select a previously
+        created user from the drop-down menu, before clicking Create.
+    </p>
+    <p>To delete a community, click the "x" button to the left of the community name on the table</p>
+    <p>To add an SNMP Trap Receiver, click the "+" button to the left of the Ip Address column on the Trap Receivers table</p>
+    <img src="cfg-wiz-recv.png" />
+    <p>
+        Select the required SNMP Version (v2 or v3) and enter the IP Address of the trap receiver.
+        If you selected v2, select the community from the drop-down menu, if you selected v3, select the user from the drop-down menu.
+    </p>
+    <p>
+        Note that, to simplify the configuration, the wizard sets the Authentication Protocol as MD5 and the Encryption Protocol
+        as DES, and that's what needs to be configured on the receiver side. The primary key assiciated to the encryption protocol is
+        configured the same as the user's password.
+    </p>
+    <p>
+        After your are done with the configuration, click Submit for the wizard to apply the configuration to the OmniSwitch.
+    </p>
+    <p id="faq" class="header">Frequently Asked Questions</p>
     <p class="title">How do I know if my switch supports PoE?  </p>
     <p>ALE PoE capable switches will have a P in the model number.</p>
     <p class="title">How do I increase the PoE port maximum?</p>
@@ -148,19 +217,19 @@
     <p>802.bt must be supported and enabled on the switch for auto class detection to function correctly.</p>
     <p class="title">How do I accomplish long term monitoring of my ALE network?</p>
     <p>
-        The PoE Wizard is designed to assist with new installations or a major refresh. Long term monitoring of ALE networks
+        The Application is designed to assist with new installations or a major refresh. Long term monitoring of ALE networks
         is available with our OmniVista Network Management System and plugins for either Milestone or Genetec:
         https://www.al-enterprise.com/en/products/network-management-security
     </p>
     <p class="title">Are there any more generalized network scanning tools available?</p>
     <p>
-        The PoE Wizard is designed to assist only with PoE capable devices connected to an ALE switch.
+        The Application is designed to assist only with PoE capable devices connected to an ALE switch.
         There are free to use general networking scanning tools available on the Internet, however these
         are not supplied or supported by Alcatel Lucent Enterprise and ALE assumes no liability for their use.
         Advanced IP Scanner can discover networked devices: https://www.advanced-ip-scanner.com/
         Nmap can scan individual devices: https://nmap.org/downloadad
     </p>
-    <p class="header">Obtaining more support</p>
+    <p id="support" class="header">Obtaining more support</p>
     <p>
         Complete Alcatel Lucent Enterprise AOS manuals can be downloaded, and no login or registration is required:
         https://www.spacewalkers.com/feed/article/release-note-aos-89R4
@@ -171,7 +240,7 @@
         Learn more about Alcatel Lucent Enterprise’s commitment to the Video Surveillance industry including ultra rapid switch
         configurations using Lighting Config, Milestone and Genetec plugins and more at: https://linktr.ee/Alcatel.Lucent.Enterprise
     </p>
-    <p class="header">PoE Standards</p>
+    <p id="std" class="header">PoE Standards</p>
     <p>PoE standards are defined by the Institute of Electrical and Electronics Engineers (IEEE) and include</p>
     <ul>
         <li>
@@ -203,14 +272,14 @@
             </ul>
         </li>
     </ul>
-    <p class="header">High Power PoE</p>
+    <p id="hp" class="header">High Power PoE</p>
     <p>
         ALE 6860E and 6865 switches provide intermediate power levels, specifically between 60 and 75 watts.
         They were designed before the finalization of IEEE 802.3bt standards, cater to devices that require
         more power than PoE+ but less than the highest levels of PoE++. The 4-pair option must be set to
         deliver power High PoE, similar to Type 3 and Type 4 and the wizard will set this for you.
     </p>
-    <p class="header">PoE Detection and Class Negotiation</p>
+    <p id="neg" class="header">PoE Detection and Class Negotiation</p>
     <p class="title">PoE Detection</p>
     <p>
         Before delivering power, the switch must ensure that the connected device is PoE-compatible to prevent damage
@@ -258,7 +327,7 @@
         <li>Classes 5 to 8: Defined in IEEE 802.3bt for higher power levels, supporting up to 100 watts.</li>
     </ul>
     <img src="poe-table.png" />
-    <p>The PoE Wizard will display both PoE class and the maximum wattage supported by that class for you.</p>
+    <p>The Application will display both PoE class and the maximum wattage supported by that class for you.</p>
     <p class="title">Negotiation Process</p>
     <ul>
         <li>
@@ -280,7 +349,7 @@
         </li>
     </ul>
     <p>You can read more about Power over Ethernet on Wikipedia: https://en.wikipedia.org/wiki/Power_over_Ethernet</p>
-    <p class="header">Role of LLDP in PoE</p>
+    <p id="lldp" class="header">Role of LLDP in PoE</p>
     <p>
         The Link Layer Discovery Protocol (LLDP) is an industry-standard, vendor-neutral protocol used by network devices
         to advertise information about themselves to other devices on the same network. This information includes device
@@ -369,7 +438,7 @@
         You can read more about LLDP on the Wikipedia page: https://en.wikipedia.org/wiki/LLDP and a nice EE Times tutorial
         can be found here: https://www.eetimes.com/tutorial-on-the-link-layer-discovery-protocol/
     </p>
-    <p class="header">Additional Technologies Related to PoE</p>
+    <p id="poe-tech" class="header">Additional Technologies Related to PoE</p>
     <p class="title">lanpower power-over-hdmi</p>
     <p>
         The ALE OS6860E-P24Z8 has a special PoE setting that may be required in rare cases.

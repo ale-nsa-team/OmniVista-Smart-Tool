@@ -43,7 +43,7 @@ namespace PoEWizard.Components
                     };
                     if (dlg.ShowDialog() == false)
                     {
-                        cb.IsChecked = false;
+                        cb.IsChecked = !cb.IsChecked;
                     }
                 }
             }
