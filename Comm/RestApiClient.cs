@@ -102,7 +102,7 @@ namespace PoEWizard.Comm
                         this._connected = false;
                         if (!string.IsNullOrEmpty(xmlDoc.InnerXml) && xmlDoc.InnerXml.ToLower().Contains("unsupported"))
                         {
-                            throw new SwitchRejectConnection($"Switch {this._ip_address} doesn't support Rest Api");
+                            throw NotSupportApiException();
                         }
                         throw new SwitchAuthenticationFailure("Invalid response body - token not found!");
                     }
@@ -145,6 +145,7 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 string error = ex.Message;
+                string stackTrace = ex.StackTrace;
                 if (ex.InnerException != null)
                 {
                     error = ex.InnerException.Message;
@@ -154,11 +155,12 @@ namespace PoEWizard.Comm
                         if (error.ToLower().Contains("unable to connect"))
                         {
                             error = $"Failed to establish a connection to {this._ip_address}!";
-                            throw new SwitchConnectionFailure(error);
                         }
+                        if (!string.IsNullOrEmpty(ex.InnerException.InnerException.StackTrace)) stackTrace = ex.InnerException.InnerException.StackTrace;
                     }
                 }
-                throw new Exception(error);
+                Logger.Error($"{error}\n{stackTrace}");
+                throw NotSupportApiException();
             }
         }
 
@@ -172,8 +174,13 @@ namespace PoEWizard.Comm
             }
             catch
             {
-                throw new SwitchRejectConnection($"Switch {this._ip_address} doesn't support Rest Api");
+                throw NotSupportApiException();
             }
+        }
+
+        private SwitchRejectConnection NotSupportApiException()
+        {
+            return new SwitchRejectConnection($"Switch {this._ip_address} doesn't support Alcatel Lucent Enterprise Rest Api");
         }
 
         private void RemoveToken()
@@ -230,6 +237,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
+                Logger.Error(ex);
                 if (ex.InnerException is HttpRequestException) throw new SwitchConnectionFailure("Switch connection failure!");
                 else throw ex;
             }

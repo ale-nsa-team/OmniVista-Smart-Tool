@@ -40,7 +40,7 @@ namespace PoEWizard.Components
             int year = DateTime.Now.Year;
             Assembly assembly = Assembly.GetExecutingAssembly();
             string version = assembly.GetName().Version.ToString();
-            _aboutTitle.Text = assembly.GetCustomAttribute<AssemblyTitleAttribute>().Title;
+            _aboutTitle.Text = "Alcatel Lucent Enterprise Installer's Toolkit";
             _version.Text = "Version " + string.Join(".", version.Split('.').ToList().Take(2));
             _copyRight.Text = $"Copyright © {year} ALE USA Inc. All Rights Reserved.";
             _aboutDescr.Text = description + disclamer;

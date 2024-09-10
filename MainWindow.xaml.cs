@@ -334,11 +334,16 @@ namespace PoEWizard
 
         private async void ResetPort_Click(object sender, RoutedEventArgs e)
         {
+            string title = $"Restarting power on port {selectedPort.Name}";
             if (selectedPort == null) return;
             try
             {
+                if (!ShowMessageBox(title, $"Are you sure you want to reset the port {selectedPort.Name} of switch {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo))
+                {
+                    return;
+                }
                 DisableButtons();
-                string barText = $"Restarting power on port {selectedPort.Name} ...";
+                string barText = $"{title} ...";
                 ShowInfoBox(barText);
                 ShowProgress(barText);
                 await Task.Run(() => restApiService.RestartPowerOnPort(selectedPort.Name, 60));

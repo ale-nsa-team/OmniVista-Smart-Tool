@@ -5,8 +5,8 @@
        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
        xmlns:local="clr-namespace:PoEWizard.Components"
        mc:Ignorable="d"
-        Loaded="OnWindowLoaded"
-       Title="PoE Wizard Help" Height="400" Width="450" WindowStyle="SingleBorderWindow" ShowInTaskbar="False">
+       Loaded="OnWindowLoaded"
+       Title="Alcatel Lucent Enterprise Installer's Toolkit Help" Height="400" Width="450" WindowStyle="SingleBorderWindow" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
