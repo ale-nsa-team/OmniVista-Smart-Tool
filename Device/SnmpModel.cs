@@ -104,6 +104,7 @@ namespace PoEWizard.Device
 
         public bool HasChanges(SnmpModel orig)
         {
+            if (orig == null) return false;
             bool usr = this.Users.Count != orig.Users.Count;
             bool comm = this.Communities.Count != orig.Communities.Count;
             bool st = this.Stations.Count != orig.Stations.Count;

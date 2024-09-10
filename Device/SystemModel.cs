@@ -72,11 +72,14 @@ namespace PoEWizard.Device
         private List<PropertyInfo> GetChanges(SystemModel orig)
         {
             List<PropertyInfo> changes = new List<PropertyInfo>();
-            var props = this.GetType().GetProperties();
-            foreach (var prop in props)
+            if (orig != null)
             {
-                if ((string)prop.GetValue(this, null) != (string)prop.GetValue(orig, null))
-                    changes.Add(prop);
+                var props = this.GetType().GetProperties();
+                foreach (var prop in props)
+                {
+                    if ((string)prop.GetValue(this, null) != (string)prop.GetValue(orig, null))
+                        changes.Add(prop);
+                }
             }
             return changes;
         }

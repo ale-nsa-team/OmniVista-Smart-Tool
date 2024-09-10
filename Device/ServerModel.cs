@@ -90,15 +90,18 @@ namespace PoEWizard.Device
         private List<PropertyInfo> GetChanges(ServerModel orig)
         {
             List<PropertyInfo> changes = new List<PropertyInfo>();
-            var props = this.GetType().GetProperties();
-            foreach (var prop in props)
+            if (orig != null)
             {
-                object val = prop.GetValue(this, null);
-                if (val?.GetType() == typeof(Boolean))
+                var props = this.GetType().GetProperties();
+                foreach (var prop in props)
                 {
-                    if ((bool)val != (bool)prop.GetValue(orig, null)) changes.Add(prop);
+                    object val = prop.GetValue(this, null);
+                    if (val?.GetType() == typeof(Boolean))
+                    {
+                        if ((bool)val != (bool)prop.GetValue(orig, null)) changes.Add(prop);
+                    }
+                    else if (val != prop.GetValue(orig, null)) changes.Add(prop);
                 }
-                else if (val != prop.GetValue(orig, null)) changes.Add(prop);
             }
             return changes;
         }
