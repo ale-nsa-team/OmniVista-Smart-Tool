@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>PoE Wizard Help</title>
+    <title>Alcatel-Lucent Enterprise Installer's Tookit Help Help</title>
     <style type="text/css">
         body {
             font-family: sans-serif;
@@ -44,18 +44,19 @@
     </style>
 </head>
 <body>
-    <p class="header">Power over Ethernet (PoE) Wizard Help</p>
+    <p class="header">Alcatel-Lucent Enterprise Installer's Toolkit Help</p>
     <p>
         Power over Ethernet (PoE) is a technology that allows Ethernet cables to transmit both data and electrical power to devices over a single network cable. 
         This simplifies the installation of networked devices such as wireless access points, IP cameras, VoIP phones, and other network devices by eliminating 
         the need for separate power supplies.
         Before we start, the minimum AOS supported by this Wizard is 8.9 R1. Switches running AOS 5.X or 6.X are not supported.
-        The PoE Wizard attempts to diagnose and repair PoE devices that will not boot. 
+        The Application attempts to diagnose and repair PoE devices that will not boot. 
     </p>
     <p class="topic">Help Topoics</p>
     <ul>
         <li><a href="#connection">Connectig to a Switch</a></li>
-        <li><a href="#wizard">Running the Wizard</a></li>
+        <li><a href="#wizard">Running the PoE Wizard</a></li>
+        <li><a href="#cfg-wiz">Configuration Wizard</a></li>
         <li><a href="#faq">Frequently Asked Questions</a></li>
         <li><a href="#support">Obtaining more support</a></li>
         <li><a href="#std">PoE Standards</a></li>
@@ -73,7 +74,7 @@
     </p>
     <img src="login.png" />
     <p>
-        Upon successful completion of the login, the PoE Wizard will gather important information about the switch 
+        Upon successful completion of the login, the Application will gather important information about the switch 
         including the serial number, model, software release and more.
     </p>
     <img src="connected.png" />
@@ -134,7 +135,7 @@
         any extra information such as name, IP address, or firmware.
     </p>
     <img src="wiz-result.png" />
-    <p>Exiting the PoE Wizard will prompt you to save your changes. Click OK and wait for it to be completed. This can take some time</p>
+    <p>Exiting the Application will prompt you to save your changes. Click OK and wait for it to be completed. This can take some time</p>
     <img src="save-prompt.png" />
     <br />
     <img src="save-progress.png" />
@@ -153,8 +154,46 @@
     <p class="topic">Basic Config Wizard</p>
     <p>The wizard presents a few configuration windows, you can navigate back and forth using the "Next >" and "< Back" buttons.</p>
     <p>The first window lets you configure the management IP address and netmask, as well as some switch system parameters</p>
-    <img src="cfg-wiz-sys" />
-
+    <img src="cfg-wiz-sys.png" />
+    <p>
+        Clicking "Next >" will nagivate to the next window where you can configure the Default Gateway, DNS and NTP servers. 
+        When NTP option is enabled, you can select the switch's timezone from the drop-down menu.
+    </p>
+    <img src="cfg-wiz-srv.png" />
+    <p>
+        Click "Next >" to navigate to the next window, which allows you to configure some features, like Disabling insecure protocols 
+        (telnet, ftp) enable SSH, etc. Note that if you toggle the Enable PoE switch off, you will be prompted to confirm your action, 
+        because it will turn off power on all PoE ports on the switch. If you confirm, the operation will take effect after you press 
+        the Submit button.
+    </p>
+    <img src="cfg-wiz-feature.png" />
+    <p>The last page on the configuration wizard allows you to configure the switch to send SNMP traps to trap receivers</p>
+    <img src="cfg-wiz-snmp.png" />
+    <p>To add an snmp user, click the "+" button to the left of the table's '"Name" column</p>
+    <img src="cfg-wiz-add-user.png" />
+    <p>Enter the username and password and click Create</p>
+    <p>To delete a user, click the "x" button on the left of the username on the table.</p>
+    <p>If you are using SNMP v2, you can create a community by clicking the "+" sign on the Communities table</p>
+    <img src="cfg-wiz-add-comm.png" />
+    <p>
+        Since on the ALE OmniWwitches an SNMP community is associated with a user, enter the community name and select a previously
+        created user from the drop-down menu, before clicking Create.
+    </p>
+    <p>To delete a community, click the "x" button to the left of the community name on the table</p>
+    <p>To add an SNMP Trap Receiver, click the "+" button to the left of the Ip Address column on the Trap Receivers table</p>
+    <img src="cfg-wiz-recv.png" />
+    <p>
+        Select the required SNMP Version (v2 or v3) and enter the IP Address of the trap receiver.
+        If you selected v2, select the community from the drop-down menu, if you selected v3, select the user from the drop-down menu.
+    </p>
+    <p>
+        Note that, to simplify the configuration, the wizard sets the Authentication Protocol as MD5 and the Encryption Protocol 
+        as DES, and that's what needs to be configured on the receiver side. The primary key assiciated to the encryption protocol is
+        configured the same as the user's password.
+    </p>
+    <p>
+        After your are done with the configuration, click Submit for the wizard to apply the configuration to the OmniSwitch.
+    </p>
     <p id="faq" class="header">Frequently Asked Questions</p>
     <p class="title">How do I know if my switch supports PoE?  </p>
     <p>ALE PoE capable switches will have a P in the model number.</p>
@@ -178,13 +217,13 @@
     <p>802.bt must be supported and enabled on the switch for auto class detection to function correctly.</p>
     <p class="title">How do I accomplish long term monitoring of my ALE network?</p>
     <p>
-        The PoE Wizard is designed to assist with new installations or a major refresh. Long term monitoring of ALE networks 
+        The Application is designed to assist with new installations or a major refresh. Long term monitoring of ALE networks 
         is available with our OmniVista Network Management System and plugins for either Milestone or Genetec: 
         https://www.al-enterprise.com/en/products/network-management-security
     </p>
     <p class="title">Are there any more generalized network scanning tools available?</p>
     <p>
-        The PoE Wizard is designed to assist only with PoE capable devices connected to an ALE switch.  
+        The Application is designed to assist only with PoE capable devices connected to an ALE switch.  
         There are free to use general networking scanning tools available on the Internet, however these 
         are not supplied or supported by Alcatel Lucent Enterprise and ALE assumes no liability for their use.
         Advanced IP Scanner can discover networked devices: https://www.advanced-ip-scanner.com/
@@ -288,7 +327,7 @@
         <li>Classes 5 to 8: Defined in IEEE 802.3bt for higher power levels, supporting up to 100 watts.</li>
     </ul>
     <img src="poe-table.png" />
-    <p>The PoE Wizard will display both PoE class and the maximum wattage supported by that class for you.</p>
+    <p>The Application will display both PoE class and the maximum wattage supported by that class for you.</p>
     <p class="title">Negotiation Process</p>
     <ul>
         <li>
