@@ -477,7 +477,7 @@ namespace PoEWizard.Comm
                     try
                     {
                         int period = (int)dur;
-                        if (period > 15 && period % 5 == 0) GetSystemInfo();
+                        if (period > 15 && period % 5 == 0) GetSyncStatus();
                     }
                     catch { }
                     if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
