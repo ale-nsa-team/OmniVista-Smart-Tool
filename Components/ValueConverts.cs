@@ -124,8 +124,8 @@ namespace PoEWizard.Components
                         return Utils.IsOldAosVersion(val) ? Colors.Warn : Colors.Default;
                     case "SyncStatus":
                         return val == SyncStatusType.Synchronized.ToString() ? Colors.Clear :
-                               val == SyncStatusType.NotSynchronized.ToString() ? Colors.Danger :
-                               val == SyncStatusType.Unknown.ToString() ? Colors.Unknown : Colors.Warn;
+                               val == SyncStatusType.NotSynchronized.ToString() ? Colors.Warn :
+                               val == SyncStatusType.Unknown.ToString() ? Colors.Unknown : Colors.Danger;
                     case "LpCmmDebugLevel":
                     case "LpNiDebugLevel":
                         SwitchDebugLogLevel level = Utils.StringToSwitchDebugLevel(val);
