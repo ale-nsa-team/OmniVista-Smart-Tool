@@ -73,7 +73,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>wiz.ico</ApplicationIcon>
+    <ApplicationIcon>app-icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="HtmlAgilityPack, Version=1.11.65.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
@@ -343,9 +343,6 @@
     <Resource Include="Resources\Img\wiz.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="wiz.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Img\wand.png" />
   </ItemGroup>
   <ItemGroup>
@@ -438,6 +435,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Help\Img\config-wiz.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Img\app-icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="app-icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
