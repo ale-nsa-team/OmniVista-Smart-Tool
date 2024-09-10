@@ -180,7 +180,7 @@ namespace PoEWizard.Comm
 
         private SwitchRejectConnection NotSupportApiException()
         {
-            return new SwitchRejectConnection($"Switch {this._ip_address} doesn't support Alcatel Lucent Enterprise Rest Api");
+            return new SwitchRejectConnection($"Switch {this._ip_address} doesn't support Alcatel-Lucent Enterprise Rest API");
         }
 
         private void RemoveToken()

@@ -6,7 +6,7 @@
        xmlns:local="clr-namespace:PoEWizard.Components"
        mc:Ignorable="d"
        Loaded="OnWindowLoaded"
-       Title="Alcatel Lucent Enterprise Installer's Toolkit Help" Height="400" Width="450" WindowStyle="SingleBorderWindow" ShowInTaskbar="False">
+       Title="Alcatel-Lucent Enterprise Installer's Toolkit Help" Height="400" Width="450" WindowStyle="SingleBorderWindow" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
