@@ -9,7 +9,7 @@
         Loaded="OnWindowLoaded"
         Closing="OnWindowClosing"
         WindowStartupLocation="CenterScreen"
-        Title="Alcatel Lucent Enterprise Installer's Toolkit" Height="800" Width="1300" Icon="/Resources/Img/app-icon.ico">
+        Title="Alcatel-Lucent Enterprise Installer's Toolkit" Height="800" Width="1300" Icon="/Resources/Img/app-icon.ico">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
