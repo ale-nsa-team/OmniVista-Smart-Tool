@@ -84,7 +84,10 @@ namespace PoEWizard.Data
             if (selectedDuration > 1) this.Summary += "s";
             this.Summary += $"\n  Switch: {this.SwitchTraffic.Name} ({this.SwitchTraffic.IpAddress}), Serial Number: {this.SwitchTraffic.SerialNumber}";
             this.Summary += $"\n  Date: {this.TrafficStartTime:MM/dd/yyyy hh:mm:ss tt}";
-            this.Summary += $"\n  Duration: {Utils.CalcStringDuration(TrafficStartTime, true)}\n\nTraffic Alert:\n";
+            this.Summary += $"\n  Duration: {Utils.CalcStringDuration(TrafficStartTime, true)}";
+            this.Summary += $"\n\nNote: This tool can detect common network issues, but is not a substitute for long term monitoring and human interpretation.";
+            this.Summary += $"\n      Your results may vary and will change over time.";
+            this.Summary += $"\n\nTraffic Alert:\n";
             this.TrafficDuration = DateTime.Now.Subtract(this.SwitchTraffic.StartTime).TotalSeconds;
             BuildReportData();
             BuildLldpDevicesReport();

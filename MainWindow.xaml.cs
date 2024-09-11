@@ -1220,19 +1220,9 @@ namespace PoEWizard
         {
             await RunWizardCommands(new List<Command>() { Command.CHECK_CAPACITOR_DETECTION }, 60);
             WizardResult result = reportResult.GetReportResult(selectedPort.Name);
-            bool reset = false;
-            if (result != WizardResult.Ok && result != WizardResult.Fail) reportResult.RemoveLastWizardReport(selectedPort.Name); else reset = true;
+            if (result != WizardResult.Ok && result != WizardResult.Fail) reportResult.RemoveLastWizardReport(selectedPort.Name);
             await CheckDefaultMaxPower();
-            if (selectedPort.Poe == PoeStatus.Off)
-            {
-                if (ShowMessageBox("Port PoE turned Off", $"The PoE on port {selectedPort.Name} is turned Off!\n Do you want to turn it On?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo))
-                {
-                    await RunWizardCommands(new List<Command>() { Command.RESET_POWER_PORT }, 30);
-                    Logger.Info($"PoE turned Off, reset power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                    reset = true;
-                }
-            }
-            if (!reset && selectedPort.Poe == PoeStatus.On && selectedPort.Power > 0)
+            if (selectedPort.Poe == PoeStatus.On && selectedPort.Power > 0)
             {
                 if (ShowMessageBox("Recycling Power on Port", $"Do you want to recycle the power on port {selectedPort.Name}?", MsgBoxIcons.Question, MsgBoxButtons.YesNo))
                 {

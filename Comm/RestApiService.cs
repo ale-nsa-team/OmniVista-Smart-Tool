@@ -488,7 +488,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError("Write memory", ex);
+                Logger.Warn(ex.Message);
             }
             CloseProgressBar();
         }
@@ -900,7 +900,12 @@ namespace PoEWizard.Comm
                     CreateReportPortNoPoe();
                     return;
                 }
-                if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny)
+                if (_wizardSwitchPort.Poe == PoeStatus.Conflict)
+                {
+                    DisableConflictPower();
+                    return;
+                }
+                else if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny)
                 {
                     WaitSec(msg, 5);
                     GetSlotLanPower(_wizardSwitchSlot);
@@ -915,6 +920,31 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 SendSwitchError("PoE Wizard", ex);
+            }
+        }
+
+        private void DisableConflictPower()
+        {
+            string wizardAction = $"Turning off the power on port {_wizardSwitchPort.Name}";
+            _progress.Report(new ProgressReport(wizardAction));
+            _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
+            WaitSec(wizardAction, 5);
+            GetSlotLanPower(_wizardSwitchSlot);
+            if (_wizardSwitchPort.Poe == PoeStatus.Conflict)
+            {
+                PowerDevice(Command.POWER_DOWN_PORT);
+                WaitPortUp(30, wizardAction);
+                _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Ok, "solved the problem");
+                StringBuilder portStatus = new StringBuilder(PrintPortStatus());
+                portStatus.Append(_wizardSwitchPort.Status);
+                if (_wizardSwitchPort.MacList?.Count > 0) portStatus.Append(", Device MAC address: ").Append(_wizardSwitchPort.MacList[0]);
+                _wizardReportResult.UpdatePortStatus(_wizardSwitchPort.Name, portStatus.ToString());
+                Logger.Info($"{wizardAction} solve the problem on port {_wizardSwitchPort.Name}");
+            }
+            else
+            {
+                _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed);
+                return;
             }
         }
 
