@@ -65,6 +65,12 @@
         </Menu>
         <StackPanel Grid.Row="1" x:Name="_switchInfo" Margin="0,2,0,0">
             <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="0.6*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -74,24 +80,13 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="130"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
                 <Label Grid.Row="0" Grid.Column="0" Style="{DynamicResource keyLabel}">Name:</Label>
                 <TextBlock Grid.Row="0" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_name" Text="{Binding Name}" />
-                <Label Grid.Row="1" Grid.Column="0" Style="{DynamicResource keyLabel}">Serial Number:</Label>
-                <TextBlock Grid.Row="1" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_serialNo" Text="{Binding SerialNumber}"/>
-                <Label Grid.Row="2" Grid.Column="0" Style="{DynamicResource keyLabel}">Model:</Label>
-                <TextBlock Grid.Row="2" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_model" Text="{Binding Model}"/>
+                <Label Grid.Row="1" Grid.Column="0" Style="{DynamicResource keyLabel}">Model:</Label>
+                <TextBlock Grid.Row="1" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_model" Text="{Binding Model}"/>
+                <Label Grid.Row="2" Grid.Column="0" Style="{DynamicResource keyLabel}">Serial Number:</Label>
+                <TextBlock Grid.Row="2" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_serialNo" Text="{Binding SerialNumber}"/>
                 <Label Grid.Row="3" Grid.Column="0" Style="{DynamicResource keyLabel}">Release:</Label>
                 <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
                     <TextBlock Style="{DynamicResource infoVal}" x:Name="_release" 
@@ -143,8 +138,8 @@
                         </Image.Visibility>
                     </Image>
                 </StackPanel>
-                <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}">Temperature:</Label>
-                <StackPanel x:Name="_tempStatus" Grid.Row="5" Grid.Column="1" Orientation="Horizontal" Visibility="Hidden">
+                <Label Grid.Row="4" Grid.Column="2" Style="{DynamicResource keyLabel}">Temperature:</Label>
+                <StackPanel x:Name="_tempStatus" Grid.Row="4" Grid.Column="3" Orientation="Horizontal" Visibility="Hidden">
                     <TextBlock Style="{DynamicResource infoVal}" 
                            Text="{Binding CurrTemperature}" 
                            Foreground="{Binding Path=TemperatureStatus, Converter={StaticResource ValueToColorConverter}, ConverterParameter=Temperature}"/>
@@ -152,8 +147,8 @@
                            ToolTip="Switch may reduce PoE output because temperature is too high" 
                            Visibility="{Binding Path=TemperatureStatus, Converter={StaticResource TempStatusToVisibilityConveter}}"/>
                 </StackPanel>
-                <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}">CPU Usage:</Label>
-                <StackPanel x:Name="_cpu" Grid.Row="6" Grid.Column="1" Orientation="Horizontal" Visibility="Hidden">
+                <Label Grid.Row="2" Grid.Column="2" Style="{DynamicResource keyLabel}">CPU Usage:</Label>
+                <StackPanel x:Name="_cpu" Grid.Row="2" Grid.Column="3" Orientation="Horizontal" Visibility="Hidden">
                     <TextBlock Style="{DynamicResource infoVal}" Text="{Binding Cpu}">
                         <TextBlock.Foreground>
                             <MultiBinding Converter="{StaticResource CpuUsageToColorConverter}">
@@ -185,28 +180,27 @@
                         </Image.ToolTip>
                     </Image>
                 </StackPanel>
-                <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}">Location:</Label>
-                <TextBlock Grid.Row="7" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_location" Text="{Binding Location}" />
-                <Label Grid.Row="8" Grid.Column="0" Style="{DynamicResource keyLabel}">Contact:</Label>
-                <TextBlock Grid.Row="8" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_contact" Text="{Binding Contact}" />
-                <Label Grid.Row="9" Grid.Column="0" Style="{DynamicResource keyLabel}">MAC Address:</Label>
-                <TextBlock Grid.Row="9" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_mac" Text="{Binding MacAddress}"/>
-                <Label Grid.Row="10" Grid.Column="0" Style="{DynamicResource keyLabel}">IP Address:</Label>
-                <TextBlock Grid.Row="10" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_ip" Text="{Binding IpAddress}"/>
-                <Label Grid.Row="11" Grid.Column="0" Style="{DynamicResource keyLabel}">Running Directory:</Label>
-                <TextBlock Grid.Row="11" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_runningDir" Text="{Binding RunningDir}"
+                <Label Grid.Row="3" Grid.Column="2" Style="{DynamicResource keyLabel}">Free Flash Memory:</Label>
+                <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}">Location:</Label>
+                <TextBlock Grid.Row="6" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_location" Text="{Binding Location}" />
+                <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}">Contact:</Label>
+                <TextBlock Grid.Row="7" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_contact" Text="{Binding Contact}" />
+                <Label Grid.Row="0" Grid.Column="2" Style="{DynamicResource keyLabel}">MAC Address:</Label>
+                <TextBlock Grid.Row="0" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_mac" Text="{Binding MacAddress}"/>
+                <Label Grid.Row="1" Grid.Column="2" Style="{DynamicResource keyLabel}">IP Address:</Label>
+                <TextBlock Grid.Row="1" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_ip" Text="{Binding IpAddress}"/>
+                <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}">Running Directory:</Label>
+                <TextBlock Grid.Row="5" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_runningDir" Text="{Binding RunningDir}"
                        Foreground="{Binding Path=RunningDir, Converter={StaticResource ValueToColorConverter}, ConverterParameter=RunningDir}"/>
-                <Label Grid.Row="12" Grid.Column="0" Style="{DynamicResource keyLabel}">Synchronization:</Label>
-                <TextBlock Grid.Row="12" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_syncStatus" Text="{Binding SyncStatusLabel}"
+                <Label Grid.Row="5" Grid.Column="2" Style="{DynamicResource keyLabel}">Synchronization:</Label>
+                <TextBlock Grid.Row="5" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_syncStatus" Text="{Binding SyncStatusLabel}"
                        Foreground="{Binding Path=SyncStatus, Converter={StaticResource ValueToColorConverter}, ConverterParameter=SyncStatus}"/>
-
-                <Label Grid.Row="13" Grid.Column="0" Style="{DynamicResource keyLabel}">PoE Debug Level:</Label>
-                <TextBlock Grid.Row="13" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_ilpni" Text="{Binding LpNiLabelDebugLevel}"
+                <Label Grid.Row="6" Grid.Column="2" Style="{DynamicResource keyLabel}">PoE Debug Level:</Label>
+                <TextBlock Grid.Row="6" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_ilpni" Text="{Binding LpNiLabelDebugLevel}"
                        Foreground="{Binding Path=LpNiDebugLevel, Converter={StaticResource ValueToColorConverter}, ConverterParameter=LpNiDebugLevel}"/>
-                <Label Grid.Row="14" Grid.Column="0" Style="{DynamicResource keyLabel}">CMM Debug Level:</Label>
-                <TextBlock Grid.Row="14" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_lpcmm" Text="{Binding LpCmmLabelDebugLevel}"
+                <Label Grid.Row="7" Grid.Column="2" Style="{DynamicResource keyLabel}">CMM Debug Level:</Label>
+                <TextBlock Grid.Row="7" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_lpcmm" Text="{Binding LpCmmLabelDebugLevel}"
                        Foreground="{Binding Path=LpCmmDebugLevel, Converter={StaticResource ValueToColorConverter}, ConverterParameter=LpCmmDebugLevel}"/>
-
             </Grid>
         </StackPanel>
         <Border Grid.Row="2" x:Name="_slotInfo" Style="{DynamicResource gridBorder}" Margin="5">

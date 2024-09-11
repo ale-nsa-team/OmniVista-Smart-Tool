@@ -28,6 +28,11 @@ namespace PoEWizard.Components
             DataContext = features;
         }
 
+        private void OnPageLoaded(object sender, RoutedEventArgs e)
+        {
+            _vlans.ItemsSource = features.Vlans;
+        }
+
         private void PoE_Changed(object sender, RoutedEventArgs e)
         {
             CheckBox cb = sender as CheckBox;

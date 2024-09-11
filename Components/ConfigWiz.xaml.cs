@@ -166,6 +166,7 @@ namespace PoEWizard.Components
         private bool ApplyCommands(List<CmdRequest> cmds, string message)
         {
             if (cmds.Count == 0) return false;
+            bool res = false;
             ShowInfoBox(message);
 
             foreach (CmdRequest cmd in cmds)
@@ -178,6 +179,7 @@ namespace PoEWizard.Components
                     {
                         WaitChassisUp();
                     }
+                    res = cmd.Command == Command.START_POE || cmd.Command == Command.STOP_POE;
                 }
                 catch (Exception ex)
                 {
@@ -185,7 +187,7 @@ namespace PoEWizard.Components
                         Errors.Add(ex.Message);
                 }
             }
-            return true;
+            return res || !message.Contains("Features");
         }
 
         private void GetServerData()
@@ -246,8 +248,25 @@ namespace PoEWizard.Components
                 dict = dicList.FirstOrDefault(d => d["Name"] == "ssh");
                 features.IsSsh = dict != null && dict["Status"] == "enabled";
             }
-            dict = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_MULTICAST, ParseType.Etable)) as Dictionary<string, string>;
+            dict = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_MULTICAST_GLOBAL, ParseType.Etable)) as Dictionary<string, string>;
             if (dict != null) features.IsMulticast = dict["Status"] == "enabled";
+            dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_VLAN, ParseType.Htable)) as List<Dictionary<string, string>>;
+            if (dicList.Count > 0)
+            {
+                foreach(var dic in dicList)
+                {
+                    if (dic["type"] == "std")
+                    {
+                        string vlan = dic["vlan"];
+                        dict = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_MULTICAST_VLAN, ParseType.Etable, vlan)) as Dictionary<string, string>;
+                        if (dict?.Count > 0)
+                        {
+                            features.Vlans.Add(new Vlan(dic["vlan"], !dict["Status"].Contains("disabled")));
+                        }
+                    }
+                }
+
+            }
         }
 
         private void GetSnmpData()
