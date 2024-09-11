@@ -6,6 +6,7 @@ using PoEWizard.Device;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -72,16 +73,13 @@ namespace PoEWizard
         public MainWindow()
         {
             device = new SwitchModel();
-            //application info
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            string version = assembly.GetName().Version.ToString();
-            string title = assembly.GetCustomAttribute<AssemblyTitleAttribute>().Title;
-            string ale = assembly.GetCustomAttribute<AssemblyCompanyAttribute>().Company;
+            //File Version info
+            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
             //datapath
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            dataPath = Path.Combine(appData, ale, title);
+            dataPath = Path.Combine(appData, fileVersionInfo.CompanyName, fileVersionInfo.ProductName);
             InitializeComponent();
-            this.Title += $" (V {string.Join(".", version.Split('.').ToList().Take(2))})";
+            this.Title += $" (V {string.Join(".", fileVersionInfo.ProductVersion.Split('.').ToList().Take(2))})";
             lightDict = Resources.MergedDictionaries[0];
             darkDict = Resources.MergedDictionaries[1];
             currentDict = darkDict;
