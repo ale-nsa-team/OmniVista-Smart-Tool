@@ -13,7 +13,7 @@ namespace PoEWizard.Data
             "#Tx Broadcast Frames,#Tx Unicast Frames,Tx Broadcast/Unicast (%),#Tx Multicast Frames,Tx Unicast+Multicast Rate (Kbps),#Tx Lost Frames,#Tx Collided Frames,#Tx Collisions,#Tx Late Collisions,#Tx Excessive Collisions," +
             "Device Type,Vendor,MAC Address List";
         const string HEADER_DEVICE = "Port,Type,Name,Description,IP Address,Vendor,Model,Software Version,Serial Number,MAC Address";
-        const double MAX_PERCENT_BROADCAST = 0.5;
+        const double MAX_PERCENT_BROADCAST = 2.0;
         const double MAX_PERCENT_RATE = 70;
         const double MAX_PERCENT_WARNING_LOST_FRAMES = 5;
         const double MAX_PERCENT_CRITICAL_LOST_FRAMES = 8;
