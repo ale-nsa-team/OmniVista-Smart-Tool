@@ -9,7 +9,7 @@ using System.Windows;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Alcatel-Lucent Enterprise")]
-[assembly: AssemblyProduct("ALE Installer's Toolkit")]
+[assembly: AssemblyProduct("ALE Installers Toolkit")]
 [assembly: AssemblyCopyright("Copyright ©  2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -49,5 +49,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.39.0.0")]
-[assembly: AssemblyFileVersion("0.39.0.0")]
+[assembly: AssemblyVersion("0.40.0.0")]
+[assembly: AssemblyFileVersion("0.40.0.0")]

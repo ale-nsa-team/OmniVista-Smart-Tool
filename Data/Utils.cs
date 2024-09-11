@@ -491,7 +491,7 @@ namespace PoEWizard.Data
 
         public static string PurgeFiles(string folder, int nbMaxFiles)
         {
-            StringBuilder txtDelete = new StringBuilder();
+            StringBuilder txtDelete = new StringBuilder("\n\t- List of files deleted:");
             if (Directory.Exists(folder))
             {
                 string[] filesList = new DirectoryInfo(folder).GetFiles().OrderByDescending(f => f.LastWriteTime).Select(f => f.Name).ToArray();
@@ -507,12 +507,13 @@ namespace PoEWizard.Data
                         {
                             File.Delete(fPath);
                             nbFiles--;
-                            txtDelete.Append("\n\t").Append(fPath).Append(" (").Append(lastWriteTime.ToString("MM/dd/yyyy hh:mm:ss tt")).Append(")");
+                            if (nbFilesDeleted % 3 == 0) txtDelete.Append("\n\t  "); else if (nbFilesDeleted > 0) txtDelete.Append(", ");
+                            txtDelete.Append(filesList[idx]).Append(" (").Append(lastWriteTime.ToString("MM/dd/yyyy hh:mm:ss tt")).Append(")");
                             nbFilesDeleted++;
                         }
                     }
                 }
-                if (txtDelete.Length > 0) return $"{nbFilesDeleted} snapshot configuration files deleted:{txtDelete}";
+                if (nbFilesDeleted > 0) return $"\n\t- Number of snapshot configuration files deleted: {nbFilesDeleted}\n\t- Folder: {folder}{txtDelete}";
             }
             return string.Empty;
         }

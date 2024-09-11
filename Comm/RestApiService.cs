@@ -514,7 +514,7 @@ namespace PoEWizard.Comm
             if (Directory.Exists(folder))
             {
                 string txt = Utils.PurgeFiles(folder, MAX_NB_SNAPSHOT_SAVED);
-                if (!string.IsNullOrEmpty(txt)) Logger.Activity(txt);
+                if (!string.IsNullOrEmpty(txt)) Logger.Warn($"Purging snapshot configuration files{txt}");
             }
             else Directory.CreateDirectory(folder);
         }
