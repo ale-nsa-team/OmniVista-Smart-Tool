@@ -217,8 +217,15 @@ namespace PoEWizard.Comm
                 HttpRequestMessage request = GetHttpRequest(entry, url);
                 var http_response = this._httpClient.SendAsync(request);
                 while (!http_response.IsCompleted) { };
-                if (http_response.IsCanceled || http_response.Result == null) throw new SwitchConnectionFailure("Switch connection failure!");
-                if (http_response != null & http_response.Result.StatusCode == HttpStatusCode.Unauthorized)
+                string error = null;
+                if (http_response.Result == null) error = $"Requested URL: {url}\r\nError: Switch {this._ip_address} rejected the request";
+                else if (http_response.IsCanceled) error = $"Requested URL: {url}\r\nError: Switch {this._ip_address} didn't respond within {this._cnx_timeout} sec";
+                if (!string.IsNullOrEmpty(error))
+                {
+                    response[ERROR] = error;
+                    return response;
+                }
+                if (http_response.Result.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     RemoveToken();
                     Login();
@@ -238,7 +245,7 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                if (ex.InnerException is HttpRequestException) throw new SwitchConnectionFailure("Switch connection failure!");
+                if (ex.InnerException is HttpRequestException) throw new SwitchConnectionFailure($"Switch {this._ip_address} connection failure!");
                 else throw ex;
             }
             return response;
@@ -266,8 +273,8 @@ namespace PoEWizard.Comm
                             else
                                 Logger.Error(errorMsg);
                         }
-                        return error;
                     }
+                    return error;
                 }
             }
             catch { }
