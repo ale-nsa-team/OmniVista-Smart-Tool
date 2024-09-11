@@ -49,14 +49,16 @@
                 <Label Grid.Row="0" Grid.Column="0">Password</Label>
                 <PasswordBox Grid.Row="1" Grid.Column="0" x:Name="_maskedPwd"
                          local:PasswordBoxAssistant.BindPassword="True"
-                         PreviewMouseDown="MaskedPwdEnter">
+                         PreviewMouseDown="MaskedPwdEnter"
+                         KeyUp="TextBox_KeyUp"    >
                     <local:PasswordBoxAssistant.BoundPassword>
                         <Binding Path="Password" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" />
                     </local:PasswordBoxAssistant.BoundPassword>
                 </PasswordBox>
                 <TextBox Grid.Row="1" Grid.Column="0" x:Name="_clearPwd" Visibility="Hidden"
                        Text="{Binding Path=Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                       PreviewMouseDown="ClearPwdEnter" />
+                       PreviewMouseDown="ClearPwdEnter" 
+                       KeyUp="TextBox_KeyUp"/>
                 <Button Grid.Row="1" Grid.Column="1" x:Name="_bntViewPwd" 
                     Style="{DynamicResource eyeButton}"
                     Click="ShowPwd">
