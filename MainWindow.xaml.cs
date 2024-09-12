@@ -344,7 +344,7 @@ namespace PoEWizard
                 string barText = $"{title} ...";
                 ShowInfoBox(barText);
                 ShowProgress(barText);
-                await Task.Run(() => restApiService.RestartPowerOnPort(selectedPort.Name, 60));
+                await Task.Run(() => restApiService.ResetPort(selectedPort.Name, 60));
                 HideProgress();
                 HideInfoBox();
                 await RefreshChanges();
@@ -562,7 +562,7 @@ namespace PoEWizard
                 selectedPort = port;
                 selectedPortIndex = _portList.SelectedIndex;
                 _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
-                _btnResetPort.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
+                _btnResetPort.IsEnabled = true;
             }
         }
 
@@ -1603,7 +1603,7 @@ namespace PoEWizard
                 _portList.SelectionChanged -= PortSelection_Changed;
                 _portList.SelectedItem = _portList.Items[selectedPortIndex];
                 _portList.SelectionChanged += PortSelection_Changed;
-                _btnRunWiz.IsEnabled = true;
+                _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
                 _btnResetPort.IsEnabled = true;
             }
         }
@@ -1615,7 +1615,7 @@ namespace PoEWizard
                 _slotsView.SelectionChanged -= SlotSelection_Changed;
                 _slotsView.SelectedItem = _slotsView.Items[selectedSlotIndex];
                 _slotsView.SelectionChanged += SlotSelection_Changed;
-                _btnRunWiz.IsEnabled = true;
+                if (selectedPort != null) _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe; else _btnRunWiz.IsEnabled = true;
                 _btnResetPort.IsEnabled = true;
             }
         }

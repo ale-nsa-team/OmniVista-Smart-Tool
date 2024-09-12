@@ -86,6 +86,9 @@ namespace PoEWizard.Data
             [Command.SET_MAX_POWER_PORT] = $"lanpower port {DAT} power {DAT}",
             [Command.CAPACITOR_DETECTION_ENABLE] = $"lanpower port {DAT} capacitor-detection enable",
             [Command.CAPACITOR_DETECTION_DISABLE] = $"lanpower port {DAT} capacitor-detection disable",
+            [Command.ETHERNET_ENABLE] = $"interfaces {DAT} admin-state enable",
+            [Command.ETHERNET_DISABLE] = $"interfaces {DAT} admin-state disable",
+            [Command.SHOW_INTERFACE_PORT] = $"show interfaces port {DAT}",
             #endregion
 
             #region General Switch commands

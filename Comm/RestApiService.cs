@@ -782,23 +782,30 @@ namespace PoEWizard.Comm
             return false;
         }
 
-        public void RestartPowerOnPort(string port, int waitSec)
+        public void ResetPort(string port, int waitSec)
         {
             try
             {
                 GetSwitchSlotPort(port);
                 if (_wizardSwitchSlot == null || _wizardSwitchPort == null) return;
-                string progressMessage = $"Restarting power on port {port}";
                 RefreshPoEData();
                 UpdatePortData();
                 DateTime startTime = DateTime.Now;
-                RestartDeviceOnPort(progressMessage, 10);
-                WaitPortUp(waitSec, !string.IsNullOrEmpty(progressMessage) ? progressMessage : string.Empty);
+                string progressMessage = _wizardSwitchPort.Poe == PoeStatus.NoPoe ? $"Restarting port {port}" : $"Restarting power on port {port}";
+                if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
+                {
+                    RestartEthernetOnPort(progressMessage, 10);
+                }
+                else
+                {
+                    RestartDeviceOnPort(progressMessage, 10);
+                    WaitPortUp(waitSec, !string.IsNullOrEmpty(progressMessage) ? progressMessage : string.Empty);
+                }
                 RefreshPortsInformation();
                 ProgressReport progressReport = new ProgressReport("");
                 if (_wizardSwitchPort.Status == PortStatus.Up)
                 {
-                    progressReport.Message = $"Power restarted on port {port}.";
+                    progressReport.Message = $"Port {port} restarted.";
                     progressReport.Type = ReportType.Info;
                 }
                 else
@@ -808,12 +815,67 @@ namespace PoEWizard.Comm
                 }
                 progressReport.Message += $"\nStatus: {_wizardSwitchPort.Status}, PoE Status: {_wizardSwitchPort.Poe}, Duration: {Utils.CalcStringDuration(startTime, true)}";
                 _progress.Report(progressReport);
-                LogActivity($"Restarted power on port {port}", $"\n{progressReport.Message}");
+                LogActivity($"Port {port} restarted by the user", $"\n{progressReport.Message}");
             }
             catch (Exception ex)
             {
                 SendSwitchError("Change power priority", ex);
             }
+        }
+
+        private void RestartEthernetOnPort(string progressMessage, int waitTimeSec = 5)
+        {
+            string action = !string.IsNullOrEmpty(progressMessage) ? progressMessage : string.Empty;
+            SendCommand(new CmdRequest(Command.ETHERNET_DISABLE, new string[1] { _wizardSwitchPort.Name }));
+            string msg = $"{action} ...\nShutting DOWN port";
+            _progress.Report(new ProgressReport($"{msg}{PrintPortStatus()}"));
+            WaitSec(msg, 5);
+            WaitEthernetStatus(waitTimeSec, PortStatus.Down, msg);
+            SendCommand(new CmdRequest(Command.ETHERNET_ENABLE, new string[1] { _wizardSwitchPort.Name }));
+            msg = $"{action} ...\nStarting UP port";
+            _progress.Report(new ProgressReport($"{msg}{PrintPortStatus()}"));
+            WaitSec(msg, 5);
+            WaitEthernetStatus(waitTimeSec, PortStatus.Up, msg);
+        }
+
+        private DateTime WaitEthernetStatus(int waitSec, PortStatus waitStatus, string progressMessage = null)
+        {
+            string msg = !string.IsNullOrEmpty(progressMessage) ? $"{progressMessage}\n" : string.Empty;
+            msg += $"Waiting port {_wizardSwitchPort.Name} to come UP";
+            _progress.Report(new ProgressReport($"{msg} ...{PrintPortStatus()}"));
+            DateTime startTime = DateTime.Now;
+            PortStatus ethStatus = UpdateEthStatus();
+            int dur = 0;
+            while (dur < waitSec)
+            {
+                Thread.Sleep(1000);
+                dur = (int)Utils.GetTimeDuration(startTime);
+                _progress.Report(new ProgressReport($"{msg} ({Utils.CalcStringDuration(startTime, true)}) ...{PrintPortStatus()}"));
+                if (ethStatus == waitStatus) break;
+                if (dur % 5 == 0) ethStatus = UpdateEthStatus();
+            }
+            return startTime;
+        }
+
+        private PortStatus UpdateEthStatus()
+        {
+            _dictList = SendCommand(new CmdRequest(Command.SHOW_INTERFACE_PORT, ParseType.TrafficTable, new string[1] { _wizardSwitchPort.Name })) as List<Dictionary<string, string>>;
+            if (_dictList?.Count > 0)
+            {
+                foreach (Dictionary<string, string> dict in _dictList)
+                {
+                    string port = Utils.GetDictValue(dict, PORT);
+                    if (!string.IsNullOrEmpty(port))
+                    {
+                        if (port == _wizardSwitchPort.Name)
+                        {
+                            string sValStatus = Utils.FirstChToUpper(Utils.GetDictValue(dict, OPERATIONAL_STATUS));
+                            if (!string.IsNullOrEmpty(sValStatus) && Enum.TryParse(sValStatus, out PortStatus portStatus))return portStatus; else return PortStatus.Unknown;
+                        }
+                    }
+                }
+            }
+            return PortStatus.Unknown;
         }
 
         public void RefreshSwitchPorts()

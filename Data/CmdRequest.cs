@@ -63,6 +63,9 @@ namespace PoEWizard.Data
         SET_MAX_POWER_PORT,
         CAPACITOR_DETECTION_ENABLE,
         CAPACITOR_DETECTION_DISABLE,
+        ETHERNET_ENABLE,
+        ETHERNET_DISABLE,
+        SHOW_INTERFACE_PORT,
         #endregion
 
         #region General Switch commands

@@ -377,6 +377,7 @@ namespace PoEWizard.Data
                         if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(key) && !dict.ContainsKey(key)) dict.Add(key, value);
                     }
                 }
+                if (dict?.Count > 0 && dict.ContainsKey(PORT) && !string.IsNullOrEmpty(dict[PORT])) table.Add(dict);
             }
             return table;
         }
