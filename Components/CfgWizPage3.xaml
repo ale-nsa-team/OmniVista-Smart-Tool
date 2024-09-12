@@ -6,6 +6,7 @@
       xmlns:validators="clr-namespace:PoEWizard.Components"
       xmlns:dev="clr-namespace:PoEWizard.Device"
       mc:Ignorable="d" 
+      Loaded="OnPageLoaded"
       d:DesignHeight="450" d:DesignWidth="800"
       Name="Props"
       Title="Features">
@@ -35,10 +36,6 @@
             <CheckBox x:Name="_ssh" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsSsh}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal">
-            <Label Margin="51,0,0,0">Enable Multicast</Label>
-            <CheckBox x:Name="_multicast" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsMulticast}" />
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
             <Label Margin="37,0,0,0">Enable DHCP Relay</Label>
             <CheckBox x:Name="_dhcpRelay" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsDhcpRelay}" />
         </StackPanel>
@@ -54,5 +51,21 @@
                 </TextBox.Text>
             </TextBox>
         </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label Margin="51,0,0,0">Enable Multicast</Label>
+            <CheckBox x:Name="_multicast" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsMulticast}" />
+        </StackPanel>
+        <DataGrid x:Name="_vlans" 
+                  Style="{DynamicResource defaultGrid}"
+                  Margin="100,10,0,0"
+                  ItemsSource="{Binding Vlans}"
+                  Visibility="{Binding Path=IsMulticast, Converter={StaticResource BoolToVisibilityConverter}}"
+                  ColumnHeaderStyle="{DynamicResource gridHeader}"
+                  CellStyle="{DynamicResource gridCell}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="VLAN" Width="50" Binding="{Binding Path=Number, Mode=OneWay}" />
+                <DataGridCheckBoxColumn Header="Enable" Width="50" Binding="{Binding Path=Enable, Mode=TwoWay}" />
+            </DataGrid.Columns>
+        </DataGrid>
     </StackPanel>
 </Page>

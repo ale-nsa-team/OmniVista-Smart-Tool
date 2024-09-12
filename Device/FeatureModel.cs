@@ -1,6 +1,7 @@
 ﻿using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace PoEWizard.Device
@@ -8,19 +9,21 @@ namespace PoEWizard.Device
     public class FeatureModel : ICloneable
     {
         private readonly SwitchModel device;
-        
+
         public bool IsPoe { get; set; } = false;
         public bool NoInsecureProtos { get; set; } = true;
         public bool IsSsh { get; set; } = true;
         public bool IsMulticast { get; set; } = true;
         public bool IsDhcpRelay { get; set; } = false;
         public string DhcpSrv { get; set; }
+        public List<Vlan> Vlans { get; set; }
 
         public FeatureModel() { }
 
         public FeatureModel(SwitchModel device)
         {
             this.device = device;
+            Vlans = new List<Vlan>();
             foreach (var chas in device.ChassisList)
             {
                 if (chas != null)
@@ -39,7 +42,16 @@ namespace PoEWizard.Device
 
         public object Clone()
         {
-            return this.MemberwiseClone();
+            return new FeatureModel
+            {
+                IsPoe = this.IsPoe,
+                IsMulticast = this.IsMulticast,
+                IsSsh = this.IsSsh,
+                NoInsecureProtos = this.NoInsecureProtos,
+                IsDhcpRelay = this.IsDhcpRelay,
+                DhcpSrv = this.DhcpSrv,
+                Vlans = this.Vlans.Select(v => (Vlan)v.Clone()).ToList()
+            };
         }
 
         public List<CmdRequest> ToCommandList(FeatureModel orig)
@@ -90,7 +102,11 @@ namespace PoEWizard.Device
                         {
                             cmdList.Add(new CmdRequest(Command.ENABLE_MULTICAST));
                             cmdList.Add(new CmdRequest(Command.ENABLE_QUERYING));
-                            cmdList.Add(new CmdRequest(Command.ENABLE_MULTICAST_VLAN, ""));
+                        }
+                        else
+                        {
+                            cmdList.Add(new CmdRequest(Command.DISABLE_MULTICAST));
+                            cmdList.Add(new CmdRequest(Command.DISABLE_QUERYING));
                         }
                         break;
                     case "IsDhcpRelay":
@@ -102,6 +118,17 @@ namespace PoEWizard.Device
                         else
                         {
                             cmdList.Add(new CmdRequest(Command.DISABLE_DHCP_RELAY));
+                        }
+                        break;
+                    case "Vlans":
+                        if (!IsMulticast) break;
+                        List<Vlan> diff = (List<Vlan>)this.Vlans.Except(orig.Vlans).ToList();
+                        if (diff?.Count > 0)
+                        {
+                            foreach (var v in diff)
+                            {
+                                cmdList.Add(new CmdRequest(Command.MULTICAST_VLAN, v.Number, v.Enable ? "enable" : "disable"));
+                            }
                         }
                         break;
                 }
@@ -122,10 +149,40 @@ namespace PoEWizard.Device
                     {
                         if ((bool)val != (bool)prop.GetValue(orig, null)) changes.Add(prop);
                     }
+                    else if (prop.Name == "Vlans")
+                    {
+                        List<Vlan> curr = val as List<Vlan>;
+                        List<Vlan> old = prop.GetValue(orig, null) as List<Vlan>;
+                        if (curr?.Count != old.Count || curr.Except(old).Any()) changes.Add(prop);
+                    }
                     else if (val != prop.GetValue(orig, null)) changes.Add(prop);
                 }
             }
             return changes;
+        }
+    }
+
+    public class Vlan : ICloneable
+    {
+        public string Number { get; set; }
+        public bool Enable { get; set; }
+
+        public Vlan() { }
+
+        public Vlan(string number, bool enable)
+        {
+            Number = number;
+            Enable = enable;
+        }
+
+        public bool Equals(Vlan other)
+        {
+            return (this.Number == other.Number && this.Enable == other.Enable);
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
     }
 }
