@@ -30,6 +30,8 @@ namespace PoEWizard.Components
         private SystemModel sysOrig;
         private FeatureModel featOrig;
         private SnmpModel snmpOrig;
+        
+        public bool MustDisconnect { get; set; } = false;
 
         public bool IsRebootSwitch { get; set; } = false;
 
@@ -57,7 +59,8 @@ namespace PoEWizard.Components
             features = new FeatureModel(device);
             snmpData = new SnmpModel();
             pageNo = 1;
-            _btnCfgBack.IsEnabled = false;
+            sysOrig = sysData.Clone() as SystemModel;
+            _btnCfgBack.IsEnabled = false;            
             _cfgFrame.Navigate(new CfgWizPage1(sysData));
             //_btnSubmit.IsEnabled = false;
         }
@@ -74,11 +77,9 @@ namespace PoEWizard.Components
                 GetSnmpData();
             });
 
-            srvOrig = srvData.Clone() as ServerModel;
-            sysOrig = sysData.Clone() as SystemModel;
+            srvOrig = srvData.Clone() as ServerModel;            
             featOrig = features.Clone() as FeatureModel;
             snmpOrig = snmpData.Clone() as SnmpModel;
-
             HideInfoBox();
         }
 
@@ -115,12 +116,16 @@ namespace PoEWizard.Components
             bool needRefresh = false;
             await Task.Run(() =>
             {
-                needRefresh = ApplyCommands(sysData.ToCommandList(sysOrig), "Applying System parameters...");
+
                 ApplyCommands(srvData.ToCommandList(srvOrig), "Applying DNS and NPT parameters...");
-                needRefresh = ApplyCommands(features.ToCommandList(featOrig), "Applying Features...") || needRefresh;
+                needRefresh = ApplyCommands(features.ToCommandList(featOrig), "Applying Features...");
+                List<CmdRequest> cmds = sysData.ToCommandList(sysOrig);
+                MustDisconnect = cmds.FirstOrDefault(c => c.Command == Command.SET_IP_INTERFACE) != null;
+                needRefresh = ApplyCommands(cmds, "Applying System parameters...") || needRefresh;
             });
             HideInfoBox();
-            if (needRefresh)
+
+            if (needRefresh && !MustDisconnect)
             {
                 ShowInfoBox("Reloading switch data, please wait...");
                 await Task.Run(() => restSrv.ScanSwitch(null));
@@ -349,9 +354,8 @@ namespace PoEWizard.Components
 
         private void HideInfoBox()
         {
-            _infoBox.Visibility = Visibility.Hidden;
+            _infoBox.Visibility = Visibility.Collapsed;
         }
-
         #endregion
     }
 }

@@ -153,12 +153,22 @@ namespace PoEWizard.Device
                     {
                         List<Vlan> curr = val as List<Vlan>;
                         List<Vlan> old = prop.GetValue(orig, null) as List<Vlan>;
-                        if (curr?.Count != old.Count || curr.Except(old).Any()) changes.Add(prop);
+                        if (CompareVlans(curr, old)) changes.Add(prop);
                     }
                     else if (val != prop.GetValue(orig, null)) changes.Add(prop);
                 }
             }
             return changes;
+        }
+
+        private bool CompareVlans(List<Vlan> curr, List<Vlan> orig)
+        {
+            if (curr.Count != orig.Count) return false;
+            foreach (var v in curr)
+            {
+                if (orig.FirstOrDefault(o => o.Equals(v)) == null) return true;
+            }
+            return false;
         }
     }
 

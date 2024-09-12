@@ -306,10 +306,18 @@ namespace PoEWizard
             {
                 Activity.Log(device, "Config Wizard applied");
             }
+            HideInfoBox();
+            if (wiz.MustDisconnect)
+            {
+                string msg = "Application will disconnect from switch because IP address was changed.\nPlease reconnect with the new address.";
+                ShowMessageBox("Config Wiz", msg);
+                isClosing = true; // to avoid write memory message
+                Connect();
+                return;
+            }
             if (wiz.IsRebootSwitch) LaunchRebootSwitch();
             else if (device.SyncStatus == SyncStatusType.Synchronized) device.SyncStatus = SyncStatusType.NotSynchronized;
             _status.Text = DEFAULT_APP_STATUS;
-            HideInfoBox();
             SetConnectedState();
         }
 
