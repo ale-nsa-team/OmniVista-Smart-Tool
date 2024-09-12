@@ -22,7 +22,7 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <StackPanel Style="{DynamicResource cfgWindow}">
+    <StackPanel Style="{DynamicResource cfgWindow}" Margin="70,0,0,0">
         <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
             <Label Margin="82,0,0,0">Enable PoE</Label>
             <CheckBox x:Name="_poE" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsPoe}" Checked="PoE_Changed" Unchecked="PoE_Changed"/>
@@ -57,7 +57,7 @@
         </StackPanel>
         <DataGrid x:Name="_vlans" 
                   Style="{DynamicResource defaultGrid}"
-                  Margin="100,10,0,0"
+                  Margin="88,15,0,0"
                   ItemsSource="{Binding Vlans}"
                   Visibility="{Binding Path=IsMulticast, Converter={StaticResource BoolToVisibilityConverter}}"
                   ColumnHeaderStyle="{DynamicResource gridHeader}"
