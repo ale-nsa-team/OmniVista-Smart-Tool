@@ -123,6 +123,7 @@ namespace PoEWizard.Data
         SET_DEFAULT_GATEWAY,
         ENABLE_MGT_VLAN,
         SET_MGT_INTERFACE,
+        SET_IP_INTERFACE,
         ENABLE_SPAN_TREE,
         SET_LOOPBACK_DET,
         SHOW_IP_SERVICE,

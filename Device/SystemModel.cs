@@ -1,7 +1,9 @@
 ﻿using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Device
 {
@@ -45,8 +47,17 @@ namespace PoEWizard.Device
                 switch (prop.Name)
                 {
                     case "MgtIpAddr":
-                        cmdList.Add(new CmdRequest(Command.SET_MGT_INTERFACE, MgtIpAddr, NetMask));
-                        device.IpAddress = MgtIpAddr;
+                        if (MainWindow.restApiService.RunSwitchCommand(
+                            new CmdRequest(Command.SHOW_IP_INTERFACE, Constants.ParseType.Htable)) 
+                            is List<Dictionary<string, string>> dics)
+                        {
+                            Dictionary<string, string> ifc = dics.FirstOrDefault(d => d[IP_ADDR] == orig.MgtIpAddr);
+                            if (ifc != null)
+                            {
+                                cmdList.Add(new CmdRequest(Command.SET_IP_INTERFACE, ifc[NAME], MgtIpAddr, NetMask, ifc[DEVICE]));
+                                device.IpAddress = MgtIpAddr;
+                            }
+                        }
                         break;
                     case "AdminPwd":
                         cmdList.Add(new CmdRequest(Command.SET_PASSWORD, "admin", AdminPwd));
