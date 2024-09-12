@@ -12,35 +12,33 @@
             overflow-y: auto;
             overflow-x: hidden;
         }
-
         li a {
             color: white;
         }
-
         li ul {
             margin-top: 0.5em;
             margin-bottom: 0.5em;
         }
-
         img {
             display: block;
             margin-left: auto;
             margin-right: auto;
         }
-
         .header, .topic, .title {
             margin-top: 2em;
             font-weight: bold;
         }
-
         .header {
             font-size: 125%;
             text-align: center;
         }
-
         .sub-topic {
             margin-top: 1em;
         }
+        .no-space {
+            margin-top: -1em;
+        }
+
     </style>
 </head>
 <body>
@@ -166,6 +164,7 @@
         because it will turn off power on all PoE ports on the switch. If you confirm, the operation will take effect after you press 
         the Submit button.
     </p>
+    <p class="no-space">When setting up multicast, you can select which VLANs will have it enabled on the table below the multicast toggle switch.</p>
     <img src="cfg-wiz-feature.png" />
     <p>The last page on the configuration wizard allows you to configure the switch to send SNMP traps to trap receivers</p>
     <img src="cfg-wiz-snmp.png" />
