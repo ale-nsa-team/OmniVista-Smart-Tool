@@ -22,8 +22,7 @@
     </Page.Resources>
     <StackPanel Style="{DynamicResource cfgWindow}">
         <Label>Management IP Address</Label>
-        <TextBox x:Name="_mgtIpAddress" IsReadOnly="True" 
-                 Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+        <TextBox x:Name="_mgtIpAddress" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
             <TextBox.Text>
                 <Binding Path="MgtIpAddr" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
@@ -33,9 +32,7 @@
             </TextBox.Text>
         </TextBox>
         <Label>Netmask</Label>
-        <TextBox x:Name="_netMask" 
-                 IsReadOnly="True"
-                 Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+        <TextBox x:Name="_netMask" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
             <TextBox.Text>
                 <Binding Path=" NetMask" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>

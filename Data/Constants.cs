@@ -286,6 +286,7 @@ namespace PoEWizard.Data
         // Used by Config Wizard
         public const string IP_ADDR = "IP Address";
         public const string SUBNET_MASK = "Subnet Mask";
+        public const string DEVICE = "Device";
         public const string GATEWAY = "Gateway Addr";
         public const string DNS_ENABLE = "systemDNSEnableDnsResolver";
         public const string DNS_DOMAIN = "systemDNSDomainName";
