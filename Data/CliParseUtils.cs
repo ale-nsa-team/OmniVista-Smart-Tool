@@ -406,6 +406,87 @@ namespace PoEWizard.Data
             return table;
         }
 
+        public static List<Dictionary<string, string>> ParseFreeSpace(string inputData)
+        {
+            string data = inputData.Replace(", ", "\n");
+            string[] split;
+            List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();
+            using (StringReader reader = new StringReader(data))
+            {
+                string line;
+                string keyId = string.Empty;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    string sLine = line.Trim();
+                    if (sLine.Length == 0) continue;
+                    string subStr = new Regex(" {2,}").Replace(sLine, " ");
+                    split = subStr.Trim().Split('/');
+                    if (split.Length >= 2)
+                    {
+                        Dictionary<string, string> dict = new Dictionary<string, string> { [P_CHASSIS] = Utils.StringToInt(split[0]).ToString() };
+                        split = split[1].Split(' ');
+                        if (split.Length >= 2) dict[FLASH] = split[1];
+                        table.Add(dict);
+                    }
+                }
+            }
+            return table;
+        }
+
+        public static Dictionary<string, string> ParseInfoSize(string inputData, string filter)
+        {
+            string data = inputData.Replace(", ", "\n");
+            string[] split;
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            using (StringReader reader = new StringReader(data))
+            {
+                string line;
+                string keyId = string.Empty;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    string sLine = line.Trim();
+                    if (sLine.Length == 0) continue;
+                    if (sLine.Contains(filter))
+                    {
+                        string subStr = new Regex(" {2,}").Replace(sLine, " ");
+                        split = subStr.Trim().Split(' ');
+                        foreach(string sVal in split)
+                        {
+                            string sValue = sVal.Trim();
+                            if (string.IsNullOrEmpty(sValue)) continue;
+                            if (!dict.ContainsKey("Filesystem"))
+                            {
+                                dict["Filesystem"] = sValue;
+                                continue;
+                            }
+                            else if (!dict.ContainsKey("Size"))
+                            {
+                                dict["Size"] = sValue;
+                                continue;
+                            }
+                            else if (!dict.ContainsKey("Used"))
+                            {
+                                dict["Used"] = sValue;
+                                continue;
+                            }
+                            else if (!dict.ContainsKey("Available"))
+                            {
+                                dict["Available"] = sValue;
+                                continue;
+                            }
+                            else if (!dict.ContainsKey("Usage"))
+                            {
+                                dict["Usage"] = sValue;
+                                continue;
+                            }
+                            if (dict.Count >= 5) break;
+                        }
+                    }
+                }
+            }
+            return dict;
+        }
+
         private static Dictionary<string, string> ParseTable(string data, Regex regex)
         {
             Dictionary<string, string> table = new Dictionary<string, string>();

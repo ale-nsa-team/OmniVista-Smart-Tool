@@ -55,7 +55,7 @@ namespace PoEWizard.Comm
                 DateTime startTime = DateTime.Now;
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
-                StartProgressBar($"Connecting to switch {SwitchModel.IpAddress} ...", 25);
+                StartProgressBar($"Connecting to switch {SwitchModel.IpAddress} ...", 26);
                 _progress.Report(new ProgressReport($"Connecting to switch {SwitchModel.IpAddress} ..."));
                 RestApiClient.Login();
                 UpdateProgressBar(++progressBarCnt); //  1
@@ -94,7 +94,7 @@ namespace PoEWizard.Comm
         {
             try
             {
-                if (totalProgressBar == 0) StartProgressBar($"Scanning switch {SwitchModel.Name} ...", 21);
+                if (totalProgressBar == 0) StartProgressBar($"Scanning switch {SwitchModel.Name} ...", 22);
                 GetCurrentSwitchDebugLevel();
                 progressBarCnt += 2;
                 UpdateProgressBar(progressBarCnt); //  5 , 6
@@ -131,6 +131,8 @@ namespace PoEWizard.Comm
                 GetMacAndLldpInfo();
                 progressBarCnt += 3;
                 UpdateProgressBar(progressBarCnt); // 19, 20, 21
+                UpdateFlashInfo();
+                UpdateProgressBar(++progressBarCnt); // 12
                 string title = string.IsNullOrEmpty(source) ? $"Refresh switch {SwitchModel.Name}" : source;
             }
             catch (Exception ex)
@@ -370,12 +372,25 @@ namespace PoEWizard.Comm
             }
         }
 
+        private bool IsAosSshConnected()
+        {
+            try
+            {
+                return SshService != null && SshService.IsSwitchConnected();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return false;
+        }
+
         private void SetAppDebugLevel(string progressMsg, Command cmd, int dbgLevel)
         {
             Command showDbgCmd = cmd == Command.DEBUG_UPDATE_LPCMM_LEVEL ? Command.DEBUG_SHOW_LPCMM_LEVEL : Command.DEBUG_SHOW_LPNI_LEVEL;
             _progress.Report(new ProgressReport($"{progressMsg} ..."));
             DateTime startCmdTime = DateTime.Now;
-            SendSshCliCommand(cmd, new string[1] { dbgLevel.ToString() });
+            SendSshUpdateLogCommand(cmd, new string[1] { dbgLevel.ToString() });
             UpdateSwitchLogBar();
             bool done = false;
             int loopCnt = 1;
@@ -428,7 +443,7 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                Dictionary<string, string> response = SendSshCliCommand(cmd);
+                Dictionary<string, string> response = SendSshUpdateLogCommand(cmd);
                 if (response != null && response.ContainsKey(OUTPUT) && !string.IsNullOrEmpty(response[OUTPUT]))
                 {
                     _debugSwitchLog.LoadFromDictionary(CliParseUtils.ParseCliSwitchDebugLevel(response[OUTPUT]));
@@ -437,10 +452,11 @@ namespace PoEWizard.Comm
             return cmd == Command.DEBUG_SHOW_LPCMM_LEVEL ? _debugSwitchLog.LpCmmLogLevel : _debugSwitchLog.LpNiLogLevel;
         }
 
-        private Dictionary<string, string> SendSshCliCommand(Command cmd, string[] data = null)
+        private Dictionary<string, string> SendSshUpdateLogCommand(Command cmd, string[] data = null)
         {
             try
             {
+                if (!IsAosSshConnected()) ConnectAosSsh();
                 Dictionary<Command, Command> cmdTranslation = new Dictionary<Command, Command>
                 {
                     [Command.DEBUG_UPDATE_LPNI_LEVEL] = Command.DEBUG_CLI_UPDATE_LPNI_LEVEL,
@@ -456,6 +472,39 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 SendSwitchError("Connect", ex);
+            }
+            return null;
+        }
+
+        private void UpdateFlashInfo()
+        {
+            string response = SendCommand(new CmdRequest(Command.SHOW_FREE_SPACE, ParseType.NoParsing)).ToString();
+            if (!string.IsNullOrEmpty(response)) SwitchModel.LoadFlashFromList(response);
+        }
+
+        public LinuxCommandSeq SendSshLinuxCommandSeq(LinuxCommandSeq cmdEntry, string progressMsg)
+        {
+            try
+            {
+                SendProgressReport(progressMsg);
+                if (!IsAosSshConnected()) ConnectAosSsh();
+                Dictionary<string, string> response = new Dictionary<string, string>();
+                cmdEntry.StartTime = DateTime.Now;
+                foreach (LinuxCommand cmdLinux in cmdEntry.CommandSeq)
+                {
+                    cmdLinux.Response = SshService?.SendLinuxCommand(cmdLinux);
+                    if (cmdLinux.DelaySec > 0) WaitSec($"{progressMsg} on switch {SwitchModel.Name}", cmdLinux.DelaySec);
+                }
+                cmdEntry.Duration = Utils.CalcStringDuration(cmdEntry.StartTime);
+                return cmdEntry;
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError("Connect", ex);
+            }
+            finally
+            {
+                DisconnectAosSsh();
             }
             return null;
         }
@@ -1839,7 +1888,7 @@ namespace PoEWizard.Comm
 
         private void SendProgressReport(string progrMsg)
         {
-            string msg = $"{progrMsg} on switch {SwitchModel.Name}";
+            string msg = $"{progrMsg} on switch {(!string.IsNullOrEmpty(SwitchModel.Name) ? SwitchModel.Name : SwitchModel.IpAddress)}";
             _progress.Report(new ProgressReport(msg));
             Logger.Info(msg);
         }

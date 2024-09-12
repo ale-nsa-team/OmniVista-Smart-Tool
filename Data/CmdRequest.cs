@@ -34,6 +34,7 @@ namespace PoEWizard.Data
         SHOW_HEALTH_CONFIG,
         SHOW_LLDP_INVENTORY,
         SHOW_SYSTEM_RUNNING_DIR,
+        SHOW_FREE_SPACE,
         #endregion
 
         #region PoE Wizard commands

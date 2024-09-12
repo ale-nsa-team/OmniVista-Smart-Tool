@@ -57,6 +57,7 @@ namespace PoEWizard.Data
             [Command.SHOW_HEALTH_CONFIG] = "show health configuration",
             [Command.SHOW_LLDP_INVENTORY] = "show lldp remote-system med inventory",
             [Command.SHOW_SYSTEM_RUNNING_DIR] = "urn=chasControlModuleTable&mibObject0=sysName&mibObject1=sysLocation&mibObject2=sysContact&mibObject3=sysUpTime&mibObject4=sysDescr&mibObject5=configChangeStatus&mibObject6=chasControlCurrentRunningVersion&mibObject7=chasControlCertifyStatus",
+            [Command.SHOW_FREE_SPACE] = "freespace",
             #endregion
 
             #region PoE Wizard commands

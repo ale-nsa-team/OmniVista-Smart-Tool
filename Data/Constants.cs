@@ -308,6 +308,8 @@ namespace PoEWizard.Data
         // Snapshot configuration changes
         public const string SNAPSHOT_FOLDER = "snapshot";
         public const string SNAPSHOT_SUFFIX = "-snapshot.txt";
+        // Flash free space command
+        public const string FLASH = "Flash";
         #endregion
 
         #region regex patterns

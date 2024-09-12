@@ -181,6 +181,7 @@
                     </Image>
                 </StackPanel>
                 <Label Grid.Row="3" Grid.Column="2" Style="{DynamicResource keyLabel}">Free Flash Memory:</Label>
+                <TextBlock Grid.Row="3" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_flash" Text="{Binding FreeFlash}" />
                 <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}">Location:</Label>
                 <TextBlock Grid.Row="6" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_location" Text="{Binding Location}" />
                 <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}">Contact:</Label>

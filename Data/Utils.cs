@@ -110,11 +110,19 @@ namespace PoEWizard.Data
             try
             {
                 string number = ExtractNumber(strNumber);
-                if (!string.IsNullOrEmpty(number))
-                {
-                    bool isNumeric = double.TryParse(strNumber.Trim(), out double dVal);
-                    if (isNumeric && (dVal > 0)) return dVal;
-                }
+                if (!string.IsNullOrEmpty(number)) return ParseToDouble(strNumber);
+            }
+            catch { }
+            return 0;
+        }
+
+        public static double ParseToDouble(string strNumber)
+        {
+            if (string.IsNullOrEmpty(strNumber)) return 0;
+            try
+            {
+                bool isNumeric = double.TryParse(strNumber.Trim(), out double dVal);
+                if (isNumeric && (dVal > 0)) return dVal;
             }
             catch { }
             return 0;

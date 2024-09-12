@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.RestUrl;
 
 namespace PoEWizard.Comm
 {
@@ -78,7 +79,7 @@ namespace PoEWizard.Comm
 
         public bool IsSwitchConnected()
         {
-            return (this._client != null);
+            return (this._client != null && this._client.IsConnected);
         }
         public void DisconnectSshClient()
         {
@@ -175,6 +176,7 @@ namespace PoEWizard.Comm
                 throw ex;
             }
         }
+
         private string SendCommandToFindPrompt()
         {
             FlushSshStream();
@@ -196,6 +198,7 @@ namespace PoEWizard.Comm
             }
             return null;
         }
+
         private void ParseSessionConfig(string response)
         {
             try
@@ -244,17 +247,33 @@ namespace PoEWizard.Comm
                 LogException("ParseSessionConfig", ex);
             }
         }
+
+        public Dictionary<string, string> SendLinuxCommand(LinuxCommand cmdLinux)
+        {
+            try
+            {
+                Dictionary<string, string> resp = SendCliCommand(cmdLinux.Command, 60);
+                return ParseResponse(resp[RESPONSE], cmdLinux.Command);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                throw ex;
+            }
+        }
+
         public Dictionary<string, string> SendCommand(RestUrlEntry cmdEntry, string[] data, string expected = null)
         {
-            string cmd = RestUrl.GetReqFromCmdTbl(cmdEntry.RestUrl, data);
+            string cmd = GetReqFromCmdTbl(cmdEntry.RestUrl, data);
             if (cmd == null) return null;
             cmdEntry.StartTime = DateTime.Now;
             Dictionary<string, string> response;
             response = SendCliCommand(cmd, 60, expected);
-            cmdEntry.Duration = response[RestUrl.DURATION];
-            cmdEntry.Response = ParseResponse(response[RestUrl.RESPONSE], cmd);
+            cmdEntry.Duration = response[DURATION];
+            cmdEntry.Response = ParseResponse(response[RESPONSE], cmd);
             return cmdEntry.Response;
         }
+
         private Dictionary<string, string> SendCliCommand(string cmd, int maxWait, string expected = null)
         {
             if (cmd == null) throw new SwitchCommandError("Command line is empty!");
@@ -272,8 +291,8 @@ namespace PoEWizard.Comm
                     this._prev_command_failed = null;
                     Dictionary<string, string> response = new Dictionary<string, string>
                     {
-                        [RestUrl.RESPONSE] = "",
-                        [RestUrl.DURATION] = ""
+                        [RESPONSE] = "",
+                        [DURATION] = ""
                     };
                     DateTime startTime = DateTime.Now;
                     string result = null;
@@ -287,8 +306,8 @@ namespace PoEWizard.Comm
                         Thread.Sleep(200);
                         result = WaitEndDataReceived(cmd, 10, "copy images before reloading");
                     }
-                    response[RestUrl.RESPONSE] = result;
-                    response[RestUrl.DURATION] = Utils.CalcStringDuration(startTime);
+                    response[RESPONSE] = result;
+                    response[DURATION] = Utils.CalcStringDuration(startTime);
                     return response;
                 }
                 else
@@ -603,7 +622,7 @@ namespace PoEWizard.Comm
                 Dictionary<string, string> result = new Dictionary<string, string>
                 {
                     [CMD] = cmd,
-                    [RestUrl.OUTPUT] = response,
+                    [OUTPUT] = response,
                     [PROMPT] = this.SessionPrompt
                 };
                 return result;

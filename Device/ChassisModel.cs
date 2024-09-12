@@ -28,6 +28,8 @@ namespace PoEWizard.Device
         public string Fpga { get; set; }
         public string Cpld { get; set; }
         public int Cpu { get; set; }
+        public double FlashSize { get; set; }
+        public string FreeFlash { get; set; }
 
         public ChassisModel(Dictionary<string, string> dict)
         {

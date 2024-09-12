@@ -24,6 +24,7 @@ namespace PoEWizard.Device
         public int Cpu { get; set; }
         public string Fpga { get; set; }
         public string Cpld { get; set; }
+        public string FreeFlash { get; set; }
         #endregion
 
         public string DefaultGwy { get; set; }
@@ -291,6 +292,7 @@ namespace PoEWizard.Device
             MacAddress = chassis.MacAddress;
             Fpga = chassis.Fpga;
             Cpld = chassis.Cpld;
+            FreeFlash = chassis.FreeFlash;
         }
 
         private void UpdateTemperatureSelectedSlot()
@@ -308,6 +310,31 @@ namespace PoEWizard.Device
             ChassisModel chassis = GetChassis(SelectedSlot);
             if (chassis == null) return;
             Cpu = chassis.Cpu;
+        }
+
+        public void LoadFlashFromList(string data)
+        {
+            List<Dictionary<string, string>> dictList = CliParseUtils.ParseFreeSpace(data);
+            if (dictList == null || dictList.Count == 0) return;
+            foreach(Dictionary<string, string> dict in dictList)
+            {
+                int chassisNr = Utils.StringToInt(Utils.GetDictValue(dict, P_CHASSIS));
+                ChassisModel chassis = GetChassis(chassisNr);
+                if (chassis != null)
+                {
+                    long freeSize = Utils.StringToLong(Utils.GetDictValue(dict, FLASH));
+                    chassis.FreeFlash = Utils.PrintNumberBytes(freeSize);
+                }
+            }
+            UpdateFlashSelectedSlot();
+        }
+
+        private void UpdateFlashSelectedSlot()
+        {
+            if (string.IsNullOrEmpty(SelectedSlot)) SelectedSlot = "1/1";
+            ChassisModel chassis = GetChassis(SelectedSlot);
+            if (chassis == null) return;
+            FreeFlash = chassis.FreeFlash;
         }
 
         public void UpdateCpuThreshold(Dictionary<string, string> dict)
