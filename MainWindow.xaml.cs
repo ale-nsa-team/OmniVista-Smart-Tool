@@ -703,8 +703,8 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.Connect(reportResult));
-                await CheckSwitchScanResult($"Connect to switch {device.Name}...", startTime);
                 UpdateConnectedState();
+                await CheckSwitchScanResult($"Connect to switch {device.Name}...", startTime);
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
                     await AskRebootCertified();
