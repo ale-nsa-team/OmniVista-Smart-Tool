@@ -685,7 +685,6 @@ namespace PoEWizard
                     device.Login = "admin";
                     device.Password = lastPwd;
                 }
-                restApiService = new RestApiService(device, progress);
                 if (device.IsConnected)
                 {
                     string textMsg = $"Disconnecting switch {device.Name}";
@@ -699,6 +698,7 @@ namespace PoEWizard
                     SetDisconnectedState();
                     return;
                 }
+                restApiService = new RestApiService(device, progress);
                 isClosing = false;
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
