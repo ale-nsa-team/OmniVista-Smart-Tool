@@ -15,6 +15,7 @@ namespace PoEWizard.Components
 
         public CfgWizPage2(ServerModel srvData)
         {
+            string tz = srvData.Timezone; //saving before calling InitializeComponent because it's resetting it
             InitializeComponent();
             if (MainWindow.theme == ThemeType.Dark)
             {
@@ -26,34 +27,13 @@ namespace PoEWizard.Components
             }
 
             serverData = srvData;
+            serverData.Timezone = tz;
             DataContext = serverData;
         }
 
         private void OnPageLoaded(object sender, RoutedEventArgs e)
         {
             _defaultGwy.Focus();
-        }
-
-        private void Text_Changed(object sender, RoutedEventArgs e)
-        {
-            if (sender is TextBox tb)
-            {
-                BindingExpression b = BindingOperations.GetBindingExpression(tb, TextBox.TextProperty);
-                if (!b?.HasValidationError ?? false)
-                {
-                    //serverData.Save(b.ResolvedSourcePropertyName, tb.Text);
-                }
-            }
-        }
-
-        private void Option_Changed(object sender, RoutedEventArgs e)
-        {
-            if (sender is CheckBox cb)
-            {
-                if (!cb.IsKeyboardFocusWithin) return;
-                BindingExpression b = BindingOperations.GetBindingExpression(cb, CheckBox.IsCheckedProperty);
-                //serverData.Save(b.ResolvedSourcePropertyName, cb.IsChecked.ToString());
-            }
         }
     }
 }
