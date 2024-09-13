@@ -1432,6 +1432,10 @@ namespace PoEWizard
                 {
                     _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
                 }
+                else 
+                {
+                    _slotsView.CellStyle = currentDict["gridCell"] as Style;
+                }
                 _slotsView.SelectedIndex = selectedSlotIndex >= 0 && _slotsView.Items?.Count > selectedSlotIndex ? selectedSlotIndex : 0;
                 _slotsView.Visibility = Visibility.Visible;
                 _portList.Visibility = Visibility.Visible;
