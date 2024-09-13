@@ -208,6 +208,7 @@
             <DataGrid x:Name="_slotsView"
                       Visibility="Hidden"
                       Style="{DynamicResource defaultGrid}" 
+                      MaxHeight="150"
                       ColumnHeaderStyle="{DynamicResource gridHeader}"
                       CellStyle="{DynamicResource gridCell}"
                       IsReadOnly="True"
