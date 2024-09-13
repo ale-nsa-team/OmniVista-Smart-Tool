@@ -433,11 +433,12 @@ namespace PoEWizard.Data
             return table;
         }
 
-        public static Dictionary<string, string> ParseInfoSize(string inputData, string filter)
+        public static List<Dictionary<string, string>> ParseDiskSize(string inputData, string filter = null)
         {
             string data = inputData.Replace(", ", "\n");
             string[] split;
-            Dictionary<string, string> dict = new Dictionary<string, string>();
+            List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();
+            Dictionary<string, string> dict;
             using (StringReader reader = new StringReader(data))
             {
                 string line;
@@ -446,45 +447,30 @@ namespace PoEWizard.Data
                 {
                     string sLine = line.Trim();
                     if (sLine.Length == 0) continue;
-                    if (sLine.Contains(filter))
+                    if (!string.IsNullOrEmpty(filter) && !sLine.Contains(filter)) continue;
+                    string subStr = Utils.RemoveSpaces(sLine);
+                    split = subStr.Trim().Split(' ');
+                    dict = new Dictionary<string, string>();
+                    foreach (string sVal in split)
                     {
-                        string subStr = new Regex(" {2,}").Replace(sLine, " ");
-                        split = subStr.Trim().Split(' ');
-                        foreach(string sVal in split)
+                        string sValue = sVal.Trim();
+                        if (string.IsNullOrEmpty(sValue) || sValue == FILE_SYSTEM || sValue == TOTAL_SIZE ||
+                            sValue == SIZE_USED || sValue == SIZE_AVAILABLE || sValue == DISK_USAGE || sValue == MOUNTED) continue;
+                        if (!dict.ContainsKey(FILE_SYSTEM)) dict[FILE_SYSTEM] = sValue;
+                        else if (!dict.ContainsKey(TOTAL_SIZE)) dict[TOTAL_SIZE] = sValue;
+                        else if (!dict.ContainsKey(SIZE_USED)) dict[SIZE_USED] = sValue;
+                        else if (!dict.ContainsKey(SIZE_AVAILABLE)) dict[SIZE_AVAILABLE] = sValue;
+                        else if (!dict.ContainsKey(DISK_USAGE)) dict[DISK_USAGE] = sValue;
+                        else if (!dict.ContainsKey(MOUNTED)) dict[MOUNTED] = sValue;
+                        if (dict.Count >= 6)
                         {
-                            string sValue = sVal.Trim();
-                            if (string.IsNullOrEmpty(sValue)) continue;
-                            if (!dict.ContainsKey("Filesystem"))
-                            {
-                                dict["Filesystem"] = sValue;
-                                continue;
-                            }
-                            else if (!dict.ContainsKey("Size"))
-                            {
-                                dict["Size"] = sValue;
-                                continue;
-                            }
-                            else if (!dict.ContainsKey("Used"))
-                            {
-                                dict["Used"] = sValue;
-                                continue;
-                            }
-                            else if (!dict.ContainsKey("Available"))
-                            {
-                                dict["Available"] = sValue;
-                                continue;
-                            }
-                            else if (!dict.ContainsKey("Usage"))
-                            {
-                                dict["Usage"] = sValue;
-                                continue;
-                            }
-                            if (dict.Count >= 5) break;
+                            table.Add(dict);
+                            break;
                         }
                     }
                 }
             }
-            return dict;
+            return table;
         }
 
         private static Dictionary<string, string> ParseTable(string data, Regex regex)

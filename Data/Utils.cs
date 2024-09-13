@@ -273,6 +273,11 @@ namespace PoEWizard.Data
             return inputStr.Substring(startPos, length);
         }
 
+        public static string RemoveSpaces(string inputStr)
+        {
+            return new Regex(" {2,}").Replace(inputStr, " ");
+        }
+
         public static bool IsValidIP(string ipAddr)
         {
             try

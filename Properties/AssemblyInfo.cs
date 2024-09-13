@@ -9,7 +9,7 @@ using System.Windows;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Alcatel-Lucent Enterprise")]
-[assembly: AssemblyProduct("ALE Installers Toolkit")]
+[assembly: AssemblyProduct("AOS Toolkit")]
 [assembly: AssemblyCopyright("Copyright ©  2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
