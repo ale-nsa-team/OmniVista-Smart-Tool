@@ -1671,7 +1671,8 @@ namespace PoEWizard.Comm
                 chassis.PowerRemaining = chassis.PowerBudget - chassis.PowerConsumed;
                 foreach (var ps in chassis.PowerSupplies)
                 {
-                    _dict = SendCommand(new CmdRequest(Command.SHOW_POWER_SUPPLY, ParseType.Vtable, new string[1] { ps.Id.ToString() })) as Dictionary<string, string>;
+                    string psId = chassis.Number > 0 ? $"{chassis.Number} {ps.Id}" : $"{ps.Id}";
+                    _dict = SendCommand(new CmdRequest(Command.SHOW_POWER_SUPPLY, ParseType.Vtable, new string[1] { psId })) as Dictionary<string, string>;
                     ps.LoadFromDictionary(_dict);
                 }
             }
