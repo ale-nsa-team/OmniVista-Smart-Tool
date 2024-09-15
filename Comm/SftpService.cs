@@ -41,7 +41,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                Logger.Error("Error connecting to switch", ex);
+                Logger.Error($"Error connecting to switch {Host} (Port: {Port}, User: {Username})", ex);
                 sftpError = ex.Message;
             }
             return sftpError;

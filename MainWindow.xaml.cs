@@ -116,11 +116,11 @@ namespace PoEWizard
             });
             //check cli arguments
             string[] args = Environment.GetCommandLineArgs();
-            if (args.Length > 3)
+            if (args.Length > 3 && !string.IsNullOrEmpty(args[1]) && Utils.IsValidIP(args[1]) && !string.IsNullOrEmpty(args[2]) && !string.IsNullOrEmpty(args[3]))
             {
                 device.IpAddress = args[1];
                 device.Login = args[2];
-                device.Password = args[3];
+                device.Password = args[3].Replace("\r\n", string.Empty);
                 Connect();
             }
         }
