@@ -31,16 +31,20 @@ namespace PoEWizard.Comm
             _sftpClient = new SftpClient(host, port, user, password);
         }
 
-        public void Connect()
+        public string Connect()
         {
+            string sftpError;
             try
             {
                 if (!_sftpClient.IsConnected) _sftpClient.Connect();
+                return null;
             }
             catch (Exception ex)
             {
                 Logger.Error("Error connecting to switch.", ex);
+                sftpError = ex.Message;
             }
+            return sftpError;
         }
 
         public void ResetConnection()
