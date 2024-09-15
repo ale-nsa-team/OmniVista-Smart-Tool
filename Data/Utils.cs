@@ -90,6 +90,11 @@ namespace PoEWizard.Data
                 string number = ExtractNumber(strNumber);
                 if (!string.IsNullOrEmpty(number))
                 {
+                    if (number.Contains("."))
+                    {
+                        string[] split = number.Split('.');
+                        if (split.Length == 2) number = split[0]; else number = number.Replace(".", string.Empty);
+                    }
                     bool isNumeric = int.TryParse(number.Trim(), out int intVal);
                     if (isNumeric && (intVal >= 0)) return intVal;
                 }
@@ -110,7 +115,7 @@ namespace PoEWizard.Data
             try
             {
                 string number = ExtractNumber(strNumber);
-                if (!string.IsNullOrEmpty(number)) return ParseToDouble(strNumber);
+                if (!string.IsNullOrEmpty(number)) return ParseToDouble(number);
             }
             catch { }
             return 0;
@@ -148,6 +153,12 @@ namespace PoEWizard.Data
         {
             try
             {
+                if (strNumber.Contains("."))
+                {
+                    string[] split = strNumber.Split('.');
+                    if (split.Length == 2) return new string(strNumber.Where(c => char.IsDigit(c) || c == '.').ToArray());
+                    else strNumber = strNumber.Replace(".", string.Empty);
+                }
                 return new string(strNumber.Where(char.IsDigit).ToArray());
             }
             catch { }
@@ -385,8 +396,8 @@ namespace PoEWizard.Data
 
         public static double GetThresholdPercentage(object[] values)
         {
-            double cpu = double.TryParse(values[0].ToString(), out double d) ? d : 0;
-            double thrshld = double.TryParse(values[1].ToString(), out d) ? d : 0;
+            double cpu = StringToDouble(values[0].ToString());
+            double thrshld = StringToDouble(values[1].ToString());
             if (thrshld == 0) return 1;
             return 1 - cpu / thrshld;
         }

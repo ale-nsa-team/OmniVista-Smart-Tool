@@ -21,7 +21,7 @@ namespace PoEWizard.Device
         public string MacAddress { get; set; }
         public string CurrTemperature { get; set; }
         public ThresholdType TemperatureStatus { get; set; }
-        public int Cpu { get; set; }
+        public string Cpu { get; set; }
         public string Fpga { get; set; }
         public string Cpld { get; set; }
         public string FreeFlash { get; set; }
@@ -313,7 +313,8 @@ namespace PoEWizard.Device
             if (string.IsNullOrEmpty(SelectedSlot)) SelectedSlot = "1/1";
             ChassisModel chassis = GetChassis(SelectedSlot);
             if (chassis == null) return;
-            Cpu = chassis.Cpu;
+            string cpuPercent = $"{chassis.Cpu}%";
+            Cpu = chassis.IsMaster ? cpuPercent + MASTER : cpuPercent + SLAVE;
         }
 
         public void LoadFlashFromList(string data)

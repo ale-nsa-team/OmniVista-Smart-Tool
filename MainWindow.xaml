@@ -133,7 +133,7 @@
                             </MultiBinding>
                         </TextBlock.Foreground>
                     </TextBlock>
-                    <TextBlock Style="{DynamicResource infoVal}" Margin="-10,0,0,0" Text="%">
+                    <TextBlock Style="{DynamicResource infoVal}" Margin="-10,0,0,0" >
                         <TextBlock.Foreground>
                             <MultiBinding Converter="{StaticResource CpuUsageToColorConverter}">
                                 <Binding Path="Cpu" />
