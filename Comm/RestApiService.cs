@@ -165,7 +165,7 @@ namespace PoEWizard.Comm
                 if (File.Exists(filePath))
                 {
                     string prevCfgSnapshot = File.ReadAllText(filePath);
-                    if (!string.IsNullOrEmpty(prevCfgSnapshot)) return new ConfigChanges(SwitchModel, prevCfgSnapshot).ToString();
+                    if (!string.IsNullOrEmpty(prevCfgSnapshot)) return ConfigChanges.GetChanges(SwitchModel, prevCfgSnapshot);
                 }
             }
             catch (Exception ex)
@@ -515,7 +515,7 @@ namespace PoEWizard.Comm
             {
                 if (SwitchModel.SyncStatus == SyncStatusType.Synchronized) return;
                 string msg = $"Writing memory on switch {SwitchModel.Name}";
-                StartProgressBar($"{msg} ...", 25);
+                StartProgressBar($"{msg} ...", 30);
                 SendCommand(new CmdRequest(Command.WRITE_MEMORY));
                 progressStartTime = DateTime.Now;
                 double dur = 0;
@@ -526,7 +526,7 @@ namespace PoEWizard.Comm
                     try
                     {
                         int period = (int)dur;
-                        if (period > 15 && period % 5 == 0) GetSyncStatus();
+                        if (period > 20 && period % 5 == 0) GetSyncStatus();
                     }
                     catch { }
                     if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
@@ -564,6 +564,20 @@ namespace PoEWizard.Comm
             {
                 string txt = Utils.PurgeFiles(folder, MAX_NB_SNAPSHOT_SAVED);
                 if (!string.IsNullOrEmpty(txt)) Logger.Warn($"Purging snapshot configuration files{txt}");
+                if (SwitchModel.SyncStatus == SyncStatusType.Synchronized)
+                {
+                    string filePath = Path.Combine(folder, Path.Combine(folder, $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}"));
+                    if (File.Exists(filePath))
+                    {
+                        string currSnapshot = File.ReadAllText(filePath);
+                        string cfgChanges = ConfigChanges.GetChanges(SwitchModel, currSnapshot);
+                        if (!string.IsNullOrEmpty(cfgChanges))
+                        {
+                            Logger.Info($"Switch {SwitchModel.Name} was synchronized but snapshot config file {SwitchModel.IpAddress}{SNAPSHOT_SUFFIX} was updated!");
+                            File.WriteAllText(filePath, SwitchModel.ConfigSnapshot);
+                        }
+                    }
+                }
             }
             else Directory.CreateDirectory(folder);
         }
