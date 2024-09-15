@@ -135,6 +135,7 @@ namespace PoEWizard.Device
                         List<Dictionary<string, string>> chasList = dictList.Where(d => GetChassisId(d) == i).ToList();
                         if (chasList?.Count == 0) continue;
                         chassis = this.GetChassis(GetChassisId(chasList[0]));
+                        if (chassis == null) continue;
                         int nslots = chasList.GroupBy(c => GetSlotId(c)).Count();
                         for (int j = 1; j <= nslots; j++)
                         {
@@ -147,6 +148,7 @@ namespace PoEWizard.Device
                                 slot = new SlotModel(chassisSlot);
                                 chassis.Slots.Add(slot);
                             }
+                            slot.IsMaster = chassis.IsMaster;
                             foreach (var dict in slotList)
                             {
                                 chassisSlot = new ChassisSlotPort(dict[CHAS_SLOT_PORT]);
@@ -287,12 +289,13 @@ namespace PoEWizard.Device
             if (string.IsNullOrEmpty(SelectedSlot)) SelectedSlot = "1/1";
             ChassisModel chassis = GetChassis(SelectedSlot);
             if (chassis == null) return;
-            Model = chassis.Model;
-            SerialNumber = chassis.SerialNumber;
-            MacAddress = chassis.MacAddress;
-            Fpga = chassis.Fpga;
-            Cpld = chassis.Cpld;
-            FreeFlash = chassis.FreeFlash;
+            string chasType = chassis.IsMaster ? MASTER : SLAVE;
+            Model = chassis.Model + chasType;
+            SerialNumber = chassis.SerialNumber + chasType;
+            MacAddress = chassis.MacAddress + chasType;
+            Fpga = !string.IsNullOrEmpty(chassis.Fpga) ? chassis.Fpga + chasType : string.Empty;
+            Cpld = !string.IsNullOrEmpty(chassis.Cpld) ? chassis.Cpld + chasType : string.Empty;
+            FreeFlash = chassis.FreeFlash + chasType;
         }
 
         private void UpdateTemperatureSelectedSlot()
@@ -300,7 +303,8 @@ namespace PoEWizard.Device
             if (string.IsNullOrEmpty(SelectedSlot)) SelectedSlot = "1/1";
             ChassisModel chassis = GetChassis(SelectedSlot);
             if (chassis == null) return;
-            CurrTemperature = $"{(chassis.Temperature.Current * 9 / 5) + 32}{F} ({chassis.Temperature.Current}{C})";
+            string chasType = chassis.IsMaster ? MASTER : SLAVE;
+            CurrTemperature = $"{(chassis.Temperature.Current * 9 / 5) + 32}{F} ({chassis.Temperature.Current}{C})" + chasType;
             TemperatureStatus = chassis.Temperature.Status;
         }
 

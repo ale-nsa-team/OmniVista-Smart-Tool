@@ -51,13 +51,6 @@ namespace PoEWizard.Device
             SupportsPoE = true;
         }
 
-        public ChassisModel(string sn, string mac, string model)
-        {
-            SerialNumber = sn;
-            MacAddress = mac;
-            Model = model;
-        }
-
         public void LoadFromList(List<Dictionary<string, string>> list)
         {
             foreach (Dictionary<string, string> dict in list)
@@ -66,6 +59,7 @@ namespace PoEWizard.Device
                 var slot = this.Slots.FirstOrDefault(x => x.Number == slotId);
                 if (slot == null) return;
                 slot.LoadFromDictionary(dict);
+                slot.IsMaster = this.IsMaster;
             }
         }
 

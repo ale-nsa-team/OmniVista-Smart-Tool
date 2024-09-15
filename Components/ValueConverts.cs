@@ -160,7 +160,9 @@ namespace PoEWizard.Components
                 if (Utils.IsInvalid(values)) return Colors.Default;
                 string versionType = parameter?.ToString() ?? FPGA;
                 string model = values[0].ToString();
+                if (model.Contains("(")) model = RemoveMasterSlave(model);
                 string versions = values[1].ToString();
+                if (versions.Contains("(")) versions = RemoveMasterSlave(versions);
                 if (string.IsNullOrEmpty(versions)) return Colors.Unknown;
                 int[] minversion = Utils.GetMinimunVersion(model, versionType);
                 if (minversion == null) return Colors.Default;
@@ -173,6 +175,13 @@ namespace PoEWizard.Components
                 Logger.Error(ex);
             }
             return Colors.Default;
+        }
+
+        private static string RemoveMasterSlave(string prop)
+        {
+            string[] split = prop.Split('(');
+            if (split.Length > 1 && !string.IsNullOrEmpty(split[0])) prop = split[0].Trim();
+            return prop;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

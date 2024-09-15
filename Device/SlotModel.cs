@@ -28,6 +28,7 @@ namespace PoEWizard.Device
         public bool IsHiResDetection { get; set; }
         public bool IsInitialized { get; set; }
         public bool SupportsPoE { get; set; }
+        public bool IsMaster { get; set; }
 
         public SlotModel() { }
 
@@ -37,6 +38,7 @@ namespace PoEWizard.Device
             this.Name = $"{chassisSlot.ChassisNr}/{chassisSlot.SlotNr}";
             this.Ports = new List<PortModel>();
             this.SupportsPoE = true;
+            this.IsMaster = true;
         }
 
         public void LoadFromDictionary(Dictionary<string, string> dict)
@@ -89,12 +91,6 @@ namespace PoEWizard.Device
         public PortModel GetPort(string portNumber)
         {
             return Ports.FirstOrDefault(p => p.Number == portNumber);
-        }
-
-        private int ParseNumber(string slot, int index)
-        {
-            string[] parts = slot.Split('/');
-            return parts.Length > index ? (int.TryParse(parts[index], out int n) ? n : 0) : 0;
         }
 
         private double ParseDouble(string val)

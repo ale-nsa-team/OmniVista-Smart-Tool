@@ -318,6 +318,9 @@ namespace PoEWizard.Data
         public const string SIZE_AVAILABLE = "Available";
         public const string DISK_USAGE = "Usage";
         public const string MOUNTED = "Mounted";
+        // Used to display switch data related to chassis Master or Slave
+        public const string MASTER = " (Master)";
+        public const string SLAVE = " (Slave)";
         #endregion
 
         #region regex patterns
