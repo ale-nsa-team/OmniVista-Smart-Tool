@@ -15,6 +15,7 @@ namespace PoEWizard.Data
         public Dictionary<string, string> Response { get; set; }
 
         public LinuxCommand(string cmd) : this(cmd, null, 15, 0) { }
+        public LinuxCommand(string cmd, string expected) : this(cmd, expected, 15, 0) { }
         public LinuxCommand(string cmd, string expected, int maxWaitSec) : this(cmd, expected, maxWaitSec, 0) { }
         public LinuxCommand(string cmd, string expected, int maxWaitSec, int delaySec)
         {
