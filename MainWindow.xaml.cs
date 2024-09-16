@@ -17,6 +17,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Markup.Localizer;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static PoEWizard.Data.Constants;
@@ -653,6 +654,33 @@ namespace PoEWizard
             }
 
             await Task.Run(() => restApiService.RunSwitchCommand(cmd));
+
+            if (cb.IsChecked == true)
+            {
+                ShowProgress($"Turning on PoE on slot {selectedSlot.Name}");
+                ShowInfoBox($"Waiting for slot {selectedSlot.Name} to come up...");
+                int count = 0;
+                while (count < 30)
+                {
+                    await Task.Run(() => GetSlotPowerStatus(selectedSlot));
+                    if (selectedSlot.IsInitialized) break;
+                    await Task.Delay(2000);
+                    count++;
+                }
+                await Task.Run(() => {
+                    List<Dictionary<string, string>> dictList = restApiService.RunSwitchCommand(new CmdRequest(Command.SHOW_LAN_POWER_CONFIG, ParseType.Htable2, selectedSlot.Name)) as List<Dictionary<string, string>>;
+                    selectedSlot.LoadFromList(dictList, DictionaryType.LanPowerCfg);
+                });
+                HideInfoBox();
+                HideProgress();
+            }
+            else
+            {
+                selectedSlot.PoeStatus = SlotPoeStatus.Off;
+                selectedSlot.IsInitialized = false;
+            }
+            slotView = new SlotView(device);
+            _slotsView.ItemsSource = slotView.Slots;
         }
 
         private async void FPoE_Click(object sender, RoutedEventArgs e)
@@ -1129,6 +1157,12 @@ namespace PoEWizard
                 HideProgress();
                 HideInfoBox();
             }
+        }
+
+        private void GetSlotPowerStatus(SlotModel slot)
+        {
+            var _dictList = restApiService.RunSwitchCommand(new CmdRequest(Command.SHOW_SLOT_LAN_POWER_STATUS, ParseType.Htable2, slot.Name)) as List<Dictionary<string, string>>;
+            if (_dictList?.Count > 0) slot.LoadFromDictionary(_dictList[0]);
         }
 
         private async Task CheckSwitchScanResult(string title, DateTime startTime)

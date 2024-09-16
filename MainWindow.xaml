@@ -219,7 +219,7 @@
                     <DataGridTextColumn Header="#Ports" Width="*" Binding="{Binding Path=NbPorts}"/>
                     <DataGridTextColumn Header="#Poe Ports" Width="*" Binding="{Binding Path=NbPoePorts}" />
                     <DataGridTextColumn Header="Budget (Watts)" Width="*" Binding="{Binding Path=Budget}" />
-                    <DataGridTextColumn Header="Consumption (Watts)" Width="*" Binding="{Binding Path=Power}"/>
+                    <DataGridTextColumn Header="Consumption (Watts)" Width="1.1*" Binding="{Binding Path=Power}"/>
                     <DataGridTemplateColumn Header="802.3BT Support" Width="1.1*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

@@ -30,7 +30,7 @@ namespace PoEWizard.Components
         private SystemModel sysOrig;
         private FeatureModel featOrig;
         private SnmpModel snmpOrig;
-        
+
         public bool MustDisconnect { get; set; } = false;
 
         public bool IsRebootSwitch { get; set; } = false;
@@ -60,7 +60,7 @@ namespace PoEWizard.Components
             snmpData = new SnmpModel();
             pageNo = 1;
             sysOrig = sysData.Clone() as SystemModel;
-            _btnCfgBack.IsEnabled = false;            
+            _btnCfgBack.IsEnabled = false;
             _cfgFrame.Navigate(new CfgWizPage1(sysData));
             //_btnSubmit.IsEnabled = false;
         }
@@ -77,7 +77,7 @@ namespace PoEWizard.Components
                 GetSnmpData();
             });
 
-            srvOrig = srvData.Clone() as ServerModel;            
+            srvOrig = srvData.Clone() as ServerModel;
             featOrig = features.Clone() as FeatureModel;
             snmpOrig = snmpData.Clone() as SnmpModel;
             HideInfoBox();
@@ -180,16 +180,11 @@ namespace PoEWizard.Components
                 {
                     Logger.Info($"Config wizard: applying command {cmd.Command} {(cmd.Data != null ? "With data: " + string.Join(", ", cmd.Data) : "")}");
                     restSrv.RunSwitchCommand(cmd);
-                    res = cmd.Command == Command.START_STOP_SLOT_POE;
-                    if (res)
-                    {
-                        WaitSlotUp();
-                    }                
+                    res = true;
                 }
                 catch (Exception ex)
                 {
-                    if (!Regex.IsMatch(ex.Message, MATCH_POE_RUNNING))
-                        Errors.Add(ex.Message);
+                    Errors.Add(ex.Message);
                 }
             }
             return res || !message.Contains("Features");
@@ -258,7 +253,7 @@ namespace PoEWizard.Components
             dicList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_VLAN, ParseType.Htable)) as List<Dictionary<string, string>>;
             if (dicList.Count > 0)
             {
-                foreach(var dic in dicList)
+                foreach (var dic in dicList)
                 {
                     if (dic["type"] == "std")
                     {
@@ -315,31 +310,6 @@ namespace PoEWizard.Components
                     snmpData.Stations.Add(station);
                 }
             }
-        }
-
-        private void WaitSlotUp()
-        {
-            foreach (var chassis in device.ChassisList)
-            {
-                foreach (var slot in chassis.Slots)
-                {
-                    ShowInfoBox($"Waiting for slot {slot.Name} to come up...");
-                    int count = 0;
-                    while (count < 15)
-                    {
-                        Thread.Sleep(2000);
-                        GetSlotPowerStatus(slot);
-                        if (slot.IsInitialized) break;
-                        count++;
-                    }
-                }
-            }
-        }
-
-        private void GetSlotPowerStatus(SlotModel slot)
-        {
-            var _dictList = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_SLOT_LAN_POWER_STATUS, ParseType.Htable2, slot.Name)) as List<Dictionary<string, string>>;
-            if (_dictList?.Count > 0) slot.LoadFromDictionary(_dictList[0]);
         }
 
         private void ShowInfoBox(string message)
