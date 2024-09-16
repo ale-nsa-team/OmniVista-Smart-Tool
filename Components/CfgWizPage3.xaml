@@ -23,9 +23,6 @@
     </Page.Resources>
 
     <StackPanel Style="{DynamicResource cfgWindow}" Margin="70,0,0,0">
-        <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-            <Label Margin="82,0,0,0">Enable PoE</Label>
-        </StackPanel>
         <StackPanel Orientation="Horizontal">
             <Label>Disable Insecure Protocols</Label>
             <CheckBox x:Name="_disableFtp" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding NoInsecureProtos}" />
