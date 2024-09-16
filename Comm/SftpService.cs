@@ -120,7 +120,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                if (!ex.Message.Contains("No such file")) Logger.Error(ex);
             }
         }
 

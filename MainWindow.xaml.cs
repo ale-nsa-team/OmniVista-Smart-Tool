@@ -399,6 +399,10 @@ namespace PoEWizard
             {
                 DisableButtons();
                 bool restartPoE = ShowMessageBox("Collect Logs", $"Do you want to recycle PoE on all ports of switch {device.Name} to collect the logs?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
+                string txt = $"Collect Logs launched by the user";
+                if (restartPoE) txt += " (recycle PoE on all ports)";
+                Logger.Activity($"{txt} on switch {device.Name}");
+                Activity.Log(device, $"{txt}.");
                 string sftpError = await RunCollectLogs(restartPoE, null, false);
                 if (!string.IsNullOrEmpty(sftpError)) ShowMessageBox($"Collecting logs on switch {device.Name}", $"Cannot connect secure FTP on switch {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
             }
@@ -998,7 +1002,6 @@ namespace PoEWizard
                 txt.Append(")\n\tDuration of tar file creation: ").Append(strDur);
                 txt.Append("\n\tTotal duration to generate log file in ").Append(SwitchDebugLogLevel.Debug3).Append(" level: ").Append(strTotalDuration);
                 Logger.Activity(txt.ToString());
-                Activity.Log(device, "Collect Logs.");
             }
             catch (Exception ex)
             {
