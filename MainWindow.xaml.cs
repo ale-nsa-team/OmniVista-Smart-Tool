@@ -645,6 +645,11 @@ namespace PoEWizard
                 {
                     cmd = new CmdRequest(Command.START_STOP_SLOT_POE, selectedSlot.Name, "stop");
                 }
+                else 
+                {
+                    cb.IsChecked = !cb.IsChecked;
+                    return;
+                }
             }
             else
             {
