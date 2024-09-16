@@ -40,7 +40,9 @@ namespace PoEWizard
         private PortModel selectedPort;
         private int selectedPortIndex;
         private SlotModel selectedSlot;
+        private int prevSlot;
         private int selectedSlotIndex;
+        private bool isWaitingSlotOn = false;
         private WizardReport reportResult = new WizardReport();
         private bool isClosing = false;
         private DeviceType selectedDeviceType;
@@ -569,6 +571,7 @@ namespace PoEWizard
         {
             if (_slotsView.SelectedItem is SlotModel slot)
             {
+                prevSlot = selectedSlotIndex;
                 selectedSlot = slot;
                 device.SelectedSlot = slot.Name;
                 selectedSlotIndex = _slotsView.SelectedIndex;
@@ -651,9 +654,18 @@ namespace PoEWizard
                     return;
                 }
             }
+            else if (isWaitingSlotOn)
+            {
+                selectedSlot = slotView.Slots[prevSlot];
+                _slotsView.SelectedIndex = prevSlot;
+                ShowMessageBox("PoE On", $"Please wait for slot {selectedSlot.Name} to come up");
+                cb.IsChecked = !cb.IsChecked;
+                return;
+            }
             else
             {
                 cmd = new CmdRequest(Command.START_STOP_SLOT_POE, selectedSlot.Name, "start");
+                isWaitingSlotOn = true;
             }
 
             await Task.Run(() => restApiService.RunSwitchCommand(cmd));
@@ -676,6 +688,7 @@ namespace PoEWizard
                 });
                 HideInfoBox();
                 HideProgress();
+                isWaitingSlotOn = false;
             }
             else
             {
