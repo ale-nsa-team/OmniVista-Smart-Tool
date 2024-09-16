@@ -16,8 +16,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Markup.Localizer;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static PoEWizard.Data.Constants;
@@ -1195,13 +1193,7 @@ namespace PoEWizard
                             }
                         }
                     }
-                    if (resetSlotCnt > 0)
-                    {
-                        await Task.Run(() => WaitTask(20, $"Waiting Ports to come UP on Switch {device.Name}"));
-                        await Task.Run(() => restApiService.RefreshSwitchPorts());
-                        RefreshSlotAndPortsView();
-                        EnableButtons();
-                    }
+                    if (resetSlotCnt > 0) await WaitPortsToComeUP();
                 }
                 Logger.Debug($"{title} completed (duration: {duration})");
             }
@@ -1209,6 +1201,28 @@ namespace PoEWizard
             {
                 Logger.Error(ex);
             }
+        }
+
+        private async Task WaitPortsToComeUP()
+        {
+            await Task.Run(() => WaitSlotStartUp());
+            RefreshSlotAndPortsView();
+            EnableButtons();
+        }
+
+        private void WaitSlotStartUp()
+        {
+            string txt = $"Waiting Ports to come UP on Switch {device.Name}";
+            DateTime startTime = DateTime.Now;
+            int dur = 0;
+            progress.Report(new ProgressReport($"{txt} ..."));
+            while (dur < 20)
+            {
+                Thread.Sleep(1000);
+                dur = (int)Utils.GetTimeDuration(startTime);
+                progress.Report(new ProgressReport($"{txt} ({dur} sec) ..."));
+            }
+            restApiService.RefreshSwitchPorts();
         }
 
         private async Task RunWizardCamera()
@@ -1380,19 +1394,6 @@ namespace PoEWizard
                 if (device.IsConnected) _traffic.IsEnabled = true; else _traffic.IsEnabled = false;
                 HideProgress();
                 HideInfoBox();
-            }
-        }
-
-        private void WaitTask(int waitTime, string txt)
-        {
-            DateTime startTime = DateTime.Now;
-            int dur = 0;
-            progress.Report(new ProgressReport($"{txt} ..."));
-            while (dur < waitTime)
-            {
-                Thread.Sleep(1000);
-                dur = (int)Utils.GetTimeDuration(startTime);
-                progress.Report(new ProgressReport($"{txt} ({dur} sec) ..."));
             }
         }
 
