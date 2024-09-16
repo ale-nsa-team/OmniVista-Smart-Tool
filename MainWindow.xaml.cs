@@ -1172,22 +1172,24 @@ namespace PoEWizard
 
         private async Task WaitPortsToComeUP()
         {
-            await Task.Run(() =>
-            {
-               string txt = $"Waiting Ports to come UP on Switch {device.Name}";
-                DateTime startTime = DateTime.Now;
-                int dur = 0;
-                progress.Report(new ProgressReport($"{txt} ..."));
-                while (dur < 20)
-                {
-                    Thread.Sleep(1000);
-                    dur = (int)Utils.GetTimeDuration(startTime);
-                    progress.Report(new ProgressReport($"{txt} ({dur} sec) ..."));
-                }
-                restApiService.RefreshSwitchPorts();
-            });
+            await Task.Run(() => WaitSlotStartUp());
             RefreshSlotAndPortsView();
             EnableButtons();
+        }
+
+        private void WaitSlotStartUp()
+        {
+            string txt = $"Waiting Ports to come UP on Switch {device.Name}";
+            DateTime startTime = DateTime.Now;
+            int dur = 0;
+            progress.Report(new ProgressReport($"{txt} ..."));
+            while (dur < 20)
+            {
+                Thread.Sleep(1000);
+                dur = (int)Utils.GetTimeDuration(startTime);
+                progress.Report(new ProgressReport($"{txt} ({dur} sec) ..."));
+            }
+            restApiService.RefreshSwitchPorts();
         }
 
         private async Task RunWizardCamera()
