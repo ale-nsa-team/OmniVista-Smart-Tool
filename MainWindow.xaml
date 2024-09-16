@@ -268,6 +268,16 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Master" Width="1.1*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=IsMaster, Converter={StaticResource BoolToSymbolConverter}}"
+                                           Foreground="{Binding Path=IsMaster,
+                                           Converter={StaticResource ValueToColorConverter},
+                                           ConverterParameter=Boolean}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

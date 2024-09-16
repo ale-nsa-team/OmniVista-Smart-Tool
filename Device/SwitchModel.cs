@@ -289,13 +289,12 @@ namespace PoEWizard.Device
             if (string.IsNullOrEmpty(SelectedSlot)) SelectedSlot = "1/1";
             ChassisModel chassis = GetChassis(SelectedSlot);
             if (chassis == null) return;
-            string chasType = chassis.IsMaster ? MASTER : SLAVE;
-            Model = chassis.Model + chasType;
-            SerialNumber = chassis.SerialNumber + chasType;
-            MacAddress = chassis.MacAddress + chasType;
-            Fpga = !string.IsNullOrEmpty(chassis.Fpga) ? chassis.Fpga + chasType : string.Empty;
-            Cpld = !string.IsNullOrEmpty(chassis.Cpld) ? chassis.Cpld + chasType : string.Empty;
-            FreeFlash = chassis.FreeFlash + chasType;
+            Model = SetMasterSlave(chassis, chassis.Model);
+            SerialNumber = SetMasterSlave(chassis, chassis.SerialNumber);
+            MacAddress = SetMasterSlave(chassis, chassis.MacAddress);
+            Fpga = !string.IsNullOrEmpty(chassis.Fpga) ? SetMasterSlave(chassis, chassis.Fpga) : string.Empty;
+            Cpld = !string.IsNullOrEmpty(chassis.Cpld) ? SetMasterSlave(chassis, chassis.Cpld) : string.Empty;
+            FreeFlash = SetMasterSlave(chassis, chassis.FreeFlash);
         }
 
         private void UpdateTemperatureSelectedSlot()
@@ -303,8 +302,7 @@ namespace PoEWizard.Device
             if (string.IsNullOrEmpty(SelectedSlot)) SelectedSlot = "1/1";
             ChassisModel chassis = GetChassis(SelectedSlot);
             if (chassis == null) return;
-            string chasType = chassis.IsMaster ? MASTER : SLAVE;
-            CurrTemperature = $"{(chassis.Temperature.Current * 9 / 5) + 32}{F} ({chassis.Temperature.Current}{C})" + chasType;
+            CurrTemperature = SetMasterSlave(chassis, $"{(chassis.Temperature.Current * 9 / 5) + 32}{F} ({chassis.Temperature.Current}{C})");
             TemperatureStatus = chassis.Temperature.Status;
         }
 
@@ -313,8 +311,7 @@ namespace PoEWizard.Device
             if (string.IsNullOrEmpty(SelectedSlot)) SelectedSlot = "1/1";
             ChassisModel chassis = GetChassis(SelectedSlot);
             if (chassis == null) return;
-            string cpuPercent = $"{chassis.Cpu}%";
-            Cpu = chassis.IsMaster ? cpuPercent + MASTER : cpuPercent + SLAVE;
+            Cpu = SetMasterSlave(chassis, $"{chassis.Cpu}%");
         }
 
         public void LoadFlashFromList(string data)
@@ -361,25 +358,6 @@ namespace PoEWizard.Device
         {
             ChassisModel cm = GetChassis(slotName);
             return cm?.Slots.FirstOrDefault(s => s.Name == slotName);
-        }
-
-        private PowerSupplyState GetPowerSupplyState()
-        {
-            if (ChassisList != null && ChassisList.Count > 0)
-            {
-                foreach (ChassisModel chassis in ChassisList)
-                {
-                    foreach (PowerSupplyModel ps in chassis.PowerSupplies)
-                    {
-                        if (ps.Status == PowerSupplyState.Down)
-                        {
-                            return PowerSupplyState.Down;
-                        }
-                    }
-                }
-                return PowerSupplyState.Up;
-            }
-            return PowerSupplyState.Unknown;
         }
 
         public void UpdateSwitchUplinks()
@@ -430,6 +408,30 @@ namespace PoEWizard.Device
             SlotModel slotModel = chassisModel.Slots.FirstOrDefault(c => c.Number == slotPort.SlotNr);
             if (slotModel == null) return null;
             return slotModel.Ports.FirstOrDefault(c => c.Number == slotPort.PortNr);
+        }
+
+        private string SetMasterSlave(ChassisModel chassis, string sValue)
+        {
+            if (ChassisList.Count > 1) return $"{sValue}{(chassis.IsMaster ? MASTER : SLAVE)}"; else return sValue;
+        }
+
+        private PowerSupplyState GetPowerSupplyState()
+        {
+            if (ChassisList != null && ChassisList.Count > 0)
+            {
+                foreach (ChassisModel chassis in ChassisList)
+                {
+                    foreach (PowerSupplyModel ps in chassis.PowerSupplies)
+                    {
+                        if (ps.Status == PowerSupplyState.Down)
+                        {
+                            return PowerSupplyState.Down;
+                        }
+                    }
+                }
+                return PowerSupplyState.Up;
+            }
+            return PowerSupplyState.Unknown;
         }
 
         private int GetChassisId(Dictionary<string, string> chas)
