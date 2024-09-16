@@ -56,8 +56,9 @@ namespace PoEWizard.Comm
                 DateTime startTime = DateTime.Now;
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
-                StartProgressBar($"Connecting to switch {SwitchModel.IpAddress} ...", 26);
-                _progress.Report(new ProgressReport($"Connecting to switch {SwitchModel.IpAddress} ..."));
+                string progrMsg = $"Connecting to switch {SwitchModel.IpAddress} ...";
+                StartProgressBar(progrMsg, 28);
+                _progress.Report(new ProgressReport(progrMsg));
                 RestApiClient.Login();
                 UpdateProgressBar(++progressBarCnt); //  1
                 if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to switch {SwitchModel.IpAddress}!");
@@ -72,7 +73,8 @@ namespace PoEWizard.Comm
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_CHASSIS, ParseType.MVTable, DictionaryType.Chassis)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.Chassis);
                 UpdateProgressBar(++progressBarCnt); // 4
-                ScanSwitch($"Connect to switch {SwitchModel.IpAddress}", reportResult);
+                ScanSwitch(progrMsg, reportResult);
+                UpdateFlashInfo(progrMsg);
                 LogActivity($"Switch connected", $", duration: {Utils.CalcStringDuration(startTime)}");
                 if (!File.Exists(Path.Combine(Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
                 {
@@ -87,15 +89,19 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError("Connect", ex);
             }
-            progressBarCnt = 0;
-            totalProgressBar = 0;
+            CloseProgressBar();
         }
 
         public void ScanSwitch(string source, WizardReport reportResult = null)
         {
+            bool closeProgressBar = false;
             try
             {
-                if (totalProgressBar == 0) StartProgressBar($"Scanning switch {SwitchModel.Name} ...", 22);
+                if (totalProgressBar == 0)
+                {
+                    StartProgressBar($"Scanning switch {SwitchModel.Name} ...", 21);
+                    closeProgressBar = true;
+                }
                 GetCurrentSwitchDebugLevel();
                 progressBarCnt += 2;
                 UpdateProgressBar(progressBarCnt); //  5 , 6
@@ -132,15 +138,13 @@ namespace PoEWizard.Comm
                 GetMacAndLldpInfo();
                 progressBarCnt += 3;
                 UpdateProgressBar(progressBarCnt); // 19, 20, 21
-                UpdateFlashInfo(source);
-                UpdateProgressBar(++progressBarCnt); // 12
                 string title = string.IsNullOrEmpty(source) ? $"Refresh switch {SwitchModel.Name}" : source;
             }
             catch (Exception ex)
             {
                 SendSwitchError(source, ex);
             }
-            CloseProgressBar();
+            if (closeProgressBar) CloseProgressBar();
         }
 
         private void UpdateFlashInfo(string source)
@@ -514,7 +518,8 @@ namespace PoEWizard.Comm
         {
             try
             {
-                SendProgressReport(progressMsg);
+                _progress.Report(new ProgressReport(progressMsg));
+                UpdateProgressBar(++progressBarCnt); //  1
                 DateTime startTime = DateTime.Now;
                 if (!IsAosSshConnected()) ConnectAosSsh();
                 string msg = $"{progressMsg} on switch {SwitchModel.Name}";
@@ -525,6 +530,7 @@ namespace PoEWizard.Comm
                     cmdLinux.Response = SshService?.SendLinuxCommand(cmdLinux);
                     if (cmdLinux.DelaySec > 0) WaitSec(msg, cmdLinux.DelaySec);
                     SendWaitProgressReport(msg, startTime);
+                    UpdateProgressBar(++progressBarCnt); //  1
                 }
                 cmdEntry.Duration = Utils.CalcStringDuration(cmdEntry.StartTime);
                 return cmdEntry;
