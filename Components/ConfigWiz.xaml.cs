@@ -180,11 +180,11 @@ namespace PoEWizard.Components
                 {
                     Logger.Info($"Config wizard: applying command {cmd.Command} {(cmd.Data != null ? "With data: " + string.Join(", ", cmd.Data) : "")}");
                     restSrv.RunSwitchCommand(cmd);
-                    if (cmd.Command == Command.START_POE)
+                    if (cmd.Command == Command.START_STOP_POE)
                     {
                         WaitChassisUp();
                     }
-                    res = cmd.Command == Command.START_POE || cmd.Command == Command.STOP_POE;
+                    res = cmd.Command == Command.START_STOP_POE || cmd.Command == Command.STOP_POE;
                 }
                 catch (Exception ex)
                 {
@@ -266,7 +266,7 @@ namespace PoEWizard.Components
                         dict = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_MULTICAST_VLAN, ParseType.Etable, vlan)) as Dictionary<string, string>;
                         if (dict?.Count > 0)
                         {
-                            features.Vlans.Add(new Vlan(dic["vlan"], !dict["Status"].Contains("disabled")));
+                            features.Vlans.Add(new EnableObj(dic["vlan"], !dict["Status"].Contains("disabled")));
                         }
                     }
                 }

@@ -10,32 +10,26 @@ namespace PoEWizard.Device
     {
         private readonly SwitchModel device;
 
-        public bool IsPoe { get; set; } = false;
         public bool NoInsecureProtos { get; set; } = true;
         public bool IsSsh { get; set; } = true;
         public bool IsMulticast { get; set; } = true;
         public bool IsDhcpRelay { get; set; } = false;
         public string DhcpSrv { get; set; }
-        public List<Vlan> Vlans { get; set; }
+        public List<EnableObj> Vlans { get; set; }
+        public List<EnableObj> Slots { get; set; }
 
         public FeatureModel() { }
 
         public FeatureModel(SwitchModel device)
         {
             this.device = device;
-            Vlans = new List<Vlan>();
+            Vlans = new List<EnableObj>();
+            Slots = new List<EnableObj>();
             foreach (var chas in device.ChassisList)
             {
                 if (chas != null)
                 {
-                    foreach (var slot in chas.Slots)
-                    {
-                        if (slot?.IsInitialized == true)
-                        {
-                            IsPoe = true;
-                            return;
-                        }
-                    }
+                    Slots.AddRange(chas.Slots.Select(s => new EnableObj(s.Name, s.IsInitialized)));
                 }
             }
         }
@@ -44,13 +38,13 @@ namespace PoEWizard.Device
         {
             return new FeatureModel
             {
-                IsPoe = this.IsPoe,
                 IsMulticast = this.IsMulticast,
                 IsSsh = this.IsSsh,
                 NoInsecureProtos = this.NoInsecureProtos,
                 IsDhcpRelay = this.IsDhcpRelay,
                 DhcpSrv = this.DhcpSrv,
-                Vlans = this.Vlans.Select(v => (Vlan)v.Clone()).ToList()
+                Vlans = this.Vlans.Select(v => (EnableObj)v.Clone()).ToList(),
+                Slots = this.Slots.Select(s => (EnableObj)s.Clone()).ToList()
             };
         }
 
@@ -62,16 +56,6 @@ namespace PoEWizard.Device
             {
                 switch (prop.Name)
                 {
-                    case "IsPoe":
-                        var cmd = IsPoe ? Command.START_POE : Command.STOP_POE;
-                        foreach (var chas in device.ChassisList)
-                        {
-                            if (chas != null)
-                            {
-                                cmdList.Add(new CmdRequest(cmd, chas.Number.ToString()));
-                            }
-                        }
-                        break;
                     case "NoInsecureProtos":
                         if (NoInsecureProtos)
                         {
@@ -122,12 +106,22 @@ namespace PoEWizard.Device
                         break;
                     case "Vlans":
                         if (!IsMulticast) break;
-                        List<Vlan> diff = (List<Vlan>)this.Vlans.Except(orig.Vlans).ToList();
-                        if (diff?.Count > 0)
+                        List<EnableObj> vdiff = (List<EnableObj>)this.Vlans.Except(orig.Vlans).ToList();
+                        if (vdiff?.Count > 0)
                         {
-                            foreach (var v in diff)
+                            foreach (var v in vdiff)
                             {
                                 cmdList.Add(new CmdRequest(Command.MULTICAST_VLAN, v.Number, v.Enable ? "enable" : "disable"));
+                            }
+                        }
+                        break;
+                    case "Slots":
+                        List<EnableObj> sdiff = (List<EnableObj>)this.Slots.Except(orig.Slots).ToList();
+                        if (sdiff?.Count > 0)
+                        {
+                            foreach (var s in sdiff)
+                            {
+                                cmdList.Add(new CmdRequest(Command.START_STOP_POE, s.Number, s.Enable ? "start" : "stop"));
                             }
                         }
                         break;
@@ -151,8 +145,8 @@ namespace PoEWizard.Device
                     }
                     else if (prop.Name == "Vlans")
                     {
-                        List<Vlan> curr = val as List<Vlan>;
-                        List<Vlan> old = prop.GetValue(orig, null) as List<Vlan>;
+                        List<EnableObj> curr = val as List<EnableObj>;
+                        List<EnableObj> old = prop.GetValue(orig, null) as List<EnableObj>;
                         if (CompareVlans(curr, old)) changes.Add(prop);
                     }
                     else if (val != prop.GetValue(orig, null)) changes.Add(prop);
@@ -161,7 +155,7 @@ namespace PoEWizard.Device
             return changes;
         }
 
-        private bool CompareVlans(List<Vlan> curr, List<Vlan> orig)
+        private bool CompareVlans(List<EnableObj> curr, List<EnableObj> orig)
         {
             if (curr.Count != orig.Count) return false;
             foreach (var v in curr)
@@ -172,20 +166,20 @@ namespace PoEWizard.Device
         }
     }
 
-    public class Vlan : ICloneable
+    public class EnableObj : ICloneable
     {
         public string Number { get; set; }
         public bool Enable { get; set; }
 
-        public Vlan() { }
+        public EnableObj() { }
 
-        public Vlan(string number, bool enable)
+        public EnableObj(string number, bool enable)
         {
             Number = number;
             Enable = enable;
         }
 
-        public bool Equals(Vlan other)
+        public bool Equals(EnableObj other)
         {
             return (this.Number == other.Number && this.Enable == other.Enable);
         }
