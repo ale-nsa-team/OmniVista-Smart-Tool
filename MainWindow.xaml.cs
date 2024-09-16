@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static PoEWizard.Data.Constants;
@@ -628,6 +629,30 @@ namespace PoEWizard
                 HideInfoBox();
                 HideProgress();
             }
+        }
+
+        private async void Power_Click(object sender, RoutedEventArgs e)
+        {
+            CheckBox cb = sender as CheckBox;
+            if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
+            FocusManager.SetFocusedElement(FocusManager.GetFocusScope(cb), null);
+            Keyboard.ClearFocus();
+            CmdRequest cmd = null;
+            if (cb.IsChecked == false)
+            {
+                string msg = $"Are you sure you want to turn PoE off on all ports in slot {selectedSlot.Name}?";
+                bool poweroff = ShowMessageBox("PoE OFF", msg, MsgBoxIcons.Question, MsgBoxButtons.YesNo);
+                if (poweroff)
+                {
+                    cmd = new CmdRequest(Command.START_STOP_SLOT_POE, selectedSlot.Name, "stop");
+                }
+            }
+            else
+            {
+                cmd = new CmdRequest(Command.START_STOP_SLOT_POE, selectedSlot.Name, "start");
+            }
+
+            await Task.Run(() => restApiService.RunSwitchCommand(cmd));
         }
 
         private async void FPoE_Click(object sender, RoutedEventArgs e)

@@ -15,23 +15,14 @@ namespace PoEWizard.Device
         public bool IsMulticast { get; set; } = true;
         public bool IsDhcpRelay { get; set; } = false;
         public string DhcpSrv { get; set; }
-        public List<EnableObj> Vlans { get; set; }
-        public List<EnableObj> Slots { get; set; }
+        public List<VlanMC> Vlans { get; set; }
 
         public FeatureModel() { }
 
         public FeatureModel(SwitchModel device)
         {
             this.device = device;
-            Vlans = new List<EnableObj>();
-            Slots = new List<EnableObj>();
-            foreach (var chas in device.ChassisList)
-            {
-                if (chas != null)
-                {
-                    Slots.AddRange(chas.Slots.Select(s => new EnableObj(s.Name, s.IsInitialized)));
-                }
-            }
+            Vlans = new List<VlanMC>();
         }
 
         public object Clone()
@@ -43,8 +34,7 @@ namespace PoEWizard.Device
                 NoInsecureProtos = this.NoInsecureProtos,
                 IsDhcpRelay = this.IsDhcpRelay,
                 DhcpSrv = this.DhcpSrv,
-                Vlans = this.Vlans.Select(v => (EnableObj)v.Clone()).ToList(),
-                Slots = this.Slots.Select(s => (EnableObj)s.Clone()).ToList()
+                Vlans = this.Vlans.Select(v => (VlanMC)v.Clone()).ToList()
             };
         }
 
@@ -106,22 +96,12 @@ namespace PoEWizard.Device
                         break;
                     case "Vlans":
                         if (!IsMulticast) break;
-                        List<EnableObj> vdiff = (List<EnableObj>)this.Vlans.Except(orig.Vlans).ToList();
+                        List<VlanMC> vdiff = (List<VlanMC>)this.Vlans.Except(orig.Vlans).ToList();
                         if (vdiff?.Count > 0)
                         {
                             foreach (var v in vdiff)
                             {
                                 cmdList.Add(new CmdRequest(Command.MULTICAST_VLAN, v.Number, v.Enable ? "enable" : "disable"));
-                            }
-                        }
-                        break;
-                    case "Slots":
-                        List<EnableObj> sdiff = (List<EnableObj>)this.Slots.Except(orig.Slots).ToList();
-                        if (sdiff?.Count > 0)
-                        {
-                            foreach (var s in sdiff)
-                            {
-                                cmdList.Add(new CmdRequest(Command.START_STOP_SLOT_POE, s.Number, s.Enable ? "start" : "stop"));
                             }
                         }
                         break;
@@ -145,8 +125,8 @@ namespace PoEWizard.Device
                     }
                     else if (prop.Name == "Vlans")
                     {
-                        List<EnableObj> curr = val as List<EnableObj>;
-                        List<EnableObj> old = prop.GetValue(orig, null) as List<EnableObj>;
+                        List<VlanMC> curr = val as List<VlanMC>;
+                        List<VlanMC> old = prop.GetValue(orig, null) as List<VlanMC>;
                         if (CompareVlans(curr, old)) changes.Add(prop);
                     }
                     else if (val != prop.GetValue(orig, null)) changes.Add(prop);
@@ -155,7 +135,7 @@ namespace PoEWizard.Device
             return changes;
         }
 
-        private bool CompareVlans(List<EnableObj> curr, List<EnableObj> orig)
+        private bool CompareVlans(List<VlanMC> curr, List<VlanMC> orig)
         {
             if (curr.Count != orig.Count) return false;
             foreach (var v in curr)
@@ -166,20 +146,20 @@ namespace PoEWizard.Device
         }
     }
 
-    public class EnableObj : ICloneable
+    public class VlanMC : ICloneable
     {
         public string Number { get; set; }
         public bool Enable { get; set; }
 
-        public EnableObj() { }
+        public VlanMC() { }
 
-        public EnableObj(string number, bool enable)
+        public VlanMC(string number, bool enable)
         {
             Number = number;
             Enable = enable;
         }
 
-        public bool Equals(EnableObj other)
+        public bool Equals(VlanMC other)
         {
             return (this.Number == other.Number && this.Enable == other.Enable);
         }

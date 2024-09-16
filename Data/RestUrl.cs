@@ -97,6 +97,7 @@ namespace PoEWizard.Data
             [Command.WRITE_MEMORY] = "write memory flash-synchro",
             [Command.SHOW_CONFIGURATION] = "show configuration snapshot",
             [Command.REBOOT_SWITCH] = "reload from working no rollback-timeout",
+            [Command.START_STOP_SLOT_POE] = $"lanpower slot {DAT} service {DAT}",
             #endregion
 
             #region Switch Debug Log commands
@@ -163,7 +164,6 @@ namespace PoEWizard.Data
             [Command.DISABLE_NTP] = "ntp client admin-state disable",
             [Command.SET_NTP_SERVER] = $"ntp server {DAT}",
             [Command.DELETE_NTP_SERVER] = $"no ntp server {DAT}",
-            [Command.START_STOP_SLOT_POE] = $"lanpower slot {DAT} service {DAT}",
             [Command.SNMP_AUTH_LOCAL] = "aaa authentication snmp local",
             [Command.SNMP_COMMUNITY_MODE] = "snmp community-map mode enable",
             [Command.SNMP_COMMUNITY_MAP] = $"snmp community-map \"{DAT}\" user \"{DAT}\" enable",

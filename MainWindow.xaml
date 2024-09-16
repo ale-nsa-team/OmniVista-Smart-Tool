@@ -219,7 +219,7 @@
                     <DataGridTextColumn Header="#Ports" Width="*" Binding="{Binding Path=NbPorts}"/>
                     <DataGridTextColumn Header="#Poe Ports" Width="*" Binding="{Binding Path=NbPoePorts}" />
                     <DataGridTextColumn Header="Budget (Watts)" Width="*" Binding="{Binding Path=Budget}" />
-                    <DataGridTextColumn Header="Power (Watts)" Width="*" Binding="{Binding Path=Power}"/>
+                    <DataGridTextColumn Header="Consumption (Watts)" Width="*" Binding="{Binding Path=Power}"/>
                     <DataGridTemplateColumn Header="802.3BT Support" Width="1.1*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -227,6 +227,16 @@
                                            Foreground="{Binding Path=Is8023btSupport,
                                            Converter={StaticResource ValueToColorConverter},
                                            ConverterParameter=Boolean}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Power" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox Style="{DynamicResource toggleSwitch}" Margin="4,0"
+                                          Checked="Power_Click" Unchecked="Power_Click"
+                                          IsChecked="{Binding Path=IsInitialized}"
+                                          ToolTip="Turn PoE ON/OFF on this slot" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

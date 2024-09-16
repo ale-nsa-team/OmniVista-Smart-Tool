@@ -266,7 +266,7 @@ namespace PoEWizard.Components
                         dict = restSrv.RunSwitchCommand(new CmdRequest(Command.SHOW_MULTICAST_VLAN, ParseType.Etable, vlan)) as Dictionary<string, string>;
                         if (dict?.Count > 0)
                         {
-                            features.Vlans.Add(new EnableObj(dic["vlan"], !dict["Status"].Contains("disabled")));
+                            features.Vlans.Add(new VlanMC(dic["vlan"], !dict["Status"].Contains("disabled")));
                         }
                     }
                 }
