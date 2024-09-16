@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
+using System.Windows.Interop;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
 
@@ -131,7 +132,7 @@ namespace PoEWizard.Comm
                 GetMacAndLldpInfo();
                 progressBarCnt += 3;
                 UpdateProgressBar(progressBarCnt); // 19, 20, 21
-                UpdateFlashInfo();
+                UpdateFlashInfo(source);
                 UpdateProgressBar(++progressBarCnt); // 12
                 string title = string.IsNullOrEmpty(source) ? $"Refresh switch {SwitchModel.Name}" : source;
             }
@@ -140,6 +141,39 @@ namespace PoEWizard.Comm
                 SendSwitchError(source, ex);
             }
             CloseProgressBar();
+        }
+
+        private void UpdateFlashInfo(string source)
+        {
+            try
+            {
+                if (SwitchModel?.ChassisList?.Count > 0)
+                {
+                    try
+                    {
+                        foreach (ChassisModel chassis in SwitchModel.ChassisList)
+                        {
+                            LinuxCommandSeq cmdSeq;
+                            if (chassis.IsMaster) cmdSeq = new LinuxCommandSeq();
+                            else cmdSeq = new LinuxCommandSeq(new LinuxCommand($"ssh-chassis {SwitchModel.Login}@{chassis.Number}", "Password", 30));
+                            cmdSeq.AddCommandSeq(new List<LinuxCommand> { new LinuxCommand("su"), new LinuxCommand("df -h"), new LinuxCommand("exit")});
+                            cmdSeq = SendSshLinuxCommandSeq(cmdSeq, $"Reading Flash data of chassis {chassis.Number}");
+                            _dict = cmdSeq.GetResponse("df -h");
+                            if (_dict != null && _dict.ContainsKey(OUTPUT)) SwitchModel.LoadFlashSizeFromList(_dict[OUTPUT], chassis);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                        string response = SendCommand(new CmdRequest(Command.SHOW_FREE_SPACE, ParseType.NoParsing)).ToString();
+                        if (!string.IsNullOrEmpty(response)) SwitchModel.LoadFreeFlashFromList(response);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError(source, ex);
+            }
         }
 
         public void GetSystemInfo()
@@ -476,24 +510,21 @@ namespace PoEWizard.Comm
             return null;
         }
 
-        private void UpdateFlashInfo()
-        {
-            string response = SendCommand(new CmdRequest(Command.SHOW_FREE_SPACE, ParseType.NoParsing)).ToString();
-            if (!string.IsNullOrEmpty(response)) SwitchModel.LoadFlashFromList(response);
-        }
-
         public LinuxCommandSeq SendSshLinuxCommandSeq(LinuxCommandSeq cmdEntry, string progressMsg)
         {
             try
             {
                 SendProgressReport(progressMsg);
+                DateTime startTime = DateTime.Now;
                 if (!IsAosSshConnected()) ConnectAosSsh();
+                string msg = $"{progressMsg} on switch {SwitchModel.Name}";
                 Dictionary<string, string> response = new Dictionary<string, string>();
                 cmdEntry.StartTime = DateTime.Now;
                 foreach (LinuxCommand cmdLinux in cmdEntry.CommandSeq)
                 {
                     cmdLinux.Response = SshService?.SendLinuxCommand(cmdLinux);
-                    if (cmdLinux.DelaySec > 0) WaitSec($"{progressMsg} on switch {SwitchModel.Name}", cmdLinux.DelaySec);
+                    if (cmdLinux.DelaySec > 0) WaitSec(msg, cmdLinux.DelaySec);
+                    SendWaitProgressReport(msg, startTime);
                 }
                 cmdEntry.Duration = Utils.CalcStringDuration(cmdEntry.StartTime);
                 return cmdEntry;
@@ -1583,15 +1614,21 @@ namespace PoEWizard.Comm
             while (dur <= waitSec)
             {
                 if (dur >= waitSec) return;
-                string strDur = Utils.CalcStringDuration(startTime, true);
-                string txt = $"{msg}";
-                if (!string.IsNullOrEmpty(strDur)) txt += $" ({strDur})";
-                txt += $" ...{PrintPortStatus()}";
-                _progress.Report(new ProgressReport(txt));
+                SendWaitProgressReport(msg, startTime);
                 Thread.Sleep(1000);
                 dur = Utils.GetTimeDuration(startTime);
             }
         }
+
+        private void SendWaitProgressReport(string msg, DateTime startTime)
+        {
+            string strDur = Utils.CalcStringDuration(startTime, true);
+            string txt = $"{msg}";
+            if (!string.IsNullOrEmpty(strDur)) txt += $" ({strDur})";
+            txt += $" ...{PrintPortStatus()}";
+            _progress.Report(new ProgressReport(txt));
+        }
+
         private void UpdateProgressReport()
         {
             WizardResult result;

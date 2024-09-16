@@ -314,7 +314,29 @@ namespace PoEWizard.Device
             Cpu = SetMasterSlave(chassis, $"{chassis.Cpu}%");
         }
 
-        public void LoadFlashFromList(string data)
+        public void LoadFlashSizeFromList(string data, ChassisModel chassis)
+        {
+            if (chassis == null) return;
+            List<Dictionary<string, string>> dictList = CliParseUtils.ParseDiskSize(data, "/flash");
+            if (dictList == null || dictList.Count == 0) return;
+            if (dictList == null || dictList.Count == 0) return;
+            foreach (Dictionary<string, string> dict in dictList)
+            {
+                string mount = Utils.GetDictValue(dict, MOUNTED);
+                if (!string.IsNullOrEmpty(mount) && mount == "/flash")
+                {
+                    chassis.FlashSize = $"{Utils.GetDictValue(dict, SIZE_TOTAL)}B";
+                    chassis.FlashSizeUsed = $"{Utils.GetDictValue(dict, SIZE_USED)}B";
+                    chassis.FlashSizeFree = $"{Utils.GetDictValue(dict, SIZE_AVAILABLE)}B";
+                    chassis.FlashUsage = Utils.GetDictValue(dict, DISK_USAGE);
+                    chassis.FreeFlash = $"{chassis.FlashUsage}, Total: {chassis.FlashSize}";
+                    break;
+                }
+            }
+            UpdateFlashSelectedSlot();
+        }
+
+        public void LoadFreeFlashFromList(string data)
         {
             List<Dictionary<string, string>> dictList = CliParseUtils.ParseFreeSpace(data);
             if (dictList == null || dictList.Count == 0) return;

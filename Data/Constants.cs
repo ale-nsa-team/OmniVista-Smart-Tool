@@ -313,7 +313,7 @@ namespace PoEWizard.Data
         public const string FLASH = "Flash";
         // Used by ParseDiskSize in CliParseUtils
         public const string FILE_SYSTEM = "Filesystem";
-        public const string TOTAL_SIZE = "Size";
+        public const string SIZE_TOTAL = "Size";
         public const string SIZE_USED = "Used";
         public const string SIZE_AVAILABLE = "Available";
         public const string DISK_USAGE = "Usage";
