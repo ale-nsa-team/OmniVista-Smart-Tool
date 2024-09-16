@@ -112,6 +112,8 @@ namespace PoEWizard.Data
             [Command.DEBUG_CLI_UPDATE_LPCMM_LEVEL] = $"swlog appid lpcmm subapp all level {DAT}",
             [Command.DEBUG_CLI_SHOW_LPNI_LEVEL] = "show swlog appid lpni",
             [Command.DEBUG_CLI_SHOW_LPCMM_LEVEL] = "show swlog appid lpcmm",
+            [Command.START_CHASSIS_POE] = $"lanpower chassis {DAT} start",
+            [Command.STOP_CHASSIS_POE ] = $"lanpower chassis {DAT} stop",
             #endregion
 
             #region Config Wizard commands
@@ -161,7 +163,7 @@ namespace PoEWizard.Data
             [Command.DISABLE_NTP] = "ntp client admin-state disable",
             [Command.SET_NTP_SERVER] = $"ntp server {DAT}",
             [Command.DELETE_NTP_SERVER] = $"no ntp server {DAT}",
-            [Command.START_STOP_POE] = $"lanpower chassis {DAT} service {DAT}",
+            [Command.START_STOP_SLOT_POE] = $"lanpower slot {DAT} service {DAT}",
             [Command.SNMP_AUTH_LOCAL] = "aaa authentication snmp local",
             [Command.SNMP_COMMUNITY_MODE] = "snmp community-map mode enable",
             [Command.SNMP_COMMUNITY_MAP] = $"snmp community-map \"{DAT}\" user \"{DAT}\" enable",

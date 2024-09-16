@@ -180,11 +180,11 @@ namespace PoEWizard.Components
                 {
                     Logger.Info($"Config wizard: applying command {cmd.Command} {(cmd.Data != null ? "With data: " + string.Join(", ", cmd.Data) : "")}");
                     restSrv.RunSwitchCommand(cmd);
-                    if (cmd.Command == Command.START_STOP_POE)
+                    res = cmd.Command == Command.START_STOP_SLOT_POE;
+                    if (res)
                     {
-                        WaitChassisUp();
-                    }
-                    res = cmd.Command == Command.START_STOP_POE || cmd.Command == Command.STOP_POE;
+                        WaitSlotUp();
+                    }                
                 }
                 catch (Exception ex)
                 {
@@ -317,7 +317,7 @@ namespace PoEWizard.Components
             }
         }
 
-        private void WaitChassisUp()
+        private void WaitSlotUp()
         {
             foreach (var chassis in device.ChassisList)
             {

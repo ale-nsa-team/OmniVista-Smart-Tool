@@ -121,7 +121,7 @@ namespace PoEWizard.Device
                         {
                             foreach (var s in sdiff)
                             {
-                                cmdList.Add(new CmdRequest(Command.START_STOP_POE, s.Number, s.Enable ? "start" : "stop"));
+                                cmdList.Add(new CmdRequest(Command.START_STOP_SLOT_POE, s.Number, s.Enable ? "start" : "stop"));
                             }
                         }
                         break;

@@ -367,11 +367,11 @@ namespace PoEWizard.Comm
             {
                 string msg = $"Turning power OFF on all slots of chassis {chassis.Number} to capture logs ...";
                 _progress.Report(new ProgressReport(msg));
-                SendCommand(new CmdRequest(Command.STOP_POE, new string[1] { chassis.Number.ToString() }));
+                SendCommand(new CmdRequest(Command.STOP_CHASSIS_POE, new string[1] { chassis.Number.ToString() }));
                 UpdateSwitchLogBar();
                 WaitSec(msg, 5);
                 _progress.Report(new ProgressReport($"Turning power ON on all slots of chassis {chassis.Number} to capture logs ..."));
-                SendCommand(new CmdRequest(Command.START_STOP_POE, new string[1] { chassis.Number.ToString() }));
+                SendCommand(new CmdRequest(Command.START_CHASSIS_POE, new string[1] { chassis.Number.ToString() }));
                 foreach (var slot in chassis.Slots)
                 {
                     UpdateSwitchLogBar();
