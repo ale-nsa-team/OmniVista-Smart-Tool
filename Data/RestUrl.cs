@@ -42,7 +42,7 @@ namespace PoEWizard.Data
             [Command.SHOW_CHASSIS] = "show chassis",
             [Command.SHOW_PORTS_LIST] = "show interfaces alias",
             [Command.SHOW_POWER_SUPPLIES] = $"show powersupply",
-            [Command.SHOW_POWER_SUPPLY] = $"show powersupply {DAT}",
+            [Command.SHOW_POWER_SUPPLY] = $"show powersupply chassis-id {DAT}",
             [Command.SHOW_LAN_POWER] = $"show lanpower slot {DAT}",
             [Command.SHOW_CHASSIS_LAN_POWER_STATUS] = $"show lanpower chassis {DAT} status",
             [Command.SHOW_SLOT] = $"show slot {DAT}",

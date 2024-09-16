@@ -15,11 +15,11 @@ namespace PoEWizard.Data
     public static class Logger
     {
         #region variables
-        private static int logSize;
-        private static int logCount;
-        private static EventLog eventLog;
+        private static readonly int logSize;
+        private static readonly int logCount;
+        private static readonly EventLog eventLog;
         private static readonly object lockObj = new object();
-        private static bool eventLogOk;
+        private static readonly bool eventLogOk;
 
         public static string LogPath { get; private set; }
         public static LogLevel LogLevel { get; set; }

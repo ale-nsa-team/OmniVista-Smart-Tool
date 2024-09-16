@@ -454,10 +454,10 @@ namespace PoEWizard.Data
                     foreach (string sVal in split)
                     {
                         string sValue = sVal.Trim();
-                        if (string.IsNullOrEmpty(sValue) || sValue == FILE_SYSTEM || sValue == TOTAL_SIZE ||
+                        if (string.IsNullOrEmpty(sValue) || sValue == FILE_SYSTEM || sValue == SIZE_TOTAL ||
                             sValue == SIZE_USED || sValue == SIZE_AVAILABLE || sValue == DISK_USAGE || sValue == MOUNTED) continue;
                         if (!dict.ContainsKey(FILE_SYSTEM)) dict[FILE_SYSTEM] = sValue;
-                        else if (!dict.ContainsKey(TOTAL_SIZE)) dict[TOTAL_SIZE] = sValue;
+                        else if (!dict.ContainsKey(SIZE_TOTAL)) dict[SIZE_TOTAL] = sValue;
                         else if (!dict.ContainsKey(SIZE_USED)) dict[SIZE_USED] = sValue;
                         else if (!dict.ContainsKey(SIZE_AVAILABLE)) dict[SIZE_AVAILABLE] = sValue;
                         else if (!dict.ContainsKey(DISK_USAGE)) dict[DISK_USAGE] = sValue;

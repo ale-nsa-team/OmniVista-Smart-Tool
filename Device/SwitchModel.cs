@@ -21,7 +21,7 @@ namespace PoEWizard.Device
         public string MacAddress { get; set; }
         public string CurrTemperature { get; set; }
         public ThresholdType TemperatureStatus { get; set; }
-        public int Cpu { get; set; }
+        public string Cpu { get; set; }
         public string Fpga { get; set; }
         public string Cpld { get; set; }
         public string FreeFlash { get; set; }
@@ -135,6 +135,7 @@ namespace PoEWizard.Device
                         List<Dictionary<string, string>> chasList = dictList.Where(d => GetChassisId(d) == i).ToList();
                         if (chasList?.Count == 0) continue;
                         chassis = this.GetChassis(GetChassisId(chasList[0]));
+                        if (chassis == null) continue;
                         int nslots = chasList.GroupBy(c => GetSlotId(c)).Count();
                         for (int j = 1; j <= nslots; j++)
                         {
@@ -147,6 +148,7 @@ namespace PoEWizard.Device
                                 slot = new SlotModel(chassisSlot);
                                 chassis.Slots.Add(slot);
                             }
+                            slot.IsMaster = chassis.IsMaster;
                             foreach (var dict in slotList)
                             {
                                 chassisSlot = new ChassisSlotPort(dict[CHAS_SLOT_PORT]);
@@ -287,12 +289,12 @@ namespace PoEWizard.Device
             if (string.IsNullOrEmpty(SelectedSlot)) SelectedSlot = "1/1";
             ChassisModel chassis = GetChassis(SelectedSlot);
             if (chassis == null) return;
-            Model = chassis.Model;
-            SerialNumber = chassis.SerialNumber;
-            MacAddress = chassis.MacAddress;
-            Fpga = chassis.Fpga;
-            Cpld = chassis.Cpld;
-            FreeFlash = chassis.FreeFlash;
+            Model = SetMasterSlave(chassis, chassis.Model);
+            SerialNumber = SetMasterSlave(chassis, chassis.SerialNumber);
+            MacAddress = SetMasterSlave(chassis, chassis.MacAddress);
+            Fpga = !string.IsNullOrEmpty(chassis.Fpga) ? SetMasterSlave(chassis, chassis.Fpga) : string.Empty;
+            Cpld = !string.IsNullOrEmpty(chassis.Cpld) ? SetMasterSlave(chassis, chassis.Cpld) : string.Empty;
+            FreeFlash = SetMasterSlave(chassis, chassis.FreeFlash);
         }
 
         private void UpdateTemperatureSelectedSlot()
@@ -300,7 +302,7 @@ namespace PoEWizard.Device
             if (string.IsNullOrEmpty(SelectedSlot)) SelectedSlot = "1/1";
             ChassisModel chassis = GetChassis(SelectedSlot);
             if (chassis == null) return;
-            CurrTemperature = $"{(chassis.Temperature.Current * 9 / 5) + 32}{F} ({chassis.Temperature.Current}{C})";
+            CurrTemperature = SetMasterSlave(chassis, $"{(chassis.Temperature.Current * 9 / 5) + 32}{F} ({chassis.Temperature.Current}{C})");
             TemperatureStatus = chassis.Temperature.Status;
         }
 
@@ -309,10 +311,32 @@ namespace PoEWizard.Device
             if (string.IsNullOrEmpty(SelectedSlot)) SelectedSlot = "1/1";
             ChassisModel chassis = GetChassis(SelectedSlot);
             if (chassis == null) return;
-            Cpu = chassis.Cpu;
+            Cpu = SetMasterSlave(chassis, $"{chassis.Cpu}%");
         }
 
-        public void LoadFlashFromList(string data)
+        public void LoadFlashSizeFromList(string data, ChassisModel chassis)
+        {
+            if (chassis == null) return;
+            List<Dictionary<string, string>> dictList = CliParseUtils.ParseDiskSize(data, "/flash");
+            if (dictList == null || dictList.Count == 0) return;
+            if (dictList == null || dictList.Count == 0) return;
+            foreach (Dictionary<string, string> dict in dictList)
+            {
+                string mount = Utils.GetDictValue(dict, MOUNTED);
+                if (!string.IsNullOrEmpty(mount) && mount == "/flash")
+                {
+                    chassis.FlashSize = $"{Utils.GetDictValue(dict, SIZE_TOTAL)}B";
+                    chassis.FlashSizeUsed = $"{Utils.GetDictValue(dict, SIZE_USED)}B";
+                    chassis.FlashSizeFree = $"{Utils.GetDictValue(dict, SIZE_AVAILABLE)}B";
+                    chassis.FlashUsage = Utils.GetDictValue(dict, DISK_USAGE);
+                    chassis.FreeFlash = $"{chassis.FlashUsage}, Total: {chassis.FlashSize}";
+                    break;
+                }
+            }
+            UpdateFlashSelectedSlot();
+        }
+
+        public void LoadFreeFlashFromList(string data)
         {
             List<Dictionary<string, string>> dictList = CliParseUtils.ParseFreeSpace(data);
             if (dictList == null || dictList.Count == 0) return;
@@ -356,25 +380,6 @@ namespace PoEWizard.Device
         {
             ChassisModel cm = GetChassis(slotName);
             return cm?.Slots.FirstOrDefault(s => s.Name == slotName);
-        }
-
-        private PowerSupplyState GetPowerSupplyState()
-        {
-            if (ChassisList != null && ChassisList.Count > 0)
-            {
-                foreach (ChassisModel chassis in ChassisList)
-                {
-                    foreach (PowerSupplyModel ps in chassis.PowerSupplies)
-                    {
-                        if (ps.Status == PowerSupplyState.Down)
-                        {
-                            return PowerSupplyState.Down;
-                        }
-                    }
-                }
-                return PowerSupplyState.Up;
-            }
-            return PowerSupplyState.Unknown;
         }
 
         public void UpdateSwitchUplinks()
@@ -425,6 +430,30 @@ namespace PoEWizard.Device
             SlotModel slotModel = chassisModel.Slots.FirstOrDefault(c => c.Number == slotPort.SlotNr);
             if (slotModel == null) return null;
             return slotModel.Ports.FirstOrDefault(c => c.Number == slotPort.PortNr);
+        }
+
+        private string SetMasterSlave(ChassisModel chassis, string sValue)
+        {
+            if (ChassisList.Count > 1) return $"{sValue}{(chassis.IsMaster ? MASTER : SLAVE)}"; else return sValue;
+        }
+
+        private PowerSupplyState GetPowerSupplyState()
+        {
+            if (ChassisList != null && ChassisList.Count > 0)
+            {
+                foreach (ChassisModel chassis in ChassisList)
+                {
+                    foreach (PowerSupplyModel ps in chassis.PowerSupplies)
+                    {
+                        if (ps.Status == PowerSupplyState.Down)
+                        {
+                            return PowerSupplyState.Down;
+                        }
+                    }
+                }
+                return PowerSupplyState.Up;
+            }
+            return PowerSupplyState.Unknown;
         }
 
         private int GetChassisId(Dictionary<string, string> chas)

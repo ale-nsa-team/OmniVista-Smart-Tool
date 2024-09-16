@@ -31,16 +31,20 @@ namespace PoEWizard.Comm
             _sftpClient = new SftpClient(host, port, user, password);
         }
 
-        public void Connect()
+        public string Connect()
         {
+            string sftpError;
             try
             {
                 if (!_sftpClient.IsConnected) _sftpClient.Connect();
+                return null;
             }
             catch (Exception ex)
             {
-                Logger.Error("Error connecting to switch.", ex);
+                Logger.Error($"Error connecting to switch {Host} (Port: {Port}, User: {Username})", ex);
+                sftpError = ex.Message;
             }
+            return sftpError;
         }
 
         public void ResetConnection()
@@ -116,7 +120,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                if (!ex.Message.Contains("No such file")) Logger.Error(ex);
             }
         }
 

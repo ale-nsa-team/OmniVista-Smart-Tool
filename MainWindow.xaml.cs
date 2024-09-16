@@ -116,11 +116,11 @@ namespace PoEWizard
             });
             //check cli arguments
             string[] args = Environment.GetCommandLineArgs();
-            if (args.Length > 3)
+            if (args.Length > 3 && !string.IsNullOrEmpty(args[1]) && Utils.IsValidIP(args[1]) && !string.IsNullOrEmpty(args[2]) && !string.IsNullOrEmpty(args[3]))
             {
                 device.IpAddress = args[1];
                 device.Login = args[2];
-                device.Password = args[3];
+                device.Password = args[3].Replace("\r\n", string.Empty);
                 Connect();
             }
         }
@@ -208,16 +208,25 @@ namespace PoEWizard
         {
             try
             {
-                ShowProgress("Loading vcboot.cfg file...");
-                Logger.Debug($"Loading vcboot.cfg file from switch {device.Name}");
+                string title = "Loading vcboot.cfg file...";
+                string msg = $"{title} from switch {device.Name}";
+                ShowInfoBox($"{msg} ...");
+                ShowProgress($"{title} ...");
+                Logger.Debug(msg);
                 string res = string.Empty;
+                string sftpError = null;
                 await Task.Run(() =>
                 {
                     sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
-                    sftpService.Connect();
-                    res = sftpService.DownloadToMemory(VCBOOT_PATH);
+                    sftpError = sftpService.Connect();
+                    if (string.IsNullOrEmpty(sftpError)) res = sftpService.DownloadToMemory(VCBOOT_PATH);
                 });
                 HideProgress();
+                if (!string.IsNullOrEmpty(sftpError))
+                {
+                    ShowMessageBox(msg, $"Cannot connect secure FTP on switch {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
+                    return;
+                }
                 TextViewer tv = new TextViewer("VCBoot config file", res)
                 {
                     Owner = this,
@@ -230,6 +239,7 @@ namespace PoEWizard
             {
                 Logger.Error(ex);
             }
+            HideInfoBox();
         }
 
         private async void ViewSnapshot_Click(object sender, RoutedEventArgs e)
@@ -389,13 +399,20 @@ namespace PoEWizard
             {
                 DisableButtons();
                 bool restartPoE = ShowMessageBox("Collect Logs", $"Do you want to recycle PoE on all ports of switch {device.Name} to collect the logs?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
-                await RunCollectLogs(restartPoE);
+                string txt = $"Collect Logs launched by the user";
+                if (restartPoE) txt += " (recycle PoE on all ports)";
+                Logger.Activity($"{txt} on switch {device.Name}");
+                Activity.Log(device, $"{txt}.");
+                string sftpError = await RunCollectLogs(restartPoE, null, false);
+                if (!string.IsNullOrEmpty(sftpError)) ShowMessageBox($"Collecting logs on switch {device.Name}", $"Cannot connect secure FTP on switch {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
             }
             EnableButtons();
+            HideProgress();
+            HideInfoBox();
         }
 
         private void Traffic_Click(object sender, RoutedEventArgs e)
@@ -703,8 +720,8 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.Connect(reportResult));
-                await CheckSwitchScanResult($"Connect to switch {device.Name}...", startTime);
                 UpdateConnectedState();
+                await CheckSwitchScanResult($"Connect to switch {device.Name}...", startTime);
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
                     await AskRebootCertified();
@@ -855,7 +872,8 @@ namespace PoEWizard
                     bool res = ShowMessageBox("Wizard", "It looks like the wizard was unable to fix the problem.\nDo you want to collect information to send to technical support?",
                                               MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                     if (!res) return;
-                    barText = await RunCollectLogs(true, selectedPort.Name);
+                    string sftpError = await RunCollectLogs(true, selectedPort.Name);
+                    if (!string.IsNullOrEmpty(sftpError)) ShowMessageBox(barText, $"Cannot connect secure FTP on switch {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
                 }
                 await GetSyncStatus(null);
             }
@@ -874,20 +892,27 @@ namespace PoEWizard
             }
         }
 
-        private async Task<string> RunCollectLogs(bool restartPoE, string port = null)
+        private async Task<string> RunCollectLogs(bool restartPoE, string port = null, bool createTacText = true)
         {
+            ShowInfoBox($"Collecting logs on switch {device.Name} ...");
+            string sftpError = null;
+            await Task.Run(() =>
+            {
+                sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
+                sftpError = sftpService.Connect();
+                if (string.IsNullOrEmpty(sftpError)) sftpService.DeleteFile(SWLOG_PATH);
+            });
+            if (!string.IsNullOrEmpty(sftpError)) return sftpError;
             maxCollectLogsDur = Utils.GetEstimateCollectLogDuration(restartPoE, port);
             string barText = "Cleaning up current log ...";
             ShowInfoBox(barText);
             StartProgressBar(barText);
-            sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
-            await Task.Run(() => sftpService.Connect());
             await Task.Run(() => sftpService.DeleteFile(SWLOG_PATH));
-            await GenerateSwitchLogFile(restartPoE, port);
-            return barText;
+            await GenerateSwitchLogFile(restartPoE, port, createTacText);
+            return null;
         }
 
-        private async Task GenerateSwitchLogFile(bool restartPoE, string port)
+        private async Task GenerateSwitchLogFile(bool restartPoE, string port, bool createTacText = true)
         {
             const double MAX_WAIT_SFTP_RECONNECT_SEC = 60;
             const double MAX_WAIT_TAR_FILE_SEC = 180;
@@ -971,13 +996,12 @@ namespace PoEWizard
                     info = new FileInfo(saveas);
                 }
                 UpdateSwitchLogBar(initialTime);
-                debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, selectedPort);
+                if (createTacText) debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, selectedPort);
                 StringBuilder txt = new StringBuilder("Log tar file \"").Append(SWLOG_PATH).Append("\" downloaded from the switch ").Append(device.IpAddress);
                 txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\" (").Append(Utils.PrintNumberBytes(info.Length));
                 txt.Append(")\n\tDuration of tar file creation: ").Append(strDur);
                 txt.Append("\n\tTotal duration to generate log file in ").Append(SwitchDebugLogLevel.Debug3).Append(" level: ").Append(strTotalDuration);
                 Logger.Activity(txt.ToString());
-                Activity.Log(device, "Collect Logs.");
             }
             catch (Exception ex)
             {

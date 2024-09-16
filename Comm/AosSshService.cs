@@ -252,7 +252,7 @@ namespace PoEWizard.Comm
         {
             try
             {
-                Dictionary<string, string> resp = SendCliCommand(cmdLinux.Command, 60);
+                Dictionary<string, string> resp = SendCliCommand(cmdLinux.Command, cmdLinux.MaxWaitSec, cmdLinux.Expected);
                 return ParseResponse(resp[RESPONSE], cmdLinux.Command);
             }
             catch (Exception ex)
@@ -300,12 +300,7 @@ namespace PoEWizard.Comm
                     SendCommandToSwitch(cmd, maxWait, expected);
                     Thread.Sleep(100);
                     result = WaitEndDataReceived(cmd, maxWait, expected);
-                    if (result.Contains("Confirm") && result.Contains("(Y/N)"))
-                    {
-                        SendCommandToSwitch("Y", 10, "Y");
-                        Thread.Sleep(200);
-                        result = WaitEndDataReceived(cmd, 10, "copy images before reloading");
-                    }
+                    result = WaitConfirm(cmd, result);
                     response[RESPONSE] = result;
                     response[DURATION] = Utils.CalcStringDuration(startTime);
                     return response;
@@ -328,6 +323,28 @@ namespace PoEWizard.Comm
                 throw ex;
             }
         }
+
+        private string WaitConfirm(string cmd, string result)
+        {
+            string sendCmd;
+            string expected;
+            if (result.Contains("Confirm") && result.Contains("(Y/N)"))
+            {
+                sendCmd = "Y";
+                expected = "copy images before reloading";
+            }
+            else if (result.Contains("Password"))
+            {
+                sendCmd = this._switch.Password;
+                expected = this.SessionPrompt;
+            }
+            else return result;
+            SendCommandToSwitch(sendCmd, 10, sendCmd);
+            Thread.Sleep(200);
+            result = WaitEndDataReceived(cmd, 10, expected);
+            return result;
+        }
+
         private void ResetSSHConnection(string cmd)
         {
             try

@@ -10,13 +10,18 @@ namespace PoEWizard.Data
     {
         public string Command { get; set; }
         public int DelaySec { get; set; }
+        public int MaxWaitSec { get; set; }
+        public string Expected {  get; set; }
         public Dictionary<string, string> Response { get; set; }
 
-        public LinuxCommand(string cmd) : this(cmd, 0) { }
-        public LinuxCommand(string cmd, int delaySec)
+        public LinuxCommand(string cmd) : this(cmd, null, 15, 0) { }
+        public LinuxCommand(string cmd, string expected, int maxWaitSec) : this(cmd, expected, maxWaitSec, 0) { }
+        public LinuxCommand(string cmd, string expected, int maxWaitSec, int delaySec)
         {
             this.Command = cmd;
             this.DelaySec = delaySec;
+            this.MaxWaitSec = maxWaitSec;
+            this.Expected = expected;
             this.Response = new Dictionary<string, string> { [REST_URL] = "Run linux command", [ERROR] = string.Empty, [DURATION] = string.Empty };
         }
     }
@@ -26,6 +31,8 @@ namespace PoEWizard.Data
         public List<LinuxCommand> CommandSeq { get; set; }
         public DateTime StartTime { get; set; }
         public string Duration { get; set; }
+
+        public LinuxCommandSeq() : this(new List<LinuxCommand>()) { }
         public LinuxCommandSeq(List<LinuxCommand> cmdSeq) 
         {
             this.StartTime = DateTime.Now;
@@ -37,10 +44,10 @@ namespace PoEWizard.Data
             this.CommandSeq = new List<LinuxCommand> { linuxCmd };
         }
 
-        public void AddLinuxCommand(LinuxCommand linuxCmd)
+        public void AddCommandSeq(List<LinuxCommand> cmdSeq)
         {
             if (this.CommandSeq == null) this.CommandSeq = new List<LinuxCommand>();
-            this.CommandSeq.Add(linuxCmd);
+            this.CommandSeq.AddRange(cmdSeq);
         }
 
         public Dictionary<string, string> GetResponse(string cmd)
