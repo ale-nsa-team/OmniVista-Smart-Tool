@@ -639,10 +639,9 @@ namespace PoEWizard
             if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
             FocusManager.SetFocusedElement(FocusManager.GetFocusScope(cb), null);
             Keyboard.ClearFocus();
-            CmdRequest cmd = null;
             if (cb.IsChecked == false)
             {
-                string msg = $"Are you sure you want to turn PoE off on all ports in slot {selectedSlot.Name}?";
+                string msg = $"Are you sure you want to turn PoE OFF on all ports in slot {selectedSlot.Name}?";
                 bool poweroff = ShowMessageBox("PoE OFF", msg, MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                 if (poweroff)
                 {
@@ -1175,12 +1174,6 @@ namespace PoEWizard
             }
         }
 
-        private void GetSlotPowerStatus(SlotModel slot)
-        {
-            var _dictList = restApiService.RunSwitchCommand(new CmdRequest(Command.SHOW_SLOT_LAN_POWER_STATUS, ParseType.Htable2, slot.Name)) as List<Dictionary<string, string>>;
-            if (_dictList?.Count > 0) slot.LoadFromDictionary(_dictList[0]);
-        }
-
         private async Task CheckSwitchScanResult(string title, DateTime startTime)
         {
             try
@@ -1202,16 +1195,21 @@ namespace PoEWizard
                         if (reportList?.Count > 0)
                         {
                             ReportResult report = reportList[reportList.Count - 1];
-                            string alertMsg = $"{report.AlertDescription}\nDo you want to turn it On?";
+                            string alertMsg = $"{report.AlertDescription}\nDo you want to turn it on?";
                             if (report?.Result == WizardResult.Warning && ShowMessageBox($"Slot {report.ID} warning", alertMsg, MsgBoxIcons.Question, MsgBoxButtons.YesNo))
                             {
-                                await Task.Run(() => restApiService.RunPowerUpSlot(report.ID));
+                                await PowerSlotUpOrDown(Command.POWER_UP_SLOT, report.ID);
                                 resetSlotCnt++;
                                 Logger.Debug($"{report}\nSlot {report.ID} turned On");
                             }
                         }
                     }
-                    if (resetSlotCnt > 0) await WaitPortsToComeUP();
+                    if (resetSlotCnt > 0)
+                    {
+                        ShowProgress($"Waiting Ports to come UP on Switch {device.Name}");
+                        await Task.Run(() => WaitSlotPortsUp());
+                        RefreshSlotsAndPorts();
+                    }
                 }
                 Logger.Debug($"{title} completed (duration: {duration})");
             }
@@ -1221,24 +1219,39 @@ namespace PoEWizard
             }
         }
 
-        private async Task WaitPortsToComeUP()
+        private async Task PowerSlotUpOrDown(Command cmd, string slotNr)
         {
-            await Task.Run(() => WaitSlotStartUp());
-            RefreshSlotAndPortsView();
-            EnableButtons();
+            string msg = $"Turning slot {slotNr} PoE {(cmd == Command.POWER_UP_SLOT ? "ON" : "OFF")}";
+            ShowProgress(msg);
+            progress.Report(new ProgressReport($"{msg} ..."));
+            await Task.Run(() =>
+            {
+                restApiService.PowerSlotUpOrDown(cmd, slotNr);
+                restApiService.RefreshSwitchPorts();
+            }
+            );
+            RefreshSlotsAndPorts();
         }
 
-        private void WaitSlotStartUp()
+        private void RefreshSlotsAndPorts()
         {
-            string txt = $"Waiting Ports to come UP on Switch {device.Name}";
+            RefreshSlotAndPortsView();
+            EnableButtons();
+            HideInfoBox();
+            HideProgress();
+        }
+
+        private void WaitSlotPortsUp()
+        {
+            string msg = $"Waiting Ports to come UP on Switch {device.Name}";
             DateTime startTime = DateTime.Now;
             int dur = 0;
-            progress.Report(new ProgressReport($"{txt} ..."));
+            progress.Report(new ProgressReport($"{msg} ..."));
             while (dur < 20)
             {
                 Thread.Sleep(1000);
                 dur = (int)Utils.GetTimeDuration(startTime);
-                progress.Report(new ProgressReport($"{txt} ({dur} sec) ..."));
+                progress.Report(new ProgressReport($"{msg} ({dur} sec) ..."));
             }
             restApiService.RefreshSwitchPorts();
         }

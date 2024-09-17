@@ -31,6 +31,7 @@ namespace PoEWizard.Device
         public string MEDPowerPriority { get; set; } = string.Empty;
         public string MEDPowerValue { get; set; } = string.Empty;
         public bool IsMacName { get; set; } = false;
+        public string Alias {  get; set; } = string.Empty;
 
         public EndPointDeviceModel() { }
         public EndPointDeviceModel(Dictionary<string, string> dict)
@@ -135,6 +136,7 @@ namespace PoEWizard.Device
                     tip.Add($"{Name} ({Utils.GetVendorName(Name)})");
                 }
             }
+            if (!string.IsNullOrEmpty(Alias)) tip.Add($"Alias: {Alias}");
             if (!string.IsNullOrEmpty(Description)) tip.Add($"Description: {Description}");
             if (!string.IsNullOrEmpty(Vendor)) tip.Add($"Vendor: {Vendor}");
             if (!string.IsNullOrEmpty(Model)) tip.Add($"Model: {Model}");
