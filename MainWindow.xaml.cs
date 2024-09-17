@@ -636,14 +636,14 @@ namespace PoEWizard
             if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
             FocusManager.SetFocusedElement(FocusManager.GetFocusScope(cb), null);
             Keyboard.ClearFocus();
-            CmdRequest cmd = null;
             if (cb.IsChecked == false)
             {
-                string msg = $"Are you sure you want to turn PoE off on all ports in slot {selectedSlot.Name}?";
+                string msg = $"Are you sure you want to turn PoE OFF on all ports in slot {selectedSlot.Name}?";
                 bool poweroff = ShowMessageBox("PoE OFF", msg, MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                 if (poweroff)
                 {
-                    cmd = new CmdRequest(Command.START_STOP_SLOT_POE, selectedSlot.Name, "stop");
+                    await Task.Run(() => restApiService.RunSwitchCommand(new CmdRequest(Command.START_STOP_SLOT_POE, selectedSlot.Name, "stop")));
+                    return;
                 }
                 else 
                 {
@@ -651,29 +651,16 @@ namespace PoEWizard
                     return;
                 }
             }
-            else
-            {
-                cmd = new CmdRequest(Command.START_STOP_SLOT_POE, selectedSlot.Name, "start");
-            }
-
-            await Task.Run(() => restApiService.RunSwitchCommand(cmd));
-
             if (cb.IsChecked == true)
             {
-                ShowProgress($"Turning on PoE on slot {selectedSlot.Name}");
-                ShowInfoBox($"Waiting for slot {selectedSlot.Name} to come up...");
-                int count = 0;
-                while (count < 30)
+                ShowProgress($"Turning ON PoE on slot {selectedSlot.Name}");
+                await Task.Run(() =>
                 {
-                    await Task.Run(() => GetSlotPowerStatus(selectedSlot));
-                    if (selectedSlot.IsInitialized) break;
-                    await Task.Delay(2000);
-                    count++;
-                }
-                await Task.Run(() => {
-                    List<Dictionary<string, string>> dictList = restApiService.RunSwitchCommand(new CmdRequest(Command.SHOW_LAN_POWER_CONFIG, ParseType.Htable2, selectedSlot.Name)) as List<Dictionary<string, string>>;
-                    selectedSlot.LoadFromList(dictList, DictionaryType.LanPowerCfg);
+                    restApiService.RunPowerUpSlot(selectedSlot.Name);
+                    WaitSlotPortsUp();
                 });
+                RefreshSlotAndPortsView();
+                EnableButtons();
                 HideInfoBox();
                 HideProgress();
             }
@@ -1162,12 +1149,6 @@ namespace PoEWizard
             }
         }
 
-        private void GetSlotPowerStatus(SlotModel slot)
-        {
-            var _dictList = restApiService.RunSwitchCommand(new CmdRequest(Command.SHOW_SLOT_LAN_POWER_STATUS, ParseType.Htable2, slot.Name)) as List<Dictionary<string, string>>;
-            if (_dictList?.Count > 0) slot.LoadFromDictionary(_dictList[0]);
-        }
-
         private async Task CheckSwitchScanResult(string title, DateTime startTime)
         {
             try
@@ -1189,7 +1170,7 @@ namespace PoEWizard
                         if (reportList?.Count > 0)
                         {
                             ReportResult report = reportList[reportList.Count - 1];
-                            string alertMsg = $"{report.AlertDescription}\nDo you want to turn it On?";
+                            string alertMsg = $"{report.AlertDescription}\nDo you want to turn it on?";
                             if (report?.Result == WizardResult.Warning && ShowMessageBox($"Slot {report.ID} warning", alertMsg, MsgBoxIcons.Question, MsgBoxButtons.YesNo))
                             {
                                 await Task.Run(() => restApiService.RunPowerUpSlot(report.ID));
@@ -1198,7 +1179,12 @@ namespace PoEWizard
                             }
                         }
                     }
-                    if (resetSlotCnt > 0) await WaitPortsToComeUP();
+                    if (resetSlotCnt > 0)
+                    {
+                        await Task.Run(() => WaitSlotPortsUp());
+                        RefreshSlotAndPortsView();
+                        EnableButtons();
+                    }
                 }
                 Logger.Debug($"{title} completed (duration: {duration})");
             }
@@ -1208,14 +1194,7 @@ namespace PoEWizard
             }
         }
 
-        private async Task WaitPortsToComeUP()
-        {
-            await Task.Run(() => WaitSlotStartUp());
-            RefreshSlotAndPortsView();
-            EnableButtons();
-        }
-
-        private void WaitSlotStartUp()
+        private void WaitSlotPortsUp()
         {
             string txt = $"Waiting Ports to come UP on Switch {device.Name}";
             DateTime startTime = DateTime.Now;

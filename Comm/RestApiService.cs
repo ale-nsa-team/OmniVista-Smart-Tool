@@ -9,7 +9,6 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
-using System.Windows.Interop;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
 
@@ -610,7 +609,7 @@ namespace PoEWizard.Comm
                         string cfgChanges = ConfigChanges.GetChanges(SwitchModel, currSnapshot);
                         if (!string.IsNullOrEmpty(cfgChanges))
                         {
-                            Logger.Info($"Switch {SwitchModel.Name} was synchronized but snapshot config file {SwitchModel.IpAddress}{SNAPSHOT_SUFFIX} was updated!");
+                            Logger.Activity($"Switch {SwitchModel.Name} was synchronized but snapshot config file {SwitchModel.IpAddress}{SNAPSHOT_SUFFIX} was updated!");
                             File.WriteAllText(filePath, SwitchModel.ConfigSnapshot);
                         }
                     }
@@ -1004,10 +1003,7 @@ namespace PoEWizard.Comm
                     SendProgressError("Power UP slot", $"Couldn't get data for slot {slotNr}");
                     return;
                 }
-                if (!_wizardSwitchSlot.IsInitialized)
-                {
-                    PowerUpSlot();
-                }
+                PowerUpSlot();
             }
             catch (Exception ex)
             {
@@ -1712,7 +1708,7 @@ namespace PoEWizard.Comm
                         if (slot.SupportsPoE)
                         {
                             slot.PoeStatus = SlotPoeStatus.Off;
-                            _wizardReportResult.CreateReportResult(slot.Name, WizardResult.Warning, $"\nSlot {slot.Name} is turned Off!");
+                            _wizardReportResult.CreateReportResult(slot.Name, WizardResult.Warning, $"\nPoE on slot {slot.Name} is turned OFF!");
                         }
                         else
                         {
@@ -1899,9 +1895,9 @@ namespace PoEWizard.Comm
         private void WaitSlotPower(bool powerUp)
         {
             DateTime startTime = DateTime.Now;
-            StringBuilder txt = new StringBuilder("Powering ");
-            if (powerUp) txt.Append("UP"); else txt.Append("DOWN");
-            txt.Append(" slot ").Append(_wizardSwitchSlot.Name).Append(" on switch ").Append(SwitchModel.Name);
+            StringBuilder txt = new StringBuilder("Turning ");
+            if (powerUp) txt.Append("ON"); else txt.Append("OFF");
+            txt.Append(" PoE on slot ").Append(_wizardSwitchSlot.Name).Append(" on switch ").Append(SwitchModel.Name);
             _progress.Report(new ProgressReport($"{txt} ..."));
             int dur = 0;
             while (dur < 50)
@@ -1960,6 +1956,7 @@ namespace PoEWizard.Comm
 
         public void Close()
         {
+            RestApiClient?.Close();
             LogActivity("Switch disconnected");
         }
 

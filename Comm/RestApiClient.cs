@@ -25,7 +25,7 @@ namespace PoEWizard.Comm
 
         #region Internal Variables
 
-        private readonly HttpClient _httpClient;
+        private HttpClient _httpClient;
         private readonly string _ip_address;
         private readonly string _login;
         private readonly string _password;
@@ -67,6 +67,7 @@ namespace PoEWizard.Comm
 
         private void ConnectToSwitch()
         {
+            if (this._httpClient == null) return;
             DateTime startTime = DateTime.Now;
             try
             {
@@ -199,6 +200,7 @@ namespace PoEWizard.Comm
         {
             string url = ParseUrl(entry);
             if (string.IsNullOrEmpty(url)) throw new SwitchCommandError("Command line is missing!");
+            if (this._httpClient == null) return new Dictionary<string, string> { [REST_URL] = url, [ERROR] = $"Switch {this._ip_address} is disconnected", [DURATION] = string.Empty };
             entry.StartTime = DateTime.Now;
             Dictionary<string, string> response = SendRestApiRequest(entry, url);
             response[DURATION] = Utils.CalcStringDuration(entry.StartTime);
@@ -216,7 +218,8 @@ namespace PoEWizard.Comm
                 response[REST_URL] = url;
                 HttpRequestMessage request = GetHttpRequest(entry, url);
                 var http_response = this._httpClient.SendAsync(request);
-                while (!http_response.IsCompleted) { };
+                while (http_response != null && !http_response.IsCompleted) { };
+                if (http_response == null) return response;
                 string error = null;
                 if (http_response.Result == null) error = $"Requested URL: {url}\r\nError: Switch {this._ip_address} rejected the request";
                 else if (http_response.IsCanceled) error = $"Requested URL: {url}\r\nError: Switch {this._ip_address} didn't respond within {this._cnx_timeout} sec";
@@ -228,7 +231,7 @@ namespace PoEWizard.Comm
                 if (http_response.Result.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     RemoveToken();
-                    Login();
+                    ConnectToSwitch();
                     request = GetHttpRequest(entry, url);
                     http_response = this._httpClient.SendAsync(request);
                 }
@@ -300,15 +303,16 @@ namespace PoEWizard.Comm
 
         #region Other Public Methods
 
-        public void Abort()
+        public void Close()
         {
             this._httpClient.Dispose();
+            this._httpClient = null;
+            this._connected = false;
         }
 
         public bool IsConnected()
         {
-            if (!this._connected) Login();
-            return this._connected;
+            return this._httpClient != null && this._connected;
         }
 
         public override string ToString()

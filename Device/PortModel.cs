@@ -31,10 +31,13 @@ namespace PoEWizard.Device
         public List<string> MacList { get; set; }
         public EndPointDeviceModel EndPointDevice { get; set; }
         public List<EndPointDeviceModel> EndPointDevicesList { get; set; }
+        public string Alias { get; set; }
         public List<PriorityLevelType> Priorities => Enum.GetValues(typeof(PriorityLevelType)).Cast<PriorityLevelType>().ToList();
 
         public PortModel(Dictionary<string, string> dict)
         {
+            EndPointDevice = new EndPointDeviceModel();
+            EndPointDevicesList = new List<EndPointDeviceModel>();
             Name = Utils.GetDictValue(dict, CHAS_SLOT_PORT);
             Number = GetPortId(Name);
             UpdatePortStatus(dict);
@@ -52,8 +55,6 @@ namespace PoEWizard.Device
             IsCapacitorDetection = true;
             Protocol8023bt = ConfigType.Unavailable;
             MacList = new List<string>();
-            EndPointDevice = new EndPointDeviceModel();
-            EndPointDevicesList = new List<EndPointDeviceModel>();
         }
 
         public void LoadPoEData(Dictionary<string, string> dict)
@@ -143,6 +144,7 @@ namespace PoEWizard.Device
                     if (idx >= 0 && idx < this.EndPointDevicesList.Count)
                     {
                         this.EndPointDevicesList[idx]?.LoadLldpRemoteTable(dict);
+                        if (idx == 0) this.EndPointDevicesList[idx].Alias = this.Alias;
                     }
                     else
                     {
@@ -182,6 +184,8 @@ namespace PoEWizard.Device
             IsEnabled = (Utils.GetDictValue(dict, ADMIN_STATUS)) == "enable";
             string sValStatus = Utils.FirstChToUpper(Utils.GetDictValue(dict, LINK_STATUS));
             if (!string.IsNullOrEmpty(sValStatus) && Enum.TryParse(sValStatus, out PortStatus portStatus)) Status = portStatus; else Status = PortStatus.Unknown;
+            Alias = Utils.GetDictValue(dict, ALIAS).Replace("\"", string.Empty);
+            EndPointDevice.Alias = Alias;
         }
 
         public void UpdateMacList(List<Dictionary<string, string>> dictList)

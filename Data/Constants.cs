@@ -139,6 +139,7 @@ namespace PoEWizard.Data
         public const string CLASS = "Class";
         public const string TYPE = "Type";
         public const string PRIO_DISCONNECT = "Priority Disconnect";
+        public const string ALIAS = "Alias";
         // Used by "SHOW_LAN_POWER"
         public const string POWERED_ON = "Powered On";
         public const string POWERED_OFF = "Powered Off";

@@ -205,8 +205,9 @@ namespace PoEWizard.Device
                             [CAPABILITIES_ENABLED] = "Unknown",
                             [MAC_NAME] = string.Join(",", port.MacList)
                         };
-                        port.EndPointDevice = new EndPointDeviceModel(ep);
+                        port.EndPointDevice = new EndPointDeviceModel(ep) { Alias = port.Alias };
                         port.EndPointDevicesList.Add(port.EndPointDevice);
+                        port.EndPointDevicesList[0].Alias = port.Alias;
                     }
                     break;
 
