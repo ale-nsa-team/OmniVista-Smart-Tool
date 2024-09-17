@@ -305,6 +305,7 @@ namespace PoEWizard.Comm
 
         public void Close()
         {
+            Logger.Activity($"Closing Rest API client on {this._ip_address}");
             this._httpClient.Dispose();
             this._httpClient = null;
             this._connected = false;
