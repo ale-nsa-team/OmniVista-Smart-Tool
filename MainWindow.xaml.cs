@@ -281,6 +281,13 @@ namespace PoEWizard
                 "The switch configuration will be restored to factory default. Please confirm your action.", 
                 MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
             if (!res) return;
+            PassCode pc = new PassCode(this);
+            if (pc.ShowDialog() == false) return;
+            if (pc.Password != PASS_CODE)
+            {
+                ShowMessageBox("Factory Reset", "Invalid password", MsgBoxIcons.Error);
+                return;
+            } 
             Logger.Warn($"Switch S/N {device.SerialNumber} Model {device.Model}: Factory reset applied!");
             Activity.Log(device, "Factory reset applied");
             ShowProgress("Applying factory default...");
@@ -392,7 +399,18 @@ namespace PoEWizard
 
         private void Reboot_Click(object sender, RoutedEventArgs e)
         {
-            LaunchRebootSwitch();
+            PassCode pc = new PassCode(this);
+            if (pc.ShowDialog() == true)
+            {
+                if (pc.Password != PASS_CODE)
+                {
+                    ShowMessageBox("Reboot", "Invalid password", MsgBoxIcons.Error);
+                }
+                else
+                {
+                    LaunchRebootSwitch();
+                }
+            } 
         }
 
         private async void CollectLogs_Click(object sender, RoutedEventArgs e)
