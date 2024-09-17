@@ -659,7 +659,7 @@ namespace PoEWizard
             Keyboard.ClearFocus();
             if (cb.IsChecked == false)
             {
-                string msg = $"Are you sure you want to turn PoE OFF on all ports in slot {selectedSlot.Name}?";
+                string msg = $"Are you sure you want to turn PoE Off on all ports in slot {selectedSlot.Name}?";
                 bool poweroff = ShowMessageBox("PoE OFF", msg, MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                 if (poweroff)
                 {
@@ -692,6 +692,7 @@ namespace PoEWizard
                     WaitSlotPortsUp();
                 });
                 RefreshSlotsAndPorts();
+                selectedSlot.IsPoeModeEnable = !selectedSlot.Is8023btSupport;
                 isWaitingSlotOn = false;
             }
             else
