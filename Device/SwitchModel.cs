@@ -207,7 +207,6 @@ namespace PoEWizard.Device
                         };
                         port.EndPointDevice = new EndPointDeviceModel(ep) { Alias = port.Alias };
                         port.EndPointDevicesList.Add(port.EndPointDevice);
-                        port.EndPointDevicesList[0].Alias = port.Alias;
                     }
                     break;
 

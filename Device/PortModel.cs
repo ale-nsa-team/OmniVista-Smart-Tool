@@ -144,13 +144,13 @@ namespace PoEWizard.Device
                     if (idx >= 0 && idx < this.EndPointDevicesList.Count)
                     {
                         this.EndPointDevicesList[idx]?.LoadLldpRemoteTable(dict);
-                        if (idx == 0) this.EndPointDevicesList[idx].Alias = this.Alias;
                     }
                     else
                     {
                         this.EndPointDevicesList.Add(new EndPointDeviceModel(dict));
                     }
                 }
+                this.EndPointDevicesList[0].Alias = this.Alias;
             }
         }
 
@@ -185,7 +185,6 @@ namespace PoEWizard.Device
             string sValStatus = Utils.FirstChToUpper(Utils.GetDictValue(dict, LINK_STATUS));
             if (!string.IsNullOrEmpty(sValStatus) && Enum.TryParse(sValStatus, out PortStatus portStatus)) Status = portStatus; else Status = PortStatus.Unknown;
             Alias = Utils.GetDictValue(dict, ALIAS).Replace("\"", string.Empty);
-            EndPointDevice.Alias = Alias;
         }
 
         public void UpdateMacList(List<Dictionary<string, string>> dictList)
