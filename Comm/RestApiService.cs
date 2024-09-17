@@ -992,22 +992,23 @@ namespace PoEWizard.Comm
             SwitchModel.LoadFromList(_dictList, DictionaryType.PortsList);
         }
 
-        public void RunPowerUpSlot(string slotNr)
+        public void PowerSlotUpOrDown(Command cmd, string slotNr)
         {
-            _wizardProgressReport = new ProgressReport("PoE Wizard Report:");
+            string msg = $"Turning slot {slotNr} PoE {(cmd == Command.POWER_UP_SLOT ? "ON" : "OFF")}";
+            _wizardProgressReport = new ProgressReport($"{msg} ...");
             try
             {
                 _wizardSwitchSlot = SwitchModel.GetSlot(slotNr);
                 if (_wizardSwitchSlot == null)
                 {
-                    SendProgressError("Power UP slot", $"Couldn't get data for slot {slotNr}");
+                    SendProgressError(msg, $"Couldn't get data for slot {slotNr}");
                     return;
                 }
-                PowerUpSlot();
+                if (cmd == Command.POWER_UP_SLOT) PowerSlotUp(); else PowerSlotDown();
             }
             catch (Exception ex)
             {
-                SendSwitchError("Power UP slot", ex);
+                SendSwitchError(msg, ex);
             }
         }
 
@@ -1022,7 +1023,7 @@ namespace PoEWizard.Comm
                     SendProgressError("PoE Wizard", $"Couldn't get data for port {port}");
                     return;
                 }
-                if (!_wizardSwitchSlot.IsInitialized) PowerUpSlot();
+                if (!_wizardSwitchSlot.IsInitialized) PowerSlotUp();
                 _wizardReportResult = reportResult;
                 if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
                 {
@@ -1051,7 +1052,7 @@ namespace PoEWizard.Comm
                 }
                 string msg = "Running PoE Wizard";
                 _progress.Report(new ProgressReport($"{msg} ..."));
-                if (!_wizardSwitchSlot.IsInitialized) PowerUpSlot();
+                if (!_wizardSwitchSlot.IsInitialized) PowerSlotUp();
                 _wizardReportResult = reportResult;
                 if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
                 {
@@ -1846,7 +1847,7 @@ namespace PoEWizard.Comm
 
         private void CheckFPOEand823BT(Command cmd)
         {
-            if (!_wizardSwitchSlot.IsInitialized) PowerUpSlot();
+            if (!_wizardSwitchSlot.IsInitialized) PowerSlotUp();
             if (cmd == Command.POE_FAST_ENABLE)
             {
                 if (_wizardSwitchSlot.Is8023btSupport && _wizardSwitchSlot.Ports?.FirstOrDefault(p => p.Protocol8023bt == ConfigType.Enable) != null)
@@ -1867,37 +1868,30 @@ namespace PoEWizard.Comm
             else if (cmd == Command.POWER_823BT_DISABLE) txt.Append("Disabling");
             txt.Append(" 802.3bt on slot ").Append(_wizardSwitchSlot.Name).Append(" of switch ").Append(SwitchModel.Name);
             _progress.Report(new ProgressReport($"{txt} ..."));
-            PowerDownSlot();
+            PowerSlotDown();
             WaitSlotPower(false);
             SendCommand(new CmdRequest(cmd, new string[1] { _wizardSwitchSlot.Name }));
-            PowerUpSlot();
+            PowerSlotUp();
         }
 
-        private void PowerDownSlot()
+        private void PowerSlotDown()
         {
-            try
-            {
-                SendCommand(new CmdRequest(Command.POWER_DOWN_SLOT, new string[1] { _wizardSwitchSlot.Name }));
-            }
-            catch
-            {
-                WriteMemory();
-            }
-            SendCommand(new CmdRequest(Command.POWER_DOWN_SLOT, new string[1] { _wizardSwitchSlot.Name }));
+            SendCommand(new CmdRequest(Command.POWER_DOWN_SLOT, _wizardSwitchSlot.Name));
+            WaitSlotPower(false);
         }
 
-        private void PowerUpSlot()
+        private void PowerSlotUp()
         {
-            SendCommand(new CmdRequest(Command.POWER_UP_SLOT, new string[1] { _wizardSwitchSlot.Name }));
+            SendCommand(new CmdRequest(Command.POWER_UP_SLOT, _wizardSwitchSlot.Name));
             WaitSlotPower(true);
         }
 
         private void WaitSlotPower(bool powerUp)
         {
             DateTime startTime = DateTime.Now;
-            StringBuilder txt = new StringBuilder("Turning ");
+            StringBuilder txt = new StringBuilder("Turning slot ").Append(_wizardSwitchSlot.Name).Append(" PoE ");
             if (powerUp) txt.Append("ON"); else txt.Append("OFF");
-            txt.Append(" PoE on slot ").Append(_wizardSwitchSlot.Name).Append(" on switch ").Append(SwitchModel.Name);
+            txt.Append(" on switch ").Append(SwitchModel.Name);
             _progress.Report(new ProgressReport($"{txt} ..."));
             int dur = 0;
             while (dur < 50)

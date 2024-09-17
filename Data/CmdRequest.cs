@@ -144,7 +144,6 @@ namespace PoEWizard.Data
         DELETE_NTP_SERVER,
         START_CHASSIS_POE,
         STOP_CHASSIS_POE,
-        START_STOP_SLOT_POE,
         SNMP_AUTH_LOCAL,
         SNMP_COMMUNITY_MODE,
         SNMP_COMMUNITY_MAP,

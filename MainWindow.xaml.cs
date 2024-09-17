@@ -643,16 +643,7 @@ namespace PoEWizard
                 if (poweroff)
                 {
                     DisableButtons();
-                    msg = $"Turning OFF PoE on slot {selectedSlot.Name}";
-                    ShowProgress(msg);
-                    progress.Report(new ProgressReport($"{msg} ..."));
-                    await Task.Run(() =>
-                    {
-                        restApiService.RunSwitchCommand(new CmdRequest(Command.START_STOP_SLOT_POE, selectedSlot.Name, "stop"));
-                        restApiService.RefreshSwitchPorts();
-                    }
-                    );
-                    RefreshSlotsAndPorts();
+                    await PowerSlotUpOrDown(Command.POWER_DOWN_SLOT, selectedSlot.Name);
                     return;
                 }
                 else 
@@ -667,7 +658,7 @@ namespace PoEWizard
                 ShowProgress($"Turning ON PoE on slot {selectedSlot.Name}");
                 await Task.Run(() =>
                 {
-                    restApiService.RunPowerUpSlot(selectedSlot.Name);
+                    restApiService.PowerSlotUpOrDown(Command.POWER_UP_SLOT, selectedSlot.Name);
                     WaitSlotPortsUp();
                 });
                 RefreshSlotsAndPorts();
@@ -1181,13 +1172,7 @@ namespace PoEWizard
                             string alertMsg = $"{report.AlertDescription}\nDo you want to turn it on?";
                             if (report?.Result == WizardResult.Warning && ShowMessageBox($"Slot {report.ID} warning", alertMsg, MsgBoxIcons.Question, MsgBoxButtons.YesNo))
                             {
-                                string msg = $"Turning ON PoE on slot {report.ID}";
-                                ShowProgress(msg);
-                                progress.Report(new ProgressReport($"{msg} ..."));
-                                await Task.Run(() => restApiService.RunPowerUpSlot(report.ID));
-                                RefreshSlotsAndPorts();
-                                HideInfoBox();
-                                HideProgress();
+                                await PowerSlotUpOrDown(Command.POWER_UP_SLOT, report.ID);
                                 resetSlotCnt++;
                                 Logger.Debug($"{report}\nSlot {report.ID} turned On");
                             }
@@ -1206,6 +1191,20 @@ namespace PoEWizard
             {
                 Logger.Error(ex);
             }
+        }
+
+        private async Task PowerSlotUpOrDown(Command cmd, string slotNr)
+        {
+            string msg = $"Turning slot {slotNr} PoE {(cmd == Command.POWER_UP_SLOT ? "ON" : "OFF")}";
+            ShowProgress(msg);
+            progress.Report(new ProgressReport($"{msg} ..."));
+            await Task.Run(() =>
+            {
+                restApiService.PowerSlotUpOrDown(cmd, slotNr);
+                restApiService.RefreshSwitchPorts();
+            }
+            );
+            RefreshSlotsAndPorts();
         }
 
         private void RefreshSlotsAndPorts()

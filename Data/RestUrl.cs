@@ -97,7 +97,6 @@ namespace PoEWizard.Data
             [Command.WRITE_MEMORY] = "write memory flash-synchro",
             [Command.SHOW_CONFIGURATION] = "show configuration snapshot",
             [Command.REBOOT_SWITCH] = "reload from working no rollback-timeout",
-            [Command.START_STOP_SLOT_POE] = $"lanpower slot {DAT} service {DAT}",
             #endregion
 
             #region Switch Debug Log commands
