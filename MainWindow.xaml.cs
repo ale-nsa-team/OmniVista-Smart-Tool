@@ -639,6 +639,7 @@ namespace PoEWizard
             if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
             FocusManager.SetFocusedElement(FocusManager.GetFocusScope(cb), null);
             Keyboard.ClearFocus();
+            CmdRequest cmd = null;
             if (cb.IsChecked == false)
             {
                 string msg = $"Are you sure you want to turn PoE OFF on all ports in slot {selectedSlot.Name}?";
