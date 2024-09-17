@@ -250,7 +250,7 @@
                                           IsEnabled="{Binding Path=IsPoeModeEnable}"
                                           IsChecked="{Binding Path=FPoE, Converter={StaticResource ConfigTypeToBoolConverter}, ConverterParameter=Enable}" 
                                           ToolTipService.IsEnabled="{Binding Path=IsPoeModeEnable, Converter={StaticResource InverseBoolConverter}}"
-                                          ToolTip="Fast PoE is disabled when 802.3bt is enabled" />
+                                          ToolTip="Fast PoE is disabled when PoE is turned off or 802.3bt is enabled" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -264,7 +264,7 @@
                                           IsEnabled="{Binding Path=IsPoeModeEnable}"
                                           IsChecked="{Binding Path=PPoE, Converter={StaticResource ConfigTypeToBoolConverter}, ConverterParameter=Enable}" 
                                           ToolTipService.IsEnabled="{Binding Path=IsPoeModeEnable, Converter={StaticResource InverseBoolConverter}}"
-                                          ToolTip="Perpetual PoE is disabled when 802.3bt is enabled"/>
+                                          ToolTip="Perpetual PoE is disabled when PoE is turned off or 802.3bt is enabled"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
