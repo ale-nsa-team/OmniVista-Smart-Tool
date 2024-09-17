@@ -639,14 +639,15 @@ namespace PoEWizard
             if (selectedSlot == null || !cb.IsKeyboardFocusWithin) return;
             FocusManager.SetFocusedElement(FocusManager.GetFocusScope(cb), null);
             Keyboard.ClearFocus();
-            CmdRequest cmd = null;
             if (cb.IsChecked == false)
             {
                 string msg = $"Are you sure you want to turn PoE OFF on all ports in slot {selectedSlot.Name}?";
                 bool poweroff = ShowMessageBox("PoE OFF", msg, MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                 if (poweroff)
                 {
-                    cmd = new CmdRequest(Command.START_STOP_SLOT_POE, selectedSlot.Name, "stop");
+                    DisableButtons();
+                    await PowerSlotUpOrDown(Command.POWER_DOWN_SLOT, selectedSlot.Name);
+                    return;
                 }
                 else 
                 {
@@ -662,32 +663,17 @@ namespace PoEWizard
                 cb.IsChecked = !cb.IsChecked;
                 return;
             }
-            else
-            {
-                cmd = new CmdRequest(Command.START_STOP_SLOT_POE, selectedSlot.Name, "start");
-                isWaitingSlotOn = true;
-            }
-
-            await Task.Run(() => restApiService.RunSwitchCommand(cmd));
-
             if (cb.IsChecked == true)
             {
-                ShowProgress($"Turning on PoE on slot {selectedSlot.Name}");
-                ShowInfoBox($"Waiting for slot {selectedSlot.Name} to come up...");
-                int count = 0;
-                while (count < 30)
+                isWaitingSlotOn = true;
+                DisableButtons();
+                ShowProgress($"Turning slot {selectedSlot.Name} PoE ON");
+                await Task.Run(() =>
                 {
-                    await Task.Run(() => GetSlotPowerStatus(selectedSlot));
-                    if (selectedSlot.IsInitialized) break;
-                    await Task.Delay(2000);
-                    count++;
-                }
-                await Task.Run(() => {
-                    List<Dictionary<string, string>> dictList = restApiService.RunSwitchCommand(new CmdRequest(Command.SHOW_LAN_POWER_CONFIG, ParseType.Htable2, selectedSlot.Name)) as List<Dictionary<string, string>>;
-                    selectedSlot.LoadFromList(dictList, DictionaryType.LanPowerCfg);
+                    restApiService.PowerSlotUpOrDown(Command.POWER_UP_SLOT, selectedSlot.Name);
+                    WaitSlotPortsUp();
                 });
-                HideInfoBox();
-                HideProgress();
+                RefreshSlotsAndPorts();
                 isWaitingSlotOn = false;
             }
             else
