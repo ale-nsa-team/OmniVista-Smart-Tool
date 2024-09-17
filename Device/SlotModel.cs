@@ -20,7 +20,7 @@ namespace PoEWizard.Device
         public List<PortModel> Ports { get; set; }
         public double Threshold { get; set; }
         public bool Is8023btSupport {get;set;}
-        public bool IsPoeModeEnable { get; set; } = true;
+        public bool IsPoeModeEnable { get; set; }
         public bool IsPriorityDisconnect { get; set; }
         public ConfigType FPoE { get; set; }
         public ConfigType PPoE { get; set; }
@@ -56,6 +56,7 @@ namespace PoEWizard.Device
         public void LoadFromList(List<Dictionary<string, string>> list, DictionaryType dt)
         {
             if (dt == DictionaryType.LanPower) this.NbPoePorts = 0;
+            this.IsPoeModeEnable = true;
             foreach (var dict in list)
             {
                 string[] split = (dict.TryGetValue((dt == DictionaryType.LanPower) ? PORT : CHAS_SLOT_PORT, out string s) ? s : "0").Split('/');

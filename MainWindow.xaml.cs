@@ -692,7 +692,6 @@ namespace PoEWizard
                     WaitSlotPortsUp();
                 });
                 RefreshSlotsAndPorts();
-                selectedSlot.IsPoeModeEnable = !selectedSlot.Is8023btSupport;
                 isWaitingSlotOn = false;
             }
             else
@@ -1540,7 +1539,7 @@ namespace PoEWizard
                 DataContext = device;
                 Logger.Debug($"Data context set to {device.Name}");
                 _comImg.Source = (ImageSource)currentDict["connected"];
-                _switchAttributes.Text = $"Connected to: {device.Name}";
+                _switchAttributes.Text = $"Connected to: {device.Name} (Up time: {device.UpTime})";
                 _btnConnect.Cursor = Cursors.Hand;
                 _switchMenuItem.IsEnabled = false;
                 _disconnectMenuItem.Visibility = Visibility.Visible;
