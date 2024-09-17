@@ -333,6 +333,14 @@ namespace PoEWizard.Comm
                 sendCmd = "Y";
                 expected = "copy images before reloading";
             }
+            else if (result.Contains("Are you sure"))
+            {
+                SendCommandToSwitch("yes", 15, "yes");
+                Thread.Sleep(200);
+                WaitEndDataReceived(cmd, 15, "Password");
+                sendCmd = this._switch.Password;
+                expected = this.SessionPrompt;
+            }
             else if (result.Contains("Password"))
             {
                 sendCmd = this._switch.Password;
@@ -537,14 +545,24 @@ namespace PoEWizard.Comm
                         rec_buffer = this._received_buffer.ToString();
                     }
                     bool recAll = false;
+                    string recStr = rec_buffer.Trim();
                     if (string.IsNullOrEmpty(expected))
                     {
-                        recAll = (rec_buffer.Trim().EndsWith(this.SessionPrompt) && rec_buffer.Contains(cmd));
+                        recAll = recStr.EndsWith(this.SessionPrompt) && rec_buffer.Contains(cmd);
                     }
-                    else
+                    else if (expected.Contains("|"))
                     {
-                        recAll = (rec_buffer.Trim().Contains(expected) && rec_buffer.Contains(cmd));
+                        string[] expectList = expected.Split('|');
+                        if (expectList.Length > 0)
+                        {
+                            foreach (string expectItem in expectList)
+                            {
+                                recAll = recStr.Contains(expectItem) && rec_buffer.Contains(cmd);
+                                if (recAll) break;
+                            }
+                        }
                     }
+                    else recAll = recStr.Contains(expected) && rec_buffer.Contains(cmd);
                     if (recAll)
                     {
                         LogResponseCommand(cmd, startTime);
