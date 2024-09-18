@@ -666,6 +666,8 @@ namespace PoEWizard
                 {
                     DisableButtons();
                     await PowerSlotUpOrDown(Command.POWER_DOWN_SLOT, selectedSlot.Name);
+                    Logger.Activity($"PoE on slot {selectedSlot.Name} turned off");
+                    Activity.Log(device, $"PoE on slot {selectedSlot.Name} turned off");
                     return;
                 }
                 else 
@@ -692,6 +694,8 @@ namespace PoEWizard
                     restApiService.PowerSlotUpOrDown(Command.POWER_UP_SLOT, selectedSlot.Name);
                     WaitSlotPortsUp();
                 });
+                Logger.Activity($"PoE on slot {selectedSlot.Name} turned on");
+                Activity.Log(device, $"PoE on slot {selectedSlot.Name} turned on");
                 RefreshSlotsAndPorts();
                 isWaitingSlotOn = false;
             }
