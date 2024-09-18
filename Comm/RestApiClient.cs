@@ -31,6 +31,7 @@ namespace PoEWizard.Comm
         private readonly string _password;
         private readonly double _cnx_timeout;
         private bool _connected = false;
+        private DateTime _start_connect_time;
 
         #endregion Internal Variables
 
@@ -68,7 +69,7 @@ namespace PoEWizard.Comm
         private void ConnectToSwitch()
         {
             if (this._httpClient == null) return;
-            DateTime startTime = DateTime.Now;
+            this._start_connect_time = DateTime.Now;
             try
             {
                 string domain = "authv2";
@@ -76,15 +77,15 @@ namespace PoEWizard.Comm
                 var response = this._httpClient.GetAsync(url);
                 while (!response.IsCompleted)
                 {
-                    if (Utils.IsTimeExpired(startTime, this._cnx_timeout))
+                    if (Utils.IsTimeExpired(this._start_connect_time, this._cnx_timeout))
                     {
-                        throw new SwitchConnectionFailure($"{PrintUnreachableError(startTime)}\nTook too long to respond (>{Utils.CalcStringDuration(startTime)})");
+                        throw new SwitchConnectionFailure($"{PrintUnreachableError(this._start_connect_time)}\nTook too long to respond (>{Utils.CalcStringDuration(this._start_connect_time)})");
                     }
                     Thread.Sleep(WAIT_SWITCH_CONNECT_DELAY_MS);
                 };
                 if (response.IsCanceled || response.Result == null || response.Result.Content == null)
                 {
-                    throw new SwitchConnectionFailure(PrintUnreachableError(startTime));
+                    throw new SwitchConnectionFailure(PrintUnreachableError(this._start_connect_time));
                 }
                 XmlDocument xmlDoc = GetRestApiResponse(response.Result.Content.ReadAsStringAsync().Result);
                 XmlNode tokenNode;
@@ -124,7 +125,7 @@ namespace PoEWizard.Comm
             }
             catch (HttpRequestException ex)
             {
-                string error = PrintUnreachableError(startTime);
+                string error = PrintUnreachableError(this._start_connect_time);
                 if (ex.InnerException != null)
                 {
                     error = ex.InnerException.Message;
@@ -217,23 +218,28 @@ namespace PoEWizard.Comm
                 url = $"{this._httpClient.BaseAddress}{url}";
                 response[REST_URL] = url;
                 HttpRequestMessage request = GetHttpRequest(entry, url);
-                var http_response = this._httpClient.SendAsync(request);
-                while (http_response != null && !http_response.IsCompleted) { };
-                if (http_response == null) return response;
-                string error = null;
-                if (http_response.Result == null) error = $"Requested URL: {url}\r\nError: Switch {this._ip_address} rejected the request";
-                else if (http_response.IsCanceled) error = $"Requested URL: {url}\r\nError: Switch {this._ip_address} didn't respond within {this._cnx_timeout} sec";
+                Task<HttpResponseMessage> http_response = SendRequest(request);
+                if (http_response == null)
+                {
+                    response[ERROR] = $"Switch {this._ip_address} didn't respond within {this._cnx_timeout} sec";
+                    return response;
+                }
+                string error;
+                int nbRetry = 0;
+                while (http_response.IsCanceled || http_response.Result == null)
+                {
+                    nbRetry++;
+                    error = GetHttpResponseError(url, http_response);
+                    Logger.Warn($"{error ?? "Unknown error"} (Try #{nbRetry}, duration: {Utils.CalcStringDuration(entry.StartTime)})");
+                    if (nbRetry >= 3) break;
+                    Thread.Sleep(3000);
+                    http_response = SendRequest(request);
+                }
+                error = GetHttpResponseError(url, http_response);
                 if (!string.IsNullOrEmpty(error))
                 {
                     response[ERROR] = error;
                     return response;
-                }
-                if (http_response.Result.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    RemoveToken();
-                    ConnectToSwitch();
-                    request = GetHttpRequest(entry, url);
-                    http_response = this._httpClient.SendAsync(request);
                 }
                 if (http_response.Result.StatusCode == HttpStatusCode.OK)
                 {
@@ -252,6 +258,34 @@ namespace PoEWizard.Comm
                 else throw ex;
             }
             return response;
+        }
+
+        private Task<HttpResponseMessage> SendRequest(HttpRequestMessage request)
+        {
+            Task<HttpResponseMessage> http_response = SendAsyncRequest(request);
+            if (http_response?.Result?.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                Logger.Activity($"Switch {this._ip_address} token expired (duration: {Utils.CalcStringDuration(this._start_connect_time)})");
+                RemoveToken();
+                ConnectToSwitch();
+                http_response = SendAsyncRequest(request);
+            }
+            return http_response;
+        }
+
+        private Task<HttpResponseMessage> SendAsyncRequest(HttpRequestMessage request)
+        {
+            Task<HttpResponseMessage> http_response = this._httpClient.SendAsync(request);
+            while (http_response != null && !http_response.IsCompleted) { };
+            if (http_response != null) return http_response;
+            return null;
+        }
+
+        private string GetHttpResponseError(string url, Task<HttpResponseMessage> http_response)
+        {
+            if (http_response.IsCanceled) return $"Requested URL: {url}\r\nError: Switch {this._ip_address} didn't respond within {this._cnx_timeout} sec";
+            else if (http_response.Result == null) return $"Requested URL: {url}\r\nError: Switch {this._ip_address} rejected the request";
+            return null;
         }
 
         private string ParseError(Task<HttpResponseMessage> http_response, string url)
@@ -296,7 +330,7 @@ namespace PoEWizard.Comm
 
         private string PrintUnreachableError(DateTime startTime)
         {
-            return $"Switch is unreachable (>{Utils.CalcStringDuration(startTime)})";
+            return $"Couldn't connect to switch within {Utils.CalcStringDuration(startTime, true)}";
         }
 
         #endregion Send Api Resquest
