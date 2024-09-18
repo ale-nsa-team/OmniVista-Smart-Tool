@@ -54,7 +54,7 @@ namespace PoEWizard.Device
         public int LpCmmDebugLevel => GetAppLogLevel(LPCMM);
         public string LpCmmLabelDebugLevel => GetLabelAppLogLevel(LPCMM);
 
-        public SwitchModel() : this("", DEFAULT_USERNAME, DEFAULT_PASSWORD, 5) { }
+        public SwitchModel() : this("", DEFAULT_USERNAME, DEFAULT_PASSWORD, SWITCH_CONNECT_TIMEOUT_SEC) { }
 
         public SwitchModel(string ipAddr, string username, string password, int cnxTimeout)
         {

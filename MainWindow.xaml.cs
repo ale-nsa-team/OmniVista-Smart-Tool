@@ -288,7 +288,7 @@ namespace PoEWizard
             {
                 ShowMessageBox("Factory Reset", "Invalid password", MsgBoxIcons.Error);
                 return;
-            } 
+            }
             Logger.Warn($"Switch S/N {device.SerialNumber} Model {device.Model}: Factory reset applied!");
             Activity.Log(device, "Factory reset applied");
             ShowProgress("Applying factory default...");
@@ -1266,6 +1266,8 @@ namespace PoEWizard
         {
             await Enable823BT();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
+            await ResetPortPower();
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await EnableHdmiMdi();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await ChangePriority();
@@ -1278,6 +1280,8 @@ namespace PoEWizard
         {
             await Enable2PairPower();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
+            await ResetPortPower();
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await ChangePriority();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await EnableHdmiMdi();
@@ -1288,6 +1292,8 @@ namespace PoEWizard
 
         private async Task RunWizardWirelessLan()
         {
+            await ResetPortPower();
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable823BT();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable2PairPower();
@@ -1299,6 +1305,8 @@ namespace PoEWizard
 
         private async Task RunWizardOther()
         {
+            await ResetPortPower();
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await ChangePriority();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable823BT();
@@ -1331,6 +1339,12 @@ namespace PoEWizard
             Logger.Debug($"Enable 2-Pair Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
+        private async Task ResetPortPower()
+        {
+            await RunPoeWizard(new List<Command>() { Command.RESET_POWER_PORT }, 30);
+            Logger.Debug($"Recycling Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+        }
+
         private async Task ChangePriority()
         {
             await RunPoeWizard(new List<Command>() { Command.CHECK_POWER_PRIORITY });
@@ -1353,25 +1367,12 @@ namespace PoEWizard
             Logger.Debug($"Enable Power over HDMI on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
-        private async Task RunPoeWizard(List<Command> cmdList, int waitSec = 15)
-        {
-            await Task.Run(() => restApiService.RunPoeWizard(selectedPort.Name, reportResult, cmdList, waitSec));
-        }
-
         private async Task RunLastWizardActions()
         {
             await RunWizardCommands(new List<Command>() { Command.CHECK_CAPACITOR_DETECTION }, 60);
             WizardResult result = reportResult.GetReportResult(selectedPort.Name);
             if (result != WizardResult.Ok && result != WizardResult.Fail) reportResult.RemoveLastWizardReport(selectedPort.Name);
             await CheckDefaultMaxPower();
-            if (selectedPort.Poe == PoeStatus.On && selectedPort.Power > 0)
-            {
-                if (ShowMessageBox("Recycling Power on Port", $"Do you want to recycle the power on port {selectedPort.Name}?", MsgBoxIcons.Question, MsgBoxButtons.YesNo))
-                {
-                    await RunWizardCommands(new List<Command>() { Command.RESET_POWER_PORT }, 30);
-                    Logger.Info($"Recycling the power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-                }
-            }
             reportResult.UpdateResult(selectedPort.Name, reportResult.GetReportResult(selectedPort.Name));
         }
 
@@ -1387,6 +1388,11 @@ namespace PoEWizard
                     await RunWizardCommands(new List<Command>() { Command.CHANGE_MAX_POWER });
                 }
             }
+        }
+
+        private async Task RunPoeWizard(List<Command> cmdList, int waitSec = 15)
+        {
+            await Task.Run(() => restApiService.RunPoeWizard(selectedPort.Name, reportResult, cmdList, waitSec));
         }
 
         private async Task RunWizardCommands(List<Command> cmdList, int waitSec = 15)

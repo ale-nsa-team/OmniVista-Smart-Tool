@@ -609,7 +609,7 @@ namespace PoEWizard.Comm
                         string cfgChanges = ConfigChanges.GetChanges(SwitchModel, currSnapshot);
                         if (!string.IsNullOrEmpty(cfgChanges))
                         {
-                            Logger.Activity($"Updating snapshot config file {SwitchModel.IpAddress}{SNAPSHOT_SUFFIX} because the switch {SwitchModel.Name} was synchronized!");
+                            Logger.Activity($"Updating snapshot config file {SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}!\nSwitch {SwitchModel.Name} was synchronized but the snapshot config file was different.");
                             File.WriteAllText(filePath, SwitchModel.ConfigSnapshot);
                         }
                     }
@@ -1064,11 +1064,11 @@ namespace PoEWizard.Comm
                     DisableConflictPower();
                     return;
                 }
-                else if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny)
+                else if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny && _wizardSwitchPort.Poe != PoeStatus.Searching)
                 {
                     WaitSec(msg, 5);
                     GetSlotLanPower(_wizardSwitchSlot);
-                    if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny)
+                    if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny && _wizardSwitchPort.Poe != PoeStatus.Searching)
                     {
                         NothingToDo();
                         return;
@@ -1188,6 +1188,10 @@ namespace PoEWizard.Comm
                         ChangePortMaxPower();
                         break;
                 }
+                if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok)
+                {
+                    break;
+                }
             }
         }
 
@@ -1256,7 +1260,7 @@ namespace PoEWizard.Comm
                     wizardAction = $"Disabling capacitor detection on port {_wizardSwitchPort.Name}";
                     RestartDeviceOnPort(wizardAction, 5);
                     WaitSec(wizardAction, 10);
-                    WaitPortUp(waitSec, wizardAction);
+                    WaitPortUp(30, wizardAction);
                 }
                 Logger.Info(txt);
             }
@@ -1391,7 +1395,7 @@ namespace PoEWizard.Comm
                 }
                 else
                 {
-                    error = $"Switch {(string.IsNullOrEmpty(SwitchModel.Name) ? SwitchModel.IpAddress : SwitchModel.Name)} unreachable";
+                    error = $"Switch {(string.IsNullOrEmpty(SwitchModel.Name) ? SwitchModel.IpAddress : SwitchModel.Name)} unreachable\n{error}";
                     this.SwitchModel.Status = SwitchStatus.Unreachable;
                 }
             }
@@ -1551,7 +1555,6 @@ namespace PoEWizard.Comm
                 RestartDeviceOnPort(wizardAction);
                 CheckPortUp(waitSec, wizardAction);
                 _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
-                _wizardReportResult.UpdateWizardReport(_wizardSwitchPort.Name, WizardResult.Proceed);
             }
             catch (Exception ex)
             {
@@ -1604,7 +1607,8 @@ namespace PoEWizard.Comm
         private bool IsPortUp()
         {
             if (_wizardSwitchPort.Status != PortStatus.Up) return false;
-            else if (_wizardSwitchPort.Poe == PoeStatus.On || _wizardSwitchPort.Poe == PoeStatus.Off) return true;
+            else if (_wizardSwitchPort.Poe == PoeStatus.On && _wizardSwitchPort.Power > 0) return true;
+            else if (_wizardSwitchPort.Poe == PoeStatus.Off) return true;
             else if (_wizardSwitchPort.Poe == PoeStatus.Searching && _wizardCommand == Command.CAPACITOR_DETECTION_DISABLE) return true;
             return false;
         }
