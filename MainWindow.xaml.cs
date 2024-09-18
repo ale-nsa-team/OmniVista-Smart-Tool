@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -1553,7 +1554,7 @@ namespace PoEWizard
                 DataContext = device;
                 Logger.Debug($"Data context set to {device.Name}");
                 _comImg.Source = (ImageSource)currentDict["connected"];
-                _switchAttributes.Text = $"Connected to: {device.Name} (Up time: {device.UpTime})";
+                _switchAttributes.Text = $"Connected to: {device.Name} (Up time: {ConvertUptime(device.UpTime)})";
                 _btnConnect.Cursor = Cursors.Hand;
                 _switchMenuItem.IsEnabled = false;
                 _disconnectMenuItem.Visibility = Visibility.Visible;
@@ -1764,6 +1765,27 @@ namespace PoEWizard
                 if (selectedPort != null) _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe; else _btnRunWiz.IsEnabled = true;
                 _btnResetPort.IsEnabled = true;
             }
+        }
+
+        private string ConvertUptime(string uptime)
+        {
+            try
+            {
+                string[] s = uptime.Split(',');
+                int d = int.TryParse(GetDigits(s[0]), out d) ? d : 0;
+                int h = int.TryParse(GetDigits(s[1]), out h) ? h : 0;
+                int idx = s[2].IndexOf("and");
+                int m = int.TryParse(GetDigits(s[2].Substring(0, idx)), out m) ? m : 0;
+                int sec = int.TryParse(GetDigits(s[2].Substring(idx)), out sec) ? sec : 0;
+                return $"{(d > 0 ? d + " days, " : "")}{h}h : {m}min : {sec}sec";
+            }
+            catch { }
+            return uptime;
+        }
+
+        private string GetDigits(string s)
+        {
+            return Regex.Match(s, @"\d+").Value;
         }
 
         #endregion private methods

@@ -69,6 +69,7 @@ namespace PoEWizard.Components
         #region Event Handlers
         private async void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
+            _btnSubmit.IsEnabled = false;
             ShowInfoBox("Loading current parameters, please wait...");
             await Task.Run(() =>
             {
@@ -105,7 +106,7 @@ namespace PoEWizard.Components
             if (pageNo == pageCount)
             {
                 _btnCfgNext.IsEnabled = false;
-                //_btnSubmit.IsEnabled = true;
+                _btnSubmit.IsEnabled = true;
             }
             _btnCfgBack.IsEnabled = true;
             NavigateToPage();
