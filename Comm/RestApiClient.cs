@@ -32,6 +32,7 @@ namespace PoEWizard.Comm
         private readonly double _cnx_timeout;
         private bool _connected = false;
         private DateTime _start_connect_time;
+        private HttpRequestMessage _http_request;
 
         #endregion Internal Variables
 
@@ -222,8 +223,7 @@ namespace PoEWizard.Comm
             {
                 url = $"{this._httpClient.BaseAddress}{url}";
                 response[REST_URL] = url;
-                HttpRequestMessage request = GetHttpRequest(entry, url);
-                Task<HttpResponseMessage> http_response = SendRequest(request);
+                Task<HttpResponseMessage> http_response = SendHttpRequest(entry, url);
                 if (http_response == null)
                 {
                     response[ERROR] = $"Switch {this._ip_address} didn't respond within {this._cnx_timeout} sec";
@@ -239,7 +239,7 @@ namespace PoEWizard.Comm
                     if (nbRetry >= 3) break;
                     ReconnectSwitch();
                     Thread.Sleep(3000);
-                    http_response = SendRequest(request);
+                    http_response = SendHttpRequest(entry, url);
                 }
                 error = GetHttpResponseError(url, http_response);
                 if (!string.IsNullOrEmpty(error))
@@ -266,33 +266,35 @@ namespace PoEWizard.Comm
             return response;
         }
 
-        private Task<HttpResponseMessage> SendRequest(HttpRequestMessage request)
+        private Task<HttpResponseMessage> SendHttpRequest(RestUrlEntry entry, string url)
         {
-            Task<HttpResponseMessage> http_response = SendAsyncRequest(request);
+            Task<HttpResponseMessage> http_response = SendAsyncRequest(entry, url);
             if (http_response?.Result?.StatusCode == HttpStatusCode.Unauthorized)
             {
                 Logger.Activity($"Switch {this._ip_address} token expired (duration: {Utils.CalcStringDuration(this._start_connect_time)})");
                 ReconnectSwitch();
-                http_response = SendAsyncRequest(request);
+                http_response = SendAsyncRequest(entry, url);
             }
             return http_response;
+        }
+
+        private Task<HttpResponseMessage> SendAsyncRequest(RestUrlEntry entry, string url)
+        {
+            this._http_request = GetHttpRequest(entry, url);
+            Task<HttpResponseMessage> http_response = this._httpClient.SendAsync(this._http_request);
+            while (http_response != null && !http_response.IsCompleted) { };
+            if (http_response != null) return http_response;
+            return null;
         }
 
         private void ReconnectSwitch()
         {
             RemoveToken();
-            this._httpClient.Dispose();
-            this._httpClient = null;
+            this._http_request.Dispose();
+            this._http_request = null;
+            CloseHttpClient();
             CreateHttpClient();
             ConnectToSwitch();
-        }
-
-        private Task<HttpResponseMessage> SendAsyncRequest(HttpRequestMessage request)
-        {
-            Task<HttpResponseMessage> http_response = this._httpClient.SendAsync(request);
-            while (http_response != null && !http_response.IsCompleted) { };
-            if (http_response != null) return http_response;
-            return null;
         }
 
         private string GetHttpResponseError(string url, Task<HttpResponseMessage> http_response)
@@ -354,9 +356,14 @@ namespace PoEWizard.Comm
         public void Close()
         {
             Logger.Activity($"Closing Rest API client on {this._ip_address}");
+            CloseHttpClient();
+            this._connected = false;
+        }
+
+        private void CloseHttpClient()
+        {
             this._httpClient.Dispose();
             this._httpClient = null;
-            this._connected = false;
         }
 
         public bool IsConnected()
