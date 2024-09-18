@@ -81,6 +81,7 @@ namespace PoEWizard.Components
                     string filepath = Path.Combine(MainWindow.dataPath, "app.cfg");
                     string np = Utils.EncryptString(newpwd);
                     File.WriteAllText(filepath, np);
+                    SavedPassword = newpwd;
                     this.DataContext = null;
                     Password = newpwd;
                     this.DataContext = this;
