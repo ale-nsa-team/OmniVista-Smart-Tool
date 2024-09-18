@@ -55,7 +55,6 @@ namespace PoEWizard
         private int selectedTrafficDuration;
         private DateTime startTrafficAnalysisTime;
         private double maxCollectLogsDur = 0;
-        private readonly string passCode = string.Empty;
         #endregion
 
         #region Local constants
@@ -120,16 +119,11 @@ namespace PoEWizard
             });
             //check cli arguments
             string[] args = Environment.GetCommandLineArgs();
-            if (args.Length == 2 && !string.IsNullOrEmpty(args[1]))
-            {
-                passCode = args[1].Replace("\r\n", string.Empty);
-            }
-            else if (args.Length > 3 && !string.IsNullOrEmpty(args[1]) && Utils.IsValidIP(args[1]) && !string.IsNullOrEmpty(args[2]) && !string.IsNullOrEmpty(args[3]))
+            if (args.Length > 3 && !string.IsNullOrEmpty(args[1]) && Utils.IsValidIP(args[1]) && !string.IsNullOrEmpty(args[2]) && !string.IsNullOrEmpty(args[3]))
             {
                 device.IpAddress = args[1];
                 device.Login = args[2];
                 device.Password = args[3].Replace("\r\n", string.Empty);
-                passCode = args.Length > 4 ? args[4] : string.Empty;
                 Connect();
             }
         }
@@ -288,15 +282,12 @@ namespace PoEWizard
                 "The switch configuration will be restored to factory default. Please confirm your action.", 
                 MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
             if (!res) return;
-            if (string.IsNullOrEmpty(passCode) || passCode != PASS_CODE)
+            PassCode pc = new PassCode(this);
+            if (pc.ShowDialog() == false) return;
+            if (pc.Password != PASS_CODE)
             {
-                PassCode pc = new PassCode(this);
-                if (pc.ShowDialog() == false) return;
-                if (pc.Password != PASS_CODE)
-                {
-                    ShowMessageBox("Factory Reset", "Invalid password", MsgBoxIcons.Error);
-                    return;
-                }
+                ShowMessageBox("Factory Reset", "Invalid password", MsgBoxIcons.Error);
+                return;
             }
             Logger.Warn($"Switch S/N {device.SerialNumber} Model {device.Model}: Factory reset applied!");
             Activity.Log(device, "Factory reset applied");
@@ -409,11 +400,6 @@ namespace PoEWizard
 
         private void Reboot_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(passCode) && passCode == PASS_CODE)
-            {
-                LaunchRebootSwitch();
-                return;
-            }
             PassCode pc = new PassCode(this);
             if (pc.ShowDialog() == true)
             {
