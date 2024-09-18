@@ -285,7 +285,7 @@ namespace PoEWizard.Data
         // Used by BuildOuiTable method of MainWindow.xaml.cs class
         public const string OUI_FILE = "oui.csv";
         // Used by Config Wizard
-        public const string PASS_CODE = "@AleT00lkit#";
+        public const string DEFAULT_PASS_CODE = "@AleT00lkit#";
         public const string IP_ADDR = "IP Address";
         public const string SUBNET_MASK = "Subnet Mask";
         public const string DEVICE = "Device";

@@ -1,0 +1,68 @@
+﻿<Window x:Class="PoEWizard.Components.ChangePwd"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+       xmlns:local="clr-namespace:PoEWizard.Components"
+       mc:Ignorable="d"
+       Loaded="OnWindowLoaded"
+       Title="ChangePwd" Height="280" Width="200" WindowStyle="None" ShowInTaskbar="False">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
+                <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Style="{DynamicResource _mainGrid}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Style="{DynamicResource keyLabel}" Margin="0,10,0,0">Current Password</Label>
+        <PasswordBox Grid.Row="1" x:Name="_currpwd"
+                     Foreground="{DynamicResource fontColor}"
+                     Background="{DynamicResource barBackground}"
+                     Margin="10"
+                     local:PasswordBoxAssistant.BindPassword="True"
+                     KeyUp="Pwd_KeyUp">
+            <local:PasswordBoxAssistant.BoundPassword>
+                <Binding Path="CurrPwd" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" />
+            </local:PasswordBoxAssistant.BoundPassword>
+        </PasswordBox>
+        <Label Grid.Row="2" Style="{DynamicResource keyLabel}" Margin="0,10,0,0">New Password</Label>
+        <PasswordBox Grid.Row="3" x:Name="_newpwd"
+                     Foreground="{DynamicResource fontColor}"
+                     Background="{DynamicResource barBackground}"
+                     Margin="10"
+                     local:PasswordBoxAssistant.BindPassword="True"
+                     KeyUp="Pwd_KeyUp">
+            <local:PasswordBoxAssistant.BoundPassword>
+                <Binding Path="NewPwd" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" />
+            </local:PasswordBoxAssistant.BoundPassword>
+        </PasswordBox>
+        <Label Grid.Row="4" Style="{DynamicResource keyLabel}" Margin="0,10,0,0">Confirm Password</Label>
+        <PasswordBox Grid.Row="5" x:Name="_cfrmpwd"
+                     Foreground="{DynamicResource fontColor}"
+                     Background="{DynamicResource barBackground}"
+                     Margin="10"
+                     local:PasswordBoxAssistant.BindPassword="True"
+                     KeyUp="Pwd_KeyUp">
+            <local:PasswordBoxAssistant.BoundPassword>
+                <Binding Path="CfrmPwd" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" />
+            </local:PasswordBoxAssistant.BoundPassword>
+        </PasswordBox>
+        <Border Grid.Row="6" Style="{DynamicResource propsBorder}">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Click="BtnOk_Click" Style="{DynamicResource smallButton}" Margin="2,0,0,0">OK</Button>
+                <Button Click="BtnCancel_Click" Style="{DynamicResource smallButton}" Margin="20,0,0,0">Cancel</Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

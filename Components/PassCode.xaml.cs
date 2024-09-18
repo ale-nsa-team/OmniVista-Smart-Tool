@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using PoEWizard.Data;
+using System;
+using System.IO;
+using System.Windows;
 using System.Windows.Input;
 using static PoEWizard.Data.Constants;
 
@@ -9,6 +12,7 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class PassCode : Window
     {
+        public string SavedPassword;
         public string Password { get; set; }
         
         public PassCode(Window owner)
@@ -25,6 +29,7 @@ namespace PoEWizard.Components
             DataContext = this;
             this.Owner = owner;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            SavedPassword = GetPassword();
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
@@ -48,6 +53,49 @@ namespace PoEWizard.Components
         {
             this.DialogResult = false;
             this.Close();
+        }
+
+        private void ChgPwd_Click(object sender, RoutedEventArgs e)
+        {
+            ChangePwd cp = new ChangePwd(this.Owner, SavedPassword);
+            if (cp.ShowDialog() == true && cp.NewPwd != SavedPassword) SavePassword(cp.NewPwd);
+        }
+
+        private string GetPassword()
+        {
+            string filepath = Path.Combine(MainWindow.dataPath, "app.cfg");
+            if (File.Exists(filepath))
+            {
+                string encPwd = File.ReadAllText(filepath);
+                if (!string.IsNullOrEmpty(encPwd)) return Utils.DecryptString(encPwd);
+            }
+            return Constants.DEFAULT_PASS_CODE;
+        }
+
+        private void SavePassword(string newpwd)
+        {
+            try
+            {
+                if (newpwd != null)
+                {
+                    string filepath = Path.Combine(MainWindow.dataPath, "app.cfg");
+                    string np = Utils.EncryptString(newpwd);
+                    File.WriteAllText(filepath, np);
+                    SavedPassword = newpwd;
+                    this.DataContext = null;
+                    Password = newpwd;
+                    this.DataContext = this;
+                }
+            }
+            catch (Exception ex)
+            {
+                CustomMsgBox cm = new CustomMsgBox(this.Owner)
+                {
+                    Title = "Change Password",
+                    Message = $"Could not change password: {ex.Message}"
+                };
+                cm.ShowDialog();
+            }
         }
     }
 }

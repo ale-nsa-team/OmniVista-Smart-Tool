@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -24,6 +25,8 @@ namespace PoEWizard.Data
     {
         [DllImport("dwmapi.dll", PreserveSig = true)]
         public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
+        private const string ENCRYPT_KEY = "a9cd76210f6e0bb4fdbd23a9cda9831a";
 
         public static void SetTitleColor(Window window)
         {
@@ -542,6 +545,53 @@ namespace PoEWizard.Data
             return string.Empty;
         }
 
+        public static string EncryptString(string plaintext)
+        {
+            if (string.IsNullOrEmpty(plaintext)) return plaintext;
+            byte[] key = Encoding.UTF8.GetBytes(ENCRYPT_KEY);
+
+            using (Aes aes = Aes.Create())
+            {
+                ICryptoTransform encryptor = aes.CreateEncryptor(key, aes.IV);
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter streamWriter = new StreamWriter(cryptoStream))
+                        {
+                            streamWriter.Write(plaintext);
+                        }
+                    }
+                    byte[] cyphertextBytes = memoryStream.ToArray();
+
+                    return Convert.ToBase64String(aes.IV.Concat(cyphertextBytes).ToArray());
+                }
+            }
+        }
+
+        public static string DecryptString(string cipherText)
+        {
+            if (string.IsNullOrEmpty(cipherText)) return cipherText;
+            byte[] dataBytes = Convert.FromBase64String(cipherText);
+            byte[] iv = dataBytes.Take(16).ToArray();
+            byte[] cipherBytes = dataBytes.Skip(16).ToArray();
+            byte[] key = Encoding.UTF8.GetBytes(ENCRYPT_KEY);
+
+            using (Aes aes = Aes.Create())
+            {
+                ICryptoTransform decryptor = aes.CreateDecryptor(key, iv);
+                using (MemoryStream memoryStream = new MemoryStream(cipherBytes))
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader streamReader = new StreamReader(cryptoStream))
+                        {
+                            return streamReader.ReadToEnd();
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
