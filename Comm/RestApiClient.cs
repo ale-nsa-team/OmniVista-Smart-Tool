@@ -47,8 +47,13 @@ namespace PoEWizard.Comm
             this._login = device.Login;
             this._password = device.Password;
             this._cnx_timeout = device.CnxTimeout;
+            CreateHttpClient();
+        }
+
+        private void CreateHttpClient()
+        {
             this._httpClient = new HttpClient();
-            if (!string.IsNullOrEmpty(device.IpAddress))
+            if (!string.IsNullOrEmpty(this._ip_address))
             {
                 this._httpClient.BaseAddress = new Uri($"https://{this._ip_address}");
                 this._httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.alcatellucentaos+xml");
@@ -232,6 +237,7 @@ namespace PoEWizard.Comm
                     error = GetHttpResponseError(url, http_response);
                     Logger.Warn($"{error ?? "Unknown error"} (Try #{nbRetry}, duration: {Utils.CalcStringDuration(entry.StartTime)})");
                     if (nbRetry >= 3) break;
+                    ReconnectSwitch();
                     Thread.Sleep(3000);
                     http_response = SendRequest(request);
                 }
@@ -266,11 +272,19 @@ namespace PoEWizard.Comm
             if (http_response?.Result?.StatusCode == HttpStatusCode.Unauthorized)
             {
                 Logger.Activity($"Switch {this._ip_address} token expired (duration: {Utils.CalcStringDuration(this._start_connect_time)})");
-                RemoveToken();
-                ConnectToSwitch();
+                ReconnectSwitch();
                 http_response = SendAsyncRequest(request);
             }
             return http_response;
+        }
+
+        private void ReconnectSwitch()
+        {
+            RemoveToken();
+            this._httpClient.Dispose();
+            this._httpClient = null;
+            CreateHttpClient();
+            ConnectToSwitch();
         }
 
         private Task<HttpResponseMessage> SendAsyncRequest(HttpRequestMessage request)

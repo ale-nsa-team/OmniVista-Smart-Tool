@@ -114,6 +114,7 @@ namespace PoEWizard.Device
         public string ToTooltip()
         {
             List<string> tip = new List<string>();
+            if (!string.IsNullOrEmpty(Alias)) tip.Add($"Alias: {Alias}");
             if (!string.IsNullOrEmpty(Type)) tip.Add($"Type: {Type}");
             if (!string.IsNullOrEmpty(Name))
             {
@@ -136,7 +137,6 @@ namespace PoEWizard.Device
                     tip.Add($"{Name} ({Utils.GetVendorName(Name)})");
                 }
             }
-            if (!string.IsNullOrEmpty(Alias)) tip.Add($"Alias: {Alias}");
             if (!string.IsNullOrEmpty(Description)) tip.Add($"Description: {Description}");
             if (!string.IsNullOrEmpty(Vendor)) tip.Add($"Vendor: {Vendor}");
             if (!string.IsNullOrEmpty(Model)) tip.Add($"Model: {Model}");
