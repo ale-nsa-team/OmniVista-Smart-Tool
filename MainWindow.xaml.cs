@@ -284,7 +284,7 @@ namespace PoEWizard
             if (!res) return;
             PassCode pc = new PassCode(this);
             if (pc.ShowDialog() == false) return;
-            if (pc.Password != PASS_CODE)
+            if (pc.Password != pc.SavedPassword)
             {
                 ShowMessageBox("Factory Reset", "Invalid password", MsgBoxIcons.Error);
                 return;
@@ -403,7 +403,7 @@ namespace PoEWizard
             PassCode pc = new PassCode(this);
             if (pc.ShowDialog() == true)
             {
-                if (pc.Password != PASS_CODE)
+                if (pc.Password != pc.SavedPassword)
                 {
                     ShowMessageBox("Reboot", "Invalid password", MsgBoxIcons.Error);
                 }

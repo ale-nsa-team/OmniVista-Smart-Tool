@@ -2,14 +2,12 @@
 using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using static PoEWizard.Data.Constants;
-using System.Threading;
 
 namespace PoEWizard.Components
 {

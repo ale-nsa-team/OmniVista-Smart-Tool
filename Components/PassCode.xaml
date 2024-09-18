@@ -34,8 +34,10 @@
         </PasswordBox>
         <Border Grid.Row="2" Style="{DynamicResource propsBorder}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="2,0,0,0">OK</Button>
-                <Button Click="BtnCancel_Click" Style="{DynamicResource defaultButton}" Margin="20,0,0,0">Cancel</Button>
+                <Button Click="BtnOk_Click" Style="{DynamicResource smallButton}" Margin="2,0,0,0">OK</Button>
+                <Button Click="BtnCancel_Click" Style="{DynamicResource smallButton}" Margin="20,0,0,0">Cancel</Button>
+                <Button Click="ChgPwd_Click" Style="{DynamicResource smallButton}"
+                        Margin="50,0,0,0" Width="100" FontSize="10">Change Password</Button>
             </StackPanel>
         </Border>
     </Grid>

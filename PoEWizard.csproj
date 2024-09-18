@@ -134,6 +134,9 @@
     <Compile Include="Components\AboutBox.xaml.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\ChangePwd.xaml.cs">
+      <DependentUpon>ChangePwd.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\HelpViewer.xaml.cs">
       <DependentUpon>HelpViewer.xaml</DependentUpon>
     </Compile>
@@ -255,6 +258,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Components\AboutBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\ChangePwd.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
