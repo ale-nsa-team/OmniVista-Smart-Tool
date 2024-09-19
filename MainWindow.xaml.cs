@@ -664,6 +664,14 @@ namespace PoEWizard
                 bool poweroff = ShowMessageBox("PoE OFF", msg, MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                 if (poweroff)
                 {
+                    PassCode pc = new PassCode(this);
+                    if (pc.ShowDialog() == false) return;
+                    if (pc.Password != pc.SavedPassword)
+                    {
+                        ShowMessageBox("Slot PoE Off", "Invalid password", MsgBoxIcons.Error);
+                        cb.IsChecked = !cb.IsChecked;
+                        return;
+                    }
                     DisableButtons();
                     await PowerSlotUpOrDown(Command.POWER_DOWN_SLOT, selectedSlot.Name);
                     Logger.Activity($"PoE on slot {selectedSlot.Name} turned off");
