@@ -19,6 +19,7 @@ namespace PoEWizard.Components
         public string Message { get; set; }
         public MsgBoxButtons Buttons { get; set; }
         public MsgBoxIcons Img { get; set; }
+        public MsgBoxResult Result { get; private set; }
 
         public CustomMsgBox(Window owner) : this(owner, MsgBoxButtons.Ok) { }
 
@@ -40,7 +41,8 @@ namespace PoEWizard.Components
             this.Owner = owner;
             Buttons = buttons;
             msgIcon.Source = null;
-            msgOkBtn.Visibility = Visibility.Collapsed;
+            msgYesBtn.Visibility = Visibility.Collapsed;
+            msgNoBtn.Visibility = Visibility.Collapsed;
             msgCancelBtn.Visibility = Visibility.Collapsed;
         }
 
@@ -48,19 +50,28 @@ namespace PoEWizard.Components
         {
             msgHeader.Text = Header ?? "";
             msgBody.Text = Message ?? "";
-            if (Buttons == MsgBoxButtons.Ok || Buttons == MsgBoxButtons.OkCancel) msgOkBtn.Visibility = Visibility.Visible;
-            if (Buttons == MsgBoxButtons.Cancel || Buttons == MsgBoxButtons.OkCancel) msgCancelBtn.Visibility = Visibility.Visible;
-            if (Buttons == MsgBoxButtons.YesNo)
+            switch (Buttons)
             {
-                msgOkBtn.Content = "Yes";
-                msgCancelBtn.Content = "No";
-                msgOkBtn.Visibility = Visibility.Visible;
-                msgCancelBtn.Visibility = Visibility.Visible;
+                case MsgBoxButtons.Ok:
+                    SetButtons(true, false, false, false);
+                    break;
+                case MsgBoxButtons.Cancel:
+                    SetButtons(false, true, false, false);
+                    break;
+                case MsgBoxButtons.OkCancel:
+                    SetButtons(true, true, false, false);
+                    break;
+                case MsgBoxButtons.YesNo:
+                    SetButtons(false, false, true, true);
+                    break;
+                case MsgBoxButtons.YesNoCancel:
+                    SetButtons(false, true, true, true);
+                    break;
+                case MsgBoxButtons.None:
+                    Task.Delay(TimeSpan.FromSeconds(3)).ContinueWith(o => Dispatcher.Invoke(new Action(() => this.Close())));
+                    break;
             }
-            if (Buttons == MsgBoxButtons.None)
-            {
-                Task.Delay(TimeSpan.FromSeconds(3)).ContinueWith(o => Dispatcher.Invoke(new Action(() => this.Close())));
-            }
+
             switch (Img)
             {
                 case MsgBoxIcons.Warning:
@@ -83,16 +94,30 @@ namespace PoEWizard.Components
             }
             this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
         }
-        private void MsgOkBtn_Click(object sender, RoutedEventArgs e)
+        private void MsgYesBtn_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = true;
+            this.Result = MsgBoxResult.Yes;
+            this.Close();
+        }
+
+        private void MsgNoBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.Result= MsgBoxResult.No;
             this.Close();
         }
 
         private void MsgCancelBtn_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = false;
+            this.Result = MsgBoxResult.Cancel;
             this.Close();
+        }
+
+        private void SetButtons(bool ok, bool cancel, bool yes, bool no)
+        {
+            msgYesBtn.Content = ok ? "OK" : "Yes";
+            msgYesBtn.Visibility = ok || yes ? Visibility.Visible : Visibility.Collapsed;
+            msgNoBtn.Visibility = no ? Visibility.Visible : Visibility.Collapsed;
+            msgCancelBtn.Visibility = cancel ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }

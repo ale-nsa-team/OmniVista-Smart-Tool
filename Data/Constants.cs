@@ -9,8 +9,9 @@ namespace PoEWizard.Data
         public enum ThemeType { Dark, Light }
         public enum LogLevel { Error, Warn, Basic, Info, Debug, Trace }
         public enum ReportType { Error, Warning, Info, Status, Value }
-        public enum MsgBoxButtons { Ok, Cancel, OkCancel, YesNo, None };
+        public enum MsgBoxButtons { Ok, Cancel, OkCancel, YesNo, YesNoCancel, None };
         public enum MsgBoxIcons { Info, Warning, Error, Question, None };
+        public enum MsgBoxResult { Yes, No, Cancel};
         public enum GridBorderions { Dhcp, Edge, Core, Lps, Lldp, Security, MaxConfigs };
         public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
         public enum PortStatus { Unknown, Up, Down }
