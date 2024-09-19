@@ -1,0 +1,96 @@
+﻿<Window x:Class="PoEWizard.Components.SearchPort"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PoEWizard.Components"
+        mc:Ignorable="d"
+        Title="SearchPort" Height="200" Width="1050" WindowStyle="None" ShowInTaskbar="False">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
+                <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Style="{DynamicResource popupWindow}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Style="{DynamicResource gridBorder}" Margin="5">
+            <DataGrid x:Name="_searchPortView" 
+                  Style="{DynamicResource defaultGrid}"
+                  ItemsSource="{Binding PortsFound}"
+                  ColumnHeaderStyle="{DynamicResource gridHeader}"
+                  CellStyle="{DynamicResource gridCell}"
+                  IsHitTestVisible="False"
+                  IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Port" Width="0.8*" Binding="{Binding Path=Name}" />
+                    <DataGridTemplateColumn Header="PoE Status" Width="0.8*" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Poe}" Style="{DynamicResource toolTip}"
+                                Foreground="{Binding Path=Poe, 
+                                    Converter={StaticResource ValueToColorConverter}, 
+                                    ConverterParameter=Poe}" 
+                                ToolTip="{Binding Path=Poe, Converter={StaticResource PoeToTooltipConverter}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="0.9*" IsReadOnly="True">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Power (Watts)" Style="{DynamicResource toolTip}"
+                                        ToolTip="Actual power consumed by the device connected to the port" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Power}" Style="{DynamicResource toolTip}"
+                                        ToolTip="Actual power consumed by the device connected to the port" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="1.1*" IsReadOnly="True">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Max Power (Watts)" Style="{DynamicResource toolTip}"
+                                        ToolTip="Maximum power allowed by the hardware" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=MaxPower}" Style="{DynamicResource toolTip}"
+                                        ToolTip="Maximum power allowed by the hardware" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="PoE Class" Width="*" Binding="{Binding Path=Class}" IsReadOnly="True" />
+                    <DataGridTemplateColumn Header="Device Type" Width="1.4*" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=EndPointDevice.Type}"
+                                        ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
+                                        Style="{DynamicResource devToolTip}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Device Name" Width="1.2*" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=EndPointDevice.Name}"
+                                        ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
+                                        Style="{DynamicResource devToolTip}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Alias" Width="1.2*" Binding="{Binding Path=Alias}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+        <Button Grid.Row="1" Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="5">Close</Button>
+    </Grid>
+</Window>

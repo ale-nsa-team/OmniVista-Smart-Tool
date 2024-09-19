@@ -276,6 +276,20 @@ namespace PoEWizard
             ps.Show();
         }
 
+        private void SearchPort_Click(object sender, RoutedEventArgs e)
+        {
+            string macAddress = "";
+            SelectMacAddress sm = new SelectMacAddress(this);
+            sm.ShowDialog();
+            var sp = new SearchPort(device, sm.SearchMacAddress)
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            if (sp.PortsFound?.Count > 0) sp.Show();
+            else ShowMessageBox("Search Port", $"Couldn't find MAC address {macAddress} on switch {device.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
+        }
+
         private async void FactoryReset(object sender, RoutedEventArgs e)
         {
             bool res = ShowMessageBox("Factory reset", 
@@ -1744,6 +1758,7 @@ namespace PoEWizard
             _traffic.IsEnabled = val;
             _collectLogs.IsEnabled = val;
             _psMenuItem.IsEnabled = val;
+            _searchPortMenuItem.IsEnabled = val;
             _factoryRst.IsEnabled = val;
             _cfgMenuItem.IsEnabled = val;
         }
