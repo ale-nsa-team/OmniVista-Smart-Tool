@@ -78,7 +78,7 @@ namespace PoEWizard.Device
                     Location = Utils.GetDictValue(dict, SYS_LOCATION);
                     Contact = Utils.GetDictValue(dict, SYS_CONTACT);
                     TimeSpan dur = TimeSpan.FromSeconds(Utils.StringToLong(Utils.GetDictValue(dict, SYS_UP_TIME)) / 100);
-                    UpTime = $" {(dur.Days > 0 ? dur.Days + " d : " : "")}{dur.Hours} h : {dur.Minutes} min : {dur.Seconds} sec";
+                    UpTime = $"{(dur.Days > 0 ? dur.Days + " d : " : "")}{dur.Hours} h : {dur.Minutes} min : {dur.Seconds} sec";
 
                     string sync = Utils.GetDictValue(dict, CONFIG_CHANGE_STATUS);
                     string cert = Utils.GetDictValue(dict, CHAS_CONTROL_CERTIFY);
