@@ -268,7 +268,7 @@ namespace PoEWizard.Comm
             if (cmd == null) return null;
             cmdEntry.StartTime = DateTime.Now;
             Dictionary<string, string> response;
-            response = SendCliCommand(cmd, 60, expected);
+            response = SendCliCommand(cmd, 30, expected);
             cmdEntry.Duration = response[DURATION];
             cmdEntry.Response = ParseResponse(response[RESPONSE], cmd);
             return cmdEntry.Response;

@@ -159,7 +159,7 @@ namespace PoEWizard.Comm
                         {
                             LinuxCommandSeq cmdSeq;
                             if (chassis.IsMaster) cmdSeq = new LinuxCommandSeq();
-                            else cmdSeq = new LinuxCommandSeq(new LinuxCommand($"ssh-chassis {SwitchModel.Login}@{chassis.Number}", "Password|Are you sure", 30));
+                            else cmdSeq = new LinuxCommandSeq(new LinuxCommand($"ssh-chassis {SwitchModel.Login}@{chassis.Number}", "Password|Are you sure", 20));
                             cmdSeq.AddCommandSeq(new List<LinuxCommand> { new LinuxCommand("su", "->"), new LinuxCommand("df -h", "->"), new LinuxCommand("exit", "->") });
                             cmdSeq = SendSshLinuxCommandSeq(cmdSeq, $"Reading Flash data of chassis {chassis.Number}");
                             _dict = cmdSeq?.GetResponse("df -h");
@@ -387,15 +387,8 @@ namespace PoEWizard.Comm
 
         private void ConnectAosSsh()
         {
-            try
-            {
-                SshService = new AosSshService(SwitchModel);
-                SshService.ConnectSshClient();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+            SshService = new AosSshService(SwitchModel);
+            SshService.ConnectSshClient();
         }
 
         private void DisconnectAosSsh()
@@ -406,7 +399,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError("Connect", ex);
+                Logger.Error(ex);
             }
         }
 
@@ -537,13 +530,12 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError("Connect", ex);
+               throw ex;
             }
             finally
             {
                 DisconnectAosSsh();
             }
-            return null;
         }
 
         public void WriteMemory(int waitSec = 40)
