@@ -35,12 +35,12 @@ namespace PoEWizard.Components
             DataContext = this;
             this.Owner = owner;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            _macAddr.Focus();
         }
 
-        public void OnWindowLoaded(object sender, RoutedEventArgs e)
+        private void Select_KeyUp(object sender, KeyEventArgs e)
         {
-            DataContext = this;
-            SearchMacAddress = string.Empty;
+            if (e.Key == Key.Enter) BtnOk_Click(sender, e);
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)

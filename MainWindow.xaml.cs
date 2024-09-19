@@ -11,7 +11,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -55,6 +54,7 @@ namespace PoEWizard
         private int selectedTrafficDuration;
         private DateTime startTrafficAnalysisTime;
         private double maxCollectLogsDur = 0;
+        private string lastMacAddress = string.Empty;
         #endregion
 
         #region Local constants
@@ -278,16 +278,16 @@ namespace PoEWizard
 
         private void SearchPort_Click(object sender, RoutedEventArgs e)
         {
-            string macAddress = "";
-            SelectMacAddress sm = new SelectMacAddress(this);
+            SelectMacAddress sm = new SelectMacAddress(this) { SearchMacAddress = lastMacAddress };
             sm.ShowDialog();
-            var sp = new SearchPort(device, sm.SearchMacAddress)
+            lastMacAddress = sm.SearchMacAddress;
+            var sp = new SearchPort(device, lastMacAddress)
             {
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             if (sp.PortsFound?.Count > 0) sp.Show();
-            else ShowMessageBox("Search Port", $"Couldn't find MAC address {macAddress} on switch {device.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
+            else ShowMessageBox("Search Port", $"Couldn't find MAC address {lastMacAddress} on switch {device.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
         }
 
         private async void FactoryReset(object sender, RoutedEventArgs e)
@@ -429,13 +429,13 @@ namespace PoEWizard
         {
             try
             {
-                DisableButtons();
-                MsgBoxResult restartPoE = ShowMessageBox("Collect Logs", $"Do you want to recycle PoE on all ports of switch {device.Name} to collect the logs?", MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
+                MsgBoxResult restartPoE = ShowMessageBox("Collect Logs", $"Do you want to power cycle PoE on all ports of switch {device.Name} to collect the logs?", MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
                 if (restartPoE == MsgBoxResult.Cancel) return;
                 string txt = $"Collect Logs launched by the user";
-                if (restartPoE == MsgBoxResult.Yes) txt += " (recycle PoE on all ports)";
+                if (restartPoE == MsgBoxResult.Yes) txt += " (power cycle PoE on all ports)";
                 Logger.Activity($"{txt} on switch {device.Name}");
                 Activity.Log(device, $"{txt}.");
+                DisableButtons();
                 string sftpError = await RunCollectLogs(restartPoE == MsgBoxResult.Yes, null, false);
                 if (!string.IsNullOrEmpty(sftpError)) ShowMessageBox($"Collecting logs on switch {device.Name}", $"Cannot connect secure FTP on switch {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
             }

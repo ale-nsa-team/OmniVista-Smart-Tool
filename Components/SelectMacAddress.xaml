@@ -24,6 +24,7 @@
         <TextBox Grid.Row="1" x:Name="_macAddr"
                      Foreground="{DynamicResource fontColor}"
                      Background="{DynamicResource barBackground}"
+                     KeyUp="Select_KeyUp"
                      Text="{Binding SearchMacAddress}"
                      Margin="50">
         </TextBox>

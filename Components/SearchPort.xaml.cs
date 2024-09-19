@@ -1,4 +1,5 @@
 ﻿using PoEWizard.Device;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using static PoEWizard.Data.Constants;
@@ -42,7 +43,7 @@ namespace PoEWizard.Components
                         {
                             if (mac.Contains(macAddress))
                             {
-                                portsFound.Add(port);
+                                if (!portsFound.Contains(port)) portsFound.Add(port);
                             }
                         }
                     }

@@ -36,7 +36,7 @@
 
     <SolidColorBrush x:Key="fontColor" Color="Black" />
     <SolidColorBrush x:Key="linkColor" Color="Blue" />
-    <SolidColorBrush x:Key="mainWindowBackgroundColor" Color="SeaShell" />
+    <SolidColorBrush x:Key="mainWindowBackgroundColor" Color="#f2f0f0" />
     <SolidColorBrush x:Key="popupBackgroundColor" Color="#fafafa" />
     <SolidColorBrush x:Key="infoBackgroundColor" Color="LightYellow" />
     <SolidColorBrush x:Key="borderColor" Color="#bbb" />

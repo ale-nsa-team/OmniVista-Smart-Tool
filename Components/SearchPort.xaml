@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
-        Title="SearchPort" Height="200" Width="1050" WindowStyle="None" ShowInTaskbar="False">
+        Title="SearchPort" MaxHeight="195" Width="1050" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -16,19 +16,27 @@
     </Window.Resources>
     <Grid Style="{DynamicResource popupWindow}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" MaxHeight="143" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Style="{DynamicResource gridBorder}" Margin="5">
             <DataGrid x:Name="_searchPortView" 
-                  Style="{DynamicResource defaultGrid}"
-                  ItemsSource="{Binding PortsFound}"
-                  ColumnHeaderStyle="{DynamicResource gridHeader}"
-                  CellStyle="{DynamicResource gridCell}"
-                  IsHitTestVisible="False"
-                  IsReadOnly="True">
+                Style="{DynamicResource defaultGrid}"
+                ColumnHeaderStyle="{DynamicResource gridHeader}"
+                CellStyle="{DynamicResource gridCell}"
+                ItemsSource="{Binding PortsFound}"
+                IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Port" Width="0.8*" Binding="{Binding Path=Name}" />
+                    <DataGridTextColumn Header="Port" Width="0.5*" Binding="{Binding Path=Name}" />
+                    <DataGridTemplateColumn Header="Alias" Width="1.8*" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Alias}" Style="{DynamicResource toolTip}"
+                                Foreground="{DynamicResource fontColor}"
+                                ToolTip="{Binding Path=Alias}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="PoE Status" Width="0.8*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -87,7 +95,6 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Alias" Width="1.2*" Binding="{Binding Path=Alias}" />
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
