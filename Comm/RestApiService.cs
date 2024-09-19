@@ -56,7 +56,7 @@ namespace PoEWizard.Comm
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
                 string progrMsg = $"Connecting to switch {SwitchModel.IpAddress} ...";
-                StartProgressBar(progrMsg, 28);
+                StartProgressBar(progrMsg, 29);
                 _progress.Report(new ProgressReport(progrMsg));
                 RestApiClient.Login();
                 UpdateProgressBar(++progressBarCnt); //  1
@@ -75,14 +75,6 @@ namespace PoEWizard.Comm
                 ScanSwitch(progrMsg, reportResult);
                 UpdateFlashInfo(progrMsg);
                 LogActivity($"Switch connected", $", duration: {Utils.CalcStringDuration(startTime)}");
-                if (!File.Exists(Path.Combine(Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
-                {
-                    SaveConfigSnapshot();
-                }
-                else
-                {
-                    PurgeConfigSnapshotFiles();
-                }
             }
             catch (Exception ex)
             {
@@ -98,7 +90,7 @@ namespace PoEWizard.Comm
             {
                 if (totalProgressBar == 0)
                 {
-                    StartProgressBar($"Scanning switch {SwitchModel.Name} ...", 21);
+                    StartProgressBar($"Scanning switch {SwitchModel.Name} ...", 22);
                     closeProgressBar = true;
                 }
                 GetCurrentSwitchDebugLevel();
@@ -137,6 +129,15 @@ namespace PoEWizard.Comm
                 GetMacAndLldpInfo();
                 progressBarCnt += 3;
                 UpdateProgressBar(progressBarCnt); // 19, 20, 21
+                if (!File.Exists(Path.Combine(Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
+                {
+                    SaveConfigSnapshot();
+                }
+                else
+                {
+                    PurgeConfigSnapshotFiles();
+                }
+                UpdateProgressBar(++progressBarCnt); // 22
                 string title = string.IsNullOrEmpty(source) ? $"Refresh switch {SwitchModel.Name}" : source;
             }
             catch (Exception ex)
@@ -609,7 +610,7 @@ namespace PoEWizard.Comm
                         string cfgChanges = ConfigChanges.GetChanges(SwitchModel, currSnapshot);
                         if (!string.IsNullOrEmpty(cfgChanges))
                         {
-                            Logger.Activity($"Updating snapshot config file {SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}, switch {SwitchModel.Name} was synchronized but the snapshot config file was different.");
+                            Logger.Activity($"\n\tUpdating snapshot config file {SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}, switch {SwitchModel.Name} was synchronized but the snapshot config file was different.");
                             File.WriteAllText(filePath, SwitchModel.ConfigSnapshot);
                         }
                     }
