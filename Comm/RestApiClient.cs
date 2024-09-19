@@ -271,7 +271,7 @@ namespace PoEWizard.Comm
             Task<HttpResponseMessage> http_response = SendAsyncRequest(entry, url);
             if (http_response?.Result?.StatusCode == HttpStatusCode.Unauthorized)
             {
-                Logger.Activity($"Switch {this._ip_address} token expired after {Utils.CalcStringDuration(this._start_connect_time, true)}");
+                Logger.Activity($"Switch {this._ip_address} token expired after {Utils.CalcStringDuration(this._start_connect_time, true)}, reconnecting to the switch.");
                 ReconnectSwitch();
                 http_response = SendAsyncRequest(entry, url);
             }
