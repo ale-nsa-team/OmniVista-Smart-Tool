@@ -1787,11 +1787,6 @@ namespace PoEWizard
             }
         }
 
-        private string GetDigits(string s)
-        {
-            return Regex.Match(s, @"\d+").Value;
-        }
-
         #endregion private methods
     }
 }
