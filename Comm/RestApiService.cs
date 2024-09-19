@@ -1367,10 +1367,21 @@ namespace PoEWizard.Comm
             double prevMaxPower = _wizardSwitchPort.MaxPower;
             if (!_wizardSwitchPort.Is4Pair)
             {
-                SendCommand(new CmdRequest(Command.POWER_4PAIR_PORT, new string[1] { _wizardSwitchPort.Name }));
-                string msg = $"Re-enabling 2-Pair power on port {_wizardSwitchPort.Name}";
-                WaitSec(msg, 3);
-                ExecuteActionOnPort(msg, waitSec, Command.POWER_2PAIR_PORT);
+                string wizardAction = $"Re-enabling 2-Pair power on port {_wizardSwitchPort.Name}";
+                try
+                {
+                    SendCommand(new CmdRequest(Command.POWER_4PAIR_PORT, new string[1] { _wizardSwitchPort.Name }));
+                    WaitSec(wizardAction, 3);
+                    ExecuteActionOnPort(wizardAction, waitSec, Command.POWER_2PAIR_PORT);
+                }
+                catch (Exception ex)
+                {
+                    _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
+                    _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
+                    string resultDescription = $"{wizardAction} didn't solve the problem\nCommand not supported on slot {_wizardSwitchSlot.Name}";
+                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Fail, resultDescription);
+                    Logger.Info($"{ex.Message}\n{resultDescription}");
+                }
             }
             else
             {

@@ -1117,6 +1117,7 @@ namespace PoEWizard
             _slotsView.ItemsSource = null;
             _portList.ItemsSource = null;
             DataContext = device;
+            _switchAttributes.Text = $"Connected to: {device.Name} (Up time: {ConvertUptime(device.UpTime)})";
             slotView = new SlotView(device);
             _slotsView.ItemsSource = slotView.Slots;
             if (selectedSlot != null)
