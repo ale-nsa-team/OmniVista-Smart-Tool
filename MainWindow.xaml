@@ -426,7 +426,7 @@
                         IsEnabled="False"
                         Click="RunWiz_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label Style="{DynamicResource valLabel}">Run Wizard</Label>
+                        <Label Style="{DynamicResource valLabel}">Run PoE Wizard</Label>
                         <Image Source="Resources/Img/wand.png" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>

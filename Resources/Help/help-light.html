@@ -78,6 +78,14 @@
     <p>
         The middle pane of the tool displays power supply information and status. It will also show the budget being allocated to PoE devices
         as well if the switch supports the new 802.3bt PoE standard and options for Fast PoE and Perpetual PoE.
+        You can also perform some actions such as turn PoE on and off on a slot and enable / disable fast PoE or perpetual PoE.
+    </p>
+    <p class="no-space">
+        Since this operation is disrupting, you will be prompted too enter a password to be able to carry it out. There is a hard-coded password
+        that you can use initially, and you have the option to change this password for you instance of application. Once you change the
+        password, the hard-coded one will no longer be accepted.
+    </p>
+    <p class="no-space">
         Please note that neither fast nor perpetual PoE are available when 802.3bt is enabled and they are not supported on OS6465, OS6560, or OS6570M.
     </p>
     <p>
@@ -116,7 +124,7 @@
     <img src="poe-device.png" />
     <p>
         The installer sees that there is no link light on the switch and the Wizard shows port 48 Status as Searching when it should be Up and showing
-        the power being consumed. Select port 48 and click Run Wizard. This is not a camera, AP, or telephone so we select Other and click OK.
+        the power being consumed. Select port 48 and click Run PoE Wizard. This is not a camera, AP, or telephone so we select Other and click OK.
     </p>
     <img src="run-wiz.png" />
     <p>
@@ -148,6 +156,11 @@
         and will set vlan 1 IP inteface with the same IP address you used to connect to the switch originally, so you can reconnect to
         it with the application after the switch reboots. You can then proceed to run the congif wizard to add some additional configuration.
     </p>
+    <p class="no-space">
+        Since this operation is disrupting, you will be prompted to enter a password to be able to carry it out. There is a hard-coded password
+        that you can use initially, and you have the option to change this password for you instance of application. Once you change the
+        password, the hard-coded one will no longer be accepted.
+    </p>
     <p class="topic">Basic Config Wizard</p>
     <p>The wizard presents a few configuration windows, you can navigate back and forth using the "Next >" and "< Back" buttons.</p>
     <p>The first window lets you configure the management IP address and netmask, as well as some switch system parameters</p>
@@ -159,9 +172,7 @@
     <img src="cfg-wiz-srv.png" />
     <p>
         Click "Next >" to navigate to the next window, which allows you to configure some features, like Disabling insecure protocols
-        (telnet, ftp) enable SSH, etc. Note that if you toggle the Enable PoE switch off, you will be prompted to confirm your action,
-        because it will turn off power on all PoE ports on the switch. If you confirm, the operation will take effect after you press
-        the Submit button.
+        (telnet, ftp) enable SSH, etc.
     </p>
     <p class="no-space">When setting up multicast, you can select which VLANs will have it enabled on the table below the multicast toggle switch.</p>
     <img src="cfg-wiz-feature.png" />
