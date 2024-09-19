@@ -56,7 +56,7 @@ namespace PoEWizard.Comm
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
                 string progrMsg = $"Connecting to switch {SwitchModel.IpAddress} ...";
-                StartProgressBar(progrMsg, 28);
+                StartProgressBar(progrMsg, 29);
                 _progress.Report(new ProgressReport(progrMsg));
                 RestApiClient.Login();
                 UpdateProgressBar(++progressBarCnt); //  1
@@ -75,14 +75,6 @@ namespace PoEWizard.Comm
                 ScanSwitch(progrMsg, reportResult);
                 UpdateFlashInfo(progrMsg);
                 LogActivity($"Switch connected", $", duration: {Utils.CalcStringDuration(startTime)}");
-                if (!File.Exists(Path.Combine(Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
-                {
-                    SaveConfigSnapshot();
-                }
-                else
-                {
-                    PurgeConfigSnapshotFiles();
-                }
             }
             catch (Exception ex)
             {
@@ -98,7 +90,7 @@ namespace PoEWizard.Comm
             {
                 if (totalProgressBar == 0)
                 {
-                    StartProgressBar($"Scanning switch {SwitchModel.Name} ...", 21);
+                    StartProgressBar($"Scanning switch {SwitchModel.Name} ...", 22);
                     closeProgressBar = true;
                 }
                 GetCurrentSwitchDebugLevel();
@@ -137,6 +129,15 @@ namespace PoEWizard.Comm
                 GetMacAndLldpInfo();
                 progressBarCnt += 3;
                 UpdateProgressBar(progressBarCnt); // 19, 20, 21
+                if (!File.Exists(Path.Combine(Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
+                {
+                    SaveConfigSnapshot();
+                }
+                else
+                {
+                    PurgeConfigSnapshotFiles();
+                }
+                UpdateProgressBar(++progressBarCnt); // 22
                 string title = string.IsNullOrEmpty(source) ? $"Refresh switch {SwitchModel.Name}" : source;
             }
             catch (Exception ex)
@@ -158,7 +159,7 @@ namespace PoEWizard.Comm
                         {
                             LinuxCommandSeq cmdSeq;
                             if (chassis.IsMaster) cmdSeq = new LinuxCommandSeq();
-                            else cmdSeq = new LinuxCommandSeq(new LinuxCommand($"ssh-chassis {SwitchModel.Login}@{chassis.Number}", "Password|Are you sure", 30));
+                            else cmdSeq = new LinuxCommandSeq(new LinuxCommand($"ssh-chassis {SwitchModel.Login}@{chassis.Number}", "Password|Are you sure", 20));
                             cmdSeq.AddCommandSeq(new List<LinuxCommand> { new LinuxCommand("su", "->"), new LinuxCommand("df -h", "->"), new LinuxCommand("exit", "->") });
                             cmdSeq = SendSshLinuxCommandSeq(cmdSeq, $"Reading Flash data of chassis {chassis.Number}");
                             _dict = cmdSeq?.GetResponse("df -h");
@@ -386,15 +387,8 @@ namespace PoEWizard.Comm
 
         private void ConnectAosSsh()
         {
-            try
-            {
-                SshService = new AosSshService(SwitchModel);
-                SshService.ConnectSshClient();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+            SshService = new AosSshService(SwitchModel);
+            SshService.ConnectSshClient();
         }
 
         private void DisconnectAosSsh()
@@ -405,7 +399,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError("Connect", ex);
+                Logger.Error(ex);
             }
         }
 
@@ -536,13 +530,12 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError("Connect", ex);
+               throw ex;
             }
             finally
             {
                 DisconnectAosSsh();
             }
-            return null;
         }
 
         public void WriteMemory(int waitSec = 40)
@@ -609,7 +602,7 @@ namespace PoEWizard.Comm
                         string cfgChanges = ConfigChanges.GetChanges(SwitchModel, currSnapshot);
                         if (!string.IsNullOrEmpty(cfgChanges))
                         {
-                            Logger.Activity($"Updating snapshot config file {SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}!\nSwitch {SwitchModel.Name} was synchronized but the snapshot config file was different.");
+                            Logger.Activity($"\n\tUpdating snapshot config file {SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}, switch {SwitchModel.Name} was synchronized but the snapshot config file was different.");
                             File.WriteAllText(filePath, SwitchModel.ConfigSnapshot);
                         }
                     }
@@ -1367,10 +1360,21 @@ namespace PoEWizard.Comm
             double prevMaxPower = _wizardSwitchPort.MaxPower;
             if (!_wizardSwitchPort.Is4Pair)
             {
-                SendCommand(new CmdRequest(Command.POWER_4PAIR_PORT, new string[1] { _wizardSwitchPort.Name }));
-                string msg = $"Re-enabling 2-Pair power on port {_wizardSwitchPort.Name}";
-                WaitSec(msg, 3);
-                ExecuteActionOnPort(msg, waitSec, Command.POWER_2PAIR_PORT);
+                string wizardAction = $"Re-enabling 2-Pair power on port {_wizardSwitchPort.Name}";
+                try
+                {
+                    SendCommand(new CmdRequest(Command.POWER_4PAIR_PORT, new string[1] { _wizardSwitchPort.Name }));
+                    WaitSec(wizardAction, 3);
+                    ExecuteActionOnPort(wizardAction, waitSec, Command.POWER_2PAIR_PORT);
+                }
+                catch (Exception ex)
+                {
+                    _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
+                    _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
+                    string resultDescription = $"{wizardAction} didn't solve the problem\nCommand not supported on slot {_wizardSwitchSlot.Name}";
+                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Fail, resultDescription);
+                    Logger.Info($"{ex.Message}\n{resultDescription}");
+                }
             }
             else
             {

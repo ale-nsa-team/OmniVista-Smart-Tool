@@ -230,12 +230,12 @@ namespace PoEWizard.Comm
                     return response;
                 }
                 string error;
-                int nbRetry = 0;
+                int nbRetry = 1;
                 while (http_response.IsCanceled || http_response.Result == null)
                 {
-                    nbRetry++;
                     error = GetHttpResponseError(url, http_response);
                     Logger.Warn($"{error ?? "Unknown error"} (Try #{nbRetry}, duration: {Utils.CalcStringDuration(entry.StartTime)})");
+                    nbRetry++;
                     if (nbRetry >= 3) break;
                     ReconnectSwitch();
                     Thread.Sleep(3000);
@@ -271,7 +271,7 @@ namespace PoEWizard.Comm
             Task<HttpResponseMessage> http_response = SendAsyncRequest(entry, url);
             if (http_response?.Result?.StatusCode == HttpStatusCode.Unauthorized)
             {
-                Logger.Activity($"Switch {this._ip_address} token expired (duration: {Utils.CalcStringDuration(this._start_connect_time)})");
+                Logger.Activity($"Switch {this._ip_address} token expired after {Utils.CalcStringDuration(this._start_connect_time, true)}, reconnecting to the switch.");
                 ReconnectSwitch();
                 http_response = SendAsyncRequest(entry, url);
             }
@@ -289,9 +289,6 @@ namespace PoEWizard.Comm
 
         private void ReconnectSwitch()
         {
-            RemoveToken();
-            this._http_request.Dispose();
-            this._http_request = null;
             CloseHttpClient();
             CreateHttpClient();
             ConnectToSwitch();
@@ -322,9 +319,15 @@ namespace PoEWizard.Comm
                             HttpStatusCode code = Utils.ConvertToHttpStatusCode(errorList);
                             string errorMsg = $"Requested URL: {url}\r\nHTTP Response: {code} ({errorList[HTTP_RESPONSE]})\r\nError: {error}";
                             if (errMsg.Contains("not supported") || errMsg.Contains("command in progress") || errMsg.Contains("power range supported"))
+                            {
+                                string[] split = url.Split('=');
+                                if (split.Length >= 2) error += $" ({WebUtility.UrlDecode(split[1])})";
                                 Logger.Warn(errorMsg);
+                            }
                             else
+                            {
                                 Logger.Error(errorMsg);
+                            }
                         }
                     }
                     return error;
@@ -362,7 +365,9 @@ namespace PoEWizard.Comm
 
         private void CloseHttpClient()
         {
-            this._httpClient.Dispose();
+            this._http_request?.Dispose();
+            this._http_request = null;
+            this._httpClient?.Dispose();
             this._httpClient = null;
         }
 

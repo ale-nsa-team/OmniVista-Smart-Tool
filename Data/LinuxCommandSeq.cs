@@ -8,14 +8,15 @@ namespace PoEWizard.Data
 {
     public class LinuxCommand
     {
+        private const int DEFAULT_WAIT_TIME_SEC = 10;
         public string Command { get; set; }
         public int DelaySec { get; set; }
         public int MaxWaitSec { get; set; }
         public string Expected {  get; set; }
         public Dictionary<string, string> Response { get; set; }
 
-        public LinuxCommand(string cmd) : this(cmd, null, 15, 0) { }
-        public LinuxCommand(string cmd, string expected) : this(cmd, expected, 15, 0) { }
+        public LinuxCommand(string cmd) : this(cmd, null, DEFAULT_WAIT_TIME_SEC, 0) { }
+        public LinuxCommand(string cmd, string expected) : this(cmd, expected, DEFAULT_WAIT_TIME_SEC, 0) { }
         public LinuxCommand(string cmd, string expected, int maxWaitSec) : this(cmd, expected, maxWaitSec, 0) { }
         public LinuxCommand(string cmd, string expected, int maxWaitSec, int delaySec)
         {
