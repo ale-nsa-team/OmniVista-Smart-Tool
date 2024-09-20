@@ -1,7 +1,6 @@
 ﻿using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Device
@@ -31,9 +30,13 @@ namespace PoEWizard.Device
         public string MEDPowerPriority { get; set; } = string.Empty;
         public string MEDPowerValue { get; set; } = string.Empty;
         public bool IsMacName { get; set; } = false;
-        public string Alias {  get; set; } = string.Empty;
+        public string Label { get; set; } = string.Empty;
 
         public EndPointDeviceModel() { }
+        public EndPointDeviceModel Clone()
+        {
+            return this.MemberwiseClone() as EndPointDeviceModel;
+        }
         public EndPointDeviceModel(Dictionary<string, string> dict)
         {
             LoadLldpRemoteTable(dict);
@@ -54,21 +57,22 @@ namespace PoEWizard.Device
             Type = Utils.GetDictValue(dict, CAPABILITIES_ENABLED);
             IpAddress = Utils.GetDictValue(dict, MED_IP_ADDRESS);
             EthernetType = Utils.GetDictValue(dict, MAU_TYPE);
-            Name = Utils.GetDictValue(dict, SYSTEM_NAME).Replace("(null)", string.Empty);
-            IsMacName = Name == string.Empty && dict.ContainsKey(MAC_NAME);
-            if (IsMacName) Name = Utils.GetDictValue(dict, MAC_NAME);
+            Label = Name = Utils.GetDictValue(dict, SYSTEM_NAME).Replace("(null)", string.Empty);
+            Description = Utils.GetDictValue(dict, SYSTEM_DESCRIPTION).Replace("(null)", string.Empty).Replace("-", string.Empty);
+            if (string.IsNullOrEmpty(Label)) Label = Description;
             int ifIndex = Utils.StringToInt(RemotePort);
             if (PortSubType == PortSubType.LocallyAssigned && (ifIndex >= 1000))
             {
                 RemotePort = Utils.ParseIfIndex(ifIndex.ToString());
-                if (string.IsNullOrEmpty(Name)) Name = $"Remote port {RemotePort}";
+                if (string.IsNullOrEmpty(Label)) Label = $"Remote port {RemotePort}";
                 Type = SWITCH;
             }
             else if (!Utils.IsNumber(RemotePort))
             {
                 RemotePort = string.Empty;
             }
-            Description = Utils.GetDictValue(dict, SYSTEM_DESCRIPTION).Replace("(null)", string.Empty).Replace("-", string.Empty);
+            IsMacName = (string.IsNullOrEmpty(Label) || Type == MED_UNDEFINED || Type == MED_UNKNOWN) && dict.ContainsKey(MED_MAC_ADDRESS);
+            if (IsMacName) Label = Utils.GetDictValue(dict, MED_MAC_ADDRESS);
             string[] capList = Utils.GetDictValue(dict, MED_CAPABILITIES).Split('|');
             if (capList.Length > 1)
             {
@@ -97,57 +101,39 @@ namespace PoEWizard.Device
             SerialNumber = Utils.GetDictValue(dict, MED_SERIAL_NUMBER).Replace("\"", string.Empty);
         }
 
-        public override string ToString()
-        {
-            StringBuilder txt = new StringBuilder("Device Type connected: ");
-            txt.Append(string.IsNullOrEmpty(Type) ? $"{MED_UNKNOWN} ({PortSubType})" : Type);
-            if (!string.IsNullOrEmpty(Name)) txt.Append(", Name: ").Append(Name);
-            if (!string.IsNullOrEmpty(Description)) txt.Append(", Description: ").Append(Description);
-            if (!string.IsNullOrEmpty(Vendor)) txt.Append(", Vendor: ").Append(Vendor);
-            if (!string.IsNullOrEmpty(SoftwareVersion)) txt.Append(", Version: ").Append(SoftwareVersion);
-            if (!string.IsNullOrEmpty(SerialNumber)) txt.Append(", Serial #: ").Append(SerialNumber);
-            if (!string.IsNullOrEmpty(MacAddress)) txt.Append(", MAC: ").Append(MacAddress);
-            if (!string.IsNullOrEmpty(IpAddress)) txt.Append(", IP: ").Append(IpAddress);
-            return txt.ToString();
-        }
-
         public string ToTooltip()
         {
             List<string> tip = new List<string>();
-            if (!string.IsNullOrEmpty(Alias)) tip.Add($"Alias: {Alias}");
             if (!string.IsNullOrEmpty(Type)) tip.Add($"Type: {Type}");
-            if (!string.IsNullOrEmpty(Name))
+            if (!string.IsNullOrEmpty(Label))
             {
                 if (!IsMacName)
                 {
-                    if (!Name.Contains("Remote port")) tip.Add($"Name: {Name}");
+                    if (!Label.Contains("Remote port")) tip.Add($"Name: {Label}");
                 }
-                else if (Name.Contains(","))
+                else if (string.IsNullOrEmpty(Vendor) && !Label.Contains(","))
                 {
-                    string[] split = Name.Split(',');
-                    foreach (string mac in split)
-                    {
-                        string vendor = Utils.GetVendorName(mac);
-                        if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) tip.Add($"{mac} ({vendor})"); else tip.Add($"{mac}");
-                    }
-                    if (split.Length >= 10) tip.Add("          . . .");
-                }
-                else
-                {
-                    tip.Add($"{Name} ({Utils.GetVendorName(Name)})");
+                    Vendor = Utils.GetVendorName(Label);
                 }
             }
-            if (!string.IsNullOrEmpty(Description)) tip.Add($"Description: {Description}");
             if (!string.IsNullOrEmpty(Vendor)) tip.Add($"Vendor: {Vendor}");
+            if (!string.IsNullOrEmpty(Description)) tip.Add($"Description: {Description}");
             if (!string.IsNullOrEmpty(Model)) tip.Add($"Model: {Model}");
             if (!string.IsNullOrEmpty(SoftwareVersion)) tip.Add($"Version: {SoftwareVersion}");
             if (!string.IsNullOrEmpty(SerialNumber)) tip.Add($"Serial #: {SerialNumber}");
-            if (!string.IsNullOrEmpty(MacAddress)) tip.Add($"MAC: {MacAddress}");
             if (!string.IsNullOrEmpty(IpAddress)) tip.Add($"IP: {IpAddress}");
-            //if (Capabilities?.Count > 0) tip.Add($"Capabilities: [{string.Join(",", Capabilities)}]");
-            //if(!string.IsNullOrEmpty(MEDPowerValue)) tip.Add($"Power Value: {MEDPowerValue}");
-            //if (!string.IsNullOrEmpty(MEDPowerPriority)) tip.Add($"Power Priority: {MEDPowerPriority}");
             if (!string.IsNullOrEmpty(RemotePort)) tip.Add($"Remote Port: {RemotePort}");
+            if (Label.Contains(","))
+            {
+                string[] split = Label.Split(',');
+                tip.Add($"MAC List:");
+                foreach (string mac in split)
+                {
+                    string vendor = Utils.GetVendorName(mac);
+                    if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) tip.Add($"  {mac} ({vendor})"); else tip.Add($"{mac}");
+                }
+                if (split.Length >= 10) tip.Add("          . . .");
+            } else if (!string.IsNullOrEmpty(MacAddress)) tip.Add($"MAC: {MacAddress}");
             return tip.Count > 0 ? string.Join("\n", tip) : null;
         }
 

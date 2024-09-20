@@ -78,8 +78,7 @@ namespace PoEWizard.Device
                     Location = Utils.GetDictValue(dict, SYS_LOCATION);
                     Contact = Utils.GetDictValue(dict, SYS_CONTACT);
                     TimeSpan dur = TimeSpan.FromSeconds(Utils.StringToLong(Utils.GetDictValue(dict, SYS_UP_TIME)) / 100);
-                    UpTime = $"{(dur.Days > 0 ? dur.Days + " d : " : "")}{dur.Hours} h : {dur.Minutes} min : {dur.Seconds} sec";
-
+                    UpTime = $"{(dur.Days > 0 ? $"{dur.Days} d : " : "")}{(dur.Hours > 0 ? $"{dur.Hours} h : " : "")}{dur.Minutes} min : {dur.Seconds} sec";
                     string sync = Utils.GetDictValue(dict, CONFIG_CHANGE_STATUS);
                     string cert = Utils.GetDictValue(dict, CHAS_CONTROL_CERTIFY);
                     SyncStatus = sync == "1" ? cert == "3" ? SyncStatusType.Synchronized :
@@ -204,9 +203,9 @@ namespace PoEWizard.Device
                         {
                             [LOCAL_PORT] = port.Name,
                             [CAPABILITIES_ENABLED] = "Unknown",
-                            [MAC_NAME] = string.Join(",", port.MacList)
+                            [MED_MAC_ADDRESS] = string.Join(",", port.MacList)
                         };
-                        port.EndPointDevice = new EndPointDeviceModel(ep) { Alias = port.Alias };
+                        port.EndPointDevice = new EndPointDeviceModel(ep);
                         port.EndPointDevicesList.Add(port.EndPointDevice);
                     }
                     break;
@@ -383,54 +382,10 @@ namespace PoEWizard.Device
             return cm?.Slots.FirstOrDefault(s => s.Name == slotName);
         }
 
-        public void UpdateSwitchUplinks()
-        {
-            if (this.ChassisList?.Count == 0) return;
-            foreach (ChassisModel chassis in this.ChassisList)
-            {
-                foreach (SlotModel slot in chassis.Slots)
-                {
-                    slot.Ports?.ToList().ForEach(port =>
-                    {
-                        port.IsUplink = port.IsLldpMdi || port.IsLldpExtMdi || port.IsVfLink;
-                    });
-                }
-            }
-        }
-
-        public void UpdateUplink(string portNr, bool isUplink)
-        {
-            this.ChassisList?.ForEach(c =>
-            {
-                c.Slots?.ForEach(s =>
-                {
-                    s.Ports.ForEach(p =>
-                    {
-                        string name = $"{c.Number}/{s.Number}/{p.Number}";
-                        if (name.Equals(portNr))
-                        {
-                            p.IsUplink = isUplink;
-                            return;
-                        }
-                    });
-                });
-            });
-        }
-
         public void SetAppLogLevel(string app, int logLevel)
         {
             if (!string.IsNullOrEmpty(app) && DebugApp.ContainsKey(app)) this.DebugApp[app].DebugLevel = logLevel;
             else this.DebugApp[app].DebugLevel = (int)SwitchDebugLogLevel.Unknown;
-        }
-
-        public PortModel GetPort(string slotPortNr)
-        {
-            ChassisSlotPort slotPort = new ChassisSlotPort(slotPortNr);
-            ChassisModel chassisModel = ChassisList.FirstOrDefault(c => c.Number == slotPort.ChassisNr);
-            if (chassisModel == null) return null;
-            SlotModel slotModel = chassisModel.Slots.FirstOrDefault(c => c.Number == slotPort.SlotNr);
-            if (slotModel == null) return null;
-            return slotModel.Ports.FirstOrDefault(c => c.Number == slotPort.PortNr);
         }
 
         private string SetMasterSlave(ChassisModel chassis, string sValue)

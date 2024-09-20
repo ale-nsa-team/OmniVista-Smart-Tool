@@ -211,8 +211,9 @@ namespace PoEWizard.Data
         public const string MED_POWER_PRIORITY = "MED Power Priority";
         public const string MED_POWER_VALUE = "MED Power Value";
         public const string MED_IP_ADDRESS = "Management IP Address";
-        public const string MAC_NAME = "MAC Name";
+        public const string MED_MAC_ADDRESS = "MAC Address";
         public const string MED_UNKNOWN = "Unknown";
+        public const string MED_UNDEFINED = "none enable";
         // Used by "SHOW_LLDP_INVENTORY"
         public const string MED_MANUFACTURER = "Manufacturer Name";
         public const string MED_MODEL = "Model Name";

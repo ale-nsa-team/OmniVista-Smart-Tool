@@ -127,46 +127,61 @@ namespace PoEWizard.Device
 
         public void LoadLldpRemoteTable(List<Dictionary<string, string>> dictList)
         {
-            if (dictList?.Count > 0)
+            if (dictList == null || dictList.Count == 0) return;
+            if (dictList.Count > 1)
             {
-                if (dictList.Count > 1)
-                {
-                    this.EndPointDevice.Type = "Multiple devices";
-                    this.EndPointDevice.Name = "Multiple devices";
-                }
-                else
-                {
-                    this.EndPointDevice.LoadLldpRemoteTable(dictList[0]);
-                }
                 foreach (Dictionary<string, string> dict in dictList)
                 {
                     int idx = GetEndPointDeviceIndex(dict);
-                    if (idx >= 0 && idx < this.EndPointDevicesList.Count)
-                    {
-                        this.EndPointDevicesList[idx]?.LoadLldpRemoteTable(dict);
-                    }
-                    else
+                    if (idx < 0)
                     {
                         this.EndPointDevicesList.Add(new EndPointDeviceModel(dict));
+                        continue;
                     }
+                    if (idx < this.EndPointDevicesList.Count) this.EndPointDevicesList[idx]?.LoadLldpRemoteTable(dict);
                 }
-                this.EndPointDevicesList[0].Alias = this.Alias;
+                this.EndPointDevice = this.EndPointDevicesList[0].Clone();
+                this.EndPointDevice.Type = "Multiple devices";
+            }
+            else
+            {
+                this.EndPointDevicesList.Add(new EndPointDeviceModel(dictList[0]));
+                this.EndPointDevice = this.EndPointDevicesList[0];
             }
         }
 
         public void LoadLldpInventoryTable(List<Dictionary<string, string>> dictList)
         {
-            if (dictList?.Count > 0)
+            if (dictList == null || dictList.Count == 0) return;
+            foreach (Dictionary<string, string> dict in dictList)
             {
-                this.EndPointDevice.LoadLldpInventoryTable(dictList[0]);
-                foreach (Dictionary<string, string> dict in dictList)
+                int idx = GetEndPointDeviceIndex(dict);
+                if (idx < 0)
                 {
-                    int idx = GetEndPointDeviceIndex(dict);
-                    if (idx >= 0 && idx < this.EndPointDevicesList.Count)
+                    this.EndPointDevicesList.Add(new EndPointDeviceModel(dict));
+                    continue;
+                }
+                if (idx < this.EndPointDevicesList.Count) this.EndPointDevicesList[idx]?.LoadLldpInventoryTable(dict);
+            }
+            if (this.EndPointDevicesList.Count == 1)
+            {
+                this.EndPointDevice = this.EndPointDevicesList[0];
+                return;
+            }
+            if (string.IsNullOrEmpty(this.EndPointDevice.Label))
+            {
+                foreach (EndPointDeviceModel dev in this.EndPointDevicesList)
+                {
+                    if (!string.IsNullOrEmpty(dev.Description))
                     {
-                        this.EndPointDevicesList[idx]?.LoadLldpInventoryTable(dict);
+                        this.EndPointDevice = dev.Clone();
+                        if (!string.IsNullOrEmpty(dev.Name))
+                        {
+                            this.EndPointDevice = dev.Clone();
+                        }
                     }
                 }
+                this.EndPointDevice.Type = "Multiple devices";
             }
         }
 

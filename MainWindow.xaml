@@ -303,8 +303,17 @@
                       CellStyle="{DynamicResource gridCell}"
                       SelectionChanged="PortSelection_Changed">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header=" Port" Width="0.7*" Binding="{Binding Path=Name}" IsReadOnly="True"/>
-                    <DataGridTemplateColumn Header="Status" Width="0.7*" IsReadOnly="True">
+                    <DataGridTextColumn Header=" Port" Width="60" Binding="{Binding Path=Name}" IsReadOnly="True"/>
+                    <DataGridTemplateColumn Header="Alias" Width="1.6*" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Alias}" Style="{DynamicResource toolTip}"
+                                Foreground="{DynamicResource fontColor}"
+                                ToolTip="{Binding Path=Alias}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Status" Width="50" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Status}"
@@ -325,7 +334,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridComboBoxColumn Header="Priority" Width="0.8*" IsReadOnly="False">
+                    <DataGridComboBoxColumn Header="Priority" Width="50" IsReadOnly="False">
                         <DataGridComboBoxColumn.SelectedItemBinding>
                             <MultiBinding Converter="{StaticResource PoeToPriorityLevelConverter}">
                                 <Binding Path="Poe" />
@@ -381,8 +390,8 @@
                             </MultiBinding>
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="802.3BT" Width="0.7*" Binding="{Binding Path=Protocol8023bt, Converter={StaticResource ConfigTypeToSimbolConverter}}" />
-                    <DataGridTemplateColumn Header="Device Model" Width="1.4*" IsReadOnly="True">
+                    <DataGridTextColumn Header="802.3BT" Width="50" Binding="{Binding Path=Protocol8023bt, Converter={StaticResource ConfigTypeToSimbolConverter}}" />
+                    <DataGridTemplateColumn Header="Device Model" Width="1.6*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Model}"
@@ -391,7 +400,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Device Type" Width="1.4*" IsReadOnly="True">
+                    <DataGridTemplateColumn Header="Device Type" Width="1.5*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Type}"
@@ -400,10 +409,10 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Device Name" Width="1.2*" IsReadOnly="True">
+                    <DataGridTemplateColumn Header="Device Name" Width="1.8*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=EndPointDevice.Name}"
+                                <TextBlock Text="{Binding Path=EndPointDevice.Label}"
                                            ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
                                            Style="{DynamicResource devToolTip}" />
                             </DataTemplate>
