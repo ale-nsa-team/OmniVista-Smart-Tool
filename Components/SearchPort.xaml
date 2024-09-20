@@ -28,13 +28,22 @@
                 SelectionChanged="PortSelection_Changed"
                 IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Port" Width="0.5*" Binding="{Binding Path=Name}" />
+                    <DataGridTextColumn Header="Port" Width="0.8*" Binding="{Binding Path=Name}" />
                     <DataGridTemplateColumn Header="Alias" Width="1.8*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Alias}" Style="{DynamicResource toolTip}"
                                 Foreground="{DynamicResource fontColor}"
                                 ToolTip="{Binding Path=Alias}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="MAC" Width="1.8*" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=MacList, Converter={StaticResource ListToStringConverter}}" Style="{DynamicResource toolTip}"
+                                Foreground="{DynamicResource fontColor}"
+                                ToolTip="{Binding Path=MacList, Converter={StaticResource ListToStringConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

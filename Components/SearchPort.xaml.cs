@@ -29,6 +29,7 @@ namespace PoEWizard.Components
             }
             SelectedPort = null;
             PortsFound = SearchMacAddress(device, macAddress);
+            if (PortsFound.Count == 1) SelectedPort = PortsFound[0];
         }
 
         private ObservableCollection<PortModel> SearchMacAddress(SwitchModel device, string macAddress)

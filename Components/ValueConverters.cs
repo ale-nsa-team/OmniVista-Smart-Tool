@@ -550,4 +550,43 @@ namespace PoEWizard.Components
 
     }
 
+
+    public class ListToStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            const int MAX_NB_DEVICES = 10;
+            try
+            {
+                if (Utils.IsInvalid(value)) return null;
+                if (value is List<string> strList)
+                {
+                    if (strList.Count < 1) return null;
+                    bool hasmore = strList.Count > MAX_NB_DEVICES;
+                    List<string> displayList = hasmore ? strList.GetRange(0, MAX_NB_DEVICES) : strList;
+                    int maxlen = displayList.Max(t => MaxLineLen(t));
+                    if (hasmore) displayList.Add(" ...");
+                    return string.Join(",", displayList);
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return null;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+
+        private int MaxLineLen(string s)
+        {
+            return s.Split('\n').Max(l => l.Length);
+        }
+    }
+
+
 }
