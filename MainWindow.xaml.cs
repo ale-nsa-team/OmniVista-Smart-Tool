@@ -286,8 +286,13 @@ namespace PoEWizard
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
-            if (sp.PortsFound?.Count > 0) sp.Show();
-            else ShowMessageBox("Search Port", $"Couldn't find MAC address {lastMacAddress} on switch {device.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
+            if (sp.PortsFound?.Count > 0)
+            {
+                sp.ShowDialog();
+                PortModel portSelected = sp.SelectedPort;
+                return;
+            }
+            ShowMessageBox("Search Port", $"Couldn't find MAC address {lastMacAddress} on switch {device.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
         }
 
         private async void FactoryReset(object sender, RoutedEventArgs e)

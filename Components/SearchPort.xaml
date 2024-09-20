@@ -20,11 +20,12 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Style="{DynamicResource gridBorder}" Margin="5">
-            <DataGrid x:Name="_searchPortView" 
+            <DataGrid x:Name="_portsListView" 
                 Style="{DynamicResource defaultGrid}"
                 ColumnHeaderStyle="{DynamicResource gridHeader}"
                 CellStyle="{DynamicResource gridCell}"
                 ItemsSource="{Binding PortsFound}"
+                SelectionChanged="PortSelection_Changed"
                 IsReadOnly="True">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Port" Width="0.5*" Binding="{Binding Path=Name}" />

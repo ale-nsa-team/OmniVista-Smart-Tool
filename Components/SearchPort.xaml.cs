@@ -1,5 +1,5 @@
 ﻿using PoEWizard.Device;
-using System.Collections.Generic;
+using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using static PoEWizard.Data.Constants;
@@ -13,6 +13,7 @@ namespace PoEWizard.Components
     {
 
         public ObservableCollection<PortModel> PortsFound { get; set; }
+        public PortModel SelectedPort { get; set; }
 
         public SearchPort(SwitchModel device, string macAddress)
         {
@@ -26,6 +27,7 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+            SelectedPort = null;
             PortsFound = SearchMacAddress(device, macAddress);
         }
 
@@ -50,6 +52,14 @@ namespace PoEWizard.Components
                 }
             }
             return portsFound;
+        }
+
+        private void PortSelection_Changed(Object sender, RoutedEventArgs e)
+        {
+            if (_portsListView.SelectedItem is PortModel port)
+            {
+                SelectedPort = port;
+            }
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
