@@ -290,6 +290,38 @@ namespace PoEWizard
             {
                 sp.ShowDialog();
                 PortModel portSelected = sp.SelectedPort;
+                if (portSelected == null) return;
+                if (_portList.Items?.Count > 0)
+                {
+                    string[] split = portSelected.Name.Split('/');
+                    string slotPortNr = $"{split[0]}/{split[1]}";
+                    int selIndex = -1;
+                    for (int idx = 0; idx < _portList.Items.Count; idx++)
+                    {
+                        PortModel port = _portList.Items[idx] as PortModel;
+                        if (port?.Name == portSelected.Name)
+                        {
+                            selIndex = idx;
+                            break;
+                        }
+                    }
+                    if (selIndex < 0 || selIndex >= _portList.Items.Count) return;
+                    selectedPortIndex = selIndex;
+                    selIndex = -1;
+                    for (int idx = 0; idx < _slotsView.Items.Count; idx++)
+                    {
+                        SlotModel slot = _slotsView.Items[idx] as SlotModel;
+                        if (slot?.Name == slotPortNr)
+                        {
+                            selIndex = idx;
+                            break;
+                        }
+                    }
+                    if (selIndex < 0 || selIndex >= _slotsView.Items.Count) return;
+                    selectedSlotIndex = selIndex;
+                    _slotsView.SelectedItem = _slotsView.Items[selectedSlotIndex];
+                    _portList.SelectedItem = _portList.Items[selectedPortIndex];
+                }
                 return;
             }
             ShowMessageBox("Search Port", $"Couldn't find MAC address {lastMacAddress} on switch {device.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
