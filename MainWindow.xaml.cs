@@ -297,18 +297,6 @@ namespace PoEWizard
                     string[] split = portSelected.Name.Split('/');
                     string slotPortNr = $"{split[0]}/{split[1]}";
                     int selIndex = -1;
-                    for (int idx = 0; idx < _portList.Items.Count; idx++)
-                    {
-                        PortModel port = _portList.Items[idx] as PortModel;
-                        if (port?.Name == portSelected.Name)
-                        {
-                            selIndex = idx;
-                            break;
-                        }
-                    }
-                    if (selIndex < 0 || selIndex >= _portList.Items.Count) return;
-                    selectedPortIndex = selIndex;
-                    selIndex = -1;
                     for (int idx = 0; idx < _slotsView.Items.Count; idx++)
                     {
                         SlotModel slot = _slotsView.Items[idx] as SlotModel;
@@ -322,6 +310,18 @@ namespace PoEWizard
                     selectedSlotIndex = selIndex;
                     _slotsView.SelectedItem = _slotsView.Items[selectedSlotIndex];
                     _slotsView.ScrollIntoView(_slotsView.SelectedItem);
+                    selIndex = -1;
+                    for (int idx = 0; idx < _portList.Items.Count; idx++)
+                    {
+                        PortModel port = _portList.Items[idx] as PortModel;
+                        if (port?.Name == portSelected.Name)
+                        {
+                            selIndex = idx;
+                            break;
+                        }
+                    }
+                    if (selIndex < 0 || selIndex >= _portList.Items.Count) return;
+                    selectedPortIndex = selIndex;
                     _portList.SelectedItem = _portList.Items[selectedPortIndex];
                     _portList.ScrollIntoView(_portList.SelectedItem);
                 }
