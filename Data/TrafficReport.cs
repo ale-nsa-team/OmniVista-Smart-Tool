@@ -152,8 +152,17 @@ namespace PoEWizard.Data
                 ParseAlertConditions();
             }
             if (this.alertReport?.Count > 0) foreach (KeyValuePair<string, string> keyVal in this.alertReport) this.Summary += keyVal.Value;
-            else this.Summary += $"\nNo traffic anomalies detected.";
-            this.Summary += "\n";
+            else
+            {
+                this.Summary += $"\r\nNo traffic anomalies detected:";
+                this.Summary += $"\r\n Rx Rate was less than {MAX_PERCENT_RATE}% of the Bandwidth.";
+                this.Summary += $"\r\n Tx Rate was less than {MAX_PERCENT_RATE}% of the Bandwidth.";
+                this.Summary += $"\r\n #Rx Broadcast Frames was less than {MAX_PERCENT_BROADCAST}% of #Rx Unicast Frames.";
+                this.Summary += $"\r\n #Rx Lost Frames was less than {MAX_PERCENT_WARNING_LOST_FRAMES}% of #Rx Unicast and Multicast Frames.";
+                this.Summary += $"\r\n #Tx Broadcast Frames was less than {MAX_PERCENT_BROADCAST}% of #Tx Unicast Frames.";
+                this.Summary += $"\r\n #Tx Lost Frames was less than {MAX_PERCENT_WARNING_LOST_FRAMES}% of #Tx Unicast and Multicast Frames";
+            }
+            this.Summary += "\r\n";
         }
 
         private void CalculateTrafficData()
