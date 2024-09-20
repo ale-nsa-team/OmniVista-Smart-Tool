@@ -714,11 +714,15 @@ namespace PoEWizard
                 if (poweroff == MsgBoxResult.Yes)
                 {
                     PassCode pc = new PassCode(this);
-                    if (pc.ShowDialog() == false) return;
+                    if (pc.ShowDialog() == false)
+                    {
+                        cb.IsChecked = true;
+                        return;
+                    }
                     if (pc.Password != pc.SavedPassword)
                     {
                         ShowMessageBox("Slot PoE Off", "Invalid password", MsgBoxIcons.Error);
-                        cb.IsChecked = !cb.IsChecked;
+                        cb.IsChecked = true;
                         return;
                     }
                     DisableButtons();
@@ -729,7 +733,7 @@ namespace PoEWizard
                 }
                 else 
                 {
-                    cb.IsChecked = !cb.IsChecked;
+                    cb.IsChecked = true;
                     return;
                 }
             }
@@ -738,10 +742,10 @@ namespace PoEWizard
                 selectedSlot = slotView.Slots[prevSlot];
                 _slotsView.SelectedIndex = prevSlot;
                 ShowMessageBox("PoE On", $"Please wait for slot {selectedSlot.Name} to come up");
-                cb.IsChecked = !cb.IsChecked;
+                cb.IsChecked = false;
                 return;
             }
-            if (cb.IsChecked == true)
+            else
             {
                 isWaitingSlotOn = true;
                 DisableButtons();
@@ -755,11 +759,6 @@ namespace PoEWizard
                 Activity.Log(device, $"PoE on slot {selectedSlot.Name} turned on");
                 RefreshSlotsAndPorts();
                 isWaitingSlotOn = false;
-            }
-            else
-            {
-                selectedSlot.PoeStatus = SlotPoeStatus.Off;
-                selectedSlot.IsInitialized = false;
             }
             slotView = new SlotView(device);
             _slotsView.ItemsSource = slotView.Slots;
