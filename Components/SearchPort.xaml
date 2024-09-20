@@ -28,7 +28,7 @@
                 SelectionChanged="PortSelection_Changed"
                 IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Port" Width="0.5*" Binding="{Binding Path=Name}" />
+                    <DataGridTextColumn Header="Port" Width="0.8*" Binding="{Binding Path=Name}" />
                     <DataGridTemplateColumn Header="Alias" Width="1.8*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

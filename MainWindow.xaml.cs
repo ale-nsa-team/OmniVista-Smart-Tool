@@ -320,7 +320,9 @@ namespace PoEWizard
                     if (selIndex < 0 || selIndex >= _slotsView.Items.Count) return;
                     selectedSlotIndex = selIndex;
                     _slotsView.SelectedItem = _slotsView.Items[selectedSlotIndex];
+                    _slotsView.ScrollIntoView(_slotsView.SelectedItem);
                     _portList.SelectedItem = _portList.Items[selectedPortIndex];
+                    _portList.ScrollIntoView(_portList.SelectedItem);
                 }
                 return;
             }
