@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Components
@@ -36,6 +25,7 @@ namespace PoEWizard.Components
             this.Owner = owner;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             _macAddr.Focus();
+            SearchMacAddress = string.Empty;
         }
 
         private void Select_KeyUp(object sender, KeyEventArgs e)
@@ -45,6 +35,12 @@ namespace PoEWizard.Components
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
+            this.Close();
+        }
+
+        private void BtnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            SearchMacAddress = null;
             this.Close();
         }
     }

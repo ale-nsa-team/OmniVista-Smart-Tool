@@ -180,8 +180,8 @@
     <Compile Include="Components\PowerSupply.xaml.cs">
       <DependentUpon>PowerSupply.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\SearchPort.xaml.cs">
-      <DependentUpon>SearchPort.xaml</DependentUpon>
+    <Compile Include="Components\SearchMac.xaml.cs">
+      <DependentUpon>SearchMac.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\SelectMacAddress.xaml.cs">
       <DependentUpon>SelectMacAddress.xaml</DependentUpon>
@@ -327,7 +327,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\SearchPort.xaml">
+    <Page Include="Components\SearchMac.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

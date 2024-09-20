@@ -276,10 +276,11 @@ namespace PoEWizard
             ps.Show();
         }
 
-        private void SearchPort_Click(object sender, RoutedEventArgs e)
+        private void SearchMac_Click(object sender, RoutedEventArgs e)
         {
             SelectMacAddress sm = new SelectMacAddress(this) { SearchMacAddress = lastMacAddress };
             sm.ShowDialog();
+            if (sm.SearchMacAddress == null) return;
             lastMacAddress = sm.SearchMacAddress;
             var sp = new SearchPort(device, lastMacAddress)
             {
@@ -1795,7 +1796,7 @@ namespace PoEWizard
             _traffic.IsEnabled = val;
             _collectLogs.IsEnabled = val;
             _psMenuItem.IsEnabled = val;
-            _searchPortMenuItem.IsEnabled = val;
+            _searchMacMenuItem.IsEnabled = val;
             _factoryRst.IsEnabled = val;
             _cfgMenuItem.IsEnabled = val;
         }

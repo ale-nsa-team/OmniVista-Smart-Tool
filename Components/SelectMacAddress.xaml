@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
-        Title="Select Mac Address" Height="200" Width="300" WindowStyle="None" ShowInTaskbar="False">
+        Title="Select Mac Address" Height="230" Width="300" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -18,19 +18,33 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" Style="{DynamicResource titleLabel}" Margin="0,10,0,0">Please enter the MAC address</Label>
+        <Label Grid.Row="0" Style="{DynamicResource titleLabel}" Margin="0,25,0,5">Please enter the MAC address</Label>
         <TextBox Grid.Row="1" x:Name="_macAddr"
                      Foreground="{DynamicResource fontColor}"
                      Background="{DynamicResource barBackground}"
                      KeyUp="Select_KeyUp"
                      Text="{Binding SearchMacAddress}"
-                     Margin="50">
+                     Margin="50,10">
         </TextBox>
-        <Border Grid.Row="2" Style="{DynamicResource propsBorder}">
+        <TextBlock Grid.Row="2" x:Name="_note1"
+                Style="{DynamicResource aboutParagraph}"
+                Text="Note: This tool will not search for MAC address"
+                Width="255">
+        </TextBlock>
+        <TextBlock Grid.Row="3" x:Name="_note2"
+               Style="{DynamicResource aboutParagraph}"
+               Text="connected to an uplink!"
+               Margin="25,0,0,20"
+               Width="220">
+        </TextBlock>
+        <Border Grid.Row="4" Style="{DynamicResource propsBorder}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Click="BtnOk_Click" Style="{DynamicResource smallButton}" Margin="2,0,0,0">OK</Button>
+                <Button Click="BtnOk_Click" Style="{DynamicResource smallButton}" Margin="2,10,0,0">OK</Button>
+                <Button Click="BtnCancel_Click" Style="{DynamicResource smallButton}" Margin="20,10,0,0">Cancel</Button>
             </StackPanel>
         </Border>
     </Grid>
