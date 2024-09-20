@@ -383,8 +383,7 @@ namespace PoEWizard
                 Connect();
                 return;
             }
-            if (wiz.IsRebootSwitch) LaunchRebootSwitch();
-            else if (device.SyncStatus == SyncStatusType.Synchronized) device.SyncStatus = SyncStatusType.NotSynchronized;
+            if (device.SyncStatus == SyncStatusType.Synchronized) device.SyncStatus = SyncStatusType.NotSynchronized;
             _status.Text = DEFAULT_APP_STATUS;
             SetConnectedState();
         }

@@ -494,5 +494,14 @@
   <ItemGroup>
     <Resource Include="Resources\Img\connected.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Help\Img\view-menu.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Help\Img\power-supply.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Help\Img\search-mac.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

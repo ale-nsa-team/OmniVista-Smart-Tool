@@ -31,8 +31,6 @@ namespace PoEWizard.Components
 
         public bool MustDisconnect { get; set; } = false;
 
-        public bool IsRebootSwitch { get; set; } = false;
-
         public List<string> Errors { get; private set; }
 
         #region Constructor
@@ -115,7 +113,6 @@ namespace PoEWizard.Components
             bool needRefresh = false;
             await Task.Run(() =>
             {
-
                 ApplyCommands(srvData.ToCommandList(srvOrig), "Applying DNS and NPT parameters...");
                 needRefresh = ApplyCommands(features.ToCommandList(featOrig), "Applying Features...");
                 List<CmdRequest> cmds = sysData.ToCommandList(sysOrig);

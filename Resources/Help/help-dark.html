@@ -12,6 +12,9 @@
             overflow-y: auto;
             overflow-x: hidden;
         }
+        li {
+            margin-bottom: 0.5em;
+        }
         li a {
             color: white;
         }
@@ -54,6 +57,7 @@
     <ul>
         <li><a href="#connection">Connectig to a Switch</a></li>
         <li><a href="#wizard">Running the PoE Wizard</a></li>
+        <li><a href="#view">View Menu</a></li>
         <li><a href="#cfg-wiz">Configuration Wizard</a></li>
         <li><a href="#faq">Frequently Asked Questions</a></li>
         <li><a href="#support">Obtaining more support</a></li>
@@ -141,10 +145,57 @@
         any extra information such as name, IP address, or firmware.
     </p>
     <img src="wiz-result.png" />
-    <p>Exiting the Application will prompt you to save your changes. Click OK and wait for it to be completed. This can take some time</p>
+    <p>Exiting the Application will prompt you to save your changes. Click OK and wait for it to be completed. This can take some time.</p>
     <img src="save-prompt.png" />
     <br />
     <img src="save-progress.png" />
+    <p id="view" class="header">View Menu Options</p>
+    <p>After you connect to a switch, several options are available under the View menu.</p>
+    <img src="view-menu.png" />
+    <p class="topic">Log</p>
+    <p>The options available under the Log menu are</p>
+    <ul>
+        <li>
+            View App log: Displays the application log file on a separate window. You have the option to Save the log into a file
+            or clear the application logs to start collecting logs anew.
+        </li>
+        <li>
+            View Activities: Displays user activities on the switches, one per line, such as connection / disconnection from a switch,
+            reboot a switch, start / stop PoE on a slot, etc.
+        </li>
+        <li>
+            Log Level: Select the log level, as needed, to increase the verbosity of the application log files.
+            Trace is the most verbose and Error is the least verbose level. Basic level is the default.
+        </li>
+    </ul>
+    <p class="topic">vcboot.cfg</p>
+    <p>Displays the vcboot config file from the switch on a separate window. You have the option to save it to a local file on your PC.</p>
+    <p class="topic">snapshot</p>
+    <p>Displays the switch configuration snapshot on a separate window. You have the option to save it to a local file on your PC.</p>
+    <p class="topic">Power Supplies</p>
+    <p>
+        Shows the switch power supply information on a popup window, where you can check the power supply satus, 
+        type, serial number, among other parameters.
+    </p>
+    <img src="power-supply.png" />
+    <p class="topic">Search</p>
+    <p>Allows you to search for ports containing a specific mac-address.</p>
+    <p>
+        You will be prompted to enter a mac address.You may enter a partial mac, in which case the application will search for all ports that contain 
+        that portion of the mac in their mac address list. If you leave this field empty, the application will display all ports that have at
+        least one mac address associated to them.
+    </p>
+    <img src="search-mac.png" />
+    <p>
+        If you select a port on this window, before closing it, the port will also be selected on the main window, so you can perform some
+        actions on it, such as reset the port of run the PoE Wizard.
+    </p>
+    <p class="topic">Theme</p>
+    <p>Allows you to select between dark mode and light mode.</p>
+    <p class="topic">Help</p>
+    <p>Displays this Help file.</p>
+    <p class="topic">About</p>
+    <p>Displays information about the application version, as well as a copyright disclaimer.</p>
     <p id="cfg-wiz" class="header">Configuration Wizard</p>
     <p>
         If you need to reconfigure your switch, starting from scratch and adding some basic recommended setup, 
@@ -164,7 +215,7 @@
     </p>
     <p class="topic">Basic Config Wizard</p>
     <p>The wizard presents a few configuration windows, you can navigate back and forth using the "Next >" and "< Back" buttons.</p>
-    <p>The first window lets you configure the management IP address and netmask, as well as some switch system parameters</p>
+    <p>The first window lets you configure the management IP address and netmask, as well as some switch system parameters.</p>
     <img src="cfg-wiz-sys.png" />
     <p>
         Clicking "Next >" will nagivate to the next window where you can configure the Default Gateway, DNS and NTP servers. 
@@ -177,20 +228,20 @@
     </p>
     <p class="no-space">When setting up multicast, you can select which VLANs will have it enabled on the table below the multicast toggle switch.</p>
     <img src="cfg-wiz-feature.png" />
-    <p>The last page on the configuration wizard allows you to configure the switch to send SNMP traps to trap receivers</p>
+    <p>The last page on the configuration wizard allows you to configure the switch to send SNMP traps to trap receivers.</p>
     <img src="cfg-wiz-snmp.png" />
-    <p>To add an snmp user, click the "+" button to the left of the table's '"Name" column</p>
+    <p>To add an snmp user, click the "+" button to the left of the table's "Name" column.</p>
     <img src="cfg-wiz-add-user.png" />
-    <p>Enter the username and password and click Create</p>
+    <p>Enter the username and password and click Create.</p>
     <p>To delete a user, click the "x" button on the left of the username on the table.</p>
-    <p>If you are using SNMP v2, you can create a community by clicking the "+" sign on the Communities table</p>
+    <p>If you are using SNMP v2, you can create a community by clicking the "+" sign on the Communities table.</p>
     <img src="cfg-wiz-add-comm.png" />
     <p>
         Since on the ALE OmniWwitches an SNMP community is associated with a user, enter the community name and select a previously
         created user from the drop-down menu, before clicking Create.
     </p>
-    <p>To delete a community, click the "x" button to the left of the community name on the table</p>
-    <p>To add an SNMP Trap Receiver, click the "+" button to the left of the Ip Address column on the Trap Receivers table</p>
+    <p>To delete a community, click the "x" button to the left of the community name on the table.</p>
+    <p>To add an SNMP Trap Receiver, click the "+" button to the left of the Ip Address column on the Trap Receivers table.</p>
     <img src="cfg-wiz-recv.png" />
     <p>
         Select the required SNMP Version (v2 or v3) and enter the IP Address of the trap receiver.

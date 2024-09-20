@@ -30,11 +30,7 @@
             <TextBlock x:Name="_infoBlock" />
         </Border>
         <DockPanel Grid.Row="2" Margin="5,20,10,0" LastChildFill="False" >
-            <StackPanel Orientation="Horizontal">
-                <Label Style="{DynamicResource leftJustifLabel}" FontSize="10">Reboot When Finished:</Label>
-                <CheckBox x:Name="_reboot" Style="{DynamicResource toggleSwitch}" Margin="0,5,0,0" IsChecked="{Binding IsRebootSwitch}" />
-            </StackPanel>
-            <Button Click="CfgCancel_Click" Style="{DynamicResource smallButton}" Margin="20,0,0,0">Cancel</Button>
+            <Button Click="CfgCancel_Click" Style="{DynamicResource smallButton}" Margin="5,0,0,0">Cancel</Button>
             <Button x:Name="_btnSubmit" Click="CfgSubmit_Click" Style="{DynamicResource smallButton}" Margin="10,0,0,0">Submit</Button>
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                 <Button Style="{DynamicResource smallButton}" x:Name="_btnCfgBack" Click="CfgBack_Click">&lt; Back</Button>
