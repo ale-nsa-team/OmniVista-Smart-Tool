@@ -38,6 +38,15 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="MAC" Width="1.8*" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=MacList, Converter={StaticResource ListToStringConverter}}" Style="{DynamicResource toolTip}"
+                                Foreground="{DynamicResource fontColor}"
+                                ToolTip="{Binding Path=MacList, Converter={StaticResource ListToStringConverter}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="PoE Status" Width="0.8*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
