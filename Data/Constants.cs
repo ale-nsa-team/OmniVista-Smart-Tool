@@ -204,6 +204,7 @@ namespace PoEWizard.Data
         public const string CAPABILITIES_ENABLED = "Capabilities Enabled";
         public const string SYSTEM_NAME = "System Name";
         public const string SYSTEM_DESCRIPTION = "System Description";
+        public const string PORT_DESCRIPTION = "Port Description";
         public const string MED_CAPABILITIES = "MED Capabilities";
         public const string MAU_TYPE = "Mau Type";
         public const string MED_POWER_TYPE = "MED Power Type";
@@ -213,7 +214,7 @@ namespace PoEWizard.Data
         public const string MED_IP_ADDRESS = "Management IP Address";
         public const string MED_MAC_ADDRESS = "MAC Address";
         public const string MED_UNKNOWN = "Unknown";
-        public const string MED_UNDEFINED = "none enable";
+        public const string MED_NONE = "None";
         // Used by "SHOW_LLDP_INVENTORY"
         public const string MED_MANUFACTURER = "Manufacturer Name";
         public const string MED_MODEL = "Model Name";

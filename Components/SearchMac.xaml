@@ -99,7 +99,7 @@
                     <DataGridTemplateColumn Header="Device Name" Width="1.2*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=EndPointDevice.Name}"
+                                <TextBlock Text="{Binding Path=EndPointDevice.Label}"
                                         ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
                                         Style="{DynamicResource devToolTip}" />
                             </DataTemplate>
