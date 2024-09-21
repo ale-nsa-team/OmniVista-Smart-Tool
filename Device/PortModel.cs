@@ -132,21 +132,15 @@ namespace PoEWizard.Device
             {
                 foreach (Dictionary<string, string> dict in dictList)
                 {
-                    int idx = GetEndPointDeviceIndex(dict);
-                    if (idx < 0)
-                    {
-                        this.EndPointDevicesList.Add(new EndPointDeviceModel(dict));
-                        continue;
-                    }
-                    if (idx < this.EndPointDevicesList.Count) this.EndPointDevicesList[idx]?.LoadLldpRemoteTable(dict);
+                    UpdateEndPointParameters(dict, DictionaryType.LldpRemoteList);
                 }
                 this.EndPointDevice = this.EndPointDevicesList[0].Clone();
                 this.EndPointDevice.Type = "Multiple devices";
             }
             else
             {
-                this.EndPointDevicesList.Add(new EndPointDeviceModel(dictList[0]));
-                this.EndPointDevice = this.EndPointDevicesList[0];
+                UpdateEndPointParameters(dictList[0], DictionaryType.LldpRemoteList);
+                this.EndPointDevice = this.EndPointDevicesList[0].Clone();
             }
         }
 
@@ -155,17 +149,11 @@ namespace PoEWizard.Device
             if (dictList == null || dictList.Count == 0) return;
             foreach (Dictionary<string, string> dict in dictList)
             {
-                int idx = GetEndPointDeviceIndex(dict);
-                if (idx < 0)
-                {
-                    this.EndPointDevicesList.Add(new EndPointDeviceModel(dict));
-                    continue;
-                }
-                if (idx < this.EndPointDevicesList.Count) this.EndPointDevicesList[idx]?.LoadLldpInventoryTable(dict);
+                UpdateEndPointParameters(dict, DictionaryType.LldpInventoryList);
             }
             if (this.EndPointDevicesList.Count == 1)
             {
-                this.EndPointDevice = this.EndPointDevicesList[0];
+                this.EndPointDevice = this.EndPointDevicesList[0].Clone();
                 return;
             }
             if (string.IsNullOrEmpty(this.EndPointDevice.Label))
@@ -185,13 +173,16 @@ namespace PoEWizard.Device
             }
         }
 
-        private int GetEndPointDeviceIndex(Dictionary<string, string> dict)
+        private void UpdateEndPointParameters(Dictionary<string, string> dict, DictionaryType dictType)
         {
-            for (int idx = 0; idx < this.EndPointDevicesList.Count; idx++)
+            EndPointDeviceModel device = this.EndPointDevicesList.FirstOrDefault(ep => ep.MacAddress == dict[MED_MAC_ADDRESS]);
+            if (device == null)
             {
-                if (this.EndPointDevicesList[idx].MacAddress == dict[CHASSIS_MAC_ADDRESS]) return idx;
+                this.EndPointDevicesList.Add(new EndPointDeviceModel(dict));
+                return;
             }
-            return -1;
+            if (dictType == DictionaryType.LldpRemoteList) device.LoadLldpRemoteTable(dict);
+            else if (dictType == DictionaryType.LldpInventoryList) device.LoadLldpInventoryTable(dict);
         }
 
         public void UpdatePortStatus(Dictionary<string, string> dict)

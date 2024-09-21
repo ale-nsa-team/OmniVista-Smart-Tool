@@ -978,6 +978,11 @@ namespace PoEWizard.Comm
             GetMacAndLldpInfo();
         }
 
+        public void RefreshMacAndLldpInfo()
+        {
+            GetMacAndLldpInfo();
+        }
+
         private void RefreshPortsInformation()
         {
             _progress.Report(new ProgressReport($"Refreshing ports information on switch {SwitchModel.Name}"));
