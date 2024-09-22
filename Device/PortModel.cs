@@ -175,6 +175,7 @@ namespace PoEWizard.Device
 
         private void UpdateEndPointParameters(Dictionary<string, string> dict, DictionaryType dictType)
         {
+            if (!dict.ContainsKey(MED_MAC_ADDRESS)) return;
             EndPointDeviceModel device = this.EndPointDevicesList.FirstOrDefault(ep => ep.MacAddress == dict[MED_MAC_ADDRESS]);
             if (device == null)
             {

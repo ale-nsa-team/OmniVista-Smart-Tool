@@ -201,7 +201,7 @@ namespace PoEWizard.Data
         public const string LOCAL_PORT = "Local Port";
         public const string REMOTE_PORT = "Remote Port";
         public const string PORT_SUBTYPE = "Port Subtype";
-        public const string CAPABILITIES_ENABLED = "Capabilities Enabled";
+        public const string CAPABILITIES_SUPPORTED = "Capabilities Supported";
         public const string SYSTEM_NAME = "System Name";
         public const string SYSTEM_DESCRIPTION = "System Description";
         public const string PORT_DESCRIPTION = "Port Description";
@@ -213,7 +213,7 @@ namespace PoEWizard.Data
         public const string MED_POWER_VALUE = "MED Power Value";
         public const string MED_IP_ADDRESS = "Management IP Address";
         public const string MED_MAC_ADDRESS = "MAC Address";
-        public const string MED_UNKNOWN = "Unknown";
+        public const string NO_LLDP = "No LLDP";
         public const string MED_NONE = "None";
         // Used by "SHOW_LLDP_INVENTORY"
         public const string MED_MANUFACTURER = "Manufacturer Name";

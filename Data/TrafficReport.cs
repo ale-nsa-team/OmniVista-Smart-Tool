@@ -397,7 +397,7 @@ namespace PoEWizard.Data
 
         private bool IsDeviceTypeUnknown(EndPointDeviceModel device)
         {
-            return device == null || string.IsNullOrEmpty(device.Type) || device.Type == MED_UNKNOWN;
+            return device == null || string.IsNullOrEmpty(device.Type) || device.Type == NO_LLDP || device.Type == MED_NONE;
         }
     }
 
