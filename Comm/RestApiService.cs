@@ -1404,7 +1404,7 @@ namespace PoEWizard.Comm
                 }
                 else
                 {
-                    error = $"Switch {(string.IsNullOrEmpty(SwitchModel.Name) ? SwitchModel.IpAddress : SwitchModel.Name)} unreachable\n{error}";
+                    error = $"Device {SwitchModel.IpAddress} is unreachable!\n{error}";
                     this.SwitchModel.Status = SwitchStatus.Unreachable;
                 }
             }

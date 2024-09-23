@@ -188,7 +188,7 @@ namespace PoEWizard.Comm
 
         private SwitchRejectConnection NotSupportApiException()
         {
-            return new SwitchRejectConnection($"Switch {this._ip_address} doesn't support Alcatel-Lucent Enterprise Rest API");
+            return new SwitchRejectConnection($"Device {this._ip_address} doesn't support ALE Rest API or is not an ALE switch!");
         }
 
         private void RemoveToken()
@@ -349,7 +349,7 @@ namespace PoEWizard.Comm
 
         private string PrintUnreachableError(DateTime startTime)
         {
-            return $"Couldn't connect to switch within {Utils.CalcStringDuration(startTime, true)}";
+            return $"Couldn't connect to the device within {Utils.CalcStringDuration(startTime, true)}.";
         }
 
         #endregion Send Api Resquest
