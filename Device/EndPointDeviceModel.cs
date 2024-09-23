@@ -77,13 +77,13 @@ namespace PoEWizard.Device
             IsMacName = (string.IsNullOrEmpty(Label) || Type == MED_NONE || Type == NO_LLDP) && dict.ContainsKey(MED_MAC_ADDRESS);
             if (IsMacName) Label = MacAddress;
             string[] capList = Utils.GetDictValue(dict, MED_CAPABILITIES).Split('|');
-            if (capList.Length > 1)
+            if (capList.Length > 0 && !string.IsNullOrEmpty(capList[0]))
             {
-                Capabilities.Clear();
                 foreach (string val in capList)
                 {
-                    if (string.IsNullOrEmpty(val) || val.Contains("Capabilities")) continue;
-                    Capabilities.Add(val.Trim());
+                    if (string.IsNullOrEmpty(val)) continue;
+                    string cap = val.Replace("Capabilities", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty).Trim();
+                    if (!string.IsNullOrEmpty(cap)) Capabilities.Add(cap.Trim());
                 }
             }
             MEDPowerType = GetDictValue(dict, MED_POWER_TYPE, MEDPowerType);
@@ -149,6 +149,7 @@ namespace PoEWizard.Device
                 }
                 if (split.Length >= 10) tip.Add("          . . .");
             } else if (!string.IsNullOrEmpty(MacAddress)) tip.Add($"MAC: {MacAddress}");
+            if (Capabilities.Count > 0) tip.Add($"Capabilities: {string.Join(",", Capabilities)}");
             return tip.Count > 0 ? string.Join("\n", tip) : null;
         }
 
