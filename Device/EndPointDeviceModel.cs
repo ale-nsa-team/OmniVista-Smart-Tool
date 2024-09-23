@@ -1,6 +1,7 @@
 ﻿using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Device
@@ -83,7 +84,11 @@ namespace PoEWizard.Device
                 {
                     if (string.IsNullOrEmpty(val)) continue;
                     string cap = val.Replace("Capabilities", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty).Trim();
-                    if (!string.IsNullOrEmpty(cap)) Capabilities.Add(cap.Trim());
+                    if (!string.IsNullOrEmpty(cap))
+                    {
+                        string element = Capabilities.FirstOrDefault(s => s.Contains(cap));
+                        if (element == null) Capabilities.Add(cap);
+                    }
                 }
             }
             MEDPowerType = GetDictValue(dict, MED_POWER_TYPE, MEDPowerType);

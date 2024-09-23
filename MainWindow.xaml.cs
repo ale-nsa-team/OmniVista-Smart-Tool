@@ -1335,7 +1335,7 @@ namespace PoEWizard
             DateTime startTime = DateTime.Now;
             int dur = 0;
             progress.Report(new ProgressReport($"{msg} ..."));
-            while (dur < 20)
+            while (dur < WAIT_PORTS_UP_SEC)
             {
                 Thread.Sleep(1000);
                 dur = (int)Utils.GetTimeDuration(startTime);

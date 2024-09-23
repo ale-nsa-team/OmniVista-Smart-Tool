@@ -343,6 +343,7 @@ namespace PoEWizard.Data
 
         #region numbers
         public const int SWITCH_CONNECT_TIMEOUT_SEC = 10;
+        public const int WAIT_PORTS_UP_SEC = 30;
         public const double MAX_COLLECT_LOGS_WIZARD_DURATION = 65;
         public const double MAX_COLLECT_LOGS_RESET_POE_DURATION = 80;
         public const double MAX_COLLECT_LOGS_DURATION = 55;

@@ -304,7 +304,7 @@
                       SelectionChanged="PortSelection_Changed">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header=" Port" Width="60" Binding="{Binding Path=Name}" IsReadOnly="True"/>
-                    <DataGridTemplateColumn Header="Alias" Width="1.6*" IsReadOnly="True">
+                    <DataGridTemplateColumn Header="Alias" Width="1.2*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Alias}" Style="{DynamicResource toolTip}"
