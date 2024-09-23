@@ -155,12 +155,14 @@ namespace PoEWizard.Comm
                 {
                     try
                     {
+                        if (!IsAosSshConnected()) ConnectAosSsh();
+                        string sessionPrompt = SshService.SessionPrompt;
                         foreach (ChassisModel chassis in SwitchModel.ChassisList)
                         {
                             LinuxCommandSeq cmdSeq;
                             if (chassis.IsMaster) cmdSeq = new LinuxCommandSeq();
                             else cmdSeq = new LinuxCommandSeq(new LinuxCommand($"ssh-chassis {SwitchModel.Login}@{chassis.Number}", "Password|Are you sure", 20));
-                            cmdSeq.AddCommandSeq(new List<LinuxCommand> { new LinuxCommand("su", "->"), new LinuxCommand("df -h", "->"), new LinuxCommand("exit", "->") });
+                            cmdSeq.AddCommandSeq(new List<LinuxCommand> { new LinuxCommand("su", "->"), new LinuxCommand("df -h", "->"), new LinuxCommand("exit", sessionPrompt) });
                             cmdSeq = SendSshLinuxCommandSeq(cmdSeq, $"Reading Flash data of chassis {chassis.Number}");
                             _dict = cmdSeq?.GetResponse("df -h");
                             if (_dict != null && _dict.ContainsKey(OUTPUT)) SwitchModel.LoadFlashSizeFromList(_dict[OUTPUT], chassis);
