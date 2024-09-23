@@ -602,7 +602,7 @@ namespace PoEWizard.Comm
                         string cfgChanges = ConfigChanges.GetChanges(SwitchModel, currSnapshot);
                         if (!string.IsNullOrEmpty(cfgChanges))
                         {
-                            Logger.Activity($"\n\tUpdating snapshot config file {SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}, switch {SwitchModel.Name} was synchronized but the snapshot config file was different.");
+                            Logger.Activity($"\n\tUpdating snapshot config file {SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}.\n\tSwitch {SwitchModel.Name} was synchronized but the snapshot config file was different.");
                             File.WriteAllText(filePath, SwitchModel.ConfigSnapshot);
                         }
                     }
