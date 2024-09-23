@@ -20,7 +20,7 @@
     <converters:CpuUsageToVisibilityConverter x:Key="CpuUsageToVisibilityConverter" />
     <converters:DeviceToTooltipConverter x:Key="DeviceToTooltipConverter" />
     <converters:PoeToTooltipConverter x:Key="PoeToTooltipConverter" />
-    <converters:ListToStringConverter x:Key="ListToStringConverter" />
+    <converters:ToStringConverter x:Key="ToStringConverter" />
 
     <BitmapImage x:Key="connected" UriSource="Img/connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="Img/disconnected-dark.png" />

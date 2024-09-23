@@ -34,16 +34,16 @@
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Alias}" Style="{DynamicResource toolTip}"
                                 Foreground="{DynamicResource fontColor}"
-                                ToolTip="{Binding Path=Alias}" />
+                                ToolTip="{Binding Path=Alias, Converter={StaticResource ToStringConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="MAC" Width="1.8*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=MacList, Converter={StaticResource ListToStringConverter}}" Style="{DynamicResource toolTip}"
+                                <TextBlock Text="{Binding Path=MacList, Converter={StaticResource ToStringConverter}}" Style="{DynamicResource toolTip}"
                                 Foreground="{DynamicResource fontColor}"
-                                ToolTip="{Binding Path=MacList, Converter={StaticResource ListToStringConverter}}" />
+                                ToolTip="{Binding Path=MacList, Converter={StaticResource ToStringConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

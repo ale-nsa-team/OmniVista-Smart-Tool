@@ -309,7 +309,7 @@
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Alias}" Style="{DynamicResource toolTip}"
                                 Foreground="{DynamicResource fontColor}"
-                                ToolTip="{Binding Path=Alias}" />
+                                ToolTip="{Binding Path=Alias, Converter={StaticResource ToStringConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
