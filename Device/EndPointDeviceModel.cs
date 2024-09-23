@@ -150,7 +150,7 @@ namespace PoEWizard.Device
                 foreach (string mac in split)
                 {
                     string vendor = Utils.GetVendorName(mac);
-                    if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) tip.Add($" {mac} ({vendor})"); else tip.Add($"{mac}");
+                    if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) tip.Add($" {mac} ({vendor})"); else tip.Add($" {mac}");
                 }
                 if (split.Length >= 10) tip.Add("          . . .");
             } else if (!string.IsNullOrEmpty(MacAddress)) tip.Add($"MAC: {MacAddress}");
