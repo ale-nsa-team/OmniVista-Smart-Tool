@@ -85,7 +85,7 @@ namespace PoEWizard.Comm
                 {
                     if (Utils.IsTimeExpired(this._start_connect_time, this._cnx_timeout))
                     {
-                        throw new SwitchConnectionFailure($"{PrintUnreachableError(this._start_connect_time)}\nTook too long to respond (>{Utils.CalcStringDuration(this._start_connect_time)})");
+                        throw new SwitchConnectionFailure($"Failed to establish a connection to {this._ip_address}!");
                     }
                     Thread.Sleep(WAIT_SWITCH_CONNECT_DELAY_MS);
                 };
@@ -160,15 +160,15 @@ namespace PoEWizard.Comm
                     if (ex.InnerException.InnerException != null)
                     {
                         error = ex.InnerException.InnerException.Message;
-                        if (error.ToLower().Contains("unable to connect"))
+                        if (error.ToLower().Contains("unable to connect") || error.ToLower().Contains("was closed"))
                         {
-                            error = $"Failed to establish a connection to {this._ip_address}!";
+                            error = $"Failed to establish a connection to {this._ip_address} within {this._cnx_timeout} sec!";
                         }
                         if (!string.IsNullOrEmpty(ex.InnerException.InnerException.StackTrace)) stackTrace = ex.InnerException.InnerException.StackTrace;
                     }
                 }
                 Logger.Error($"{error}\n{stackTrace}");
-                throw NotSupportApiException();
+                throw new SwitchConnectionFailure(error);
             }
         }
 
