@@ -667,6 +667,8 @@ namespace PoEWizard
                 DataContext = null;
                 DataContext = device;
                 _portList.ItemsSource = slot.Ports;
+                _btnResetPort.IsEnabled = false;
+                _btnRunWiz.IsEnabled = false;
             }
 
         }
