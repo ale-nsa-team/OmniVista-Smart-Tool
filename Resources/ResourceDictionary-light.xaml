@@ -67,6 +67,7 @@
         <Setter Property="VerticalGridLinesBrush" Value="#666" />
         <Setter Property="CanUserAddRows" Value="False" />
         <Setter Property="CanUserSortColumns" Value="False" />
+        <Setter Property="CanUserResizeColumns" Value="True" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
@@ -75,7 +76,8 @@
     <Style TargetType="DataGridColumnHeader" x:Key="gridHeader">
         <Setter Property="Background" Value="{StaticResource barBackground}" />
         <Setter Property="Foreground" Value="DarkBlue" />
-        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="BorderThickness" Value="0.7,0,0,0" />
+        <Setter Property="BorderBrush" Value="{StaticResource borderColor}" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="Padding" Value="6,2,2,2" />
     </Style>
@@ -87,8 +89,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DataGridCell}">
                     <Border Padding="{TemplateBinding Padding}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
-                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            BorderBrush="{StaticResource borderColor}" 
+                            BorderThickness="0.5,0,0,0" 
                             Background="{TemplateBinding Background}" 
                             SnapsToDevicePixels="True">
                         <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
