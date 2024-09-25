@@ -78,8 +78,19 @@ namespace PoEWizard.Components
             {
                 bool isEnabled = img.Source == eye_closed;
                 img.Source = isEnabled ? eye_open : eye_closed;
-                _clearPwd.Visibility = isEnabled ? Visibility.Hidden : Visibility.Visible;
-                _maskedPwd.Visibility = isEnabled ? Visibility.Visible : Visibility.Hidden;
+                if (isEnabled)
+                {
+                    _clearPwd.Visibility = Visibility.Hidden;
+                    _maskedPwd.Visibility = Visibility.Visible;
+                    _maskedPwd.Password = Password;
+                }
+                else
+                {
+                    _clearPwd.Visibility = Visibility.Visible;
+                    _maskedPwd.Visibility = Visibility.Hidden;
+                    _clearPwd.Text = Password;
+
+                }
             }
         }
 

@@ -50,7 +50,7 @@
                 <PasswordBox Grid.Row="1" Grid.Column="0" x:Name="_maskedPwd"
                          local:PasswordBoxAssistant.BindPassword="True"
                          PreviewMouseDown="MaskedPwdEnter"
-                         KeyUp="TextBox_KeyUp"    >
+                         KeyUp="TextBox_KeyUp">
                     <local:PasswordBoxAssistant.BoundPassword>
                         <Binding Path="Password" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" />
                     </local:PasswordBoxAssistant.BoundPassword>
