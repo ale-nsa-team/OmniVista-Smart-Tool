@@ -35,6 +35,7 @@ namespace PoEWizard.Data
         SHOW_LLDP_INVENTORY,
         SHOW_SYSTEM_RUNNING_DIR,
         SHOW_FREE_SPACE,
+        SHOW_LAN_POWER_FEATURE,
         #endregion
 
         #region PoE Wizard commands

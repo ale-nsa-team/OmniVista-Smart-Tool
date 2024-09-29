@@ -11,6 +11,11 @@ namespace PoEWizard.Data
         public string NbSubApp { get; set; }
         public int DebugLevel { get; set; }
 
+        public SwitchDebugApp(string name) : this(name, string.Empty, string.Empty, string.Empty)
+        {
+            DebugLevel = (int)SwitchDebugLogLevel.Unknown;
+        }
+
         public SwitchDebugApp(string name, string iD, string index, string nbSubApp)
         {
             Name = name;

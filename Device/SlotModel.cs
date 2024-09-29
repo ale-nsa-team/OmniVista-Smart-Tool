@@ -60,8 +60,16 @@ namespace PoEWizard.Device
             foreach (var dict in list)
             {
                 string[] split = (dict.TryGetValue((dt == DictionaryType.LanPower) ? PORT : CHAS_SLOT_PORT, out string s) ? s : "0").Split('/');
-                if (split.Length < 2) continue;
-                string sport = (split.Length == 3) ? split[2] : split[1];
+                string sport = null;
+                if (split.Length == 1)
+                {
+                    sport = $"{this.Name}/{split[0]}";
+                }
+                else if (split.Length == 3)
+                {
+                    sport = $"{this.Name}/{split[2]}";
+                }
+                else continue;
                 if (sport == null) continue;
                 PortModel port = GetPort(sport);
                 if (port == null) continue;
@@ -89,9 +97,9 @@ namespace PoEWizard.Device
             else this.PoeStatus = SlotPoeStatus.Critical;
         }
 
-        public PortModel GetPort(string portNumber)
+        public PortModel GetPort(string slotPortNr)
         {
-            return Ports.FirstOrDefault(p => p.Number == portNumber);
+            return Ports.FirstOrDefault(p => p.Name == slotPortNr);
         }
 
         private double ParseDouble(string val)

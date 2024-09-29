@@ -152,7 +152,7 @@ namespace PoEWizard.Device
                             foreach (var dict in slotList)
                             {
                                 chassisSlot = new ChassisSlotPort(dict[CHAS_SLOT_PORT]);
-                                PortModel port = slot.GetPort(chassisSlot.PortNr);
+                                PortModel port = slot.GetPort(dict[CHAS_SLOT_PORT]);
                                 if (port == null) slot.Ports.Add(new PortModel(dict)); else port.UpdatePortStatus(dict);
                             }
                             slot.NbPorts = slotList.Count;
@@ -184,7 +184,7 @@ namespace PoEWizard.Device
                         if (chassis == null) continue;
                         SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
                         if (slot == null) continue;
-                        PortModel port = slot.GetPort(slotPort.PortNr);
+                        PortModel port = slot.GetPort(currPort);
                         if (port == null) continue;
                         if (currPort != prevPort)
                         {
@@ -275,7 +275,7 @@ namespace PoEWizard.Device
                 if (chassis == null) continue;
                 SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
                 if (slot == null) continue;
-                PortModel port = slot.GetPort(slotPort.PortNr);
+                PortModel port = slot.GetPort(key);
                 if (port == null) continue;
                 List<Dictionary<string, string>> dictList = list[key];
                 if (dt == DictionaryType.LldpRemoteList) port.LoadLldpRemoteTable(dictList); else port.LoadLldpInventoryTable(dictList);
@@ -391,7 +391,7 @@ namespace PoEWizard.Device
         public void SetAppLogLevel(string app, int logLevel)
         {
             if (!string.IsNullOrEmpty(app) && DebugApp.ContainsKey(app)) this.DebugApp[app].DebugLevel = logLevel;
-            else this.DebugApp[app].DebugLevel = (int)SwitchDebugLogLevel.Unknown;
+            else this.DebugApp[app] = new SwitchDebugApp(app);
         }
 
         private string SetMasterSlave(ChassisModel chassis, string sValue)
