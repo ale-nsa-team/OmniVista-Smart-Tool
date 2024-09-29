@@ -106,23 +106,10 @@ namespace PoEWizard.Device
 
         public void LoadPoEConfig(Dictionary<string, string> dict) 
         {
-            Is4Pair = (Utils.GetDictValue(dict, POWER_4PAIR)) == "enabled";
-            IsPowerOverHdmi = (Utils.GetDictValue(dict, POWER_OVER_HDMI)) == "enabled";
-            IsCapacitorDetection = (Utils.GetDictValue(dict, POWER_CAPACITOR_DETECTION)) == "enabled";
-            switch (Utils.GetDictValue(dict, POWER_823BT))
-            {
-                case "NA":
-                    Protocol8023bt = ConfigType.Unavailable;
-                    break;
-
-                case "enabled":
-                    Protocol8023bt = ConfigType.Enable;
-                    break;
-
-                case "disabled":
-                    Protocol8023bt = ConfigType.Disable;
-                    break;
-            }
+            Is4Pair = Utils.GetDictValue(dict, POWER_4PAIR) == "enabled";
+            IsPowerOverHdmi = Utils.GetDictValue(dict, POWER_OVER_HDMI) == "enabled";
+            IsCapacitorDetection = Utils.GetDictValue(dict, POWER_CAPACITOR_DETECTION) == "enabled";
+            Protocol8023bt = Utils.ConvertToConfigType(dict, POWER_823BT);
         }
 
         public void LoadLldpRemoteTable(List<Dictionary<string, string>> dictList)

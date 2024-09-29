@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
@@ -1792,32 +1793,40 @@ namespace PoEWizard.Comm
                 {
                     Logger.Error(ex);
                 }
-                Dictionary<string, string>  dict = new Dictionary<string, string>();
-                dict[POWER_4PAIR] = "disable";
-                dict[POWER_823BT] = "NA";
-                dict[POWER_OVER_HDMI] = "disable";
-
-                _dictList = GetLanPowerFeature(slot.Name, "fpoe");
-                _dictList = GetLanPowerFeature(slot.Name, "ppoe");
-                _dictList = GetLanPowerFeature(slot.Name, "capacitor-detection");
-                _dictList = GetLanPowerFeature(slot.Name, "high-resistance-detection");
-
-                slot.LoadFromDictionary(dict);
-                slot.LoadFromList(_dictList, DictionaryType.LanPowerCfg);
+                slot.Is8023btSupport = false;
+                slot.PowerClassDetection = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "capacitor-detection", "capacitor-detection"));
+                slot.IsHiResDetection = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "high-resistance-detection", "high-resistance-detection")) == ConfigType.Enable;
+                slot.PPoE = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "fpoe", "Fast-PoE"));
+                slot.FPoE = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "ppoe", "Perpetual-PoE"));
+                slot.Threshold = Utils.StringToDouble(GetLanPowerFeature(slot.Name, "usage-threshold", "usage-threshold"));
+                string capacitorDetection = GetLanPowerFeature(slot.Name, "capacitor-detection", "capacitor-detection");
+                _dict = new Dictionary<string, string> { [POWER_4PAIR] = "NA", [POWER_OVER_HDMI] = "NA", [POWER_CAPACITOR_DETECTION] = capacitorDetection, [POWER_823BT] = "NA" };
+                foreach (PortModel port in slot.Ports)
+                {
+                    port.LoadPoEConfig(_dict);
+                }
             }
         }
 
-        private List<Dictionary<string, string>> GetLanPowerFeature(string slotNr, string feature)
+        private string GetLanPowerFeature(string slotNr, string feature, string key)
         {
             try
             {
-                return SendCommand(new CmdRequest(Command.SHOW_LAN_POWER_FEATURE, ParseType.Htable2, new string[2] { slotNr, feature })) as List<Dictionary<string, string>>;
+                _dictList = SendCommand(new CmdRequest(Command.SHOW_LAN_POWER_FEATURE, ParseType.Htable, new string[2] { slotNr, feature })) as List<Dictionary<string, string>>;
+                if (_dictList?.Count > 0)
+                {
+                    _dict = _dictList[0];
+                    if (_dict?.Count > 1 && _dict.ContainsKey("Chas/Slot") && _dict["Chas/Slot"] == slotNr && _dict.ContainsKey(key))
+                    {
+                        return _dict[key];
+                    }
+                }
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
             }
-            return new List<Dictionary<string, string>>();
+            return string.Empty;
         }
 
         private void GetSlotLanPower(SlotModel slot)
@@ -1825,7 +1834,28 @@ namespace PoEWizard.Comm
             try
             {
                 GetSlotPowerStatus(slot);
-                _dictList = SendCommand(new CmdRequest(Command.SHOW_LAN_POWER, ParseType.Htable, new string[1] { $"{slot.Name}" })) as List<Dictionary<string, string>>;
+                if (slot.Budget > 1)
+                {
+                    _dictList = SendCommand(new CmdRequest(Command.SHOW_LAN_POWER, ParseType.Htable, new string[1] { $"{slot.Name}" })) as List<Dictionary<string, string>>;
+                }
+                else
+                {
+                    Dictionary<string, object> resp = SendRequest(GetRestUrlEntry(new CmdRequest(Command.SHOW_LAN_POWER, ParseType.Htable, new string[1] { $"{slot.Name}" })));
+                    string data = resp.ContainsKey(STRING) ? resp[STRING].ToString() : string.Empty;
+                    _dictList = CliParseUtils.ParseHTable(data, 1);
+                    string[] lines = Regex.Split(data, @"\r\n\r|\n");
+                    for (int idx = lines.Length - 1; idx > 0; idx--)
+                    {
+                        if (string.IsNullOrEmpty(lines[idx])) continue;
+                        if (lines[idx].Contains("Power Budget Available"))
+                        {
+                            string[] split = lines[idx].Split(new string[] { "Watts" }, StringSplitOptions.None);
+                            if (string.IsNullOrEmpty(split[0])) continue;
+                            slot.Budget = Utils.StringToDouble(split[0].Trim());
+                            break;
+                        }
+                    }
+                }
                 slot.LoadFromList(_dictList, DictionaryType.LanPower);
             }
             catch (Exception ex)

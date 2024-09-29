@@ -44,12 +44,12 @@ namespace PoEWizard.Device
         public void LoadFromDictionary(Dictionary<string, string> dict)
         {
             this.Budget = ParseDouble(Utils.GetDictValue(dict, MAX_POWER));
-            this.IsInitialized = (Utils.GetDictValue(dict, INIT_STATUS)).ToLower() == "initialized";
-            this.Is8023btSupport = (Utils.GetDictValue(dict, BT_SUPPORT)) == "Yes";
-            this.PowerClassDetection = Enum.TryParse(Utils.GetDictValue(dict, CLASS_DETECTION), true, out ConfigType res) ? res : ConfigType.Unavailable;
-            this.IsHiResDetection = (Utils.GetDictValue(dict, HI_RES_DETECTION)) == "enable";
-            this.PPoE = Enum.TryParse(Utils.GetDictValue(dict, PPOE), true, out res) ? res : ConfigType.Unavailable;
-            this.FPoE = Enum.TryParse(Utils.GetDictValue(dict, FPOE), true, out res) ? res : ConfigType.Unavailable;
+            this.IsInitialized = Utils.GetDictValue(dict, INIT_STATUS).ToLower() == "initialized";
+            this.Is8023btSupport = Utils.GetDictValue(dict, BT_SUPPORT) == "Yes";
+            this.PowerClassDetection = Utils.ConvertToConfigType(dict, CLASS_DETECTION);
+            this.IsHiResDetection = Utils.ConvertToConfigType(dict, HI_RES_DETECTION) == ConfigType.Enable;
+            this.PPoE = Utils.ConvertToConfigType(dict, PPOE);
+            this.FPoE = Utils.ConvertToConfigType(dict, FPOE);
             this.Threshold = ParseDouble(Utils.GetDictValue(dict, USAGE_THRESHOLD)  );
         }
 

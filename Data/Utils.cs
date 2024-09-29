@@ -592,6 +592,21 @@ namespace PoEWizard.Data
                 }
             }
         }
+
+        public static ConfigType ConvertToConfigType(Dictionary<string, string> dict, string key)
+        {
+            return StringToConfigType(GetDictValue(dict, key));
+        }
+
+        public static ConfigType StringToConfigType(string sVal)
+        {
+            if (!string.IsNullOrEmpty(sVal))
+            {
+                if (sVal.Contains("enable")) return ConfigType.Enable;
+                else if (sVal.Contains("disable")) return ConfigType.Disable;
+            }
+            return ConfigType.Unavailable;
+        }
     }
 }
 
