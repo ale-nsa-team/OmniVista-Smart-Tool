@@ -43,14 +43,14 @@ namespace PoEWizard.Device
 
         public void LoadFromDictionary(Dictionary<string, string> dict)
         {
-            this.Budget = ParseDouble(Utils.GetDictValue(dict, MAX_POWER));
-            this.IsInitialized = Utils.GetDictValue(dict, INIT_STATUS).ToLower() == "initialized";
-            this.Is8023btSupport = Utils.GetDictValue(dict, BT_SUPPORT) == "Yes";
-            this.PowerClassDetection = Utils.ConvertToConfigType(dict, CLASS_DETECTION);
-            this.IsHiResDetection = Utils.ConvertToConfigType(dict, HI_RES_DETECTION) == ConfigType.Enable;
-            this.PPoE = Utils.ConvertToConfigType(dict, PPOE);
-            this.FPoE = Utils.ConvertToConfigType(dict, FPOE);
-            this.Threshold = ParseDouble(Utils.GetDictValue(dict, USAGE_THRESHOLD)  );
+            if (dict.ContainsKey(MAX_POWER)) this.Budget = ParseDouble(Utils.GetDictValue(dict, MAX_POWER));
+            if (dict.ContainsKey(INIT_STATUS)) this.IsInitialized = Utils.GetDictValue(dict, INIT_STATUS).ToLower() == "initialized";
+            if (dict.ContainsKey(BT_SUPPORT)) this.Is8023btSupport = Utils.GetDictValue(dict, BT_SUPPORT) == "Yes";
+            if (dict.ContainsKey(CLASS_DETECTION)) this.PowerClassDetection = Utils.ConvertToConfigType(dict, CLASS_DETECTION);
+            if (dict.ContainsKey(HI_RES_DETECTION)) this.IsHiResDetection = Utils.ConvertToConfigType(dict, HI_RES_DETECTION) == ConfigType.Enable;
+            if (dict.ContainsKey(PPOE)) this.PPoE = Utils.ConvertToConfigType(dict, PPOE);
+            if (dict.ContainsKey(FPOE)) this.FPoE = Utils.ConvertToConfigType(dict, FPOE);
+            if (dict.ContainsKey(USAGE_THRESHOLD)) this.Threshold = ParseDouble(Utils.GetDictValue(dict, USAGE_THRESHOLD));
         }
 
         public void LoadFromList(List<Dictionary<string, string>> list, DictionaryType dt)
@@ -93,7 +93,7 @@ namespace PoEWizard.Device
             double powerConsumedMetric = 100 * this.Power / this.Budget;
             double nearThreshold = 0.9 * this.Threshold;
             if (powerConsumedMetric < nearThreshold) this.PoeStatus = SlotPoeStatus.UnderThreshold;
-            else if (powerConsumedMetric >= nearThreshold && powerConsumedMetric < Threshold) this.PoeStatus = SlotPoeStatus.NearThreshold;
+            else if (powerConsumedMetric >= nearThreshold && powerConsumedMetric < this.Threshold) this.PoeStatus = SlotPoeStatus.NearThreshold;
             else this.PoeStatus = SlotPoeStatus.Critical;
         }
 

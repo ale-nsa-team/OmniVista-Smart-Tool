@@ -1780,32 +1780,30 @@ namespace PoEWizard.Comm
 
         private void GetSlotPowerAndConfig(SlotModel slot)
         {
-            GetSlotLanPower(slot);
-            if (slot.SupportsPoE)
+            if (!slot.SupportsPoE) return;
+            try
             {
-                try
-                {
-                    _dictList = SendCommand(new CmdRequest(Command.SHOW_LAN_POWER_CONFIG, ParseType.Htable2, new string[1] { slot.Name })) as List<Dictionary<string, string>>;
-                    slot.LoadFromList(_dictList, DictionaryType.LanPowerCfg);
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                }
-                slot.Is8023btSupport = false;
-                slot.PowerClassDetection = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "capacitor-detection", "capacitor-detection"));
-                slot.IsHiResDetection = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "high-resistance-detection", "high-resistance-detection")) == ConfigType.Enable;
-                slot.PPoE = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "fpoe", "Fast-PoE"));
-                slot.FPoE = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "ppoe", "Perpetual-PoE"));
-                slot.Threshold = Utils.StringToDouble(GetLanPowerFeature(slot.Name, "usage-threshold", "usage-threshold"));
-                string capacitorDetection = GetLanPowerFeature(slot.Name, "capacitor-detection", "capacitor-detection");
-                _dict = new Dictionary<string, string> { [POWER_4PAIR] = "NA", [POWER_OVER_HDMI] = "NA", [POWER_CAPACITOR_DETECTION] = capacitorDetection, [POWER_823BT] = "NA" };
-                foreach (PortModel port in slot.Ports)
-                {
-                    port.LoadPoEConfig(_dict);
-                }
+                _dictList = SendCommand(new CmdRequest(Command.SHOW_LAN_POWER_CONFIG, ParseType.Htable2, new string[1] { slot.Name })) as List<Dictionary<string, string>>;
+                slot.LoadFromList(_dictList, DictionaryType.LanPowerCfg);
+                return;
             }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            slot.Is8023btSupport = false;
+            slot.PowerClassDetection = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "capacitor-detection", "capacitor-detection"));
+            slot.IsHiResDetection = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "high-resistance-detection", "high-resistance-detection")) == ConfigType.Enable;
+            slot.PPoE = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "fpoe", "Fast-PoE"));
+            slot.FPoE = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "ppoe", "Perpetual-PoE"));
+            slot.Threshold = Utils.StringToDouble(GetLanPowerFeature(slot.Name, "usage-threshold", "usage-threshold"));
+            string capacitorDetection = GetLanPowerFeature(slot.Name, "capacitor-detection", "capacitor-detection");
+            _dict = new Dictionary<string, string> { [POWER_4PAIR] = "NA", [POWER_OVER_HDMI] = "NA", [POWER_CAPACITOR_DETECTION] = capacitorDetection, [POWER_823BT] = "NA" };
+            foreach (PortModel port in slot.Ports)
+            {
+                port.LoadPoEConfig(_dict);
+            }
+            GetSlotLanPower(slot);
         }
 
         private string GetLanPowerFeature(string slotNr, string feature, string key)

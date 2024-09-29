@@ -235,8 +235,9 @@ namespace PoEWizard.Data
         // Used by SwitchDebugModel class
         public const string DEBUG_SWITCH_LOG = "systemSwitchLogging";
         public const string DEBUG_APP_ID = "systemSwitchLoggingApplicationAppId";
-        public const string DEBUG_SUB_APP_ID = "systemSwitchLoggingApplicationSubAppId";
         public const string DEBUG_APP_NAME = "systemSwitchLoggingApplicationAppName";
+        public const string DEBUG_APP_INDEX = "systemSwitchLoggingApplicationIndex";
+        public const string DEBUG_SUB_APP_ID = "systemSwitchLoggingApplicationSubAppId";
         public const string DEBUG_SUB_APP_NAME = "systemSwitchLoggingApplicationSubAppName";
         public const string DEBUG_SUB_APP_LEVEL = "systemSwitchLoggingApplicationSubAppLevel";
         public const string DEBUG_SUB_APP_LANNI = "LanNi";
@@ -252,7 +253,6 @@ namespace PoEWizard.Data
         public const string DEBUG_CLI_SUB_APP_LEVEL = "Level";
         public const string LPNI = "lpNi";
         public const string LPCMM = "lpCmm";
-        public const string DEBUG_APP_INDEX = "systemSwitchLoggingApplicationIndex";
         // Used by Traffic Analysis
         public const string TRAF_SLOT_PORT = "Chassis/Slot/Port";
         public const string TRAF_STATUS = "Operational Status";
