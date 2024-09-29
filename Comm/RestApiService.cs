@@ -82,6 +82,7 @@ namespace PoEWizard.Comm
                 SendSwitchError("Connect", ex);
             }
             CloseProgressBar();
+            DisconnectAosSsh();
         }
 
         public void ScanSwitch(string source, WizardReport reportResult = null)
@@ -146,6 +147,7 @@ namespace PoEWizard.Comm
                 SendSwitchError(source, ex);
             }
             if (closeProgressBar) CloseProgressBar();
+            DisconnectAosSsh();
         }
 
         private void UpdateFlashInfo(string source)
@@ -156,7 +158,7 @@ namespace PoEWizard.Comm
                 {
                     try
                     {
-                        if (!IsAosSshConnected()) ConnectAosSsh();
+                        ConnectAosSsh();
                         string sessionPrompt = SshService.SessionPrompt;
                         foreach (ChassisModel chassis in SwitchModel.ChassisList)
                         {
@@ -390,12 +392,14 @@ namespace PoEWizard.Comm
 
         private void ConnectAosSsh()
         {
+            if (IsAosSshConnected()) return;
             SshService = new AosSshService(SwitchModel);
             SshService.ConnectSshClient();
         }
 
         private void DisconnectAosSsh()
         {
+            if (!IsAosSshConnected()) return;
             try
             {
                 SshService?.DisconnectSshClient();
@@ -404,6 +408,7 @@ namespace PoEWizard.Comm
             {
                 Logger.Error(ex);
             }
+            SshService = null;
         }
 
         private bool IsAosSshConnected()
@@ -471,12 +476,13 @@ namespace PoEWizard.Comm
                 {
                     _dictList = SendCommand(new CmdRequest(Command.DEBUG_SHOW_LEVEL, ParseType.MibTable, DictionaryType.MibList,
                                                 new string[2] { SwitchModel.DebugApp[appName].Index, SwitchModel.DebugApp[appName].NbSubApp })) as List<Dictionary<string, string>>;
-                    _debugSwitchLog.LoadFromDictionary(_dictList);
+                    if (_dictList?.Count > 0 && _dictList[0]?.Count > 0)
+                    {
+                        _debugSwitchLog.LoadFromDictionary(_dictList);
+                        return cmd == Command.DEBUG_SHOW_LPCMM_LEVEL ? _debugSwitchLog.LpCmmLogLevel : _debugSwitchLog.LpNiLogLevel;
+                    }
                 }
-                else
-                {
-                    GetSshDebugLevel(cmd);
-                }
+                GetSshDebugLevel(cmd);
             }
             catch (Exception ex)
             {
@@ -508,7 +514,7 @@ namespace PoEWizard.Comm
         {
             try
             {
-                if (!IsAosSshConnected()) ConnectAosSsh();
+                ConnectAosSsh();
                 Dictionary<Command, Command> cmdTranslation = new Dictionary<Command, Command>
                 {
                     [Command.DEBUG_UPDATE_LPNI_LEVEL] = Command.DEBUG_CLI_UPDATE_LPNI_LEVEL,
@@ -535,7 +541,7 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport(progressMsg));
                 UpdateProgressBar(++progressBarCnt); //  1
                 DateTime startTime = DateTime.Now;
-                if (!IsAosSshConnected()) ConnectAosSsh();
+                ConnectAosSsh();
                 string msg = $"{progressMsg} on switch {SwitchModel.Name}";
                 Dictionary<string, string> response = new Dictionary<string, string>();
                 cmdEntry.StartTime = DateTime.Now;
