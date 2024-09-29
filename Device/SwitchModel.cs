@@ -258,7 +258,7 @@ namespace PoEWizard.Device
                                     nbSubApp = "4";
                                     break;
                             }
-                            DebugApp[appName] = new SwitchDebugApp(appName, appId, appIndex, nbSubApp);
+                            this.DebugApp[appName] = new SwitchDebugApp(appName, appId, appIndex, nbSubApp);
                         }
                     }
                     break;
@@ -390,7 +390,7 @@ namespace PoEWizard.Device
 
         public void SetAppLogLevel(string app, int logLevel)
         {
-            if (!string.IsNullOrEmpty(app) && DebugApp.ContainsKey(app)) this.DebugApp[app].DebugLevel = logLevel;
+            if (!string.IsNullOrEmpty(app) && this.DebugApp.ContainsKey(app)) this.DebugApp[app].DebugLevel = logLevel;
             else this.DebugApp[app] = new SwitchDebugApp(app);
         }
 

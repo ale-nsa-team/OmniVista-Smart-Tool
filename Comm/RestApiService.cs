@@ -473,17 +473,35 @@ namespace PoEWizard.Comm
                                                 new string[2] { SwitchModel.DebugApp[appName].Index, SwitchModel.DebugApp[appName].NbSubApp })) as List<Dictionary<string, string>>;
                     _debugSwitchLog.LoadFromDictionary(_dictList);
                 }
+                else
+                {
+                    GetSshDebugLevel(cmd);
+                }
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
+                GetSshDebugLevel(cmd);
+            }
+            return cmd == Command.DEBUG_SHOW_LPCMM_LEVEL ? _debugSwitchLog.LpCmmLogLevel : _debugSwitchLog.LpNiLogLevel;
+        }
+
+        private void GetSshDebugLevel(Command cmd)
+        {
+            try
+            {
                 Dictionary<string, string> response = SendSshUpdateLogCommand(cmd);
                 if (response != null && response.ContainsKey(OUTPUT) && !string.IsNullOrEmpty(response[OUTPUT]))
                 {
+                    string appName = cmd == Command.DEBUG_SHOW_LPCMM_LEVEL ? LPCMM : LPNI;
+                    SwitchModel.DebugApp[appName] = new SwitchDebugApp(appName);
                     _debugSwitchLog.LoadFromDictionary(CliParseUtils.ParseCliSwitchDebugLevel(response[OUTPUT]));
                 }
             }
-            return cmd == Command.DEBUG_SHOW_LPCMM_LEVEL ? _debugSwitchLog.LpCmmLogLevel : _debugSwitchLog.LpNiLogLevel;
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         private Dictionary<string, string> SendSshUpdateLogCommand(Command cmd, string[] data = null)
