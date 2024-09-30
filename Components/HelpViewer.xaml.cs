@@ -1,10 +1,12 @@
 ﻿using HtmlAgilityPack;
 using PoEWizard.Data;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Components
@@ -61,6 +63,15 @@ namespace PoEWizard.Components
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
             Utils.SetTitleColor(this);
+        }
+
+        private void OnNavigating(object sender, NavigatingCancelEventArgs e)
+        {
+            if (e.Uri != null && !e.Uri.ToString().Contains("about:blank"))
+            {
+                e.Cancel = true;
+                Process.Start(e.Uri.ToString());
+            }
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)

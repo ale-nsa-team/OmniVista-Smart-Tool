@@ -20,7 +20,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-        <WebBrowser x:Name="_hlpBrowser" Grid.Row="0" />
+        <WebBrowser x:Name="_hlpBrowser" Grid.Row="0" Navigating="OnNavigating"/>
         <Border Grid.Row="1" Style="{DynamicResource aboutBorder}">
             <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}">Close</Button>
         </Border>
