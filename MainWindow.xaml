@@ -241,7 +241,13 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Fast PoE" Width="*">
+                    <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Fast PoE" Style="{DynamicResource toolTip}"
+                                           ToolTip="Fast PoE is disabled when PoE is turned off or 802.3bt is enabled" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox Style="{DynamicResource toggleSwitch}"
@@ -250,12 +256,17 @@
                                           Unchecked="FPoE_Click"
                                           IsEnabled="{Binding Path=IsPoeModeEnable}"
                                           IsChecked="{Binding Path=FPoE, Converter={StaticResource ConfigTypeToBoolConverter}, ConverterParameter=Enable}" 
-                                          ToolTipService.IsEnabled="{Binding Path=IsPoeModeEnable, Converter={StaticResource InverseBoolConverter}}"
                                           ToolTip="Fast PoE is disabled when PoE is turned off or 802.3bt is enabled" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Perpetual PoE" Width="*">
+                    <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Perpetual PoE" Style="{DynamicResource toolTip}"
+                                           ToolTip="Perpetual PoE is disabled when PoE is turned off or 802.3bt is enabled" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox Style="{DynamicResource toggleSwitch}"
@@ -264,7 +275,6 @@
                                           Unchecked="PPoE_Click"
                                           IsEnabled="{Binding Path=IsPoeModeEnable}"
                                           IsChecked="{Binding Path=PPoE, Converter={StaticResource ConfigTypeToBoolConverter}, ConverterParameter=Enable}" 
-                                          ToolTipService.IsEnabled="{Binding Path=IsPoeModeEnable, Converter={StaticResource InverseBoolConverter}}"
                                           ToolTip="Perpetual PoE is disabled when PoE is turned off or 802.3bt is enabled"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
