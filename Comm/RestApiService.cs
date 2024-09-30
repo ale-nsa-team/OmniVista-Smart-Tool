@@ -1724,6 +1724,7 @@ namespace PoEWizard.Comm
                     {
                         slot.IsPoeModeEnable = false;
                         slot.SupportsPoE = false;
+                        slot.PoeStatus = SlotPoeStatus.NotSupported;
                         continue;
                     }
                     GetSlotPowerAndConfig(slot);
@@ -1781,8 +1782,14 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                chassis.SupportsPoE = !ex.Message.ToLower().Contains("lanpower not supported");
-                Logger.Error(ex);
+                if (ex.Message.ToLower().Contains("lanpower") && (ex.Message.ToLower().Contains("not supported") || ex.Message.ToLower().Contains("invalid entry")))
+                {
+                    chassis.SupportsPoE = false;
+                }
+                else
+                {
+                    Logger.Error(ex);
+                }
             }
         }
 
