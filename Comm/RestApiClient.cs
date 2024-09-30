@@ -318,7 +318,8 @@ namespace PoEWizard.Comm
                         {
                             HttpStatusCode code = Utils.ConvertToHttpStatusCode(errorList);
                             string errorMsg = $"Requested URL: {url}\r\nHTTP Response: {code} ({errorList[HTTP_RESPONSE]})\r\nError: {error}";
-                            if (errMsg.Contains("not supported") || errMsg.Contains("command in progress") || errMsg.Contains("power range supported"))
+                            if (errMsg.Contains("lanpower") && (errMsg.Contains("not supported") || errMsg.Contains("invalid entry"))) return error;
+                            else if (errMsg.Contains("not supported") || errMsg.Contains("command in progress") || errMsg.Contains("power range supported"))
                             {
                                 string[] split = url.Split('=');
                                 if (split.Length >= 2) error += $" ({WebUtility.UrlDecode(split[1])})";

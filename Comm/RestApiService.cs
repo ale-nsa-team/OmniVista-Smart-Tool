@@ -1795,6 +1795,12 @@ namespace PoEWizard.Comm
 
         private void GetSlotPowerAndConfig(SlotModel slot)
         {
+            GetSlotPowerConfig(slot);
+            GetSlotLanPower(slot);
+        }
+
+        private void GetSlotPowerConfig(SlotModel slot)
+        {
             if (!slot.SupportsPoE) return;
             try
             {
@@ -1818,7 +1824,6 @@ namespace PoEWizard.Comm
             {
                 port.LoadPoEConfig(_dict);
             }
-            GetSlotLanPower(slot);
         }
 
         private string GetLanPowerFeature(string slotNr, string feature, string key)
