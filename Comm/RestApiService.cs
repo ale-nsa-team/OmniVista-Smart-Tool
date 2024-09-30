@@ -1627,9 +1627,9 @@ namespace PoEWizard.Comm
         private bool IsPortUp()
         {
             if (_wizardSwitchPort.Status != PortStatus.Up) return false;
-            else if (_wizardSwitchPort.Poe == PoeStatus.On && _wizardSwitchPort.Power > 0) return true;
-            else if (_wizardSwitchPort.Poe == PoeStatus.Off) return true;
+            else if (_wizardSwitchPort.Poe == PoeStatus.On && _wizardSwitchPort.Power * 1000 > 100) return true;
             else if (_wizardSwitchPort.Poe == PoeStatus.Searching && _wizardCommand == Command.CAPACITOR_DETECTION_DISABLE) return true;
+            else if (_wizardSwitchPort.Poe == PoeStatus.Off) return true;
             return false;
         }
 
