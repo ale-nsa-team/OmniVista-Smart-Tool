@@ -146,8 +146,8 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError(source, ex);
             }
-            if (closeProgressBar) CloseProgressBar();
             DisconnectAosSsh();
+            if (closeProgressBar) CloseProgressBar();
         }
 
         private void UpdateFlashInfo(string source)
@@ -392,36 +392,24 @@ namespace PoEWizard.Comm
 
         private void ConnectAosSsh()
         {
-            if (IsAosSshConnected()) return;
+            if (SshService != null && SshService.IsSwitchConnected()) return;
+            if (SshService != null) DisconnectAosSsh();
             SshService = new AosSshService(SwitchModel);
             SshService.ConnectSshClient();
         }
 
         private void DisconnectAosSsh()
         {
-            if (!IsAosSshConnected()) return;
+            if (SshService == null) return;
             try
             {
-                SshService?.DisconnectSshClient();
+                SshService.DisconnectSshClient();
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
             }
             SshService = null;
-        }
-
-        private bool IsAosSshConnected()
-        {
-            try
-            {
-                return SshService != null && SshService.IsSwitchConnected();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-            return false;
         }
 
         private void SetAppDebugLevel(string progressMsg, Command cmd, int dbgLevel)
@@ -558,10 +546,6 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                throw ex;
-            }
-            finally
-            {
-                DisconnectAosSsh();
             }
         }
 
@@ -2051,6 +2035,7 @@ namespace PoEWizard.Comm
 
         public void Close()
         {
+            DisconnectAosSsh();
             RestApiClient?.Close();
             LogActivity("Switch disconnected");
         }

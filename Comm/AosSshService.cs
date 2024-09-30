@@ -120,9 +120,9 @@ namespace PoEWizard.Comm
             catch (SshConnectionException ex)
             {
                 this._client = null;
-                if (ex.Message.ToLower().Contains("closed before"))
+                if (ex.Message.ToLower().Contains("closed before") || ex.Message.ToLower().Contains("aborted"))
                 {
-                    throw GenerateRejectConnectionException(null);
+                    throw GenerateRejectConnectionException(ex);
                 }
                 else
                 {
@@ -318,7 +318,7 @@ namespace PoEWizard.Comm
             {
                 if (ex.Message.ToLower().Contains("not connected"))
                 {
-                    throw GenerateRejectConnectionException(cmd);
+                    throw GenerateRejectConnectionException(ex);
                 }
                 throw ex;
             }
@@ -836,23 +836,23 @@ namespace PoEWizard.Comm
         }
         #endregion
 
-        private SwitchRejectConnection GenerateRejectConnectionException(string cmd)
+        private SwitchRejectConnection GenerateRejectConnectionException(Exception ex = null)
         {
-            return new SwitchRejectConnection(PrintExceptionInfo("Switch rejected connection", cmd));
+            return new SwitchRejectConnection(PrintExceptionInfo("rejected SSH connection", ex, null));
         }
-        private SwitchConnectionDropped GenerateConnectionDroppedException(string cmd)
+        private SwitchConnectionDropped GenerateConnectionDroppedException(string cmd = null, Exception ex = null)
         {
-            return new SwitchConnectionDropped(PrintExceptionInfo("SSH connection dropped", cmd));
+            return new SwitchConnectionDropped(PrintExceptionInfo("dropped SSH connection", ex, cmd));
         }
 
-        private string PrintExceptionInfo(string title, string cmd)
+        private string PrintExceptionInfo(string reason, Exception exc, string cmd)
         {
             try
             {
-                StringBuilder error = new StringBuilder(title);
-                error.Append(" (Switch: \"").Append(this._switch.Name).Append("\", IP: ").Append(this._switch.IpAddress);
+                StringBuilder error = new StringBuilder();
+                error.Append("Switch ").Append(this._switch.Name).Append(" (").Append(this._switch.IpAddress).Append(") ").Append(reason);
                 if (cmd != null) error.Append(", command: \"").Append(cmd).Append("\"");
-                error.Append(")");
+                if (exc != null) error.Append("\n").Append(exc.Message);
                 return error.ToString();
             }
             catch (Exception ex)
@@ -864,10 +864,10 @@ namespace PoEWizard.Comm
 
         private SwitchConnectionFailure GenerateConnectionFailException()
         {
-            StringBuilder error = new StringBuilder("Switch connection fail!");
+            StringBuilder error = new StringBuilder();
             try
             {
-                error.Append("\r\nSwitch: \"").Append(this._switch.Name).Append("\", IP: ").Append(this._switch.IpAddress).Append(", Timeout: ");
+                error.Append("\r\nSwitch ").Append(this._switch.Name).Append(" (").Append(this._switch.IpAddress).Append(") failed to connect SSH within ");
                 error.Append(this._switch.CnxTimeout).Append(" sec");
             }
             catch (Exception ex)
