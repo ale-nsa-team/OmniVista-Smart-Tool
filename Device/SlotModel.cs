@@ -29,6 +29,7 @@ namespace PoEWizard.Device
         public bool IsInitialized { get; set; }
         public bool SupportsPoE { get; set; }
         public bool IsMaster { get; set; }
+        public string MasterSlave => ConvertMasterSlaveToString();
 
         public SlotModel() { }
 
@@ -110,6 +111,11 @@ namespace PoEWizard.Device
         private string GetLabelPoeStatus()
         {
             return Utils.GetEnumDescription(this.PoeStatus);
+        }
+
+        private string ConvertMasterSlaveToString()
+        {
+            return this.IsMaster ? "Master" : "Slave";
         }
     }
 }

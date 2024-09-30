@@ -279,10 +279,10 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Master" Width="1.1*">
+                    <DataGridTemplateColumn Header="VC Master/Slave" Width="1.1*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=IsMaster, Converter={StaticResource BoolToSymbolConverter}}"
+                                <TextBlock Text="{Binding Path=MasterSlave}"
                                            Foreground="{Binding Path=IsMaster,
                                            Converter={StaticResource ValueToColorConverter},
                                            ConverterParameter=Boolean}"/>
