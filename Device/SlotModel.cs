@@ -47,7 +47,7 @@ namespace PoEWizard.Device
             if (dict.ContainsKey(MAX_POWER)) this.Budget = ParseDouble(Utils.GetDictValue(dict, MAX_POWER));
             if (dict.ContainsKey(INIT_STATUS)) this.IsInitialized = Utils.GetDictValue(dict, INIT_STATUS).ToLower() == "initialized";
             if (dict.ContainsKey(BT_SUPPORT)) this.Is8023btSupport = Utils.GetDictValue(dict, BT_SUPPORT) == "Yes";
-            if (this.Is8023btSupport) this.IsPoeModeEnable = false;
+            this.IsPoeModeEnable = !this.Is8023btSupport;
             if (dict.ContainsKey(CLASS_DETECTION)) this.PowerClassDetection = Utils.ConvertToConfigType(dict, CLASS_DETECTION);
             if (dict.ContainsKey(HI_RES_DETECTION)) this.IsHiResDetection = Utils.ConvertToConfigType(dict, HI_RES_DETECTION) == ConfigType.Enable;
             if (dict.ContainsKey(PPOE)) this.PPoE = Utils.ConvertToConfigType(dict, PPOE);
