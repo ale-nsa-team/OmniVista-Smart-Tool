@@ -47,6 +47,7 @@ namespace PoEWizard.Device
             if (dict.ContainsKey(MAX_POWER)) this.Budget = ParseDouble(Utils.GetDictValue(dict, MAX_POWER));
             if (dict.ContainsKey(INIT_STATUS)) this.IsInitialized = Utils.GetDictValue(dict, INIT_STATUS).ToLower() == "initialized";
             if (dict.ContainsKey(BT_SUPPORT)) this.Is8023btSupport = Utils.GetDictValue(dict, BT_SUPPORT) == "Yes";
+            if (this.Is8023btSupport) this.IsPoeModeEnable = false;
             if (dict.ContainsKey(CLASS_DETECTION)) this.PowerClassDetection = Utils.ConvertToConfigType(dict, CLASS_DETECTION);
             if (dict.ContainsKey(HI_RES_DETECTION)) this.IsHiResDetection = Utils.ConvertToConfigType(dict, HI_RES_DETECTION) == ConfigType.Enable;
             if (dict.ContainsKey(PPOE)) this.PPoE = Utils.ConvertToConfigType(dict, PPOE);
@@ -57,7 +58,6 @@ namespace PoEWizard.Device
         public void LoadFromList(List<Dictionary<string, string>> list, DictionaryType dt)
         {
             if (dt == DictionaryType.LanPower) this.NbPoePorts = 0;
-            this.IsPoeModeEnable = true;
             foreach (var dict in list)
             {
                 string[] split = (dict.TryGetValue((dt == DictionaryType.LanPower) ? PORT : CHAS_SLOT_PORT, out string s) ? s : "0").Split('/');
@@ -82,7 +82,6 @@ namespace PoEWizard.Device
                 else
                 {
                     port.LoadPoEConfig(dict);
-                    if (port.Protocol8023bt == ConfigType.Enable) IsPoeModeEnable = false;
                 }
             }
             if (!this.IsInitialized)

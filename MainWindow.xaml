@@ -245,7 +245,7 @@
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
                                 <TextBlock Text="Fast PoE" Style="{DynamicResource toolTip}"
-                                           ToolTip="Fast PoE is disabled when PoE is turned off or 802.3bt is enabled" />
+                                           ToolTip="Fast PoE is disabled when PoE is turned off or 802.3bt is supported" />
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
@@ -256,7 +256,7 @@
                                           Unchecked="FPoE_Click"
                                           IsEnabled="{Binding Path=IsPoeModeEnable}"
                                           IsChecked="{Binding Path=FPoE, Converter={StaticResource ConfigTypeToBoolConverter}, ConverterParameter=Enable}" 
-                                          ToolTip="Fast PoE is disabled when PoE is turned off or 802.3bt is enabled" />
+                                          ToolTip="Fast PoE is disabled when PoE is turned off or 802.3bt is supported" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -264,7 +264,7 @@
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
                                 <TextBlock Text="Perpetual PoE" Style="{DynamicResource toolTip}"
-                                           ToolTip="Perpetual PoE is disabled when PoE is turned off or 802.3bt is enabled" />
+                                           ToolTip="Perpetual PoE is disabled when PoE is turned off or 802.3bt is supported" />
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
@@ -275,7 +275,7 @@
                                           Unchecked="PPoE_Click"
                                           IsEnabled="{Binding Path=IsPoeModeEnable}"
                                           IsChecked="{Binding Path=PPoE, Converter={StaticResource ConfigTypeToBoolConverter}, ConverterParameter=Enable}" 
-                                          ToolTip="Perpetual PoE is disabled when PoE is turned off or 802.3bt is enabled"/>
+                                          ToolTip="Perpetual PoE is disabled when PoE is turned off or 802.3bt is supported"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
