@@ -1170,6 +1170,10 @@ namespace PoEWizard.Comm
                         CheckCapacitorDetection(waitSec);
                         break;
 
+                    case Command.CAPACITOR_DETECTION_DISABLE:
+                        ExecuteDisableCapacitorDetection(waitSec);
+                        break;
+
                     case Command.RESET_POWER_PORT:
                         ResetPortPower(waitSec);
                         break;
@@ -1209,15 +1213,11 @@ namespace PoEWizard.Comm
                 RestartDeviceOnPort(wizardAction);
                 CheckPortUp(waitSec, wizardAction);
                 string txt;
-                if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok)
-                    txt = $"{wizardAction} solved the problem";
+                if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok) txt = $"{wizardAction} solved the problem";
                 else
                 {
                     txt = $"{wizardAction} didn't solve the problem\nDisabling capacitor detection on port {_wizardSwitchPort.Name} to restore the previous config";
-                    SendCommand(new CmdRequest(Command.CAPACITOR_DETECTION_DISABLE, new string[1] { _wizardSwitchPort.Name }));
-                    wizardAction = $"Disabling capacitor detection on port {_wizardSwitchPort.Name}";
-                    RestartDeviceOnPort(wizardAction, 5);
-                    WaitSec(wizardAction, 10);
+                    DisableCapacitorDetection();
                 }
                 Logger.Info(txt);
             }
@@ -1225,6 +1225,41 @@ namespace PoEWizard.Comm
             {
                 ParseException(_wizardProgressReport, ex);
             }
+        }
+
+        private void ExecuteDisableCapacitorDetection(int waitSec)
+        {
+            try
+            {
+                string wizardAction = $"Disabling capacitor detection on port {_wizardSwitchPort.Name}";
+                DateTime startTime = DateTime.Now;
+                _progress.Report(new ProgressReport(wizardAction));
+                _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
+                if (_wizardSwitchPort.IsCapacitorDetection)
+                {
+                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed, $"\n    Capacitor detection is already disabled on port {_wizardSwitchPort.Name}");
+                }
+                else
+                {
+                    DisableCapacitorDetection();
+                    CheckPortUp(waitSec, wizardAction);
+                    _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
+                    if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok) return;
+                    Logger.Info($"{wizardAction} didn't solve the problem");
+                }
+            }
+            catch (Exception ex)
+            {
+                ParseException(_wizardProgressReport, ex);
+            }
+        }
+
+        private void DisableCapacitorDetection()
+        {
+            SendCommand(new CmdRequest(Command.CAPACITOR_DETECTION_DISABLE, new string[1] { _wizardSwitchPort.Name }));
+            string wizardAction = $"Disabling capacitor detection on port {_wizardSwitchPort.Name}";
+            RestartDeviceOnPort(wizardAction, 5);
+            WaitSec(wizardAction, 10);
         }
 
         private void CheckMaxPower()
@@ -1859,7 +1894,7 @@ namespace PoEWizard.Comm
             string txt = $"{poeType} PoE on Slot {_wizardSwitchSlot.Name}";
             string error = $"Cannot {(enable ? "Enable" : "Disable")} {txt}";
             if (!_wizardSwitchSlot.IsInitialized) throw new SwitchCommandError($"{error} because it's powered DOWN");
-            if (_wizardSwitchSlot.Is8023btSupport && enable) throw new SwitchCommandError($"{error} because 802.3bt is enabled");
+            if (_wizardSwitchSlot.Is8023btSupport && enable) throw new SwitchCommandError($"{error} because 802.3bt is supported");
             bool ppoe = _wizardSwitchSlot.PPoE == ConfigType.Enable;
             bool fpoe = _wizardSwitchSlot.FPoE == ConfigType.Enable;
             string wizardAction = $"{(enable ? "Enabling" : "Disabling")} {txt}";

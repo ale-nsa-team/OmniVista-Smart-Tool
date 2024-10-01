@@ -1372,6 +1372,8 @@ namespace PoEWizard
         {
             await Enable2PairPower();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
+            await DisableCapacitorDetection();
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await ResetPortPower();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await ChangePriority();
@@ -1431,6 +1433,12 @@ namespace PoEWizard
         private async Task CheckCapacitorDetection()
         {
             await RunPoeWizard(new List<Command>() { Command.CHECK_CAPACITOR_DETECTION }, 60);
+            Logger.Debug($"Enable 2-Pair Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+        }
+
+        private async Task DisableCapacitorDetection()
+        {
+            await RunPoeWizard(new List<Command>() { Command.CAPACITOR_DETECTION_DISABLE }, 30);
             Logger.Debug($"Enable 2-Pair Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
