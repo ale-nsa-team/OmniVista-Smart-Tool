@@ -1021,32 +1021,6 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void RunWizardCommands(string port, WizardReport reportResult, List<Command> commands, int waitSec)
-        {
-            _wizardProgressReport = new ProgressReport("PoE Wizard Report:");
-            try
-            {
-                GetSwitchSlotPort(port);
-                if (_wizardSwitchPort == null || _wizardSwitchSlot == null)
-                {
-                    SendProgressError("PoE Wizard", $"Couldn't get data for port {port}");
-                    return;
-                }
-                if (!_wizardSwitchSlot.IsInitialized) PowerSlotUp();
-                _wizardReportResult = reportResult;
-                if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
-                {
-                    CreateReportPortNoPoe();
-                    return;
-                }
-                ExecuteWizardCommands(commands, waitSec);
-            }
-            catch (Exception ex)
-            {
-                SendSwitchError("PoE Wizard", ex);
-            }
-        }
-
         public void RunPoeWizard(string port, WizardReport reportResult, List<Command> commands, int waitSec)
         {
             if (reportResult.IsWizardStopped(port)) return;
@@ -1063,32 +1037,43 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport($"{msg} ..."));
                 if (!_wizardSwitchSlot.IsInitialized) PowerSlotUp();
                 _wizardReportResult = reportResult;
-                if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
-                {
-                    CreateReportPortNoPoe();
-                    return;
-                }
-                if (_wizardSwitchPort.Poe == PoeStatus.Conflict)
-                {
-                    DisableConflictPower();
-                    return;
-                }
-                else if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny && _wizardSwitchPort.Poe != PoeStatus.Searching)
-                {
-                    WaitSec(msg, 5);
-                    GetSlotLanPower(_wizardSwitchSlot);
-                    if (_wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny && _wizardSwitchPort.Poe != PoeStatus.Searching)
-                    {
-                        NothingToDo();
-                        return;
-                    }
-                }
-                ExecuteWizardCommands(commands, waitSec);
+                if (!IsPoeWizardAborted(msg)) ExecuteWizardCommands(commands, waitSec);
             }
             catch (Exception ex)
             {
                 SendSwitchError("PoE Wizard", ex);
             }
+        }
+
+        private bool IsPoeWizardAborted(string msg)
+        {
+            if (_wizardSwitchPort.IsUplink)
+            {
+                CreateReportPortNothingToDo($"Port {_wizardSwitchPort.Name} is an uplink");
+            }
+            else if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
+            {
+                CreateReportPortNothingToDo($"Port {_wizardSwitchPort.Name} doesn't have PoE");
+            }
+            else if (_wizardSwitchPort.Poe == PoeStatus.Conflict)
+            {
+                DisableConflictPower();
+            }
+            else
+            {
+                if (IsPoeOk())
+                {
+                    WaitSec(msg, 5);
+                    GetSlotLanPower(_wizardSwitchSlot);
+                }
+                if (IsPoeOk()) NothingToDo(); else return false;
+            }
+            return true;
+        }
+
+        private bool IsPoeOk()
+        {
+            return _wizardSwitchPort.Poe != PoeStatus.Fault && _wizardSwitchPort.Poe != PoeStatus.Deny && _wizardSwitchPort.Poe != PoeStatus.Searching;
         }
 
         private void DisableConflictPower()
@@ -1121,9 +1106,9 @@ namespace PoEWizard.Comm
             _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.NothingToDo);
         }
 
-        private void CreateReportPortNoPoe()
+        private void CreateReportPortNothingToDo(string reason)
         {
-            string wizardAction = $"Nothing to do\n    Port {_wizardSwitchPort.Name} doesn't have PoE";
+            string wizardAction = $"Nothing to do\n    {reason}";
             _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.NothingToDo, wizardAction);
         }
 
@@ -1208,68 +1193,31 @@ namespace PoEWizard.Comm
         {
             try
             {
-                string msg = $"Checking capacitor detection on port {_wizardSwitchPort.Name}";
-                _progress.Report(new ProgressReport(msg));
-                GetSlotLanPower(_wizardSwitchSlot);
-                WaitSec(msg, 5);
-                GetSlotLanPower(_wizardSwitchSlot);
-                if (_wizardSwitchPort.Poe == PoeStatus.Searching)
-                    _wizardCommand = Command.CAPACITOR_DETECTION_ENABLE;
-                else if (_wizardSwitchPort.Poe == PoeStatus.Fault || _wizardSwitchPort.Poe == PoeStatus.Deny || _wizardSwitchPort.Poe == PoeStatus.PoweredOff)
-                    _wizardCommand = Command.CAPACITOR_DETECTION_DISABLE;
-                else
-                {
-                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed);
-                    return;
-                }
-                string wizardAction = _wizardCommand == Command.CAPACITOR_DETECTION_ENABLE ? "Enabling" : "Disabling";
-                wizardAction += $" capacitor detection on port {_wizardSwitchPort.Name}";
-                _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
-                if (_wizardCommand == Command.CAPACITOR_DETECTION_ENABLE)
-                {
-                    if (_wizardSwitchPort.IsCapacitorDetection)
-                    {
-                        _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed);
-                        return;
-                    }
-                    PortSubType portSubType = _wizardSwitchPort.EndPointDevice != null ? _wizardSwitchPort.EndPointDevice.PortSubType : PortSubType.Unknown;
-                    switch (portSubType)
-                    {
-                        case PortSubType.MacAddress:
-                        case PortSubType.NetworkAddress:
-                        case PortSubType.LocallyAssigned:
-                            StringBuilder actionResult = new StringBuilder("\n    Cannot enable capacitor detection for device type ").Append(_wizardSwitchPort.EndPointDevice.Type);
-                            if (!string.IsNullOrEmpty(_wizardSwitchPort.EndPointDevice.Name)) actionResult.Append(" (").Append(_wizardSwitchPort.EndPointDevice.Name).Append(")");
-                            _wizardReportResult.UpdateWizardReport(_wizardSwitchPort.Name, WizardResult.Proceed, actionResult.ToString());
-                            Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
-                            return;
-
-                        default:
-                            break;
-                    }
-                }
-                else if (!_wizardSwitchPort.IsCapacitorDetection)
-                {
-                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed);
-                    return;
-                }
+                string wizardAction = $"Checking capacitor detection on port {_wizardSwitchPort.Name}";
                 _progress.Report(new ProgressReport(wizardAction));
-                SendCommand(new CmdRequest(_wizardCommand, new string[1] { _wizardSwitchPort.Name }));
+                WaitSec(wizardAction, 5);
+                GetSlotLanPower(_wizardSwitchSlot);
+                wizardAction = $"Enabling capacitor detection on port {_wizardSwitchPort.Name}";
+                _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
+                if (_wizardSwitchPort.IsCapacitorDetection)
+                {
+                    _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed);
+                    return;
+                }
+                SendCommand(new CmdRequest(Command.CAPACITOR_DETECTION_ENABLE, new string[1] { _wizardSwitchPort.Name }));
                 WaitSec(wizardAction, 5);
                 RestartDeviceOnPort(wizardAction);
                 CheckPortUp(waitSec, wizardAction);
-                string txt = string.Empty;
+                string txt;
                 if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok)
                     txt = $"{wizardAction} solved the problem";
                 else
                 {
                     txt = $"{wizardAction} didn't solve the problem\nDisabling capacitor detection on port {_wizardSwitchPort.Name} to restore the previous config";
-                    _wizardCommand = Command.CAPACITOR_DETECTION_DISABLE;
-                    SendCommand(new CmdRequest(_wizardCommand, new string[1] { _wizardSwitchPort.Name }));
+                    SendCommand(new CmdRequest(Command.CAPACITOR_DETECTION_DISABLE, new string[1] { _wizardSwitchPort.Name }));
                     wizardAction = $"Disabling capacitor detection on port {_wizardSwitchPort.Name}";
                     RestartDeviceOnPort(wizardAction, 5);
                     WaitSec(wizardAction, 10);
-                    WaitPortUp(30, wizardAction);
                 }
                 Logger.Info(txt);
             }
@@ -1627,9 +1575,8 @@ namespace PoEWizard.Comm
         private bool IsPortUp()
         {
             if (_wizardSwitchPort.Status != PortStatus.Up) return false;
-            else if (_wizardSwitchPort.Poe == PoeStatus.On && _wizardSwitchPort.Power * 1000 > 100) return true;
+            else if (_wizardSwitchPort.Poe == PoeStatus.On && _wizardSwitchPort.Power * 1000 > MIN_POWER_CONSUMPTION_MW) return true;
             else if (_wizardSwitchPort.Poe == PoeStatus.Searching && _wizardCommand == Command.CAPACITOR_DETECTION_DISABLE) return true;
-            else if (_wizardSwitchPort.Poe == PoeStatus.Off) return true;
             return false;
         }
 
@@ -1676,7 +1623,7 @@ namespace PoEWizard.Comm
                     break;
 
                 default:
-                    if (_wizardSwitchPort.MacList?.Count > 0) result = WizardResult.Ok; else result = WizardResult.Proceed;
+                    result = WizardResult.Proceed;
                     break;
             }
             string resultDescription;

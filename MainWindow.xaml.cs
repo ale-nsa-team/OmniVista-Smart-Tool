@@ -1354,13 +1354,15 @@ namespace PoEWizard
 
         private async Task RunWizardCamera()
         {
-            await Enable823BT();
+            await CheckCapacitorDetection();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
-            await ResetPortPower();
+            await Enable823BT();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await EnableHdmiMdi();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await ChangePriority();
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
+            await ResetPortPower();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable2PairPower();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
@@ -1391,6 +1393,8 @@ namespace PoEWizard
             await EnableHdmiMdi();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await ChangePriority();
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
+            await CheckCapacitorDetection();
         }
 
         private async Task RunWizardOther()
@@ -1405,6 +1409,7 @@ namespace PoEWizard
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable2PairPower();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
+            await CheckCapacitorDetection();
         }
 
         private async Task Enable823BT()
@@ -1421,6 +1426,12 @@ namespace PoEWizard
             }
             await RunPoeWizard(new List<Command>() { Command.POWER_823BT_ENABLE });
             Logger.Debug($"Enable 802.3.bt on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
+        }
+
+        private async Task CheckCapacitorDetection()
+        {
+            await RunPoeWizard(new List<Command>() { Command.CHECK_CAPACITOR_DETECTION }, 60);
+            Logger.Debug($"Enable 2-Pair Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
         private async Task Enable2PairPower()
@@ -1459,23 +1470,23 @@ namespace PoEWizard
 
         private async Task RunLastWizardActions()
         {
-            await RunWizardCommands(new List<Command>() { Command.CHECK_CAPACITOR_DETECTION }, 60);
-            WizardResult result = reportResult.GetReportResult(selectedPort.Name);
-            if (result != WizardResult.Ok && result != WizardResult.Fail) reportResult.RemoveLastWizardReport(selectedPort.Name);
+            //await RunWizardCommands(new List<Command>() { Command.CHECK_CAPACITOR_DETECTION }, 60);
+            //WizardResult result = reportResult.GetReportResult(selectedPort.Name);
+            //if (result != WizardResult.Ok && result != WizardResult.Fail) reportResult.RemoveLastWizardReport(selectedPort.Name);
             await CheckDefaultMaxPower();
             reportResult.UpdateResult(selectedPort.Name, reportResult.GetReportResult(selectedPort.Name));
         }
 
         private async Task CheckDefaultMaxPower()
         {
-            await RunWizardCommands(new List<Command>() { Command.CHECK_MAX_POWER });
+            await RunPoeWizard(new List<Command>() { Command.CHECK_MAX_POWER });
             if (reportResult.GetCurrentReportResult(selectedPort.Name) == WizardResult.Warning)
             {
                 string alert = reportResult.GetAlertDescription(selectedPort.Name);
                 string msg = !string.IsNullOrEmpty(alert) ? alert : $"Changing Max. Power on port {selectedPort.Name} to default";
                 if (ShowMessageBox("Check default Max. Power", $"{msg}\nDo you want to change?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
                 {
-                    await RunWizardCommands(new List<Command>() { Command.CHANGE_MAX_POWER });
+                    await RunPoeWizard(new List<Command>() { Command.CHANGE_MAX_POWER });
                 }
             }
         }
@@ -1483,11 +1494,6 @@ namespace PoEWizard
         private async Task RunPoeWizard(List<Command> cmdList, int waitSec = 15)
         {
             await Task.Run(() => restApiService.RunPoeWizard(selectedPort.Name, reportResult, cmdList, waitSec));
-        }
-
-        private async Task RunWizardCommands(List<Command> cmdList, int waitSec = 15)
-        {
-            await Task.Run(() => restApiService.RunWizardCommands(selectedPort.Name, reportResult, cmdList, waitSec));
         }
 
         private async Task RunGetSwitchLog(SwitchDebugLogLevel debugLevel, bool restartPoE = false, string port = null)
