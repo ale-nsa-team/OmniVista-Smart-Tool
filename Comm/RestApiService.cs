@@ -1047,9 +1047,9 @@ namespace PoEWizard.Comm
 
         private bool IsPoeWizardAborted(string msg)
         {
-            if (_wizardSwitchPort.IsUplink)
+            if (_wizardSwitchPort.IsSwitchUplink())
             {
-                CreateReportPortNothingToDo($"Port {_wizardSwitchPort.Name} is an uplink");
+                CreateReportPortNothingToDo($"Port {_wizardSwitchPort.Name} is a switch uplink");
             }
             else if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
             {

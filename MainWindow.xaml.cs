@@ -999,7 +999,7 @@ namespace PoEWizard
                         await RunWizardTelephone();
                         break;
                     case DeviceType.AP:
-                        await RunWizardWirelessLan();
+                        await RunWizardWirelessRouter();
                         break;
                     default:
                         await RunWizardOther();
@@ -1382,17 +1382,17 @@ namespace PoEWizard
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
         }
 
-        private async Task RunWizardWirelessLan()
+        private async Task RunWizardWirelessRouter()
         {
             await ResetPortPower();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
-            await Enable823BT();
+            await ChangePriority();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
-            await Enable2PairPower();
+            await Enable823BT();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await EnableHdmiMdi();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
-            await ChangePriority();
+            await Enable2PairPower();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await CheckCapacitorDetection();
         }

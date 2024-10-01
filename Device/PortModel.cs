@@ -164,12 +164,8 @@ namespace PoEWizard.Device
         {
             if (!dict.ContainsKey(MED_MAC_ADDRESS)) return;
             EndPointDeviceModel device = this.EndPointDevicesList.FirstOrDefault(ep => ep.MacAddress == dict[MED_MAC_ADDRESS]);
-            if (device == null)
-            {
-                this.EndPointDevicesList.Add(new EndPointDeviceModel(dict));
-                return;
-            }
-            if (dictType == DictionaryType.LldpRemoteList) device.LoadLldpRemoteTable(dict);
+            if (device == null) this.EndPointDevicesList.Add(new EndPointDeviceModel(dict));
+            else if (dictType == DictionaryType.LldpRemoteList) device.LoadLldpRemoteTable(dict);
             else if (dictType == DictionaryType.LldpInventoryList) device.LoadLldpInventoryTable(dict);
         }
 
@@ -188,7 +184,7 @@ namespace PoEWizard.Device
             {
                 if (AddMacToList(dict) >= 10) break;
             }
-            IsUplink = (MacList.Count > 2);
+            IsUplink = MacList.Count > 2;
         }
 
         public int AddMacToList(Dictionary<string, string> dict)
@@ -197,8 +193,13 @@ namespace PoEWizard.Device
             {
                 MacList.Add(Utils.GetDictValue(dict, PORT_MAC_LIST) );
             }
-            IsUplink = (MacList.Count > 2);
+            IsUplink = MacList.Count > 2;
             return MacList.Count;
+        }
+
+        public bool IsSwitchUplink()
+        {
+            return this.EndPointDevicesList?.Count > 0 && !string.IsNullOrEmpty(this.EndPointDevicesList[0].Type) && this.EndPointDevicesList[0].Type == SWITCH;
         }
 
         private string GetPortId(string chas)
