@@ -41,10 +41,27 @@ namespace PoEWizard.Components
                 {
                     foreach (var port in slot.Ports)
                     {
-                        if (port.MacList?.Count == 0 || port.EndPointDevice?.Type == SWITCH || port.MacList.Count > 2) continue;
+                        if (port.EndPointDevicesList?.Count > 0)
+                        {
+                            if (port.EndPointDevicesList[0].Type == SWITCH) continue;
+                            if (!string.IsNullOrEmpty(port.EndPointDevicesList[0].MacAddress))
+                            {
+                                if (port.EndPointDevicesList[0].MacAddress.Contains(macAddress) && !portsFound.Contains(port))
+                                {
+                                    portsFound.Add(port);
+                                    if (port.MacList?.Count == 0) port.MacList.Add(port.EndPointDevicesList[0].MacAddress);
+                                    continue;
+                                }
+                            }
+                        }
+                        if (port.MacList?.Count == 0 || port.EndPointDevicesList[0].Type == SWITCH) continue;
                         foreach (string mac in port.MacList)
                         {
-                            if (mac.Contains(macAddress) && !portsFound.Contains(port)) portsFound.Add(port);
+                            if (mac.Contains(macAddress) && !portsFound.Contains(port))
+                            {
+                                portsFound.Add(port);
+                                break;
+                            }
                         }
                     }
                 }

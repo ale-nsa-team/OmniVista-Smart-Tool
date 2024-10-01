@@ -157,6 +157,7 @@ namespace PoEWizard.Data
                     {
                         string key = match.Groups[1].Value.Trim();
                         if (key.StartsWith(FPGA)) key = FPGA; else if (key.StartsWith(CPLD)) key = CPLD;
+                        if (dict.ContainsKey(key) && !string.IsNullOrEmpty(dict[key])) continue;
                         string value = match.Groups[2].Value.Trim();
                         value = value.EndsWith(",") ? value.Substring(0, value.Length - 1) : value;
                         dict[key] = value;
