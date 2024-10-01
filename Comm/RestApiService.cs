@@ -1047,17 +1047,17 @@ namespace PoEWizard.Comm
 
         private bool IsPoeWizardAborted(string msg)
         {
-            if (_wizardSwitchPort.IsSwitchUplink())
+            if (_wizardSwitchPort.Poe == PoeStatus.Conflict)
             {
-                CreateReportPortNothingToDo($"Port {_wizardSwitchPort.Name} is a switch uplink");
+                DisableConflictPower();
             }
             else if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
             {
                 CreateReportPortNothingToDo($"Port {_wizardSwitchPort.Name} doesn't have PoE");
             }
-            else if (_wizardSwitchPort.Poe == PoeStatus.Conflict)
+            else if (_wizardSwitchPort.IsSwitchUplink())
             {
-                DisableConflictPower();
+                CreateReportPortNothingToDo($"Port {_wizardSwitchPort.Name} is a switch uplink");
             }
             else
             {
