@@ -850,7 +850,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError("Set Perpetual/Fast PoE", ex);
+                SendSwitchError($"Set {poeType} PoE", ex);
             }
             return false;
         }
@@ -1853,10 +1853,13 @@ namespace PoEWizard.Comm
 
         private string ChangePerpetualOrFastPoe(Command cmd)
         {
-            if (_wizardSwitchSlot == null) return "";
+            if (_wizardSwitchSlot == null) return string.Empty;
             bool enable = cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_FAST_ENABLE;
             string poeType = (cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
             string txt = $"{poeType} PoE on Slot {_wizardSwitchSlot.Name}";
+            string error = $"Cannot {(enable ? "Enable" : "Disable")} {txt}";
+            if (!_wizardSwitchSlot.IsInitialized) throw new SwitchCommandError($"{error} because it's powered DOWN");
+            if (_wizardSwitchSlot.Is8023btSupport && enable) throw new SwitchCommandError($"{error} because 802.3bt is enabled");
             bool ppoe = _wizardSwitchSlot.PPoE == ConfigType.Enable;
             bool fpoe = _wizardSwitchSlot.FPoE == ConfigType.Enable;
             string wizardAction = $"{(enable ? "Enabling" : "Disabling")} {txt}";
@@ -1871,7 +1874,6 @@ namespace PoEWizard.Comm
             _progress.Report(new ProgressReport(wizardAction));
             string result = $"\n - {wizardAction} ";
             Logger.Info(wizardAction);
-            CheckFPOEand823BT(cmd);
             SendCommand(new CmdRequest(cmd, new string[1] { _wizardSwitchSlot.Name }));
             WaitSec(wizardAction, 3);
             GetSlotPowerStatus(_wizardSwitchSlot);
