@@ -26,6 +26,7 @@
                 CellStyle="{DynamicResource gridCell}"
                 ItemsSource="{Binding PortsFound}"
                 SelectionChanged="PortSelection_Changed"
+                MouseDoubleClick="Mouse_DoubleClick"
                 IsReadOnly="True">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Port" Width="0.8*" Binding="{Binding Path=Name}" />
