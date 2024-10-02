@@ -98,7 +98,7 @@ namespace PoEWizard.Data
         {
             this.Data = new StringBuilder($"\r\nSwitch,\"").Append(this.SwitchTraffic.Name).Append(" ").Append(this.SwitchTraffic.IpAddress);
             this.Data.Append("\"\r\nSerial Number,\"").Append(this.SwitchTraffic.SerialNumber);
-            this.Data.Append("\"\r\nDate,").Append($"\"{this.TrafficStartTime:MM/dd/yyyy hh:mm:ss tt}\"");
+            this.Data.Append("\"\r\nDate,").Append($" {this.TrafficStartTime:MM/dd/yyyy hh:mm:ss tt}");
             this.Data.Append($"\r\nDuration,\"").Append(Utils.CalcStringDuration(TrafficStartTime, true)).Append("\"");
             this.Data.Append("\r\n\r\n\r\n").Append(HEADER);
             this.alertReport = new Dictionary<string, string>();
