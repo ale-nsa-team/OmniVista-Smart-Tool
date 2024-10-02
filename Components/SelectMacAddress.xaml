@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
-        Title="Select Mac Address" Height="200" Width="300" WindowStyle="None" ShowInTaskbar="False">
+        Title="Select Mac Address or Vendor Name" Height="180" Width="350" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -22,7 +22,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" Style="{DynamicResource titleLabel}" Margin="0,25,0,5">Please enter the MAC address</Label>
+        <Label Grid.Row="0" Style="{DynamicResource titleLabel}" Margin="0,25,0,5">Please enter the MAC address or Vendor Name</Label>
         <TextBox Grid.Row="1" x:Name="_macAddr"
                      Foreground="{DynamicResource fontColor}"
                      Background="{DynamicResource barBackground}"
@@ -32,7 +32,7 @@
         </TextBox>
         <TextBlock Grid.Row="3" x:Name="_note2"
                Style="{DynamicResource aboutParagraph}"
-               Margin="25,0,0,20"
+               Margin="25,0,0,0"
                Width="220">
         </TextBlock>
         <Border Grid.Row="4" Style="{DynamicResource propsBorder}">

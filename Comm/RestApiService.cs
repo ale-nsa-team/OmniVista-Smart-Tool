@@ -165,6 +165,7 @@ namespace PoEWizard.Comm
                             LinuxCommandSeq cmdSeq;
                             if (chassis.IsMaster) cmdSeq = new LinuxCommandSeq();
                             else cmdSeq = new LinuxCommandSeq(new LinuxCommand($"ssh-chassis {SwitchModel.Login}@{chassis.Number}", "Password|Are you sure", 20));
+                            Thread.Sleep(500);
                             cmdSeq.AddCommandSeq(new List<LinuxCommand> { new LinuxCommand("su", "->"), new LinuxCommand("df -h", "->"), new LinuxCommand("exit", sessionPrompt) });
                             cmdSeq = SendSshLinuxCommandSeq(cmdSeq, $"Reading Flash data of chassis {chassis.Number}");
                             _dict = cmdSeq?.GetResponse("df -h");
