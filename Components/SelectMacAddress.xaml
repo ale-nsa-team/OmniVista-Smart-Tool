@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
-        Title="Select Mac Address" Height="230" Width="300" WindowStyle="None" ShowInTaskbar="False">
+        Title="Select Mac Address" Height="200" Width="300" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -30,14 +30,8 @@
                      Text="{Binding SearchMacAddress}"
                      Margin="50,10">
         </TextBox>
-        <TextBlock Grid.Row="2" x:Name="_note1"
-                Style="{DynamicResource aboutParagraph}"
-                Text="Note: This tool will not search for MAC address"
-                Width="255">
-        </TextBlock>
         <TextBlock Grid.Row="3" x:Name="_note2"
                Style="{DynamicResource aboutParagraph}"
-               Text="connected to an uplink!"
                Margin="25,0,0,20"
                Width="220">
         </TextBlock>

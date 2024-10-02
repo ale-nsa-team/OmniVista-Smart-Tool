@@ -44,7 +44,6 @@ namespace PoEWizard.Components
                     {
                         if (port.EndPointDevicesList?.Count > 0)
                         {
-                            //if (port.EndPointDevicesList[0].Type == SWITCH) continue;
                             if (!string.IsNullOrEmpty(port.EndPointDevicesList[0].MacAddress))
                             {
                                 if (port.EndPointDevicesList[0].MacAddress.Contains(macAddress) && !portsFound.Contains(port))
@@ -55,7 +54,7 @@ namespace PoEWizard.Components
                                 }
                             }
                         }
-                        if (port.MacList?.Count == 0 || port.EndPointDevicesList[0].Type == SWITCH) continue;
+                        if (port.MacList?.Count == 0) continue;
                         foreach (string mac in port.MacList)
                         {
                             if (mac.Contains(macAddress) && !portsFound.Contains(port))
