@@ -9,16 +9,17 @@ namespace PoEWizard.Data
     public class TrafficReport
     {
 
-        const string HEADER = "Port,Rx Rate (Kbps),Tx Rate (Kbps),#Rx Broadcast Frames,#Rx Unicast Frames,Rx Broadcast/Unicast (%),#Rx Multicast Frames,Rx Unicast+Multicast Rate (Kbps),#Rx Lost Frames,#Rx CRC Error,#Rx Alignments Error," +
-            "#Tx Broadcast Frames,#Tx Unicast Frames,Tx Broadcast/Unicast (%),#Tx Multicast Frames,Tx Unicast+Multicast Rate (Kbps),#Tx Lost Frames,#Tx Collided Frames,#Tx Collisions,#Tx Late Collisions,#Tx Excessive Collisions," +
+        const string HEADER = "Port,Alias,Rx Rate (Kbps),Tx Rate (Kbps),#Rx Broadcast Frames,#Rx Unicast Frames,Rx Broadcast/Unicast (%),#Rx Multicast Frames," +
+            "Rx Unicast+Multicast Rate (Kbps),#Rx Lost Frames,#Rx CRC Error,#Rx Alignments Error,#Tx Broadcast Frames,#Tx Unicast Frames,Tx Broadcast/Unicast (%)," +
+            "#Tx Multicast Frames,Tx Unicast+Multicast Rate (Kbps),#Tx Lost Frames,#Tx Collided Frames,#Tx Collisions,#Tx Late Collisions,#Tx Excessive Collisions," +
             "Device Type,Vendor,MAC Address List";
-        const string HEADER_DEVICE = "Port,Type,Name,Description,IP Address,Vendor,Model,Software Version,Serial Number,MAC Address";
-        const double MAX_PERCENT_BROADCAST = 2.0;
-        const double MAX_PERCENT_RATE = 70;
-        const double MAX_PERCENT_WARNING_LOST_FRAMES = 5;
-        const double MAX_PERCENT_CRITICAL_LOST_FRAMES = 8;
-        const double MIN_UNICAST_RATE_KBPS = 301;
-        const double MIN_NB_BROADCAST_FRAMES = 300;
+        const string HEADER_DEVICE = "Port,Alias,Type,Name,Description,IP Address,Vendor,Model,Software Version,Serial Number,MAC Address";
+        const double MAX_PERCENT_BROADCAST = 0; //2.0;
+        const double MAX_PERCENT_RATE = 0; //70;
+        const double MAX_PERCENT_WARNING_LOST_FRAMES = 0; //5;
+        const double MAX_PERCENT_CRITICAL_LOST_FRAMES = 0; //8;
+        const double MIN_UNICAST_RATE_KBPS = 0; //301;
+        const double MIN_NB_BROADCAST_FRAMES = 0; //300;
 
         private PortTrafficModel trafficPort;
         private Dictionary<string, string> alertReport;
@@ -95,7 +96,11 @@ namespace PoEWizard.Data
 
         private void BuildReportData()
         {
-            this.Data = new StringBuilder(HEADER);
+            this.Data = new StringBuilder($"\r\nSwitch,\"").Append(this.SwitchTraffic.Name).Append(" ").Append(this.SwitchTraffic.IpAddress);
+            this.Data.Append("\"\r\nSerial Number,\"").Append(this.SwitchTraffic.SerialNumber);
+            this.Data.Append("\"\r\nDate,").Append($"\"{this.TrafficStartTime:MM/dd/yyyy hh:mm:ss tt}\"");
+            this.Data.Append($"\r\nDuration,\"").Append(Utils.CalcStringDuration(TrafficStartTime, true)).Append("\"");
+            this.Data.Append("\r\n\r\n\r\n").Append(HEADER);
             this.alertReport = new Dictionary<string, string>();
             foreach (KeyValuePair<string, PortTrafficModel> keyVal in this.SwitchTraffic.Ports)
             {
@@ -107,38 +112,40 @@ namespace PoEWizard.Data
                     this.trafficPort.EndPointDevice = this.switchPorts[this.trafficPort.Port].EndPointDevice;
                 }
                 if (this.trafficPort.MacList == null || this.trafficPort.MacList.Count < 1) continue;
-                this.Data.Append("\r\n ").Append(this.trafficPort.Port);
+
+                // Port,Alias
+                this.Data.Append("\r\n ").Append(this.trafficPort.Port).Append(",\"").Append(this.switchPorts[this.trafficPort.Port].Alias).Append("\"");
+                // ,Rx Rate (Kbps)
                 ParseTrafficRate("Rx Rate", this.trafficPort.RxBytes);
+                // ,Tx Rate (Kbps)
                 ParseTrafficRate("Tx Rate", this.trafficPort.TxBytes);
                 CalculateTrafficData();
 
                 #region RX Traffic data
-                // #Rx Broadcast Frames,#Rx Unicast Frames,Rx Broadcast/Unicast (%),#Rx Multicast Frames,Rx Unicast+Multicast Rate (Kbps),#Rx Lost Frames,#Rx CRC Error,#Rx Alignments Error
-                this.Data.Append(",").Append(this.rxBroadCast);
-                this.Data.Append(",").Append(this.rxUniCast);
+                // #Rx Broadcast Frames,#Rx Unicast Frames
+                this.Data.Append(",").Append(this.rxBroadCast).Append(",").Append(this.rxUniCast);
+                // ,Rx Broadcast/Unicast (%)
                 if (this.rxBroadCastPercent > 0 && this.rxUnicastMultiCastRate >= MIN_UNICAST_RATE_KBPS) this.Data.Append(",").Append(this.rxBroadCastPercent); else this.Data.Append(",");
-                this.Data.Append(",").Append(this.rxMultiCast);
-                this.Data.Append(",").Append(this.rxUnicastMultiCastRate);
-                this.Data.Append(",").Append(this.rxLostFrames);
-                this.Data.Append(",").Append(this.rxCrcError);
-                this.Data.Append(",").Append(this.rxAlignments);
+                // ,#Rx Multicast Frames,Rx Unicast+Multicast Rate (Kbps),#Rx Lost Frames
+                this.Data.Append(",").Append(this.rxMultiCast).Append(",").Append(this.rxUnicastMultiCastRate).Append(",").Append(this.rxLostFrames);
+                // ,#Rx CRC Error,#Rx Alignments Error
+                this.Data.Append(",").Append(this.rxCrcError).Append(",").Append(this.rxAlignments);
                 #endregion
 
                 #region TX Traffic data
-                // #Tx Broadcast Frames,#Tx Unicast Frames,Tx Broadcast/Unicast (%),#Tx Multicast Frames,Tx Unicast+Multicast Rate (Kbps),#Tx Lost Frames,#Tx Collided Frames,#Tx Collisions,#Tx Late Collisions,#Tx Excessive Collisions
-                this.Data.Append(",").Append(this.txBroadCast);
-                this.Data.Append(",").Append(this.txUniCast);
+                // ,#Tx Broadcast Frames,#Tx Unicast Frames
+                this.Data.Append(",").Append(this.txBroadCast).Append(",").Append(this.txUniCast);
+                // ,Tx Broadcast/Unicast (%)
                 if (this.txBroadCastPercent > 0 && this.txUnicastMultiCastRate >= MIN_UNICAST_RATE_KBPS) this.Data.Append(",").Append(this.txBroadCastPercent); else this.Data.Append(",");
-                this.Data.Append(",").Append(this.txBroadCastPercent);
-                this.Data.Append(",").Append(this.txMultiCast);
-                this.Data.Append(",").Append(this.txUnicastMultiCastRate);
-                this.Data.Append(",").Append(this.txLostFrames);
-                this.Data.Append(",").Append(GetDiffTrafficSamples(this.trafficPort.TxCollidedFrames));
-                this.Data.Append(",").Append(GetDiffTrafficSamples(this.trafficPort.TxCollisions));
-                this.Data.Append(",").Append(GetDiffTrafficSamples(this.trafficPort.TxLateCollisions));
-                this.Data.Append(",").Append(GetDiffTrafficSamples(this.trafficPort.TxExcCollisions));
+                // ,#Tx Multicast Frames,Tx Unicast+Multicast Rate (Kbps),#Tx Lost Frames
+                this.Data.Append(",").Append(this.txMultiCast).Append(",").Append(this.txUnicastMultiCastRate).Append(",").Append(this.txLostFrames);
+                // ,#Tx Collided Frames,#Tx Collisions
+                this.Data.Append(",").Append(GetDiffTrafficSamples(this.trafficPort.TxCollidedFrames)).Append(",").Append(GetDiffTrafficSamples(this.trafficPort.TxCollisions));
+                // ,#Tx Late Collisions,#Tx Excessive Collisions
+                this.Data.Append(",").Append(GetDiffTrafficSamples(this.trafficPort.TxLateCollisions)).Append(",").Append(GetDiffTrafficSamples(this.trafficPort.TxExcCollisions));
                 #endregion
 
+                // ,Device Type,Vendor;
                 this.Data.Append(",\"");
                 if (this.trafficPort.MacList?.Count > 0 && this.trafficPort.EndPointDevice != null && !IsDeviceTypeUnknown(this.trafficPort.EndPointDevice))
                 {
@@ -148,6 +155,7 @@ namespace PoEWizard.Data
                 {
                     this.Data.Append("\",\"");
                 }
+                // ,MAC Address List
                 this.Data.Append("\",\"").Append(PrintMacAdresses()).Append("\"");
                 ParseAlertConditions();
             }
@@ -362,7 +370,7 @@ namespace PoEWizard.Data
         {
             if (this.switchPorts?.Count > 0)
             {
-                this.Data.Append("\n\n").Append(HEADER_DEVICE);
+                this.Data.Append("\r\n\r\n\r\n").Append(HEADER_DEVICE);
                 foreach (KeyValuePair<string, PortModel> keyVal in this.switchPorts)
                 {
                     if (keyVal.Value == null || keyVal.Value.EndPointDevice == null || string.IsNullOrEmpty(keyVal.Value.EndPointDevice.Type)) continue;
@@ -371,25 +379,49 @@ namespace PoEWizard.Data
                     string macList = IsDeviceTypeUnknown(device) ? device.Name : string.Empty;
                     if (macList.Contains(",")) continue;
                     if (port.EndPointDevicesList.Count > 1) continue;
-                    // HEADER_DEVICE = "Port,Type,Name,Description,IP Address,Vendor,Model,Software Version,Serial Number,MAC Address";
-                    this.Data.Append("\n ").Append(port.Name).Append(",\"").Append(device.Type).Append("\"");
-                    if (IsDeviceTypeUnknown(device))
-                    {
-                        this.Data.Append(",\"\",\"\",\"\"");
-                    }
-                    else
+                    // Port,Alias,Type
+                    this.Data.Append("\n ").Append(port.Name).Append(",\"").Append(port.Alias).Append("\",\"").Append(device.Type).Append("\"");
+                    // ,Name,Description,IP Address
+                    if (!IsDeviceTypeUnknown(device))
                     {
                         this.Data.Append(",\"").Append(device.Name).Append("\",\"").Append(device.Description).Append("\",\"").Append(device.IpAddress).Append("\"");
                     }
-                    string vendor = !string.IsNullOrEmpty(device.Vendor) ? device.Vendor :
-                                    !string.IsNullOrEmpty(device.MacAddress) ? Utils.GetVendorName(device.MacAddress) : string.Empty;
-                    if (string.IsNullOrEmpty(vendor) && !string.IsNullOrEmpty(macList))
+                    else
                     {
-                        vendor = Utils.GetVendorName(macList);
+                        this.Data.Append(",\"\",\"\",\"\"");
                     }
+                    string vendor = !string.IsNullOrEmpty(device.Vendor) ? device.Vendor :
+                                    !string.IsNullOrEmpty(device.MacAddress) && !device.MacAddress.Contains(",") ? Utils.GetVendorName(device.MacAddress) : string.Empty;
+                    if (string.IsNullOrEmpty(vendor) && !string.IsNullOrEmpty(device.MacAddress) && !device.MacAddress.Contains(","))
+                    {
+                        vendor = Utils.GetVendorName(device.MacAddress);
+                    }
+                    // ,Vendor,Model,Software Version";
                     this.Data.Append(",\"").Append(vendor).Append("\",\"").Append(device.Model).Append("\",\"").Append(device.SoftwareVersion).Append("\"");
-                    this.Data.Append(",\"").Append(device.SerialNumber).Append("\",\"");
-                    if (!string.IsNullOrEmpty(device.MacAddress)) this.Data.Append(device.MacAddress); else this.Data.Append(macList);
+                    // ,Serial Number";
+                    this.Data.Append(",\"").Append(device.SerialNumber).Append("\"");
+                    // ,MAC Address";
+                    this.Data.Append(",\"");
+                    if (!string.IsNullOrEmpty(device.MacAddress))
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        if (device.MacAddress.Contains(","))
+                        {
+                            string[] split = device.MacAddress.Split(',');
+                            foreach (string mac in split)
+                            {
+                                if (sb.Length > 0) sb.Append(",");
+                                vendor = Utils.GetVendorName(mac);
+                                if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor))
+                                {
+                                    sb.Append(mac).Append(" (").Append(vendor).Append(")");
+                                }
+                                else sb.Append(mac);
+                            }
+                            this.Data.Append(sb);
+                        }
+                        else this.Data.Append(device.MacAddress);
+                    }
                     this.Data.Append("\"");
                 }
             }

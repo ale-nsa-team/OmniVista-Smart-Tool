@@ -471,13 +471,9 @@ namespace PoEWizard.Comm
                         return cmd == Command.DEBUG_SHOW_LPCMM_LEVEL ? _debugSwitchLog.LpCmmLogLevel : _debugSwitchLog.LpNiLogLevel;
                     }
                 }
-                GetSshDebugLevel(cmd);
             }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-                GetSshDebugLevel(cmd);
-            }
+            catch { }
+            GetSshDebugLevel(cmd);
             return cmd == Command.DEBUG_SHOW_LPCMM_LEVEL ? _debugSwitchLog.LpCmmLogLevel : _debugSwitchLog.LpNiLogLevel;
         }
 
