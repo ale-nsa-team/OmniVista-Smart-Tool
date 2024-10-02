@@ -34,6 +34,7 @@ namespace PoEWizard.Components
 
         private ObservableCollection<PortModel> SearchMacAddress(SwitchModel device, string macAddress)
         {
+            if (!string.IsNullOrEmpty(macAddress)) macAddress = macAddress.ToLower().Trim();
             ObservableCollection<PortModel> portsFound = new ObservableCollection<PortModel>();
             foreach (var chas in device.ChassisList)
             {
