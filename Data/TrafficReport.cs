@@ -14,12 +14,12 @@ namespace PoEWizard.Data
             "#Tx Multicast Frames,Tx Unicast+Multicast Rate (Kbps),#Tx Lost Frames,#Tx Collided Frames,#Tx Collisions,#Tx Late Collisions,#Tx Excessive Collisions," +
             "Device Type,Vendor,MAC Address List";
         const string HEADER_DEVICE = "Port,Alias,Type,Name,Description,IP Address,Vendor,Model,Software Version,Serial Number,MAC Address";
-        const double MAX_PERCENT_BROADCAST = 0; //2.0;
-        const double MAX_PERCENT_RATE = 0; //70;
-        const double MAX_PERCENT_WARNING_LOST_FRAMES = 0; //5;
-        const double MAX_PERCENT_CRITICAL_LOST_FRAMES = 0; //8;
-        const double MIN_UNICAST_RATE_KBPS = 0; //301;
-        const double MIN_NB_BROADCAST_FRAMES = 0; //300;
+        const double MAX_PERCENT_BROADCAST = 2.0;
+        const double MAX_PERCENT_RATE = 70;
+        const double MAX_PERCENT_WARNING_LOST_FRAMES = 5;
+        const double MAX_PERCENT_CRITICAL_LOST_FRAMES = 8;
+        const double MIN_UNICAST_RATE_KBPS = 301;
+        const double MIN_NB_BROADCAST_FRAMES = 300;
 
         private PortTrafficModel trafficPort;
         private Dictionary<string, string> alertReport;
