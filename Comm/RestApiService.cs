@@ -1738,7 +1738,7 @@ namespace PoEWizard.Comm
                 }
             }
             SwitchModel.SupportsPoE = (nbChassisPoE > 0);
-            if (!SwitchModel.SupportsPoE) _wizardReportResult.CreateReportResult(SWITCH, WizardResult.Fail, $"Switch {SwitchModel.Name} doesn't support PoE!");
+            if (!SwitchModel.SupportsPoE) _wizardReportResult.CreateReportResult(SWITCH, WizardResult.Warning, $"Switch {SwitchModel.Name} doesn't support PoE!");
         }
 
         private void CheckPowerClassDetection(SlotModel slot)

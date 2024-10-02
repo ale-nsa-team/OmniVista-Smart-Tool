@@ -76,7 +76,8 @@ namespace PoEWizard.Data
                 ReportResult report = null;
                 if (reportList?.Count > 0)
                 {
-                    report = reportList?.LastOrDefault(rp => rp.Result == WizardResult.NothingToDo || rp.Result == WizardResult.Fail || rp.Result == WizardResult.Ok);
+                    report = reportList?.LastOrDefault(rp => rp.Result == WizardResult.Ok || rp.Result == WizardResult.NothingToDo ||
+                                                             rp.Result == WizardResult.Warning || rp.Result == WizardResult.Fail);
                 }
                 if (report == null) return WizardResult.Proceed;
                 return report.Result;

@@ -1278,7 +1278,12 @@ namespace PoEWizard
                 WizardResult result = reportResult.GetReportResult(SWITCH);
                 if (result == WizardResult.Fail || result == WizardResult.Warning)
                 {
-                    progress.Report(new ProgressReport(title) { Title = title, Type = ReportType.Error, Message = $"{reportResult.Message}" });
+                    progress.Report(new ProgressReport(title)
+                    {
+                        Title = title,
+                        Type = result == WizardResult.Fail ? ReportType.Error : ReportType.Warning,
+                        Message = $"{reportResult.Message}"
+                    });
                     await WaitAckProgress();
                 }
                 else if (reportResult.Result?.Count > 0)
@@ -1478,9 +1483,6 @@ namespace PoEWizard
 
         private async Task RunLastWizardActions()
         {
-            //await RunWizardCommands(new List<Command>() { Command.CHECK_CAPACITOR_DETECTION }, 60);
-            //WizardResult result = reportResult.GetReportResult(selectedPort.Name);
-            //if (result != WizardResult.Ok && result != WizardResult.Fail) reportResult.RemoveLastWizardReport(selectedPort.Name);
             await CheckDefaultMaxPower();
             reportResult.UpdateResult(selectedPort.Name, reportResult.GetReportResult(selectedPort.Name));
         }

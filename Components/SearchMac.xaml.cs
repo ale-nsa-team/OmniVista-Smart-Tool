@@ -43,7 +43,7 @@ namespace PoEWizard.Components
                     {
                         if (port.EndPointDevicesList?.Count > 0)
                         {
-                            if (port.EndPointDevicesList[0].Type == SWITCH) continue;
+                            //if (port.EndPointDevicesList[0].Type == SWITCH) continue;
                             if (!string.IsNullOrEmpty(port.EndPointDevicesList[0].MacAddress))
                             {
                                 if (port.EndPointDevicesList[0].MacAddress.Contains(macAddress) && !portsFound.Contains(port))
