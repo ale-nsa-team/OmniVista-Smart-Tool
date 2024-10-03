@@ -40,6 +40,7 @@
     <sys:String x:Key="i18n_subBtn">Submit</sys:String>
     <sys:String x:Key="i18n_nextBtn">Next</sys:String>
     <sys:String x:Key="i18n_prevBtn">Previous</sys:String>
+    <sys:String x:Key="i18n_closeBtn">Close</sys:String>
 
     <!--System Information-->
     <sys:String x:Key="i18n_swName">Name:</sys:String>
@@ -133,8 +134,59 @@
     <sys:String x:Key="i18n_trapSt">Status</sys:String>
     <sys:String x:Key="i18n_ver">Version</sys:String>
     
+    <!--about box-->
+    <sys:String x:Key="i18n_descr">
+        This application allows you to apply basic configuration and troubleshoot PoE issues on an 
+        Alcatel-Lucent Enterprise OmniSwitch®, equipped with AOS 8 version.\n
+        The application communicates with the switch via REST API, to gather information on the power 
+        supplies and PoE ports, and allows the user to perform some configuration changes to mitigate 
+        common PoE issues. In case the wizard is unable to fix the problem, it allows the user to collect 
+        relevant information to be sent to TAC.\r\n
+    </sys:String>
+    <sys:String x:Key="i18n_cpright">
+        \r\nPermission to use, copy, modify, and distribute this source code, product, and its documentation 
+        without a fee and without a signed license agreement is hereby granted, provided that the copyright 
+        notice, this paragraph, and the following two paragraphs appear in all copies, modifications, and distributions."\r\n \r\n
+        IN NO EVENT SHALL ALE USA INC. BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, 
+        INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOURCE CODE, PRODUCT, AND ITS DOCUMENTATION, EVEN IF ALE USA INC. 
+        HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\r\n \r\n
+        ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTES 
+        OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOURCE CODE, PRODUCT, AND ACCOMPANYING DOCUMENTATION, 
+        IF ANY, PROVIDED HEREUNDER IS PROVIDED “AS IS.” ALE USA INC. HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, 
+        UPDATES, ENHANCEMENTS, OR MODIFICATIONS.\r\n"
+    </sys:String>
+    
     <!--Messages-->
+    <sys:String x:Key="i18n_taRun">Running...</sys:String>
+    <sys:String x:Key="i18n_taIdle">Traffic Analysys</sys:String>
+    <sys:String x:Key="i18n_taSave">Do you want to save the traffic analysis report</sys:String>
+    <sys:String x:Key="i18n_taInt">interrupted by the user before</sys:String>
+    <sys:String x:Key="i18n_taDisc">Disconnecting switch</sys:String>
+    <sys:String x:Key="i18n_closing">closing the application</sys:String>
+
     
     <!--Tool Tips-->
+    <sys:String x:Key="i18n_pwr_tt">Actual power consumed by the device connected to the port</sys:String>
+    <sys:String x:Key="i18n_maxPwr_tt">Maximum power allowed by the hardware</sys:String>
+    <sys:String x:Key="i18n_release_tt">Switch AOS version is too old. Please buy a support contract and upgrade your switch</sys:String>
+    <sys:String x:Key="i18n_temp_tt">Switch may reduce PoE output because temperature is too high</sys:String>
+    <sys:String x:Key="i18n_fpga_tt">Switch FPGA version is too old.Please buy a support contract and upgrade your switch</sys:String>
+    <sys:String x:Key="i18n_cpld_tt">Switch CPLD version is too old.Please buy a support contract and upgrade your switch</sys:String>
+    <sys:String x:Key="i18n_poe_tt">Turn PoE on/off on this port</sys:String>
+    <sys:String x:Key="i18n_fpoe_tt">Fast PoE is disabled when PoE is turned off or 802.3bt is enabled</sys:String>
+    <sys:String x:Key="i18n_ppoe_tt">Perpetual PoE is disabled when PoE is turned off or 802.3bt is enabled</sys:String>
+    <sys:String x:Key="i18n_disc_tt">Click to disconnect</sys:String>
+    <sys:String x:Key="i18n_recon_tt">Click to reconnect</sys:String>
+    <sys:String x:Key="i18n_cpun_tt">CPU usage near threshold</sys:String>
+    <sys:String x:Key="i18n_cpuo_tt">CPU usage over threshold</sys:String>
+    <sys:String x:Key="i18n_on_tt">PoE power activation is complete, and the attached device is receiving power</sys:String>
+    <sys:String x:Key="i18n_off_tt">PoE has been disabled for this port</sys:String>
+    <sys:String x:Key="i18n_srch_tt">PoE is enabled, and the switch is sending PoE probes looking for a device, but activation or class detection is incomplete</sys:String>
+    <sys:String x:Key="i18n_fault_tt">PoE activation or class detection has failed</sys:String>
+    <sys:String x:Key="i18n_deny_tt">PoE power management has denied power to the port due to priority disconnect or over subscription</sys:String>
+    <sys:String x:Key="i18n_test_tt">Port has been forced on and will remain on until it is forced off by RTP functions</sys:String>
+    <sys:String x:Key="i18n_dld_tt">Delayed start is enabled</sys:String>
+    <sys:String x:Key="i18n_conf_tt">Two PoE ports have been connected and failed to disable PoE on one port</sys:String>
+    <sys:String x:Key="i18n_nop_tt">Port doesn't support PoE</sys:String>
     
 </ResourceDictionary>
