@@ -75,31 +75,38 @@ namespace PoEWizard.Components
             string mac = string.Empty;
             if (string.IsNullOrEmpty(macAddr))
             {
-                if (port.EndPointDevicesList?.Count > 0)
-                {
-                    if (!this.IsMacAddress)
-                    {
-                        mac = port.EndPointDevicesList[0].Name.ToLower();
-                        if (!string.IsNullOrEmpty(mac) && !mac.Contains(this._device_mac)) mac = port.EndPointDevicesList[0].Vendor.ToLower();
-                        if (string.IsNullOrEmpty(mac))
-                        {
-                            mac = Utils.GetVendorName(port.EndPointDevicesList[0].MacAddress).ToLower();
-                            if (mac.Contains(":"))
-                            {
-                                string[] split = mac.Split(':');
-                                if (split.Length > 4) mac = string.Empty;
-                            }
-                        }
-                    }
-                    else mac = port.EndPointDevicesList[0].MacAddress;
-                }
+                if (port.EndPointDevicesList?.Count > 0) mac = GetDeviceNameOrVendor(port);
+            }
+            else if (this.IsMacAddress && macAddr.StartsWith(this._device_mac))
+            {
+                mac = macAddr;
             }
             else
             {
-                mac = this.IsMacAddress ? macAddr : Utils.GetVendorName(macAddr);
+                mac = Utils.GetVendorName(macAddr).ToLower();
             }
             if (this.IsMacAddress) return mac.StartsWith(this._device_mac) && !this.PortsFound.Contains(port);
             return mac.Contains(this._device_mac) && !this.PortsFound.Contains(port);
+        }
+
+        private string GetDeviceNameOrVendor(PortModel port)
+        {
+            foreach(EndPointDeviceModel device in port.EndPointDevicesList)
+            {
+                string mac = device.Name.ToLower();
+                if (string.IsNullOrEmpty(mac) || !mac.Contains(this._device_mac)) mac = device.Vendor.ToLower();
+                if (string.IsNullOrEmpty(mac))
+                {
+                    mac = Utils.GetVendorName(device.MacAddress).ToLower();
+                    if (mac.Contains(":"))
+                    {
+                        string[] split = mac.Split(':');
+                        if (split.Length > 2) return string.Empty;
+                    }
+                }
+                return mac;
+            }
+            return string.Empty;
         }
 
         private void PortSelection_Changed(Object sender, RoutedEventArgs e)
