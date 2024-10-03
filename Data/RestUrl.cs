@@ -94,10 +94,14 @@ namespace PoEWizard.Data
             #endregion
 
             #region General Switch commands
-            [Command.SHOW_INTERFACES] = "show interfaces",
             [Command.WRITE_MEMORY] = "write memory flash-synchro",
             [Command.SHOW_CONFIGURATION] = "show configuration snapshot",
             [Command.REBOOT_SWITCH] = "reload from working no rollback-timeout",
+            #endregion
+
+            #region Traffic Analysis commands
+            [Command.SHOW_INTERFACES] = "show interfaces",
+            [Command.SHOW_DDM_INTERFACES] = "show interfaces ddm",
             #endregion
 
             #region Switch Debug Log commands

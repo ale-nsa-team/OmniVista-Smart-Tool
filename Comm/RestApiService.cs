@@ -778,7 +778,7 @@ namespace PoEWizard.Comm
                 }
                 GetMacAndLldpInfo();
                 GetPortsTrafficInformation();
-                report = new TrafficReport(_switchTraffic, stopTrafficAnalysisReason, duration);
+                report = new TrafficReport(_switchTraffic, stopTrafficAnalysisReason, duration, GetDdmReport());
                 if (stopTrafficAnalysis == AbortType.CanceledByUser)
                 {
                     Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was {stopTrafficAnalysisReason}, selected duration: {duration / 60} minutes!");
@@ -820,6 +820,40 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError($"Traffic analysis on switch {SwitchModel.Name}", ex);
             }
+        }
+
+        private string GetDdmReport()
+        {
+            try
+            {
+                string resp = SendCommand(new CmdRequest(Command.SHOW_DDM_INTERFACES, ParseType.NoParsing)) as string;
+                if (!string.IsNullOrEmpty(resp))
+                {
+                    using (StringReader reader = new StringReader(resp))
+                    {
+                        bool found = false;
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            if (line.Contains("----"))
+                            {
+                                found = true;
+                                continue;
+                            }
+                            if (found)
+                            {
+                                string[] split = line.Split('/');
+                                if (split.Length > 1 && line.Length > 10)
+                                {
+                                    return resp;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+            return string.Empty;
         }
 
         public bool SetPerpetualOrFastPoe(SlotModel slot, Command cmd)

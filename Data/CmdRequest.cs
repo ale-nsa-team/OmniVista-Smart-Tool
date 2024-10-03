@@ -71,12 +71,15 @@ namespace PoEWizard.Data
         #endregion
 
         #region General Switch commands
-        SHOW_INTERFACES,
         WRITE_MEMORY,
         SHOW_CONFIGURATION,
         REBOOT_SWITCH,
         #endregion
 
+        #region Traffic Analysis commands
+        SHOW_INTERFACES,
+        SHOW_DDM_INTERFACES,
+        #endregion
         #region Virtual Meta commands
         CHECK_POWER_PRIORITY,
         RESET_POWER_PORT,

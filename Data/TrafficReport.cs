@@ -50,7 +50,7 @@ namespace PoEWizard.Data
 
 
         public double TrafficDuration { get; set; }
-        public TrafficReport(SwitchTrafficModel switchTraffic, string completion, int selectedDur)
+        public TrafficReport(SwitchTrafficModel switchTraffic, string completion, int selectedDur, string ddmReport)
         {
             this.Summary = string.Empty;
             this.Data = null;
@@ -92,6 +92,7 @@ namespace PoEWizard.Data
             this.TrafficDuration = DateTime.Now.Subtract(this.SwitchTraffic.StartTime).TotalSeconds;
             BuildReportData();
             BuildLldpDevicesReport();
+            if (!string.IsNullOrEmpty(ddmReport)) this.Data.Append("\r\n\r\n\r\n").Append(ddmReport);
         }
 
         private void BuildReportData()
