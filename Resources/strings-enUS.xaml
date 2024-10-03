@@ -1,0 +1,140 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!--Menus-->
+    <sys:String x:Key="i18n_cnx">Connection</sys:String>
+    <sys:String x:Key="i18n_view">View</sys:String>
+    <sys:String x:Key="i18n_cfg">Configuration</sys:String>
+    <sys:String x:Key="i18n_sw">Switch</sys:String>
+    <sys:String x:Key="i18n_disc">Disconnect</sys:String>
+    <sys:String x:Key="i18n_exit">Exit</sys:String>
+    <sys:String x:Key="i18n_log">Log</sys:String>
+    <sys:String x:Key="i18n_appLog">View App Log</sys:String>
+    <sys:String x:Key="i18n_activ">View Activities</sys:String>
+    <sys:String x:Key="i18n_level">Log Level</sys:String>
+    <sys:String x:Key="i18n_vcboot">vcboot.cfg</sys:String>
+    <sys:String x:Key="i18n_ps">Power Supplies</sys:String>
+    <sys:String x:Key="i18n_src">Search MAV</sys:String>
+    <sys:String x:Key="i18n_theme">Theme</sys:String>
+    <sys:String x:Key="i18n_dark">Dark</sys:String>
+    <sys:String x:Key="i18n_light">Light</sys:String>
+    <sys:String x:Key="i18n_help">Help</sys:String>
+    <sys:String x:Key="i18n_about">About</sys:String>
+    <sys:String x:Key="i18n_frst">Factory Reset...</sys:String>
+    <sys:String x:Key="i18n_cfgWiz">Basic Configuration Wizard...</sys:String>
+    
+    <!--Buttons-->
+    <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>
+    <sys:String x:Key="i18n_poeWiz">Run PoE Wizard</sys:String>
+    <sys:String x:Key="i18n_rfrsh">Refresh</sys:String>
+    <sys:String x:Key="i18n_save">Write Memory</sys:String>
+    <sys:String x:Key="i18n_reboot">Reboot</sys:String>
+    <sys:String x:Key="i18n_trfAna">Traffic Analysis</sys:String>
+    <sys:String x:Key="i18n_logcol">Collect Logs</sys:String>
+    <sys:String x:Key="i18n_cnxBtn">Connect</sys:String>
+    <sys:String x:Key="i18n_canBtn">Cancel</sys:String>
+    <sys:String x:Key="i18n_okBtn">OK</sys:String>
+    <sys:String x:Key="i18n_yBtn">Yes</sys:String>
+    <sys:String x:Key="i18n_nBtn">No</sys:String>
+    <sys:String x:Key="i18n_subBtn">Submit</sys:String>
+    <sys:String x:Key="i18n_nextBtn">Next</sys:String>
+    <sys:String x:Key="i18n_prevBtn">Previous</sys:String>
+
+    <!--System Information-->
+    <sys:String x:Key="i18n_swName">Name:</sys:String>
+    <sys:String x:Key="i18n_ipAddr">IP Address:</sys:String>
+    <sys:String x:Key="i18n_release">Release:</sys:String>
+    <sys:String x:Key="i18n_runningDir">Running Directory:</sys:String>
+    <sys:String x:Key="i18n_sync">Synchronization:</sys:String>
+    <sys:String x:Key="i18n_loc">Location:</sys:String>
+    <sys:String x:Key="i18n_contact">Contact:</sys:String>
+    <sys:String x:Key="i18n_poeDbgLvl">PoE Debug Level:</sys:String>
+    <sys:String x:Key="i18n_cmmDbgLvl">CMM Debug Level:</sys:String>
+    <sys:String x:Key="i18n_swModel">Model:</sys:String>
+    <sys:String x:Key="i18n_sn">Serial Number:</sys:String>
+    <sys:String x:Key="i18n_mac">MAC Address:</sys:String>
+    <sys:String x:Key="i18n_temp">Temperature:</sys:String>
+    <sys:String x:Key="i18n_cpu">CPU Usage:</sys:String>
+    <sys:String x:Key="i18n_fpga">FPGA Version:</sys:String>
+    <sys:String x:Key="i18n_cpld">CPLD Version:</sys:String>
+    <sys:String x:Key="i18n_flash">Free Flash Memory:</sys:String>
+    
+    <!--Slot Table-->
+    <sys:String x:Key="i18n_slot">Slot</sys:String>
+    <sys:String x:Key="i18n_nports">#Ports</sys:String>
+    <sys:String x:Key="i18n_npoe">#Poe Ports</sys:String>
+    <sys:String x:Key="i18n_buget">Budget (Watts)</sys:String>
+    <sys:String x:Key="i18n_cons">Consumption (Watts)</sys:String>
+    <sys:String x:Key="i18n_btSupp">802.3BT Support</sys:String>
+    <sys:String x:Key="i18n_slPw">Power</sys:String>
+    <sys:String x:Key="i18n_fpoe">Fast PoE</sys:String>
+    <sys:String x:Key="i18n_ppoe">Perpetual PoE</sys:String>
+    <sys:String x:Key="i18n_poeSt">PoE Status</sys:String>
+    <sys:String x:Key="i18n_vcRole">VC Master/Slave</sys:String>
+    
+    <!--Port Table-->
+    <sys:String x:Key="i18n_port">Port</sys:String>
+    <sys:String x:Key="i18n_alias">Alias</sys:String>
+    <sys:String x:Key="i18n_ptSt">Status</sys:String>
+    <sys:String x:Key="i18n_prio">Priority</sys:String>
+    <sys:String x:Key="i18n_ptPwr">Power (Watts)</sys:String>
+    <sys:String x:Key="i18n_maxPwr">Max Power (Watts)</sys:String>
+    <sys:String x:Key="i18n_class">PoE Class</sys:String>
+    <sys:String x:Key="i18n_mode">PoE Mode</sys:String>
+    <sys:String x:Key="i18n_bt">802.3BT</sys:String>
+    <sys:String x:Key="i18n_devModel">Device Model</sys:String>
+    <sys:String x:Key="i18n_devType">Device Type</sys:String>
+    <sys:String x:Key="i18n_devName">Device Name</sys:String>
+    
+    <!--Status Bar messages-->
+    <sys:String x:Key="i18n_idle">Idle</sys:String>
+    <sys:String x:Key="i18n_connTo">Connected to:</sys:String>
+    <sys:String x:Key="i18n_upTime">Up time:</sys:String>
+    
+    <!--Login Dialog-->
+    <sys:String x:Key="i18n_cred">Enter Switch Credentials</sys:String>
+    <sys:String x:Key="i18n_ip">IP Address</sys:String>
+    <sys:String x:Key="i18n_user">Username</sys:String>
+    <sys:String x:Key="i18n_pwd">Password</sys:String>
+    
+    <!--Config Wizard Dialog-->
+    <sys:String x:Key="i18n_netCfg">Network Configuration</sys:String>
+    <sys:String x:Key="i18n_mngtIp">Management IP Address</sys:String>
+    <sys:String x:Key="i18n_mask">Netmask</sys:String>
+    <sys:String x:Key="i18n_admPwd">Admin Password</sys:String>
+    <sys:String x:Key="i18n_sysName">System Name</sys:String>
+    <sys:String x:Key="i18n_sysCont">Contact</sys:String>
+    <sys:String x:Key="i18n_sysLoc">Location</sys:String>
+    <sys:String x:Key="i18n_gwy">Default Gateway</sys:String>
+    <sys:String x:Key="i18n_dns">DNS Servers</sys:String>
+    <sys:String x:Key="i18n_ntp">NTP Servers</sys:String>
+    <sys:String x:Key="i18n_srvs">Servers</sys:String>
+    <sys:String x:Key="i18n_srv">Server</sys:String>
+    <sys:String x:Key="i18n_tz">Timezone</sys:String>
+    <sys:String x:Key="i18n_feat">Features</sys:String>
+    <sys:String x:Key="i18n_insProto">Disable Insecure Protocols</sys:String>
+    <sys:String x:Key="i18n_ssh">Enable SSH</sys:String>
+    <sys:String x:Key="i18n_dhcp">Enable DHCP Relay</sys:String>
+    <sys:String x:Key="i18n_multicast">Enable Multicast</sys:String>
+    <sys:String x:Key="i18n_vlan">VLAN</sys:String>
+    <sys:String x:Key="i18n_en">Enable</sys:String>
+    <sys:String x:Key="i18n_snmp">SNMP Settings</sys:String>
+    <sys:String x:Key="i18n_usrs">Users</sys:String>
+    <sys:String x:Key="i18n_usr">User</sys:String>
+    <sys:String x:Key="i18n_comms">Communitites (v2 only)</sys:String>
+    <sys:String x:Key="i18n_comm">Community</sys:String>
+    <sys:String x:Key="i18n_recv">Trap Receivers</sys:String>
+    <sys:String x:Key="i18n_usrName">Name</sys:String>
+    <sys:String x:Key="i18n_auth">Authentication Protocol</sys:String>
+    <sys:String x:Key="i18n_enc">Encryption Protocol</sys:String>
+    <sys:String x:Key="i18n_commName">Name</sys:String>
+    <sys:String x:Key="i18n_trapIp">IP Address</sys:String>
+    <sys:String x:Key="i18n_trapSt">Status</sys:String>
+    <sys:String x:Key="i18n_ver">Version</sys:String>
+    
+    <!--Messages-->
+    
+    <!--Tool Tips-->
+    
+</ResourceDictionary>
