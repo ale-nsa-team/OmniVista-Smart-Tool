@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
-        Title="Select Mac Address" Height="220" Width="380" WindowStyle="None" ShowInTaskbar="False">
+        Title="Select Mac Address" Height="180" Width="380" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -19,8 +19,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Style="{DynamicResource titleLabel}" Margin="0,25,0,5">Please enter the MAC address, Device or Vendor Name</Label>
         <TextBox Grid.Row="1" x:Name="_macAddr"
@@ -30,21 +28,9 @@
                      Text="{Binding SearchMacAddress}"
                      Margin="50,10">
         </TextBox>
-        <TextBlock Grid.Row="2" x:Name="_note1"
-                Style="{DynamicResource aboutParagraph}"
-                Text="Note: You may enter an incomplete MAC address"
-                Margin="0,0,0,0"
-                Width="265">
-        </TextBlock>
-        <TextBlock Grid.Row="3" x:Name="_note2"
-               Style="{DynamicResource aboutParagraph}"
-               Text="with the first 3 bytes separated by colon."
-               Margin="60,0,0,20"
-               Width="255">
-        </TextBlock>
-        <Border Grid.Row="4" Style="{DynamicResource propsBorder}">
+        <Border Grid.Row="2" Style="{DynamicResource propsBorder}" Margin="0,15,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Click="BtnOk_Click" Style="{DynamicResource smallButton}" Margin="2,10,0,0">OK</Button>
+                <Button Click="BtnOk_Click" Style="{DynamicResource smallButton}" Margin="5,10,0,0">OK</Button>
                 <Button Click="BtnCancel_Click" Style="{DynamicResource smallButton}" Margin="20,10,0,0">Cancel</Button>
             </StackPanel>
         </Border>

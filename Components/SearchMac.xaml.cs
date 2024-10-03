@@ -39,8 +39,7 @@ namespace PoEWizard.Components
         private void SearchMacAddress(SwitchModel device, string macAddr)
         {
             this._device_mac = !string.IsNullOrEmpty(macAddr) ? macAddr.ToLower().Trim() : string.Empty;
-            string[] splitMac = this._device_mac.Split(':');
-            this.IsMacAddress = string.IsNullOrEmpty(this._device_mac) || (splitMac.Length > 2 && !string.IsNullOrEmpty(splitMac[1]) && !string.IsNullOrEmpty(splitMac[2]));
+            this.IsMacAddress = Utils.IsValidMacSequence(this._device_mac);
             this.PortsFound = new ObservableCollection<PortModel>();
             foreach (var chas in device.ChassisList)
             {
@@ -97,8 +96,9 @@ namespace PoEWizard.Components
             }
             else
             {
-                if (!this.IsMacAddress) mac = Utils.GetVendorName(macAddr);
+                mac = this.IsMacAddress ? macAddr : Utils.GetVendorName(macAddr);
             }
+            if (this.IsMacAddress) return mac.StartsWith(this._device_mac) && !this.PortsFound.Contains(port);
             return mac.Contains(this._device_mac) && !this.PortsFound.Contains(port);
         }
 

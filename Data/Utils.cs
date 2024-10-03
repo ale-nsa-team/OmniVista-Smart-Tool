@@ -318,6 +318,22 @@ namespace PoEWizard.Data
             return false;
         }
 
+        public static bool IsValidMacSequence(string mac)
+        {
+            string[] splitMac = mac.Split(':');
+            if (splitMac.Length > 6) return false;
+            foreach (string hex in splitMac)
+            {
+                if (string.IsNullOrEmpty(hex) || !IsValidHex(hex)) return false;
+            }
+            return true;
+        }
+
+        public static bool IsValidHex(string hex)
+        {
+            return Regex.IsMatch(hex, "^[0-9a-fA-F]{1,2}$");
+        }
+
         public static bool IsReachable(string ipAddress)
         {
             if (!IsValidIP(ipAddress)) return false;
