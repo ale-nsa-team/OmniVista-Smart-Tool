@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
-        Title="SearchPort" MaxHeight="195" Width="1050" WindowStyle="None" ShowInTaskbar="False">
+        Title="SearchPort" MinHeight="115" MaxHeight="200" Width="1050" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -109,6 +109,11 @@
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
-        <Button Grid.Row="1" Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="5">Close</Button>
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                Style="{DynamicResource aboutParagraph}"
+                Text="Note: You may double click on the port to close and select it on the main window."
+                Margin="15,5,0,0" >
+        </TextBlock>
+        <Button Grid.Row="1"  Grid.Column="1"  Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="8">Close</Button>
     </Grid>
 </Window>

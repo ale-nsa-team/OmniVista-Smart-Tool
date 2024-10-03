@@ -40,7 +40,7 @@ namespace PoEWizard.Components
         {
             this._device_mac = !string.IsNullOrEmpty(macAddr) ? macAddr.ToLower().Trim() : string.Empty;
             string[] splitMac = this._device_mac.Split(':');
-            this.IsMacAddress = string.IsNullOrEmpty(this._device_mac) || (splitMac.Length > 1 && !string.IsNullOrEmpty(splitMac[1]));
+            this.IsMacAddress = string.IsNullOrEmpty(this._device_mac) || (splitMac.Length > 2 && !string.IsNullOrEmpty(splitMac[1]) && !string.IsNullOrEmpty(splitMac[2]));
             this.PortsFound = new ObservableCollection<PortModel>();
             foreach (var chas in device.ChassisList)
             {
@@ -80,8 +80,17 @@ namespace PoEWizard.Components
                 {
                     if (!this.IsMacAddress)
                     {
-                        mac = (!string.IsNullOrEmpty(port.EndPointDevicesList[0].Vendor) ? port.EndPointDevicesList[0].Vendor :
-                               Utils.GetVendorName(port.EndPointDevicesList[0].MacAddress)).ToLower();
+                        mac = port.EndPointDevicesList[0].Name.ToLower();
+                        if (!string.IsNullOrEmpty(mac) && !mac.Contains(this._device_mac)) mac = port.EndPointDevicesList[0].Vendor.ToLower();
+                        if (string.IsNullOrEmpty(mac))
+                        {
+                            mac = Utils.GetVendorName(port.EndPointDevicesList[0].MacAddress).ToLower();
+                            if (mac.Contains(":"))
+                            {
+                                string[] split = mac.Split(':');
+                                if (split.Length > 4) mac = string.Empty;
+                            }
+                        }
                     }
                     else mac = port.EndPointDevicesList[0].MacAddress;
                 }

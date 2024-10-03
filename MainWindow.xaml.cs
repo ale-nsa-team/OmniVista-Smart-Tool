@@ -301,7 +301,7 @@ namespace PoEWizard
                     JumpToSelectedPort(portSelected);
                     return;
                 }
-                ShowMessageBox("Search Port", $"Couldn't find {(sp.IsMacAddress ? $"MAC address {lastMacAddress}" : $"Vendor \"{lastMacAddress}\"")} on switch {device.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
+                ShowMessageBox("Search Port", $"Couldn't find {(sp.IsMacAddress ? $"MAC address {lastMacAddress}" : $"device or vendor \"{lastMacAddress}\"")} on switch {device.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
             }
             catch (Exception ex)
             {
