@@ -36,6 +36,11 @@ namespace PoEWizard.Components
             if (PortsFound.Count == 1) SelectedPort = PortsFound[0];
         }
 
+        private void OnWindowLoaded(object sender, RoutedEventArgs e)
+        {
+            this.MouseDown += delegate { this.DragMove(); };
+        }
+
         private void SearchMacAddress(SwitchModel device, string macAddr)
         {
             this._device_mac = !string.IsNullOrEmpty(macAddr) ? macAddr.ToLower().Trim() : string.Empty;
@@ -49,7 +54,7 @@ namespace PoEWizard.Components
                     {
                         if (port.EndPointDevicesList?.Count > 0)
                         {
-                            if (FoundDevice(port))
+                            if (FoundDevice(port, GetDeviceNameOrVendor(port)))
                             {
                                 this.PortsFound.Add(port);
                                 if (port.MacList?.Count == 0) port.MacList.Add(port.EndPointDevicesList[0].MacAddress);
@@ -70,23 +75,10 @@ namespace PoEWizard.Components
             }
         }
 
-        private bool FoundDevice(PortModel port, string macAddr = null)
+        private bool FoundDevice(PortModel port, string macAddr)
         {
-            string mac = string.Empty;
-            if (string.IsNullOrEmpty(macAddr))
-            {
-                if (port.EndPointDevicesList?.Count > 0) mac = GetDeviceNameOrVendor(port);
-            }
-            else if (this.IsMacAddress && macAddr.StartsWith(this._device_mac))
-            {
-                mac = macAddr;
-            }
-            else
-            {
-                mac = Utils.GetVendorName(macAddr).ToLower();
-            }
-            if (this.IsMacAddress) return mac.StartsWith(this._device_mac) && !this.PortsFound.Contains(port);
-            return mac.Contains(this._device_mac) && !this.PortsFound.Contains(port);
+            if (this.IsMacAddress && macAddr.StartsWith(this._device_mac)) return !this.PortsFound.Contains(port);
+            else return Utils.GetVendorName(macAddr).ToLower().Contains(this._device_mac) && !this.PortsFound.Contains(port);
         }
 
         private string GetDeviceNameOrVendor(PortModel port)
@@ -130,5 +122,6 @@ namespace PoEWizard.Components
         {
             this.Close();
         }
+
     }
 }

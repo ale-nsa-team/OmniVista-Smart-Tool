@@ -33,6 +33,11 @@ namespace PoEWizard.Components
             DataContext = this;
         }
 
+        private void OnWindowLoaded(object sender, RoutedEventArgs e)
+        {
+            this.MouseDown += delegate { this.DragMove(); };
+        }
+
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
