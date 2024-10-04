@@ -61,6 +61,16 @@ namespace PoEWizard.Components
                                 if (port.MacList?.Count == 0) port.MacList.Add(port.EndPointDevicesList[0].MacAddress);
                             }
                         }
+                        if (port.MacList?.Count == 0) continue;
+                        foreach (string mac in port.MacList)
+                        {
+                            if (FoundDevice(port, mac))
+                            {
+                                this.PortsFound.Add(port);
+                                port.CreateVirtualDeviceEndpoint();
+                                break;
+                            }
+                        }
                     }
                 }
             }

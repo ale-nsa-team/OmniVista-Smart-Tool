@@ -198,21 +198,8 @@ namespace PoEWizard.Device
                     foreach(string key in ports.Keys)
                     {
                         PortModel port = ports[key];
-                        if (!string.IsNullOrEmpty(port.EndPointDevice.Type) && port.EndPointDevice.Type != NO_LLDP) continue;
-                        Dictionary<string, string> ep = new Dictionary<string, string>
-                        {
-                            [REMOTE_ID] = port.Name,
-                            [LOCAL_PORT] = port.Name,
-                            [CAPABILITIES_SUPPORTED] = NO_LLDP,
-                            [MED_MAC_ADDRESS] = string.Join(",", port.MacList)
-                        };
-                        if (port.EndPointDevice.Type == NO_LLDP)
-                        {
-                            port.EndPointDevice.LoadLldpRemoteTable(ep);
-                            continue;
-                        }
-                        port.EndPointDevice = new EndPointDeviceModel(ep);
-                        port.EndPointDevicesList.Add(port.EndPointDevice.Clone());
+                        if (!string.IsNullOrEmpty(port.EndPointDevice.Type) && port.EndPointDevice.Type != NO_LLDP && port.MacList?.Count < 2) continue;
+                        port.CreateVirtualDeviceEndpoint();
                     }
                     break;
 
