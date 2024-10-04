@@ -226,7 +226,9 @@ namespace PoEWizard.Device
         {
             if (MacList.Count < 10)
             {
-                MacList.Add(Utils.GetDictValue(dict, PORT_MAC_LIST) );
+                string mac = Utils.GetDictValue(dict, PORT_MAC_LIST);
+                if (Utils.IsValidMacAddress(mac) && MacList.Contains(mac)) return MacList.Count;
+                MacList.Add(mac);
             }
             IsUplink = MacList.Count > 2;
             return MacList.Count;
