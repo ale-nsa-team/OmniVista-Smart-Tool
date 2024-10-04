@@ -170,25 +170,26 @@ namespace PoEWizard.Device
 
         public void CreateVirtualDeviceEndpoint()
         {
-            bool found = false;
+            List<string> macList = new List<string>(this.MacList);
+            EndPointDeviceModel deviceFound = null;
             foreach (EndPointDeviceModel dev in this.EndPointDevicesList)
             {
+                macList.Remove(dev.MacAddress);
                 if ((string.IsNullOrEmpty(dev.Type) || dev.Type == NO_LLDP) && !string.IsNullOrEmpty(dev.MacAddress))
                 {
-                    string macAddr = dev.MacAddress;
-                    found = true;
-                    foreach (string mac in this.MacList)
-                    {
-                        if (!macAddr.Contains(mac))
-                        {
-                            dev.MacAddress += $",{mac}";
-                        }
-                    }
+                    if (deviceFound == null) deviceFound = dev;
                 }
             }
-            if (found) return;
+            if (deviceFound != null)
+            {
+                foreach (string mac in macList)
+                {
+                    if (!deviceFound.MacAddress.Contains(mac)) deviceFound.MacAddress += $",{mac}";
+                }
+                return;
+            }
             Dictionary<string, string> dict = new Dictionary<string, string> { [REMOTE_ID] = this.Name, [LOCAL_PORT] = this.Name, [CAPABILITIES_SUPPORTED] = NO_LLDP,
-                                                                               [MED_MAC_ADDRESS] = string.Join(",", this.MacList)
+                                                                               [MED_MAC_ADDRESS] = string.Join(",", macList)
             };
             this.EndPointDevicesList.Add(new EndPointDeviceModel(dict));
             UpdateEndPointDevice(NO_LLDP);
