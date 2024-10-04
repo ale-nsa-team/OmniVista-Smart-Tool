@@ -1,6 +1,7 @@
 ﻿using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using static PoEWizard.Data.Constants;
@@ -58,16 +59,6 @@ namespace PoEWizard.Components
                             {
                                 this.PortsFound.Add(port);
                                 if (port.MacList?.Count == 0) port.MacList.Add(port.EndPointDevicesList[0].MacAddress);
-                                continue;
-                            }
-                        }
-                        if (port.MacList?.Count == 0) continue;
-                        foreach (string mac in port.MacList)
-                        {
-                            if (FoundDevice(port, mac))
-                            {
-                                this.PortsFound.Add(port);
-                                break;
                             }
                         }
                     }
@@ -87,16 +78,20 @@ namespace PoEWizard.Components
             {
                 string mac = device.Name.ToLower();
                 if (string.IsNullOrEmpty(mac) || !mac.Contains(this._device_mac)) mac = device.Vendor.ToLower();
-                if (string.IsNullOrEmpty(mac))
-                {
-                    mac = Utils.GetVendorName(device.MacAddress).ToLower();
-                    if (mac.Contains(":"))
-                    {
-                        string[] split = mac.Split(':');
-                        if (split.Length > 2) return string.Empty;
-                    }
-                }
+                if (string.IsNullOrEmpty(mac) || !mac.Contains(this._device_mac)) mac = SearchMacList(new List<string>(device.MacAddress.Split(',')));
+                if (string.IsNullOrEmpty(mac) || !mac.Contains(this._device_mac)) continue;
                 return mac;
+            }
+            return string.Empty;
+        }
+
+        private string SearchMacList(List<string> macList)
+        {
+            foreach (string mac in macList)
+            {
+                string vendor = Utils.GetVendorName(mac).ToLower();
+                if (!string.IsNullOrEmpty(vendor) && !vendor.Contains(":") && vendor.Contains(this._device_mac)) return vendor;
+                else if (mac.StartsWith(this._device_mac)) return mac;
             }
             return string.Empty;
         }
