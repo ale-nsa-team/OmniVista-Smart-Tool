@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Alcatel-Lucent Enterprise")]
 [assembly: AssemblyProduct("AOS Toolkit")]
-[assembly: AssemblyCopyright("Copyright ©  2024")]
+[assembly: AssemblyCopyright("©  ALE International, ALE USA Inc. All rights reserved in all countries.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
