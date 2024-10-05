@@ -1370,14 +1370,11 @@ namespace PoEWizard
             await ResetPortPower();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable2PairPower();
-            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
         }
 
         private async Task RunWizardTelephone()
         {
             await Enable2PairPower();
-            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
-            await DisableCapacitorDetection();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await ResetPortPower();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
@@ -1387,6 +1384,7 @@ namespace PoEWizard
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await Enable823BT();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
+            await CheckCapacitorDetection();
         }
 
         private async Task RunWizardWirelessRouter()
@@ -1399,9 +1397,9 @@ namespace PoEWizard
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await EnableHdmiMdi();
             if (reportResult.IsWizardStopped(selectedPort.Name)) return;
-            await Enable2PairPower();
-            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
             await CheckCapacitorDetection();
+            if (reportResult.IsWizardStopped(selectedPort.Name)) return;
+            await Enable2PairPower();
         }
 
         private async Task RunWizardOther()

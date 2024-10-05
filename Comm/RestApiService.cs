@@ -843,10 +843,7 @@ namespace PoEWizard.Comm
                             if (found)
                             {
                                 string[] split = line.Split('/');
-                                if (split.Length > 1 && line.Length > 10)
-                                {
-                                    return resp;
-                                }
+                                if (split.Length > 1 && line.Length > 10) return resp;
                             }
                         }
                     }
@@ -1627,13 +1624,21 @@ namespace PoEWizard.Comm
             DateTime startTime = DateTime.Now;
             UpdatePortData();
             int dur = 0;
+            int cntUp = 1;
             while (dur < waitSec)
             {
                 Thread.Sleep(1000);
                 dur = (int)Utils.GetTimeDuration(startTime);
                 _progress.Report(new ProgressReport($"{msg} ({Utils.CalcStringDuration(startTime, true)}) ...{PrintPortStatus()}"));
-                if (IsPortUp()) break;
-                if (dur % 5 == 0) UpdatePortData();
+                if (dur % 5 == 0)
+                {
+                    UpdatePortData();
+                    if (IsPortUp())
+                    {
+                        if (cntUp > 2) break;
+                        cntUp++;
+                    }
+                }
             }
             return startTime;
         }
