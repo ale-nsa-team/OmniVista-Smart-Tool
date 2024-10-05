@@ -180,6 +180,7 @@ namespace PoEWizard.Device
                     if (deviceFound == null) deviceFound = dev;
                 }
             }
+            if (macList.Count < 1) return;
             if (deviceFound != null)
             {
                 foreach (string mac in macList)

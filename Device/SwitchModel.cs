@@ -198,7 +198,6 @@ namespace PoEWizard.Device
                     foreach(string key in ports.Keys)
                     {
                         PortModel port = ports[key];
-                        if (!string.IsNullOrEmpty(port.EndPointDevice.Type) && port.EndPointDevice.Type != NO_LLDP && port.MacList?.Count < 2) continue;
                         port.CreateVirtualDeviceEndpoint();
                     }
                     break;
