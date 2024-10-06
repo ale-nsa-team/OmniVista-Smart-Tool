@@ -149,14 +149,14 @@ namespace PoEWizard.Data
                 // ,Device Type,Vendor;
                 if (this.trafficPort.MacList?.Count > 0 && this.trafficPort.EndPointDevice != null && !IsDeviceTypeUnknown(this.trafficPort.EndPointDevice))
                 {
-                    this.Data.Append(",\"").Append(this.trafficPort.EndPointDevice.Type).Append("\"").Append("\",\"").Append(this.trafficPort.EndPointDevice.Vendor);
+                    this.Data.Append(",\"").Append(this.trafficPort.EndPointDevice.Type).Append("\",\"").Append(this.trafficPort.EndPointDevice.Vendor).Append("\"");
                 }
                 else
                 {
                     this.Data.Append(",,");
                 }
                 // ,MAC Address List
-                this.Data.Append("\",\"").Append(PrintMacAdresses()).Append("\"");
+                this.Data.Append(",\"").Append(PrintMacAdresses()).Append("\"");
                 ParseAlertConditions();
             }
             if (this.alertReport?.Count > 0) foreach (KeyValuePair<string, string> keyVal in this.alertReport) this.Summary += keyVal.Value;

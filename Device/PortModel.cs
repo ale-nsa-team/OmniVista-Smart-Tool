@@ -193,11 +193,9 @@ namespace PoEWizard.Device
             {
                 this.EndPointDevice.Type = MED_ROUTER;
                 this.EndPointDevice.Name = MED_ROUTER;
-                while (this.EndPointDevicesList.Count > nbDevices + 1)
-                {
-                    this.EndPointDevicesList.Remove(this.EndPointDevicesList[this.EndPointDevicesList.Count - 1]);
-                }
+                this.EndPointDevice.Label = MED_ROUTER;
             }
+            if (this.EndPointDevice.Type == NO_LLDP || this.EndPointDevice.Type == MED_ROUTER) this.EndPointDevice.Vendor = string.Empty;
         }
 
         public void UpdatePortStatus(Dictionary<string, string> dict)
