@@ -147,14 +147,13 @@ namespace PoEWizard.Data
                 #endregion
 
                 // ,Device Type,Vendor;
-                this.Data.Append(",\"");
                 if (this.trafficPort.MacList?.Count > 0 && this.trafficPort.EndPointDevice != null && !IsDeviceTypeUnknown(this.trafficPort.EndPointDevice))
                 {
-                    this.Data.Append(this.trafficPort.EndPointDevice.Type).Append("\",\"").Append(this.trafficPort.EndPointDevice.Vendor);
+                    this.Data.Append(",\"").Append(this.trafficPort.EndPointDevice.Type).Append("\"").Append("\",\"").Append(this.trafficPort.EndPointDevice.Vendor);
                 }
                 else
                 {
-                    this.Data.Append("\",\"");
+                    this.Data.Append(",,");
                 }
                 // ,MAC Address List
                 this.Data.Append("\",\"").Append(PrintMacAdresses()).Append("\"");
@@ -377,20 +376,11 @@ namespace PoEWizard.Data
                     if (keyVal.Value == null || keyVal.Value.EndPointDevice == null || string.IsNullOrEmpty(keyVal.Value.EndPointDevice.Type)) continue;
                     PortModel port = keyVal.Value;
                     EndPointDeviceModel device = port.EndPointDevice;
-                    string macList = IsDeviceTypeUnknown(device) ? device.Name : string.Empty;
-                    if (macList.Contains(",")) continue;
-                    if (port.EndPointDevicesList.Count > 1) continue;
+                    if (port.EndPointDevicesList.Count > 1 || IsDeviceTypeUnknown(device)) continue;
                     // Port,Alias,Type
                     this.Data.Append("\n ").Append(port.Name).Append(",\"").Append(port.Alias).Append("\",\"").Append(device.Type).Append("\"");
                     // ,Name,Description,IP Address
-                    if (!IsDeviceTypeUnknown(device))
-                    {
-                        this.Data.Append(",\"").Append(device.Name).Append("\",\"").Append(device.Description).Append("\",\"").Append(device.IpAddress).Append("\"");
-                    }
-                    else
-                    {
-                        this.Data.Append(",\"\",\"\",\"\"");
-                    }
+                    this.Data.Append(",\"").Append(device.Name).Append("\",\"").Append(device.Description).Append("\",\"").Append(device.IpAddress).Append("\"");
                     string vendor = !string.IsNullOrEmpty(device.Vendor) ? device.Vendor :
                                     !string.IsNullOrEmpty(device.MacAddress) && !device.MacAddress.Contains(",") ? Utils.GetVendorName(device.MacAddress) : string.Empty;
                     if (string.IsNullOrEmpty(vendor) && !string.IsNullOrEmpty(device.MacAddress) && !device.MacAddress.Contains(","))
@@ -430,7 +420,7 @@ namespace PoEWizard.Data
 
         private bool IsDeviceTypeUnknown(EndPointDeviceModel device)
         {
-            return device == null || string.IsNullOrEmpty(device.Type) || device.Type == NO_LLDP || device.Type == MED_NONE;
+            return device == null || string.IsNullOrEmpty(device.Type) || device.Type == NO_LLDP || device.Type == MED_UNSPECIFIED || device.Type == MED_UNKNOWN;
         }
     }
 

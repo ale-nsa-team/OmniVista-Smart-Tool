@@ -135,28 +135,9 @@ namespace PoEWizard.Device
             if (dictList == null || dictList.Count == 0) return;
             foreach (Dictionary<string, string> dict in dictList)
             {
-                if (!dict.ContainsKey(CAPABILITIES_SUPPORTED)) dict[CAPABILITIES_SUPPORTED] = MED_UNKNOWN;
                 UpdateEndPointParameters(dict, DictionaryType.LldpInventoryList);
             }
-            if (this.EndPointDevicesList.Count == 1)
-            {
-                UpdateEndPointDevice(MED_ROUTER);
-                return;
-            }
-            if (string.IsNullOrEmpty(this.EndPointDevice.Label))
-            {
-                foreach (EndPointDeviceModel dev in this.EndPointDevicesList)
-                {
-                    if (!string.IsNullOrEmpty(dev.Description))
-                    {
-                        this.EndPointDevice = dev.Clone();
-                        if (!string.IsNullOrEmpty(dev.Name))
-                        {
-                            this.EndPointDevice = dev.Clone();
-                        }
-                    }
-                }
-            }
+            UpdateEndPointDevice(MED_ROUTER);
         }
 
         private void UpdateEndPointParameters(Dictionary<string, string> dict, DictionaryType dictType)
@@ -175,18 +156,15 @@ namespace PoEWizard.Device
             foreach (EndPointDeviceModel dev in this.EndPointDevicesList)
             {
                 macList.Remove(dev.MacAddress);
-                if ((string.IsNullOrEmpty(dev.Type) || dev.Type == NO_LLDP) && !string.IsNullOrEmpty(dev.MacAddress))
+                if (dev.Type == NO_LLDP && !string.IsNullOrEmpty(dev.MacAddress))
                 {
                     if (deviceFound == null) deviceFound = dev;
                 }
             }
             if (macList.Count < 1) return;
-            if (deviceFound != null)
+            if (deviceFound != null && deviceFound.Type == NO_LLDP)
             {
-                foreach (string mac in macList)
-                {
-                    if (!deviceFound.MacAddress.Contains(mac)) deviceFound.MacAddress += $",{mac}";
-                }
+                deviceFound.MacAddress = string.Join(",", macList);
                 return;
             }
             Dictionary<string, string> dict = new Dictionary<string, string> { [REMOTE_ID] = this.Name, [LOCAL_PORT] = this.Name, [CAPABILITIES_SUPPORTED] = NO_LLDP,
@@ -198,11 +176,28 @@ namespace PoEWizard.Device
 
         private void UpdateEndPointDevice(string type)
         {
-            if (this.EndPointDevice.Type != NO_LLDP && (string.IsNullOrEmpty(this.EndPointDevicesList[0].Type) || this.EndPointDevicesList[0].Type == MED_NONE))
-            {
-                this.EndPointDevicesList[0].Type = !string.IsNullOrEmpty(this.EndPointDevice.Type) ? this.EndPointDevice.Type : type;
-            }
+            if (string.IsNullOrEmpty(this.EndPointDevicesList[0].Type)) this.EndPointDevicesList[0].Type = type;
             this.EndPointDevice = this.EndPointDevicesList[0].Clone();
+            CheckMultipleDevicesEndPoint();
+        }
+
+        private void CheckMultipleDevicesEndPoint()
+        {
+            int nbDevices = 0;
+            foreach (EndPointDeviceModel dev in this.EndPointDevicesList)
+            {
+                if (dev.Type == NO_LLDP) break;
+                nbDevices++;
+            }
+            if (nbDevices > 1)
+            {
+                this.EndPointDevice.Type = MED_ROUTER;
+                this.EndPointDevice.Name = MED_ROUTER;
+                while (this.EndPointDevicesList.Count > nbDevices + 1)
+                {
+                    this.EndPointDevicesList.Remove(this.EndPointDevicesList[this.EndPointDevicesList.Count - 1]);
+                }
+            }
         }
 
         public void UpdatePortStatus(Dictionary<string, string> dict)
