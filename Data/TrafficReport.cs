@@ -84,7 +84,7 @@ namespace PoEWizard.Data
             }
             this.selectedDuration = $"{selDuration} {unit}";
             if (selDuration > 1) this.selectedDuration += "s";
-            this.Summary += $"\n  Switch: {this.SwitchTraffic.Name} ({this.SwitchTraffic.IpAddress}), Serial Number: {this.SwitchTraffic.SerialNumber}";
+            this.Summary += $"\n  Switch: {this.SwitchTraffic.Name} ({this.SwitchTraffic.IpAddress}), Serial number: {this.SwitchTraffic.SerialNumber}";
             this.Summary += $"\n  Date: {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}";
             this.Summary += $"\n  Selected duration: {this.selectedDuration}";
             this.Summary += $"\n  Actual duration: {Utils.CalcStringDuration(TrafficStartTime, true)}";
@@ -100,8 +100,8 @@ namespace PoEWizard.Data
         private void BuildReportData()
         {
             this.Data = new StringBuilder($"\r\nSwitch, ").Append(this.SwitchTraffic.Name).Append(" ").Append(this.SwitchTraffic.IpAddress);
-            this.Data.Append("\"\r\nSerial Number, ").Append(this.SwitchTraffic.SerialNumber);
-            this.Data.Append("\"\r\nDate,").Append($" {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}");
+            this.Data.Append("\r\nSerial number, ").Append(this.SwitchTraffic.SerialNumber);
+            this.Data.Append("\r\nDate,").Append($" {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}");
             this.Data.Append($"\r\nSelected duration, ").Append(this.selectedDuration);
             this.Data.Append($"\r\nActual duration, ").Append(Utils.CalcStringDuration(TrafficStartTime, true));
             this.Data.Append("\r\n\r\n\r\n").Append(HEADER);
