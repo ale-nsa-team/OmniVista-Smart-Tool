@@ -84,7 +84,7 @@ namespace PoEWizard.Data
             this.Summary += $"\n  Selected duration: {selectedDuration} {unit}";
             if (selectedDuration > 1) this.Summary += "s";
             this.Summary += $"\n  Switch: {this.SwitchTraffic.Name} ({this.SwitchTraffic.IpAddress}), Serial Number: {this.SwitchTraffic.SerialNumber}";
-            this.Summary += $"\n  Date: {this.TrafficStartTime:MM/dd/yyyy hh:mm:ss tt}";
+            this.Summary += $"\n  Date: {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}";
             this.Summary += $"\n  Duration: {Utils.CalcStringDuration(TrafficStartTime, true)}";
             this.Summary += $"\n\nNote: This tool can detect common network issues, but is not a substitute for long term monitoring and human interpretation.";
             this.Summary += $"\n      Your results may vary and will change over time.";
@@ -97,10 +97,10 @@ namespace PoEWizard.Data
 
         private void BuildReportData()
         {
-            this.Data = new StringBuilder($"\r\nSwitch, \"").Append(this.SwitchTraffic.Name).Append(" ").Append(this.SwitchTraffic.IpAddress);
-            this.Data.Append("\"\r\nSerial Number, \"").Append(this.SwitchTraffic.SerialNumber);
-            this.Data.Append("\"\r\nDate,").Append($" {this.TrafficStartTime:MM/dd/yyyy hh:mm:ss tt}");
-            this.Data.Append($"\r\nDuration, \"").Append(Utils.CalcStringDuration(TrafficStartTime, true)).Append("\"");
+            this.Data = new StringBuilder($"\r\nSwitch, ").Append(this.SwitchTraffic.Name).Append(" ").Append(this.SwitchTraffic.IpAddress);
+            this.Data.Append("\"\r\nSerial Number, ").Append(this.SwitchTraffic.SerialNumber);
+            this.Data.Append("\"\r\nDate,").Append($" {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}");
+            this.Data.Append($"\r\nDuration, ").Append(Utils.CalcStringDuration(TrafficStartTime, true));
             this.Data.Append("\r\n\r\n\r\n").Append(HEADER);
             this.alertReport = new Dictionary<string, string>();
             foreach (KeyValuePair<string, PortTrafficModel> keyVal in this.SwitchTraffic.Ports)
@@ -373,22 +373,16 @@ namespace PoEWizard.Data
                 this.Data.Append("\r\n\r\n\r\n").Append(HEADER_DEVICE);
                 foreach (KeyValuePair<string, PortModel> keyVal in this.switchPorts)
                 {
-                    if (keyVal.Value == null || keyVal.Value.EndPointDevice == null || string.IsNullOrEmpty(keyVal.Value.EndPointDevice.Type)) continue;
                     PortModel port = keyVal.Value;
+                    if (port == null || port.EndPointDevice == null || string.IsNullOrEmpty(port.EndPointDevice.Type)) continue;
                     EndPointDeviceModel device = port.EndPointDevice;
-                    if (port.EndPointDevicesList.Count > 1 || IsDeviceTypeUnknown(device)) continue;
+                    if (IsDeviceTypeUnknown(device)) continue;
                     // Port,Alias,Type
                     this.Data.Append("\n ").Append(port.Name).Append(",\"").Append(port.Alias).Append("\",\"").Append(device.Type).Append("\"");
                     // ,Name,Description,IP Address
                     this.Data.Append(",\"").Append(device.Name).Append("\",\"").Append(device.Description).Append("\",\"").Append(device.IpAddress).Append("\"");
-                    string vendor = !string.IsNullOrEmpty(device.Vendor) ? device.Vendor :
-                                    !string.IsNullOrEmpty(device.MacAddress) && !device.MacAddress.Contains(",") ? Utils.GetVendorName(device.MacAddress) : string.Empty;
-                    if (string.IsNullOrEmpty(vendor) && !string.IsNullOrEmpty(device.MacAddress) && !device.MacAddress.Contains(","))
-                    {
-                        vendor = Utils.GetVendorName(device.MacAddress);
-                    }
                     // ,Vendor,Model,Software Version";
-                    this.Data.Append(",\"").Append(vendor).Append("\",\"").Append(device.Model).Append("\",\"").Append(device.SoftwareVersion).Append("\"");
+                    this.Data.Append(",\"").Append(device.Vendor).Append("\",\"").Append(device.Model).Append("\",\"").Append(device.SoftwareVersion).Append("\"");
                     // ,Serial Number";
                     this.Data.Append(",\"").Append(device.SerialNumber).Append("\"");
                     // ,MAC Address";
@@ -402,7 +396,7 @@ namespace PoEWizard.Data
                             foreach (string mac in split)
                             {
                                 if (sb.Length > 0) sb.Append(",");
-                                vendor = Utils.GetVendorName(mac);
+                                string vendor = Utils.GetVendorName(mac);
                                 if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor))
                                 {
                                     sb.Append(mac).Append(" (").Append(vendor).Append(")");
