@@ -42,6 +42,7 @@ namespace PoEWizard.Data
         private double txLostFrames = 0;
 
         private double txCollisions = 0;
+        private string selectedDuration;
 
         public string Summary { get; set; }
         public StringBuilder Data { get; set; }
@@ -69,22 +70,23 @@ namespace PoEWizard.Data
                 }
             }
             this.Summary = $"Traffic analysis {completion}:";
-            int selectedDuration;
+            int selDuration;
             string unit;
             if (selectedDur >= 60 && selectedDur < 3600)
             {
                 unit = MINUTE;
-                selectedDuration = selectedDur / 60;
+                selDuration = selectedDur / 60;
             }
             else
             {
                 unit = HOUR;
-                selectedDuration = selectedDur / 3600;
+                selDuration = selectedDur / 3600;
             }
-            this.Summary += $"\n  Selected duration: {selectedDuration} {unit}";
-            if (selectedDuration > 1) this.Summary += "s";
+            this.selectedDuration = $"{selDuration} {unit}";
+            if (selDuration > 1) this.selectedDuration += "s";
             this.Summary += $"\n  Switch: {this.SwitchTraffic.Name} ({this.SwitchTraffic.IpAddress}), Serial Number: {this.SwitchTraffic.SerialNumber}";
             this.Summary += $"\n  Date: {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}";
+            this.Summary += $"\n  Selected duration: {this.selectedDuration}";
             this.Summary += $"\n  Duration: {Utils.CalcStringDuration(TrafficStartTime, true)}";
             this.Summary += $"\n\nNote: This tool can detect common network issues, but is not a substitute for long term monitoring and human interpretation.";
             this.Summary += $"\n      Your results may vary and will change over time.";
@@ -100,6 +102,7 @@ namespace PoEWizard.Data
             this.Data = new StringBuilder($"\r\nSwitch, ").Append(this.SwitchTraffic.Name).Append(" ").Append(this.SwitchTraffic.IpAddress);
             this.Data.Append("\"\r\nSerial Number, ").Append(this.SwitchTraffic.SerialNumber);
             this.Data.Append("\"\r\nDate,").Append($" {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}");
+            this.Data.Append($"\r\nSelected duration, ").Append(this.selectedDuration);
             this.Data.Append($"\r\nDuration, ").Append(Utils.CalcStringDuration(TrafficStartTime, true));
             this.Data.Append("\r\n\r\n\r\n").Append(HEADER);
             this.alertReport = new Dictionary<string, string>();
