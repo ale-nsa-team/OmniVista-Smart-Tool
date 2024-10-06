@@ -87,7 +87,7 @@ namespace PoEWizard.Data
             this.Summary += $"\n  Switch: {this.SwitchTraffic.Name} ({this.SwitchTraffic.IpAddress}), Serial Number: {this.SwitchTraffic.SerialNumber}";
             this.Summary += $"\n  Date: {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}";
             this.Summary += $"\n  Selected duration: {this.selectedDuration}";
-            this.Summary += $"\n  Duration: {Utils.CalcStringDuration(TrafficStartTime, true)}";
+            this.Summary += $"\n  Actual duration: {Utils.CalcStringDuration(TrafficStartTime, true)}";
             this.Summary += $"\n\nNote: This tool can detect common network issues, but is not a substitute for long term monitoring and human interpretation.";
             this.Summary += $"\n      Your results may vary and will change over time.";
             this.Summary += $"\n\nTraffic Alert:\n";
@@ -103,7 +103,7 @@ namespace PoEWizard.Data
             this.Data.Append("\"\r\nSerial Number, ").Append(this.SwitchTraffic.SerialNumber);
             this.Data.Append("\"\r\nDate,").Append($" {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}");
             this.Data.Append($"\r\nSelected duration, ").Append(this.selectedDuration);
-            this.Data.Append($"\r\nDuration, ").Append(Utils.CalcStringDuration(TrafficStartTime, true));
+            this.Data.Append($"\r\nActual duration, ").Append(Utils.CalcStringDuration(TrafficStartTime, true));
             this.Data.Append("\r\n\r\n\r\n").Append(HEADER);
             this.alertReport = new Dictionary<string, string>();
             foreach (KeyValuePair<string, PortTrafficModel> keyVal in this.SwitchTraffic.Ports)
