@@ -70,7 +70,7 @@ namespace PoEWizard.Device
             {
                 RemotePort = Utils.ParseIfIndex(ifIndex.ToString());
                 if (string.IsNullOrEmpty(Label)) Label = $"Remote port {RemotePort}";
-                Type = SWITCH;
+                Type = MED_SWITCH;
             }
             else if (!Utils.IsNumber(RemotePort))
             {

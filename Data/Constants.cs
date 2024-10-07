@@ -215,7 +215,7 @@ namespace PoEWizard.Data
         public const string MED_MAC_ADDRESS = "MAC Address";
         public const string NO_LLDP = "No LLDP";
         public const string MED_UNSPECIFIED = "Unspecified";
-        public const string MED_ROUTER = "Multiple devices";
+        public const string MED_UPLINK = "Multiple devices";
         public const string MED_UNKNOWN = "Unknown";
         // Used by "SHOW_LLDP_INVENTORY"
         public const string MED_MANUFACTURER = "Manufacturer Name";
@@ -224,6 +224,7 @@ namespace PoEWizard.Data
         public const string MED_FIRMWARE_REVISION = "Firmware Revision";
         public const string MED_SOFTWARE_REVISION = "Software Revision";
         public const string MED_SERIAL_NUMBER = "Serial Number";
+        public const string MED_SWITCH = "Switch";
         // Used by "SHOW_CHASSIS"
         public const string CHAS_DEVICE = "Chassis/Device";
         public const string CURRENT = "Current";

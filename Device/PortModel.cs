@@ -121,12 +121,12 @@ namespace PoEWizard.Device
                 {
                     UpdateEndPointParameters(dict, DictionaryType.LldpRemoteList);
                 }
-                UpdateEndPointDevice(MED_ROUTER);
+                UpdateEndPointDevice(MED_UPLINK);
             }
             else
             {
                 UpdateEndPointParameters(dictList[0], DictionaryType.LldpRemoteList);
-                UpdateEndPointDevice(MED_ROUTER);
+                UpdateEndPointDevice(MED_UPLINK);
             }
         }
 
@@ -137,7 +137,7 @@ namespace PoEWizard.Device
             {
                 UpdateEndPointParameters(dict, DictionaryType.LldpInventoryList);
             }
-            UpdateEndPointDevice(MED_ROUTER);
+            UpdateEndPointDevice(MED_UPLINK);
         }
 
         private void UpdateEndPointParameters(Dictionary<string, string> dict, DictionaryType dictType)
@@ -155,11 +155,12 @@ namespace PoEWizard.Device
             EndPointDeviceModel deviceFound = null;
             foreach (EndPointDeviceModel dev in this.EndPointDevicesList)
             {
-                macList.Remove(dev.MacAddress);
                 if (dev.Type == NO_LLDP && !string.IsNullOrEmpty(dev.MacAddress))
                 {
-                    if (deviceFound == null) deviceFound = dev;
+                    deviceFound = dev;
+                    break;
                 }
+                macList.Remove(dev.MacAddress);
             }
             if (macList.Count < 1) return;
             if (deviceFound != null && deviceFound.Type == NO_LLDP)
@@ -178,11 +179,7 @@ namespace PoEWizard.Device
         {
             if (string.IsNullOrEmpty(this.EndPointDevicesList[0].Type)) this.EndPointDevicesList[0].Type = type;
             this.EndPointDevice = this.EndPointDevicesList[0].Clone();
-            CheckMultipleDevicesEndPoint();
-        }
-
-        private void CheckMultipleDevicesEndPoint()
-        {
+            if (this.EndPointDevice.Type == MED_SWITCH) return;
             int nbDevices = 0;
             foreach (EndPointDeviceModel dev in this.EndPointDevicesList)
             {
@@ -191,11 +188,11 @@ namespace PoEWizard.Device
             }
             if (nbDevices > 1)
             {
-                this.EndPointDevice.Type = MED_ROUTER;
-                this.EndPointDevice.Name = MED_ROUTER;
-                this.EndPointDevice.Label = MED_ROUTER;
+                this.EndPointDevice.Type = MED_UPLINK;
+                this.EndPointDevice.Name = MED_UPLINK;
+                this.EndPointDevice.Label = MED_UPLINK;
             }
-            if (this.EndPointDevice.Type == NO_LLDP || this.EndPointDevice.Type == MED_ROUTER) this.EndPointDevice.Vendor = string.Empty;
+            if (this.EndPointDevice.Type == NO_LLDP || this.EndPointDevice.Type == MED_UPLINK) this.EndPointDevice.Vendor = string.Empty;
         }
 
         public void UpdatePortStatus(Dictionary<string, string> dict)
@@ -230,7 +227,7 @@ namespace PoEWizard.Device
 
         public bool IsSwitchUplink()
         {
-            return this.EndPointDevicesList?.Count > 0 && !string.IsNullOrEmpty(this.EndPointDevicesList[0].Type) && this.EndPointDevicesList[0].Type == SWITCH;
+            return this.EndPointDevicesList?.Count > 0 && !string.IsNullOrEmpty(this.EndPointDevicesList[0].Type) && this.EndPointDevicesList[0].Type == MED_SWITCH;
         }
 
         private string GetPortId(string chas)
