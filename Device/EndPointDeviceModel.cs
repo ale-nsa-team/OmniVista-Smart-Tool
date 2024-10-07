@@ -58,8 +58,8 @@ namespace PoEWizard.Device
             if (portSplit.Length > 1) PortSubType = (PortSubType)Enum.ToObject(typeof(PortSubType), Utils.StringToInt(portSplit[0]));
             PortDescription = GetDictValue(dict, PORT_DESCRIPTION, PortDescription);
             Type = GetDictValue(dict, CAPABILITIES_SUPPORTED, Type);
-            if (Type.Contains("none")) Type = MED_UNSPECIFIED;
-            else if (string.IsNullOrEmpty(Type)) Type = MED_UNKNOWN;
+            if (Type.Contains("none")) Type = MED_UNKNOWN;
+            else if (string.IsNullOrEmpty(Type)) Type = MED_UNSPECIFIED;
             IpAddress = GetDictValue(dict, MED_IP_ADDRESS, IpAddress);
             EthernetType = GetDictValue(dict, MAU_TYPE, EthernetType);
             Label = Name = GetDictValue(dict, SYSTEM_NAME, Name);
@@ -76,7 +76,7 @@ namespace PoEWizard.Device
             {
                 RemotePort = string.Empty;
             }
-            IsMacName = (string.IsNullOrEmpty(Label) || Type == MED_UNSPECIFIED || Type == NO_LLDP) && dict.ContainsKey(MED_MAC_ADDRESS);
+            IsMacName = (string.IsNullOrEmpty(Label) || Type == MED_UNKNOWN || Type == NO_LLDP) && dict.ContainsKey(MED_MAC_ADDRESS);
             if (IsMacName) Label = MacAddress;
             string[] capList = Utils.GetDictValue(dict, MED_CAPABILITIES).Split('|');
             if (capList.Length > 0 && !string.IsNullOrEmpty(capList[0]))

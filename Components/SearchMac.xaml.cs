@@ -42,7 +42,8 @@ namespace PoEWizard.Components
         {
             this.MouseDown += delegate { this.DragMove(); };
 
-            this.Height = _portsListView.ActualHeight + 100;
+            this.Height = this._portsListView.ActualHeight + 105;
+            this.Top = this.Owner.Height> this.Height ? this.Owner.Top + (this.Owner.Height - this.Height)/2 : this.Top;
         }
 
         private void SearchMacAddress(SwitchModel device, string macAddr)

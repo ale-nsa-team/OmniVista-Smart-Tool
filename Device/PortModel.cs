@@ -121,12 +121,12 @@ namespace PoEWizard.Device
                 {
                     UpdateEndPointParameters(dict, DictionaryType.LldpRemoteList);
                 }
-                UpdateEndPointDevice(MED_UPLINK);
+                UpdateEndPointDevice(MED_MULTIPLE_DEVICES);
             }
             else
             {
                 UpdateEndPointParameters(dictList[0], DictionaryType.LldpRemoteList);
-                UpdateEndPointDevice(MED_UPLINK);
+                UpdateEndPointDevice(MED_MULTIPLE_DEVICES);
             }
         }
 
@@ -137,7 +137,7 @@ namespace PoEWizard.Device
             {
                 UpdateEndPointParameters(dict, DictionaryType.LldpInventoryList);
             }
-            UpdateEndPointDevice(MED_UPLINK);
+            UpdateEndPointDevice(MED_MULTIPLE_DEVICES);
         }
 
         private void UpdateEndPointParameters(Dictionary<string, string> dict, DictionaryType dictType)
@@ -188,11 +188,11 @@ namespace PoEWizard.Device
             }
             if (nbDevices > 1)
             {
-                this.EndPointDevice.Type = MED_UPLINK;
-                this.EndPointDevice.Name = MED_UPLINK;
-                this.EndPointDevice.Label = MED_UPLINK;
+                this.EndPointDevice.Type = MED_MULTIPLE_DEVICES;
+                this.EndPointDevice.Name = MED_MULTIPLE_DEVICES;
+                this.EndPointDevice.Label = MED_MULTIPLE_DEVICES;
             }
-            if (this.EndPointDevice.Type == NO_LLDP || this.EndPointDevice.Type == MED_UPLINK) this.EndPointDevice.Vendor = string.Empty;
+            if (this.EndPointDevice.Type == NO_LLDP || this.EndPointDevice.Type == MED_MULTIPLE_DEVICES) this.EndPointDevice.Vendor = string.Empty;
         }
 
         public void UpdatePortStatus(Dictionary<string, string> dict)

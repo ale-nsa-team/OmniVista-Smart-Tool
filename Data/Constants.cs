@@ -214,9 +214,9 @@ namespace PoEWizard.Data
         public const string MED_IP_ADDRESS = "Management IP Address";
         public const string MED_MAC_ADDRESS = "MAC Address";
         public const string NO_LLDP = "No LLDP";
-        public const string MED_UNSPECIFIED = "Unspecified";
-        public const string MED_UPLINK = "Multiple devices";
         public const string MED_UNKNOWN = "Unknown";
+        public const string MED_MULTIPLE_DEVICES = "Multiple devices";
+        public const string MED_UNSPECIFIED = "Unspecified";
         // Used by "SHOW_LLDP_INVENTORY"
         public const string MED_MANUFACTURER = "Manufacturer Name";
         public const string MED_MODEL = "Model Name";
