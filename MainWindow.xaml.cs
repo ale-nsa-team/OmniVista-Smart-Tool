@@ -211,7 +211,7 @@ namespace PoEWizard
         {
             try
             {
-                string title = "Loading vcboot.cfg file...";
+                string title = "Loading vcboot.cfg file";
                 string msg = $"{title} from switch {device.Name}";
                 ShowInfoBox($"{msg} ...");
                 ShowProgress($"{title} ...");
