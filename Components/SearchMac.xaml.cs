@@ -16,6 +16,7 @@ namespace PoEWizard.Components
 
         private string _device_mac = string.Empty;
 
+        public string DeviceMac => $"\"{this._device_mac}\"";
         public ObservableCollection<PortModel> PortsFound { get; set; }
         public PortModel SelectedPort { get; set; }
         public bool IsMacAddress {  get; set; }
@@ -32,9 +33,9 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
-            SelectedPort = null;
+            this.SelectedPort = null;
             SearchMacAddress(device, macAddress);
-            if (PortsFound.Count == 1) SelectedPort = PortsFound[0];
+            if (this.PortsFound.Count == 1) this.SelectedPort = this.PortsFound[0];
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
