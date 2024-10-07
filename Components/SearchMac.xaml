@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
-        Title="SearchPort" MinHeight="148" Height="260" Width="1050" WindowStyle="None" ShowInTaskbar="False" >
+        Title="SearchPort" Width="1050" WindowStyle="None" ShowInTaskbar="False" >
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -18,7 +18,7 @@
     <Grid Style="{DynamicResource popupWindow}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8,0,0,0" >
@@ -28,6 +28,7 @@
         <Border Grid.Row="1" Style="{DynamicResource gridBorder}" Margin="5">
             <DataGrid x:Name="_portsListView" 
                 Style="{DynamicResource defaultGrid}"
+                MaxHeight="630"
                 ColumnHeaderStyle="{DynamicResource gridHeader}"
                 CellStyle="{DynamicResource gridCell}"
                 ItemsSource="{Binding PortsFound}"
