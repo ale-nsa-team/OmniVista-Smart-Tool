@@ -11,6 +11,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
                 <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-ptBr.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -41,7 +42,9 @@
             <TextBlock x:Name="_version" Style="{DynamicResource aboutParagraph}" />
             <TextBlock x:Name="_copyRight" Style="{DynamicResource aboutParagraph}" />
             <TextBox x:Name="_aboutDescr" Margin="0,10,0,0"
+                     Text="{DynamicResource i18n_descr}"
                      TextWrapping="Wrap"
+                     AcceptsReturn="True"
                      Width="395"
                      Height="305"
                      IsReadOnly="True"

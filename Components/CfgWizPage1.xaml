@@ -8,7 +8,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="400" d:DesignWidth="450"
       Loaded="OnPageLoaded"
-      Title="System Parameters" ShowsNavigationUI="False">
+      Title="{DynamicResource i18n_sysPar}" ShowsNavigationUI="False">
     <Page.DataContext>
         <dev:SystemModel/>
     </Page.DataContext>
@@ -17,11 +17,12 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
                 <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-ptBr.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
     <StackPanel Style="{DynamicResource cfgWindow}">
-        <Label>Management IP Address</Label>
+        <Label Content="{DynamicResource i18n_mngtIp}" />
         <TextBox x:Name="_mgtIpAddress" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
             <TextBox.Text>
                 <Binding Path="MgtIpAddr" UpdateSourceTrigger="PropertyChanged">
@@ -31,10 +32,10 @@
                 </Binding>
             </TextBox.Text>
         </TextBox>
-        <Label>Netmask</Label>
+        <Label Content="{DynamicResource i18n_mask}" />
         <TextBox x:Name="_netMask" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
             <TextBox.Text>
-                <Binding Path=" NetMask" UpdateSourceTrigger="PropertyChanged">
+                <Binding Path="NetMask" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
                         <local:SubnetMaskRule />
                     </Binding.ValidationRules>
@@ -50,7 +51,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0">Admin password</Label>
+            <Label Grid.Row="0" Grid.Column="0" Content="{DynamicResource i18n_admPwd}" />
             <PasswordBox Grid.Row="1" Grid.Column="0" x:Name="_maskedAdminPwd"
                     Validation.ErrorTemplate="{DynamicResource validationTemplate}"
                     local:PasswordBoxAssistant.BindPassword="True"
@@ -80,7 +81,7 @@
                 <Image x:Name="_viewAdminPwd" Source="{DynamicResource eye_open}" />
             </Button>
         </Grid>
-        <Label>System Name</Label>
+        <Label Content="{DynamicResource i18n_sysName}" />
         <TextBox x:Name="_sysName" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
             <TextBox.Text>
                 <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
@@ -90,7 +91,7 @@
                 </Binding>
             </TextBox.Text>
         </TextBox>
-        <Label>Contact</Label>
+        <Label Content="{DynamicResource i18n_sysCont}" />
         <TextBox x:Name="_contact" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
             <TextBox.Text>
                 <Binding Path="Contact" UpdateSourceTrigger="PropertyChanged">
@@ -100,7 +101,7 @@
                 </Binding>
             </TextBox.Text>
         </TextBox>
-        <Label>Location</Label>
+        <Label Content="{DynamicResource i18n_sysLoc}" />
         <TextBox x:Name="_location" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
             <TextBox.Text>
                 <Binding Path="Location" UpdateSourceTrigger="PropertyChanged">
