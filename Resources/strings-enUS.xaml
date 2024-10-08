@@ -100,6 +100,7 @@
     <sys:String x:Key="i18n_pwd">Password</sys:String>
     
     <!--Config Wizard Dialog-->
+    <sys:String x:Key="i18n_sysPar">System Parameters</sys:String>
     <sys:String x:Key="i18n_netCfg">Network Configuration</sys:String>
     <sys:String x:Key="i18n_mngtIp">Management IP Address</sys:String>
     <sys:String x:Key="i18n_mask">Netmask</sys:String>
@@ -111,12 +112,16 @@
     <sys:String x:Key="i18n_dns">DNS Servers</sys:String>
     <sys:String x:Key="i18n_ntp">NTP Servers</sys:String>
     <sys:String x:Key="i18n_srvs">Servers</sys:String>
-    <sys:String x:Key="i18n_srv">Server</sys:String>
+    <sys:String x:Key="i18n_srv1">Server 1</sys:String>
+	<sys:String x:Key="i18n_srv2">Server 2</sys:String>
+	<sys:String x:Key="i18n_srv3">Server 3</sys:String>
+	<sys:String x:Key="i18n_domain">Domain Name</sys:String>
     <sys:String x:Key="i18n_tz">Timezone</sys:String>
     <sys:String x:Key="i18n_feat">Features</sys:String>
     <sys:String x:Key="i18n_insProto">Disable Insecure Protocols</sys:String>
     <sys:String x:Key="i18n_ssh">Enable SSH</sys:String>
-    <sys:String x:Key="i18n_dhcp">Enable DHCP Relay</sys:String>
+    <sys:String x:Key="i18n_relay">Enable DHCP Relay</sys:String>
+	<sys:String x:Key="i18n_dhcp">DHCP Server</sys:String>
     <sys:String x:Key="i18n_multicast">Enable Multicast</sys:String>
     <sys:String x:Key="i18n_vlan">VLAN</sys:String>
     <sys:String x:Key="i18n_en">Enable</sys:String>
@@ -195,25 +200,18 @@
     <sys:String x:Key="i18n_cmdnosup">Command not supported by switch</sys:String>
     
     <!--About box-->
-    <sys:String x:Key="i18n_descr">
-        This application allows you to apply basic configuration and troubleshoot PoE issues on an 
-        Alcatel-Lucent Enterprise OmniSwitch®, equipped with AOS 8 version.\n
-        The application communicates with the switch via REST API, to gather information on the power 
-        supplies and PoE ports, and allows the user to perform some configuration changes to mitigate 
-        common PoE issues. In case the wizard is unable to fix the problem, it allows the user to collect 
-        relevant information to be sent to TAC.\n
-    </sys:String>
-    <sys:String x:Key="i18n_cpright">
-        \nPermission to use, copy, modify, and distribute this source code, product, and its documentation 
-        without a fee and without a signed license agreement is hereby granted, provided that the copyright 
-        notice, this paragraph, and the following two paragraphs appear in all copies, modifications, and distributions."\r\n \r\n
-        IN NO EVENT SHALL ALE USA INC. BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, 
-        INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOURCE CODE, PRODUCT, AND ITS DOCUMENTATION, EVEN IF ALE USA INC. 
-        HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\r\n \r\n
-        ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTES 
-        OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOURCE CODE, PRODUCT, AND ACCOMPANYING DOCUMENTATION, 
-        IF ANY, PROVIDED HEREUNDER IS PROVIDED “AS IS.” ALE USA INC. HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, 
-        UPDATES, ENHANCEMENTS, OR MODIFICATIONS.\r\n"
+	<sys:String x:Key="i18n_aboutTitle">About ALE Installer Toolkit</sys:String>
+	<sys:String x:Key="i18n_cpright">Copyright</sys:String>
+	<sys:String x:Key="i18n_reserved">All Rights Reserved</sys:String>
+    <sys:String x:Key="i18n_descr" xml:space="preserve">
+This application allows you to apply basic configuration and troubleshoot PoE issues on an Alcatel-Lucent Enterprise OmniSwitch®, equipped with AOS 8 version.
+The application communicates with the switch via REST API, to gather information on the power supplies and PoE ports, and allows the user to perform some configuration changes to mitigate common PoE issues. In case the wizard is unable to fix the problem, it allows the user to collect relevant information to be sent to TAC.
+
+Permission to use, copy, modify, and distribute this source code, product, and its documentation without a fee and without a signed license agreement is hereby granted, provided that the copyright notice, this paragraph, and the following two paragraphs appear in all copies, modifications, and distributions.
+
+IN NO EVENT SHALL ALE USA INC. BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOURCE CODE, PRODUCT, AND ITS DOCUMENTATION, EVEN IF ALE USA INC. HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+
+ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOURCE CODE, PRODUCT, AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED “AS IS.” ALE USA INC. HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
     </sys:String>
     
     <!--Switch scan-->
