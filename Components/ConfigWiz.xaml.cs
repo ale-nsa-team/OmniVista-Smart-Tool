@@ -28,6 +28,7 @@ namespace PoEWizard.Components
         private SystemModel sysOrig;
         private FeatureModel featOrig;
         private SnmpModel snmpOrig;
+        private ResourceDictionary strings;
 
         public bool MustDisconnect { get; set; } = false;
 
@@ -46,6 +47,7 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+            strings = Resources.MergedDictionaries[1];
             DataContext = this;
             this.device = device;
             restSrv = MainWindow.restApiService;
@@ -66,7 +68,7 @@ namespace PoEWizard.Components
         private async void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
             _btnSubmit.IsEnabled = false;
-            ShowInfoBox("Loading current parameters, please wait...");
+            ShowInfoBox(GetString("i18n_loading"));
             await Task.Run(() =>
             {
                 GetServerData();
@@ -113,17 +115,17 @@ namespace PoEWizard.Components
             bool needRefresh = false;
             await Task.Run(() =>
             {
-                ApplyCommands(srvData.ToCommandList(srvOrig), "Applying DNS and NPT parameters...");
-                needRefresh = ApplyCommands(features.ToCommandList(featOrig), "Applying Features...");
+                ApplyCommands(srvData.ToCommandList(srvOrig), "i18n_appDns");
+                needRefresh = ApplyCommands(features.ToCommandList(featOrig), "i18n_appFeat");
                 List<CmdRequest> cmds = sysData.ToCommandList(sysOrig);
                 MustDisconnect = cmds.FirstOrDefault(c => c.Command == Command.SET_IP_INTERFACE) != null;
-                needRefresh = ApplyCommands(cmds, "Applying System parameters...") || needRefresh;
+                needRefresh = ApplyCommands(cmds, "i18n_appSys") || needRefresh;
             });
             HideInfoBox();
 
             if (needRefresh && !MustDisconnect)
             {
-                ShowInfoBox("Reloading switch data, please wait...");
+                ShowInfoBox("i18n_reloading");
                 await Task.Run(() => restSrv.ScanSwitch(null));
             }
             DialogResult = true;
@@ -164,11 +166,11 @@ namespace PoEWizard.Components
             _cfgFrame.Navigate(page);
         }
 
-        private bool ApplyCommands(List<CmdRequest> cmds, string message)
+        private bool ApplyCommands(List<CmdRequest> cmds, string key)
         {
             if (cmds.Count == 0) return false;
             bool res = false;
-            ShowInfoBox(message);
+            ShowInfoBox(GetString(key));
 
             foreach (CmdRequest cmd in cmds)
             {
@@ -183,7 +185,7 @@ namespace PoEWizard.Components
                     Errors.Add(ex.Message);
                 }
             }
-            return res || !message.Contains("Features");
+            return res || key != "i18n_appFeat";
         }
 
         private void GetServerData()
@@ -306,6 +308,11 @@ namespace PoEWizard.Components
                     snmpData.Stations.Add(station);
                 }
             }
+        }
+
+        private string GetString(string key)
+        {
+            return (string)strings[key] ?? string.Empty;
         }
 
         private void ShowInfoBox(string message)
