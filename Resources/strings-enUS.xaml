@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
     <!--Menus-->
     <sys:String x:Key="i18n_cnx">Connection</sys:String>
     <sys:String x:Key="i18n_view">View</sys:String>
@@ -137,7 +138,7 @@
     <sys:String x:Key="i18n_cwErr">The following errors where reported:</sys:String>
     <sys:String x:Key="i18n_twiz">Config Wizard</sys:String>
     <sys:String x:Key="i18n_discWiz">Application will disconnect from switch because IP address wad changed.\nPlease reconnect using the new address.</sys:String>
-
+    
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwRep">PoE Wizard Report:</sys:String>
     <sys:String x:Key="i18n_pwRun">Running PoE Wizard on port</sys:String>
