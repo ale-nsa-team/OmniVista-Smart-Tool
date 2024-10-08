@@ -344,17 +344,29 @@ namespace PoEWizard.Data
         public const string MATCH_USER = @"(User name)\s*=\s*(.+),";
         #endregion
 
-        #region numbers
+        #region Number of Mac Addresses Limits
+        public const int MAX_NB_MAC_PER_PORT = 500;
+        public const int MAX_NB_MAC_TOOL_TIP = 30;
+        public const int MAX_NB_DEVICES_TOOL_TIP = 10;
+        public const int MIN_NB_MAC_UPLINK = 2;
+        #endregion
+
+        #region Switch Scanner Limits
         public const int SWITCH_CONNECT_TIMEOUT_SEC = 10;
+        #endregion
+
+        #region Run Wizard Limits
         public const int WAIT_PORTS_UP_SEC = 30;
         public const double MAX_COLLECT_LOGS_WIZARD_DURATION = 65;
         public const double MAX_COLLECT_LOGS_RESET_POE_DURATION = 80;
         public const double MAX_COLLECT_LOGS_DURATION = 55;
         public const int MIN_POWER_CONSUMPTION_MW = 300;
-        // Snapshot configuration changes
-        public const int MAX_NB_SNAPSHOT_SAVED = 50;
-        public const int MAX_NB_LINES_CHANGES_DISPLAYED = 20;
+        #endregion
+
+        #region Snapshot Configuration Changes
+        public const int MAX_NB_SNAPSHOT_SAVED = 500;
         public const int MAX_NB_SNAPSHOT_DAYS = 30;
+        public const int MAX_NB_LINES_CHANGES_DISPLAYED = 20;
         #endregion
     }
 }

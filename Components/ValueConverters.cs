@@ -555,15 +555,14 @@ namespace PoEWizard.Components
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            const int MAX_NB_DEVICES = 10;
             try
             {
                 if (Utils.IsInvalid(value)) return DependencyProperty.UnsetValue;
                 if (value is List<string> strList)
                 {
                     if (strList.Count < 1) return DependencyProperty.UnsetValue;
-                    bool hasmore = strList.Count > MAX_NB_DEVICES;
-                    List<string> displayList = hasmore ? strList.GetRange(0, MAX_NB_DEVICES) : strList;
+                    bool hasmore = strList.Count > MAX_NB_DEVICES_TOOL_TIP;
+                    List<string> displayList = hasmore ? strList.GetRange(0, MAX_NB_DEVICES_TOOL_TIP) : strList;
                     int maxlen = displayList.Max(t => MaxLineLen(t));
                     if (hasmore) displayList.Add(" ...");
                     return string.Join(",", displayList);

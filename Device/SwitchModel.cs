@@ -191,7 +191,7 @@ namespace PoEWizard.Device
                             port.MacList.Clear();
                             prevPort = currPort;
                         }
-                        if (port.MacList?.Count >= 10) continue;
+                        if (port.MacList?.Count >= MAX_NB_MAC_PER_PORT) continue;
                         port.AddMacToList(dict);
                         ports[port.Name] = port;
                     }

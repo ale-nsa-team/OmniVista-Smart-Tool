@@ -148,12 +148,18 @@ namespace PoEWizard.Device
             {
                 string[] split = Label.Split(',');
                 tip.Add($"MAC List:");
+                int cntMac = 0;
                 foreach (string mac in split)
                 {
+                    cntMac++;
+                    if (cntMac > MAX_NB_MAC_TOOL_TIP)
+                    {
+                        tip.Add("          . . .");
+                        break;
+                    }
                     string vendor = Utils.GetVendorName(mac);
                     if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) tip.Add($" {mac} ({vendor})"); else tip.Add($" {mac}");
                 }
-                if (split.Length >= 10) tip.Add("          . . .");
             } else if (!string.IsNullOrEmpty(MacAddress)) tip.Add($"MAC: {MacAddress}");
             if (Capabilities.Count > 0) tip.Add($"Capabilities: {string.Join(",", Capabilities)}");
             return tip.Count > 0 ? string.Join("\n", tip) : null;

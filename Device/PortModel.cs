@@ -206,23 +206,26 @@ namespace PoEWizard.Device
         public void UpdateMacList(List<Dictionary<string, string>> dictList)
         {
             MacList.Clear();
-            foreach (Dictionary<string, string> dict in dictList)
+            if (dictList?.Count > 0)
             {
-                if (AddMacToList(dict) >= 10) break;
+                foreach (Dictionary<string, string> dict in dictList)
+                {
+                    if (MacList.Count >= MAX_NB_MAC_PER_PORT) break;
+                    AddMacToList(dict);
+                }
             }
-            IsUplink = MacList.Count > 2;
+            else
+            {
+                IsUplink = false;
+            }
         }
 
-        public int AddMacToList(Dictionary<string, string> dict)
+        public void AddMacToList(Dictionary<string, string> dict)
         {
-            if (MacList.Count < 10)
-            {
-                string mac = Utils.GetDictValue(dict, PORT_MAC_LIST);
-                if (Utils.IsValidMacAddress(mac) && MacList.Contains(mac)) return MacList.Count;
-                MacList.Add(mac);
-            }
-            IsUplink = MacList.Count > 2;
-            return MacList.Count;
+            string mac = Utils.GetDictValue(dict, PORT_MAC_LIST);
+            if (Utils.IsValidMacAddress(mac) && MacList.Contains(mac)) return;
+            MacList.Add(mac);
+            IsUplink = MacList.Count > MIN_NB_MAC_UPLINK;
         }
 
         public bool IsSwitchUplink()
