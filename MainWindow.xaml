@@ -14,13 +14,14 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/ResourceDictionary-light.xaml"/>
-                <ResourceDictionary Source="Resources/ResourceDictionary-dark.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
-    <Grid x:Name="_mainGrid" Style="{DynamicResource _mainGrid}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+                    <ResourceDictionary Source="Resources/ResourceDictionary-dark.xaml"/>
+                    <ResourceDictionary Source="Resources/strings-ptBr.xaml"/>
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </Window.Resources>
+        <Grid x:Name="_mainGrid" Style="{DynamicResource _mainGrid}">
+            <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>  
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto" MaxHeight="150"/>
             <RowDefinition Height="*"/>
@@ -28,17 +29,17 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" x:Name="_mainMenu" Style="{DynamicResource _mainMenu}">
-            <MenuItem Header="Connection">
-                <MenuItem Header="Switch..." x:Name="_switchMenuItem" Click="SwitchMenuItem_Click" />
-                <MenuItem Header="Disconnect" x:Name="_disconnectMenuItem" Click="DisconnectMenuItem_Click" Visibility="Collapsed"/>
+            <MenuItem Header="{DynamicResource i18n_cnx}">
+                <MenuItem Header="{DynamicResource i18n_sw}" x:Name="_switchMenuItem" Click="SwitchMenuItem_Click" />
+                <MenuItem Header="{DynamicResource i18n_disc}" x:Name="_disconnectMenuItem" Click="DisconnectMenuItem_Click" Visibility="Collapsed"/>
                 <Separator/>
-                <MenuItem Header="Exit" Click="Exit_Click"/>
+                <MenuItem Header="{DynamicResource i18n_exit}" Click="Exit_Click"/>
             </MenuItem>
-            <MenuItem Header="View">
-                <MenuItem Header="Log">
-                    <MenuItem Header="View App Log" Click="ViewLog_Click" />
-                    <MenuItem Header="View Activities" Click="ViewActivities_Click" />
-                    <MenuItem Header="Log Level" x:Name="_logLevels">
+            <MenuItem Header="{DynamicResource i18n_view}">
+                <MenuItem Header="{DynamicResource i18n_log}">
+                    <MenuItem Header="{DynamicResource i18n_appLog}" Click="ViewLog_Click" />
+                    <MenuItem Header="{DynamicResource i18n_activ}" Click="ViewActivities_Click" />
+                    <MenuItem Header="{DynamicResource i18n_level}" x:Name="_logLevels">
                         <MenuItem Header="Error" Click="LogLevelItem_Click" />
                         <MenuItem Header="Warn" Click="LogLevelItem_Click" />
                         <MenuItem Header="Basic" Click="LogLevelItem_Click" IsChecked="True" />
@@ -47,21 +48,21 @@
                         <MenuItem Header="Trace" Click="LogLevelItem_Click" />
                     </MenuItem>
                 </MenuItem>
-                <MenuItem Header="vcboot.cfg" x:Name="_vcbootMenuItem" IsEnabled="False" Click="ViewVcBoot_Click" />
-                <MenuItem Header="Snapshot" x:Name="_snapshotMenuItem" IsEnabled="False" Click="ViewSnapshot_Click"/>
-                <MenuItem Header="Power Supplies" x:Name="_psMenuItem" IsEnabled="False" Click="ViewPS_Click" />
-                <MenuItem Header="Search MAC" x:Name="_searchMacMenuItem" IsEnabled="False" Click="SearchMac_Click" />
+                <MenuItem Header="{DynamicResource i18n_vcboot}" x:Name="_vcbootMenuItem" IsEnabled="False" Click="ViewVcBoot_Click" />
+                <MenuItem Header="{DynamicResource i18n_sshot}" x:Name="_snapshotMenuItem" IsEnabled="False" Click="ViewSnapshot_Click"/>
+                <MenuItem Header="{DynamicResource i18n_ps}" x:Name="_psMenuItem" IsEnabled="False" Click="ViewPS_Click" />
+                <MenuItem Header="{DynamicResource i18n_src}" x:Name="_searchMacMenuItem" IsEnabled="False" Click="SearchMac_Click" />
                 <Separator/>
-                <MenuItem Header="Theme">
-                    <MenuItem Header="Dark" x:Name="_darkMenuItem" IsChecked="True" Click="ThemeItem_Click"/>
-                    <MenuItem Header="Light" x:Name="_lightMenuItem" Click="ThemeItem_Click"/>
+                <MenuItem Header="{DynamicResource i18n_theme}">
+                    <MenuItem Header="{DynamicResource i18n_dark}" x:Name="_darkMenuItem" IsChecked="True" Click="ThemeItem_Click"/>
+                    <MenuItem Header="{DynamicResource i18n_light}" x:Name="_lightMenuItem" Click="ThemeItem_Click"/>
                 </MenuItem>
-                <MenuItem Header="Help" Click="Help_Click"/>
-                <MenuItem Header="About" Click="About_Click"/>
+                <MenuItem Header="{DynamicResource i18n_help}" Click="Help_Click"/>
+                <MenuItem Header="{DynamicResource i18n_about}" Click="About_Click"/>
             </MenuItem>
-            <MenuItem Header="Configuration">
-                <MenuItem Header="Factory Reset..." x:Name="_factoryRst" IsEnabled="False" Click="FactoryReset" />
-                <MenuItem Header="Basic Config Wizard..." x:Name="_cfgMenuItem" IsEnabled="False" Click="LaunchConfigWizard"/>
+            <MenuItem Header="{DynamicResource i18n_cfg}">
+                <MenuItem Header="{DynamicResource i18n_frst}" x:Name="_factoryRst" IsEnabled="False" Click="FactoryReset" />
+                <MenuItem Header="{DynamicResource i18n_cfgWiz}" x:Name="_cfgMenuItem" IsEnabled="False" Click="LaunchConfigWizard"/>
             </MenuItem>
         </Menu>
         <StackPanel Grid.Row="1" x:Name="_switchInfo" Margin="0,2,0,0">
@@ -82,40 +83,40 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Style="{DynamicResource keyLabel}">Name:</Label>
+                <Label Grid.Row="0" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_swName}" />
                 <TextBlock Grid.Row="0" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_name" Text="{Binding Name}" />
-                <Label Grid.Row="1" Grid.Column="0" Style="{DynamicResource keyLabel}">IP Address:</Label>
+                <Label Grid.Row="1" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_ipAddr}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_ip" Text="{Binding IpAddress}"/>
-                <Label Grid.Row="2" Grid.Column="0" Style="{DynamicResource keyLabel}">Release:</Label>
+                <Label Grid.Row="2" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_release}"/>
                 <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
                     <TextBlock Style="{DynamicResource infoVal}" x:Name="_release" 
                        Text="{Binding Version}"
                        Foreground="{Binding Path=Version, Converter={StaticResource ValueToColorConverter}, ConverterParameter=AosVersion}"/>
                     <Image x:Name="_aosWarn" Style="{DynamicResource warnImg}"
-                           ToolTip="Switch AOS version is too old. Please buy a support contract and upgrade your switch"
+                           ToolTip="{DynamicResource i18n_release_tt}"
                            Visibility="{Binding Path=Version, Converter={StaticResource AosVersionToVisibilityConverter}}" />
                 </StackPanel>
-                <Label Grid.Row="3" Grid.Column="0" Style="{DynamicResource keyLabel}">Running Directory:</Label>
+                <Label Grid.Row="3" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_runningDir}" />
                 <TextBlock Grid.Row="3" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_runningDir" Text="{Binding RunningDir}"
                        Foreground="{Binding Path=RunningDir, Converter={StaticResource ValueToColorConverter}, ConverterParameter=RunningDir}"/>
-                <Label Grid.Row="4" Grid.Column="0" Style="{DynamicResource keyLabel}">Synchronization:</Label>
+                <Label Grid.Row="4" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_sync}"/>
                 <TextBlock Grid.Row="4" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_syncStatus" Text="{Binding SyncStatusLabel}"
                        Foreground="{Binding Path=SyncStatus, Converter={StaticResource ValueToColorConverter}, ConverterParameter=SyncStatus}"/>
-                <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}">Location:</Label>
+                <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_loc}" />
                 <TextBlock Grid.Row="5" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_location" Text="{Binding Location}" />
-                <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}">Contact:</Label>
+                <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_contact}" />
                 <TextBlock Grid.Row="6" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_contact" Text="{Binding Contact}" />
-                <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}">PoE Debug Level:</Label>
+                <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_poeDbgLvl}" />
                 <TextBlock Grid.Row="7" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_ilpni" Text="{Binding LpNiLabelDebugLevel}"
                        Foreground="{Binding Path=LpNiDebugLevel, Converter={StaticResource ValueToColorConverter}, ConverterParameter=LpNiDebugLevel}"/>
 
-                <Label Grid.Row="0" Grid.Column="2" Style="{DynamicResource keyLabel}">Model:</Label>
+                <Label Grid.Row="0" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_swModel}" />
                 <TextBlock Grid.Row="0" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_model" Text="{Binding Model}"/>
-                <Label Grid.Row="1" Grid.Column="2" Style="{DynamicResource keyLabel}">Serial Number:</Label>
+                <Label Grid.Row="1" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_sn}" />
                 <TextBlock Grid.Row="1" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_serialNo" Text="{Binding SerialNumber}"/>
-                <Label Grid.Row="2" Grid.Column="2" Style="{DynamicResource keyLabel}">MAC Address:</Label>
+                <Label Grid.Row="2" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_mac}" />
                 <TextBlock Grid.Row="2" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_mac" Text="{Binding MacAddress}"/>
-                <Label Grid.Row="3" Grid.Column="2" Style="{DynamicResource keyLabel}">Temperature:</Label>
+                <Label Grid.Row="3" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_temp}" />
                 <StackPanel x:Name="_tempStatus" Grid.Row="3" Grid.Column="3" Orientation="Horizontal" Visibility="Hidden">
                     <TextBlock Style="{DynamicResource infoVal}" 
                            Text="{Binding CurrTemperature}" 
@@ -124,7 +125,7 @@
                            ToolTip="Switch may reduce PoE output because temperature is too high" 
                            Visibility="{Binding Path=TemperatureStatus, Converter={StaticResource TempStatusToVisibilityConveter}}"/>
                 </StackPanel>
-                <Label Grid.Row="4" Grid.Column="2" Style="{DynamicResource keyLabel}">CPU Usage:</Label>
+                <Label Grid.Row="4" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_cpu}" />
                 <StackPanel x:Name="_cpu" Grid.Row="4" Grid.Column="3" Orientation="Horizontal" Visibility="Hidden">
                     <TextBlock Style="{DynamicResource infoVal}" Text="{Binding Cpu}">
                         <TextBlock.Foreground>
@@ -158,7 +159,7 @@
                     </Image>
                 </StackPanel>
                 <Label Grid.Row="5" Grid.Column="2" x:Name="_fpgaLbl" Style="{DynamicResource keyLabel}"
-                       Visibility="Visible">FPGA Version:</Label>
+                       Visibility="Visible" Content="{DynamicResource i18n_fpga}" />
                 <StackPanel Grid.Row="5" Grid.Column="3" Orientation="Horizontal">
                     <TextBlock Style="{DynamicResource infoVal}" x:Name="_fpga" Text="{Binding Fpga}">
                         <TextBlock.Foreground>
@@ -179,7 +180,7 @@
                     </Image>
                 </StackPanel>
                 <Label Grid.Row="5" Grid.Column="2" x:Name="_cpldLbl" Style="{DynamicResource keyLabel}"
-                       Visibility="Hidden">CPLD Version:</Label>
+                       Visibility="Hidden" Content="{DynamicResource i18n_cpld}" />
                 <StackPanel Grid.Row="5" Grid.Column="3" Orientation="Horizontal">
                     <TextBlock Style="{DynamicResource infoVal}" x:Name="_cpld" Text="{Binding Cpld}">
                         <TextBlock.Foreground>
@@ -199,9 +200,9 @@
                         </Image.Visibility>
                     </Image>
                 </StackPanel>
-                <Label Grid.Row="6" Grid.Column="2" Style="{DynamicResource keyLabel}">Free Flash Memory:</Label>
+                <Label Grid.Row="6" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_flash}" />
                 <TextBlock Grid.Row="6" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_flash" Text="{Binding FreeFlash}" />
-                <Label Grid.Row="7" Grid.Column="2" Style="{DynamicResource keyLabel}">CMM Debug Level:</Label>
+                <Label Grid.Row="7" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_cmmDbgLvl}" />
                 <TextBlock Grid.Row="7" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_lpcmm" Text="{Binding LpCmmLabelDebugLevel}"
                        Foreground="{Binding Path=LpCmmDebugLevel, Converter={StaticResource ValueToColorConverter}, ConverterParameter=LpCmmDebugLevel}"/>
             </Grid>
@@ -216,11 +217,11 @@
                       IsReadOnly="True"
                       SelectionChanged="SlotSelection_Changed">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Slot" Width="*" Binding="{Binding Path=Name}" />
-                    <DataGridTextColumn Header="#Ports" Width="*" Binding="{Binding Path=NbPorts}"/>
-                    <DataGridTextColumn Header="#Poe Ports" Width="*" Binding="{Binding Path=NbPoePorts}" />
-                    <DataGridTextColumn Header="Budget (Watts)" Width="*" Binding="{Binding Path=Budget}" />
-                    <DataGridTextColumn Header="Consumption (Watts)" Width="1.1*" Binding="{Binding Path=Power}"/>
+                    <DataGridTextColumn Header="{DynamicResource i18n_slot}" Width="*" Binding="{Binding Path=Name}" />
+                    <DataGridTextColumn Header="{DynamicResource i18n_nports}" Width="*" Binding="{Binding Path=NbPorts}"/>
+                    <DataGridTextColumn Header="{DynamicResource i18n_npoe}" Width="*" Binding="{Binding Path=NbPoePorts}" />
+                    <DataGridTextColumn Header="{DynamicResource i18n_buget}" Width="*" Binding="{Binding Path=Budget}" />
+                    <DataGridTextColumn Header="{DynamicResource i18n_cons}" Width="1.1*" Binding="{Binding Path=Power}"/>
                     <DataGridTemplateColumn Header="802.3BT Support" Width="1.1*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -231,21 +232,21 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Power" Width="*">
+                    <DataGridTemplateColumn Header="{DynamicResource i18n_ptPwr}" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox Style="{DynamicResource toggleSwitch}" Margin="4,0"
                                           Checked="Power_Click" Unchecked="Power_Click"
                                           IsChecked="{Binding Path=IsInitialized}"
-                                          ToolTip="Turn PoE ON/OFF on this slot" />
+                                          ToolTip="{DynamicResource i18n_poe_tt}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="*">
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Fast PoE" Style="{DynamicResource toolTip}"
-                                           ToolTip="Fast PoE is disabled when PoE is turned off or 802.3bt is supported" />
+                                <TextBlock Text="{DynamicResource i18n_fpoe}" Style="{DynamicResource toolTip}"
+                                           ToolTip="{DynamicResource i18n_fpoe_tt}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
@@ -256,15 +257,15 @@
                                           Unchecked="FPoE_Click"
                                           IsEnabled="{Binding Path=IsPoeModeEnable}"
                                           IsChecked="{Binding Path=FPoE, Converter={StaticResource ConfigTypeToBoolConverter}, ConverterParameter=Enable}" 
-                                          ToolTip="Fast PoE is disabled when PoE is turned off or 802.3bt is supported" />
+                                          ToolTip="{DynamicResource i18n_fpoe_tt}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="*">
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Perpetual PoE" Style="{DynamicResource toolTip}"
-                                           ToolTip="Perpetual PoE is disabled when PoE is turned off or 802.3bt is supported" />
+                                <TextBlock Text="{DynamicResource i18n_ppoe}" Style="{DynamicResource toolTip}"
+                                           ToolTip="{DynamicResource i18n_ppoe_tt}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
@@ -275,11 +276,11 @@
                                           Unchecked="PPoE_Click"
                                           IsEnabled="{Binding Path=IsPoeModeEnable}"
                                           IsChecked="{Binding Path=PPoE, Converter={StaticResource ConfigTypeToBoolConverter}, ConverterParameter=Enable}" 
-                                          ToolTip="Perpetual PoE is disabled when PoE is turned off or 802.3bt is supported"/>
+                                          ToolTip="{DynamicResource i18n_ppoe_tt}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="PoE Status" Width="*">
+                    <DataGridTemplateColumn Header="{DynamicResource i18n_poeSt}" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=PoeStatusLabel}" 
@@ -289,7 +290,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="VC Master/Slave" Width="1.1*">
+                    <DataGridTemplateColumn Header="{DynamicResource i18n_vcRole}" Width="1.1*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=MasterSlave}"
@@ -313,8 +314,8 @@
                       CellStyle="{DynamicResource gridCell}"
                       SelectionChanged="PortSelection_Changed">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header=" Port" Width="60" Binding="{Binding Path=Name}" IsReadOnly="True"/>
-                    <DataGridTemplateColumn Header="Alias" Width="1.2*" IsReadOnly="True">
+                    <DataGridTextColumn Header="{DynamicResource i18n_port}" Width="60" Binding="{Binding Path=Name}" IsReadOnly="True"/>
+                    <DataGridTemplateColumn Header="{DynamicResource i18n_alias}" Width="1.2*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Alias}" Style="{DynamicResource toolTip}"
@@ -323,7 +324,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Status" Width="50" IsReadOnly="True">
+                    <DataGridTemplateColumn Header="{DynamicResource i18n_ptSt}" Width="50" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Status}"
@@ -333,7 +334,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="PoE Status" Width="0.8*" IsReadOnly="True">
+                    <DataGridTemplateColumn Header="{DynamicResource i18n_poeSt}" Width="0.8*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Poe}" Style="{DynamicResource toolTip}"
@@ -344,7 +345,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridComboBoxColumn Header="Priority" Width="50" IsReadOnly="False">
+                    <DataGridComboBoxColumn Header="{DynamicResource i18n_prio}" Width="50" IsReadOnly="False">
                         <DataGridComboBoxColumn.SelectedItemBinding>
                             <MultiBinding Converter="{StaticResource PoeToPriorityLevelConverter}">
                                 <Binding Path="Poe" />
@@ -366,33 +367,33 @@
                     <DataGridTemplateColumn Width="0.9*" IsReadOnly="True">
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Power (Watts)" Style="{DynamicResource toolTip}"
-                                           ToolTip="Actual power consumed by the device connected to the port" />
+                                <TextBlock Text="{DynamicResource i18n_ptPwr}" Style="{DynamicResource toolTip}"
+                                           ToolTip="{DynamicResource i18n_pwr_tt}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Power}" Style="{DynamicResource toolTip}"
-                                           ToolTip="Actual power consumed by the device connected to the port" />
+                                           ToolTip="{DynamicResource i18n_pwr_tt}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="1.1*" IsReadOnly="True">
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Max Power (Watts)" Style="{DynamicResource toolTip}"
-                                           ToolTip="Maximum power allowed by the hardware" />
+                                <TextBlock Text="{DynamicResource i18n_maxPwr}" Style="{DynamicResource toolTip}"
+                                           ToolTip="{DynamicResource i18n_maxPwr_tt}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=MaxPower}" Style="{DynamicResource toolTip}"
-                                           ToolTip="Maximum power allowed by the hardware" />
+                                           ToolTip="{DynamicResource i18n_maxPwr_tt}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="PoE Class" Width="*" Binding="{Binding Path=Class}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="PoE Mode" Width="0.7*" IsReadOnly="True">
+                    <DataGridTextColumn Header="{DynamicResource i18n_class}" Width="*" Binding="{Binding Path=Class}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="{DynamicResource i18n_mode}" Width="0.7*" IsReadOnly="True">
                         <DataGridTextColumn.Binding>
                             <MultiBinding Converter="{StaticResource BoolToPoEModeConverter}">
                                 <Binding Path="Poe" />
@@ -400,8 +401,8 @@
                             </MultiBinding>
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="802.3BT" Width="50" Binding="{Binding Path=Protocol8023bt, Converter={StaticResource ConfigTypeToSimbolConverter}}" />
-                    <DataGridTemplateColumn Header="Device Model" Width="1.6*" IsReadOnly="True">
+                    <DataGridTextColumn Header="{DynamicResource i18n_bt}" Width="50" Binding="{Binding Path=Protocol8023bt, Converter={StaticResource ConfigTypeToSimbolConverter}}" />
+                    <DataGridTemplateColumn Header="{DynamicResource i18n_devModel}" Width="1.6*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Model}"
@@ -419,7 +420,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Device Name" Width="1.8*" IsReadOnly="True">
+                    <DataGridTemplateColumn Header="{DynamicResource i18n_devName}" Width="1.8*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Label}"
@@ -437,7 +438,7 @@
                         IsEnabled="False"
                         Click="ResetPort_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label Style="{DynamicResource valLabel}">Reset Port</Label>
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_ptRst}" />
                         <Image Source="{DynamicResource reboot}" Height="16" Width="16" />
                     </StackPanel>
                 </Button>
@@ -445,7 +446,7 @@
                         IsEnabled="False"
                         Click="RunWiz_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label Style="{DynamicResource valLabel}">Run PoE Wizard</Label>
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_poeWiz}" />
                         <Image Source="Resources/Img/wand.png" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>
@@ -453,7 +454,7 @@
                         IsEnabled="False" 
                         Click="RefreshSwitch_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label Style="{DynamicResource valLabel}">Refresh</Label>
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_rfrsh}" />
                         <Image Source="{DynamicResource refresh}" Height="16" Width="16" />
                     </StackPanel>
                 </Button>
@@ -461,7 +462,7 @@
                         IsEnabled="False" 
                         Click="WriteMemory_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label Style="{DynamicResource valLabel}">Write Memory</Label>
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_save}" />
                         <Image Source="{DynamicResource write_memory}" Height="16" Width="16" />
                     </StackPanel>
                 </Button>
@@ -469,7 +470,7 @@
                         IsEnabled="False" 
                         Click="Reboot_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label Style="{DynamicResource valLabel}">Reboot</Label>
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_reboot}" />
                         <Image Source="{DynamicResource reboot}" Height="16" Width="16" />
                     </StackPanel>
                 </Button>
@@ -477,7 +478,7 @@
                         IsEnabled="False" 
                         Click="Traffic_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label x:Name="_trafficLabel" Style="{DynamicResource valLabel}">Traffic Analysis</Label>
+                        <Label x:Name="_trafficLabel" Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_trfAna}" />
                         <Image Source="Resources/Img/traffic.png" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>
@@ -485,7 +486,7 @@
                         IsEnabled="False" 
                         Click="CollectLogs_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label Style="{DynamicResource valLabel}">Collect Logs</Label>
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_logcol}" />
                         <Image Source="Resources/Img/collectlogs.png" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>
