@@ -120,9 +120,9 @@
     <ControlTemplate x:Key="validationTemplate">
         <Grid ToolTip="{Binding Path=/ErrorContent}">
             <Ellipse Fill="Red" Opacity="0.8" Width="12" Height="12"
-                 HorizontalAlignment="Right" VerticalAlignment="Top" />
+                 HorizontalAlignment="Right" VerticalAlignment="Center" />
             <TextBlock Text="!" FontSize="10" Foreground="White" 
-                HorizontalAlignment="Right" 
+                HorizontalAlignment="Right" VerticalAlignment="Center" 
                 Margin="0,-2,4,0"/>
             <AdornedElementPlaceholder />
         </Grid>
