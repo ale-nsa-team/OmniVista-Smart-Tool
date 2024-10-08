@@ -20,6 +20,7 @@ namespace PoEWizard.Components
         public ObservableCollection<PortModel> PortsFound { get; set; }
         public PortModel SelectedPort { get; set; }
         public bool IsMacAddress {  get; set; }
+        public int NbMacAddressesFound { get; set; }
 
         public SearchPort(SwitchModel device, string macAddress)
         {
@@ -42,7 +43,7 @@ namespace PoEWizard.Components
         {
             this.MouseDown += delegate { this.DragMove(); };
 
-            this.Height = this._portsListView.ActualHeight + 105;
+            this.Height = this._portsListView.ActualHeight + 115;
             this.Top = this.Owner.Height> this.Height ? this.Owner.Top + (this.Owner.Height - this.Height)/2 : this.Top;
         }
 
@@ -51,6 +52,7 @@ namespace PoEWizard.Components
             this._device_mac = !string.IsNullOrEmpty(macAddr) ? macAddr.ToLower().Trim() : string.Empty;
             this.IsMacAddress = Utils.IsValidMacSequence(this._device_mac);
             this.PortsFound = new ObservableCollection<PortModel>();
+            this.NbMacAddressesFound = 0;
             foreach (var chas in device.ChassisList)
             {
                 foreach (var slot in chas.Slots)
@@ -61,6 +63,7 @@ namespace PoEWizard.Components
                         {
                             if (FoundDevice(port, GetDeviceNameOrVendor(port)))
                             {
+                                this.NbMacAddressesFound += port.MacList.Count;
                                 this.PortsFound.Add(port);
                                 if (port.MacList?.Count == 0) port.MacList.Add(port.EndPointDevicesList[0].MacAddress);
                             }
@@ -70,6 +73,7 @@ namespace PoEWizard.Components
                         {
                             if (FoundDevice(port, mac))
                             {
+                                this.NbMacAddressesFound += port.MacList.Count;
                                 this.PortsFound.Add(port);
                                 port.CreateVirtualDeviceEndpoint();
                                 break;

@@ -346,7 +346,7 @@ namespace PoEWizard.Data
 
         #region Number of Mac Addresses Limits
         public const int MAX_SEARCH_NB_MAC_PER_PORT = 1500;
-        public const int MAX_SCAN_NB_MAC_PER_PORT = 30;
+        public const int MAX_SCAN_NB_MAC_PER_PORT = 52;
         public const int MAX_NB_MAC_TOOL_TIP = 30;
         public const int MAX_NB_DEVICES_TOOL_TIP = 10;
         public const int MIN_NB_MAC_UPLINK = 2;
