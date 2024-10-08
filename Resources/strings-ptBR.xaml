@@ -30,7 +30,7 @@
     <sys:String x:Key="i18n_rfrsh">Atualizar</sys:String>
     <sys:String x:Key="i18n_save">Salvar Memória</sys:String>
     <sys:String x:Key="i18n_reboot">Reiniciar</sys:String>
-    <sys:String x:Key="i18n_trfAna">Análise de tráfego</sys:String>
+    <sys:String x:Key="i18n_trfAna">Análise de Tráfego</sys:String>
     <sys:String x:Key="i18n_logcol">Coletar Logs</sys:String>
     <sys:String x:Key="i18n_cnxBtn">Conectar</sys:String>
     <sys:String x:Key="i18n_canBtn">Cancelar</sys:String>
@@ -38,8 +38,8 @@
     <sys:String x:Key="i18n_yBtn">Sim</sys:String>
     <sys:String x:Key="i18n_nBtn">Não</sys:String>
     <sys:String x:Key="i18n_subBtn">Submeter</sys:String>
-    <sys:String x:Key="i18n_nextBtn">Próximo</sys:String>
-    <sys:String x:Key="i18n_prevBtn">Anterior</sys:String>
+    <sys:String x:Key="i18n_nextBtn">Próximo &gt;</sys:String>
+    <sys:String x:Key="i18n_prevBtn">&lt; Anterior</sys:String>
     <sys:String x:Key="i18n_closeBtn">Fechar</sys:String>
 
     <!--System Information-->
@@ -72,7 +72,7 @@
     <sys:String x:Key="i18n_fpoe">PoE Rápido</sys:String>
     <sys:String x:Key="i18n_ppoe">PoE Perpétuo</sys:String>
     <sys:String x:Key="i18n_poeSt">Status do PoE</sys:String>
-    <sys:String x:Key="i18n_vcRole">VC Principal/Secundário</sys:String>
+    <sys:String x:Key="i18n_vcRole">Função do VC</sys:String>
 
     <!--Port Table-->
     <sys:String x:Key="i18n_port">Porta</sys:String>
@@ -85,7 +85,7 @@
     <sys:String x:Key="i18n_mode">Modo de PoE</sys:String>
     <sys:String x:Key="i18n_bt">802.3BT</sys:String>
     <sys:String x:Key="i18n_devModel">Modelo do Dispositivo</sys:String>
-    <sys:String x:Key="i18n_devType">Tipo de Dispositivo</sys:String>
+    <sys:String x:Key="i18n_devType">Tipo do Dispositivo</sys:String>
     <sys:String x:Key="i18n_devName">Nome do Dispositivo</sys:String>
 
     <!--Status Bar messages-->
@@ -100,6 +100,7 @@
     <sys:String x:Key="i18n_pwd">Senha</sys:String>
 
     <!--Config Wizard Dialog-->
+    <sys:String x:Key="i18n_sysPar">Parâmetros de Sistema</sys:String>
     <sys:String x:Key="i18n_netCfg">Configuração de Rede</sys:String>
     <sys:String x:Key="i18n_mngtIp">Endereço IP de Gerenciamento</sys:String>
     <sys:String x:Key="i18n_mask">Máscara de subrede</sys:String>
@@ -111,16 +112,20 @@
     <sys:String x:Key="i18n_dns">Servidores DNS</sys:String>
     <sys:String x:Key="i18n_ntp">Servidores NTP</sys:String>
     <sys:String x:Key="i18n_srvs">Servidores</sys:String>
-    <sys:String x:Key="i18n_srv">Servidor</sys:String>
+    <sys:String x:Key="i18n_srv1">Servidor 1</sys:String>
+	<sys:String x:Key="i18n_srv2">Servidor 2</sys:String>
+	<sys:String x:Key="i18n_srv3">Servidor 3</sys:String>
+	<sys:String x:Key="i18n_domain">Domínio</sys:String>
     <sys:String x:Key="i18n_tz">Fuso Horário</sys:String>
     <sys:String x:Key="i18n_feat">Facilidades</sys:String>
-    <sys:String x:Key="i18n_insProto">Disasbiliar Protocolos Inseguros</sys:String>
+    <sys:String x:Key="i18n_insProto">Disativar Protocolos Inseguros</sys:String>
     <sys:String x:Key="i18n_ssh">Ativar SSH</sys:String>
-    <sys:String x:Key="i18n_dhcp">Ativar DHCP Relay</sys:String>
+    <sys:String x:Key="i18n_relay">Ativar DHCP Relay</sys:String>
+	<sys:String x:Key="i18n_dhcp">Servidor DHCP</sys:String>
     <sys:String x:Key="i18n_multicast">Ativar Multicast</sys:String>
     <sys:String x:Key="i18n_vlan">VLAN</sys:String>
-    <sys:String x:Key="i18n_en">Ativar</sys:String>
-    <sys:String x:Key="i18n_snmp">Configurar SNMP</sys:String>
+    <sys:String x:Key="i18n_en">Ativo</sys:String>
+    <sys:String x:Key="i18n_snmp">SNMP</sys:String>
     <sys:String x:Key="i18n_usrs">Usuários</sys:String>
     <sys:String x:Key="i18n_usr">Usuário</sys:String>
     <sys:String x:Key="i18n_comms">Comunidades (somente v2)</sys:String>
@@ -136,9 +141,14 @@
     <sys:String x:Key="i18n_runCW">Executando assistente de configuração...</sys:String>
     <sys:String x:Key="i18n_cwErr">Os seguintes erros foram reportados:</sys:String>
     <sys:String x:Key="i18n_twiz">Assistente de Configuração</sys:String>
-    <sys:String x:Key="i18n_discWiz">A aplicação vai se desconectar da switch porque o endereço IP foi alterado.\n
-        Favor Reconectar usando o novo endereço.
+    <sys:String x:Key="i18n_discWiz" xml:space="preserve">A aplicação vai se desconectar da switch porque o endereço IP foi alterado.
+    Favor Reconectar usando o novo endereço.
     </sys:String>
+    <sys:String x:Key="i18n_loading">Carregando parâmetros atuais, aguarde...</sys:String>
+    <sys:String x:Key="i18n_appDns">Configurando parâmetros de DNS e NPT...</sys:String>
+    <sys:String x:Key="i18n_appFeat">Configurando facilidades...</sys:String>
+    <sys:String x:Key="i18n_appSys">Configurando parâmetros de sistema...</sys:String>
+    <sys:String x:Key="i18n_reloading">Relendo dados da switch, aguarde...</sys:String>
 
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwRep">Relatório do Assistente de PoE:</sys:String>
@@ -197,26 +207,19 @@
     <sys:String x:Key="i18n_cmdnosup">Comando não suportado pela switch</sys:String>
 
     <!--About box-->
-    <sys:String x:Key="i18n_descr">
-        Essa aplicação pode ser utilizada para auxiliar o usuário a resolver problemas relacionados a PoE
-        em OmniSwitches® da Alcatel-Lucent Enterprise, equipados com AOS versao 8.\n
-        A aplicação se comunica com a switch via REST API, para obter informações sobre fontes de alimentação
-        e portas PoE, permitindo que o usuário execute mudanças na configuração para resolver problemas
-        comuns de PoE. Caso o assistente não consiga resolver o problema, ele permite ao usuário coletar
-        informações relevantes para serem enviadas ao TAC.\n
-    </sys:String>
-    <sys:String x:Key="i18n_cpright">
-        \nPermissão de uso, cópia, modificação, e distribuição desse código fonte, produto, e sua documentação
-        sem custo e sem um contrato de licença assinado é por este meio concedido, desde que a nota de direitos
-        autorais, este parágrafo e os dois parágrafos seguintes apareçam em todas as cópias, alterações, e distrubuições.\n\n
+	<sys:String x:Key="i18n_aboutTitle">Sobre ALE Installer Toolkit</sys:String>
+	<sys:String x:Key="i18n_cpright">Direitos Autorais</sys:String>
+	<sys:String x:Key="i18n_reserved">Todos os Direitos Reservados</sys:String>
+    <sys:String x:Key="i18n_descr" xml:space="preserve">
+Essa aplicação pode ser utilizada para auxiliar o usuário a resolver problemas relacionados a PoE em OmniSwitches® da Alcatel-Lucent Enterprise, equipados com AOS versao 8.
+A aplicação se comunica com a switch via REST API, para obter informações sobre fontes de alimentação e portas PoE, permitindo que o usuário execute mudanças na configuração para resolver problemas comuns de PoE.
+Caso o assistente não consiga resolver o problema, ele permite ao usuário coletar informações relevantes para serem enviadas ao TAC.
+		
+Permissão de uso, cópia, modificação, e distribuição desse código fonte, produto, e sua documentação sem custo e sem um contrato de licença assinado são por este meio concedidos, desde que a nota de direitos autorais, este parágrafo e os dois parágrafos seguintes apareçam em todas as cópias, alterações, e distrubuições.
         
-        EM NENHUM CASO A ALE USA INC. SERÁ RESPONSÁVEL PERANTE QUALQUER ENTIDADE POR DANOS DIRETOS, INDIRETOS, ESPECIAIS, 
-        INCIDENTAIS OU CONSEQUENCIAIS,INCLUINDO LUCROS CESSANTES, DECORRENTES DO USO DESTE CÓDIGO FONTE, PRODUTO E SUA DOCUMENTAÇÃO, 
-        MESMO QUE ALE USA INC. TENHA SIDO AVISADA DA POSSIBILIDADE DE TAIS DANOS.\n\n
-        A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS NÃO SE LIMITANDO A, GARANTIAS IMPLÍCITAS 
-        DE COMERCIALIZAÇÃO E ADEQUAÇÃO A UM DETERMINADO FIM. O CÓDIGO FONTE, O PRODUTO E A DOCUMENTAÇÃO QUE OS ACOMPANHA, SE EXISTIR, 
-        SÃO FORNECIDOS “COMO ESTÃO”. A ALE USA INC. NÃO TEM OBRIGAÇÃO DE FORNECER MANUTENÇÃO, SUPORTE, ATUALIZAÇÕES, 
-        MELHORIAS OU MODIFICAÇÕES.\n
+EM NENHUM CASO A ALE USA INC. SERÁ RESPONSÁVEL PERANTE QUALQUER ENTIDADE POR DANOS DIRETOS, INDIRETOS, ESPECIAIS, INCIDENTAIS OU CONSEQUENCIAIS, INCLUINDO LUCROS CESSANTES, DECORRENTES DO USO DESTE CÓDIGO FONTE, PRODUTO E SUA DOCUMENTAÇÃO, MESMO QUE ALE USA INC. TENHA SIDO AVISADA DA POSSIBILIDADE DE TAIS DANOS.
+		
+A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS NÃO SE LIMITANDO A, GARANTIAS IMPLÍCITAS DE COMERCIALIZAÇÃO E ADEQUAÇÃO A UM DETERMINADO FIM. O CÓDIGO FONTE, O PRODUTO E A DOCUMENTAÇÃO QUE OS ACOMPANHA, SE EXISTIR, SÃO FORNECIDOS “COMO ESTÃO”. A ALE USA INC. NÃO TEM OBRIGAÇÃO DE FORNECER MANUTENÇÃO, SUPORTE, ATUALIZAÇÕES, MELHORIAS OU MODIFICAÇÕES.
     </sys:String>
 
     <!--Switch scan-->
@@ -362,7 +365,7 @@
     <sys:String x:Key="i18n_temp_tt">A switch pode reduzir a potência no PoE porque a temperatura está muito alta</sys:String>
     <sys:String x:Key="i18n_fpga_tt">A versão de FPGA é velha. Favor adquirir um contrato de suporte para atualizar sua switch</sys:String>
     <sys:String x:Key="i18n_cpld_tt">A versão de CPLD é velha. Favor adquirir um contrato de suporte para atualizar sua switch</sys:String>
-    <sys:String x:Key="i18n_poe_tt">Liar/Desligar PoE nessa porta</sys:String>
+    <sys:String x:Key="i18n_poe_tt">Ligar/Desligar PoE nessa porta</sys:String>
     <sys:String x:Key="i18n_fpoe_tt">PoE rápido é desabilitado quando o PoE está desligado ou 802.3bt está ativo</sys:String>
     <sys:String x:Key="i18n_ppoe_tt">O PoE perpétuo é desabilitado quando o PoE está desligado ou 802.3bt está ativo</sys:String>
     <sys:String x:Key="i18n_disc_tt">Clique para desconectar</sys:String>

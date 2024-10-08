@@ -5,12 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
-        Title="About ALE Configuration Wizard" Height="500" Width="550" WindowStyle="None" ShowInTaskbar="False">
+        Title="{DynamicResource i18n_aboutTitle}" Height="500" Width="550" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
                 <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-ptBr.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -25,11 +26,13 @@
         </Grid.ColumnDefinitions>
         <Image Grid.Row="0" Grid.Column="0" Source="../Resources/Img/ale-icon.png" Stretch="None"/>
         <StackPanel Grid.Row="0" Grid.Column="1">
-            <TextBlock x:Name="_aboutTitle" Style="{DynamicResource aboutTitle}" />
+            <TextBlock x:Name="_aboutTitle" Style="{DynamicResource aboutTitle}" Text="{DynamicResource i18n_aboutTitle}"/>
             <TextBlock x:Name="_version" Style="{DynamicResource aboutParagraph}" />
             <TextBlock x:Name="_copyRight" Style="{DynamicResource aboutParagraph}" />
             <TextBox x:Name="_aboutDescr" Margin="0,10,0,0"
+                     Text="{DynamicResource i18n_descr}"
                      TextWrapping="Wrap"
+                     AcceptsReturn="True"
                      Width="395"
                      Height="305"
                      IsReadOnly="True"
