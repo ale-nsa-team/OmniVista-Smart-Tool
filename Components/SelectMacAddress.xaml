@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
+        Loaded="OnWindowLoaded"
         Title="Select Mac Address" Height="180" Width="380" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
@@ -21,12 +22,17 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Style="{DynamicResource titleLabel}" Margin="0,25,0,5">Please enter the MAC address, Device or Vendor Name</Label>
-        <TextBox Grid.Row="1" x:Name="_macAddr"
-                     Foreground="{DynamicResource fontColor}"
-                     Background="{DynamicResource barBackground}"
-                     KeyUp="Select_KeyUp"
-                     Text="{Binding SearchMacAddress}"
-                     Margin="50,10">
+        <TextBox Grid.Row="1" x:Name="_macAddr" x:FieldModifier="private" 
+                     Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                     KeyUp="SelectMac_KeyUp"
+                     Margin="50,10" >
+            <TextBox.Text>
+                <Binding Path="SearchMacAddress" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <local:MacAddressRule />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
         </TextBox>
         <Border Grid.Row="2" Style="{DynamicResource propsBorder}" Margin="0,15,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

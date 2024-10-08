@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using static PoEWizard.Data.Constants;
 
@@ -28,13 +29,24 @@ namespace PoEWizard.Components
             SearchMacAddress = string.Empty;
         }
 
-        private void Select_KeyUp(object sender, KeyEventArgs e)
+        private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            if (e.Key == Key.Enter) BtnOk_Click(sender, e);
+            this.MouseDown += delegate { this.DragMove(); };
+        }
+
+        private void SelectMac_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && !HasErrors()) BtnOk_Click(sender, e);
+        }
+
+        private bool HasErrors()
+        {
+            return string.IsNullOrEmpty(_macAddr.Text) || _macAddr.GetBindingExpression(TextBox.TextProperty).HasError;
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
+            if (HasErrors()) return;
             this.Close();
         }
 

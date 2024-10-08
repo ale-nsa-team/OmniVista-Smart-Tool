@@ -135,4 +135,18 @@ namespace PoEWizard.Components
             return (isIp || isFqdn) ? ValidationResult.ValidResult : new ValidationResult(false, "Invalid hostname");
         }
     }
+
+
+    public class MacAddressRule : ValidationRule
+    {
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            string macName = (string)value;
+            if (string.IsNullOrEmpty(macName)) return ValidationResult.ValidResult;
+            bool isValid = true;
+           if (macName.Contains(":")) isValid = Utils.IsValidMacSequence(macName);
+            return (isValid) ? ValidationResult.ValidResult : new ValidationResult(false, "Invalid MAC Address sequence");
+        }
+    }
+
 }

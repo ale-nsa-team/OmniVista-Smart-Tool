@@ -513,11 +513,10 @@
     <!-- end menu style-->
 
     <ControlTemplate x:Key="validationTemplate">
-        <Grid>
+        <Grid ToolTip="{Binding Path=/ErrorContent}">
             <Ellipse Fill="Red" Opacity="0.8" Width="12" Height="12"
                  HorizontalAlignment="Right" VerticalAlignment="Top"/>
             <TextBlock Text="!" FontSize="10" Foreground="White" 
-                ToolTip="{Binding Path=/ErrorContent}" 
                 HorizontalAlignment="Right" 
                 Margin="0,-2,4,0"/>
             <AdornedElementPlaceholder />

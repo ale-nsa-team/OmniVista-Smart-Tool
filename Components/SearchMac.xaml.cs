@@ -63,9 +63,9 @@ namespace PoEWizard.Components
                         {
                             if (FoundDevice(port, GetDeviceNameOrVendor(port)))
                             {
+                                if (port.MacList?.Count == 0) port.MacList.Add(port.EndPointDevicesList[0].MacAddress);
                                 this.NbMacAddressesFound += port.MacList.Count;
                                 this.PortsFound.Add(port);
-                                if (port.MacList?.Count == 0) port.MacList.Add(port.EndPointDevicesList[0].MacAddress);
                             }
                         }
                         if (port.MacList?.Count == 0) continue;

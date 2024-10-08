@@ -331,7 +331,7 @@ namespace PoEWizard.Data
 
         public static bool IsValidHex(string hex)
         {
-            return Regex.IsMatch(hex, "^[0-9a-fA-F]{1,2}$");
+            return hex.Length == 2 && Regex.IsMatch(hex, "^[0-9a-fA-F]{1,2}$");
         }
 
         public static bool IsReachable(string ipAddress)
