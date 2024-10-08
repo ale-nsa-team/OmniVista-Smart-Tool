@@ -5,7 +5,7 @@
     <sys:String x:Key="i18n_cnx">Conectar</sys:String>
     <sys:String x:Key="i18n_view">Mostrar</sys:String>
     <sys:String x:Key="i18n_cfg">Configuração</sys:String>
-    <sys:String x:Key="i18n_sw">Switch</sys:String>
+    <sys:String x:Key="i18n_sw">Switch...</sys:String>
     <sys:String x:Key="i18n_disc">Desconectar</sys:String>
     <sys:String x:Key="i18n_exit">Sair</sys:String>
     <sys:String x:Key="i18n_log">Log</sys:String>
@@ -13,6 +13,7 @@
     <sys:String x:Key="i18n_activ">Log de atividades</sys:String>
     <sys:String x:Key="i18n_level">Nível de Log</sys:String>
     <sys:String x:Key="i18n_vcboot">vcboot.cfg</sys:String>
+    <sys:String x:Key="i18n_sshot">Snapshot</sys:String>
     <sys:String x:Key="i18n_ps">Fontes de Alimentação</sys:String>
     <sys:String x:Key="i18n_src">Procurar MAC</sys:String>
     <sys:String x:Key="i18n_theme">Tema</sys:String>
@@ -26,7 +27,7 @@
     <!--Buttons-->
     <sys:String x:Key="i18n_ptRst">Reiniciar Porta</sys:String>
     <sys:String x:Key="i18n_poeWiz">Assistente de PoE</sys:String>
-    <sys:String x:Key="i18n_rfrsh">Recarregar</sys:String>
+    <sys:String x:Key="i18n_rfrsh">Atualizar</sys:String>
     <sys:String x:Key="i18n_save">Salvar Memória</sys:String>
     <sys:String x:Key="i18n_reboot">Reiniciar</sys:String>
     <sys:String x:Key="i18n_trfAna">Análise de tráfego</sys:String>
@@ -56,8 +57,8 @@
     <sys:String x:Key="i18n_mac">Endereço MAC:</sys:String>
     <sys:String x:Key="i18n_temp">Temperatura:</sys:String>
     <sys:String x:Key="i18n_cpu">Utilização de CPU:</sys:String>
-    <sys:String x:Key="i18n_fpga">Versão do FPGA:</sys:String>
-    <sys:String x:Key="i18n_cpld">Versão do CPLD:</sys:String>
+    <sys:String x:Key="i18n_fpga">Versão de FPGA:</sys:String>
+    <sys:String x:Key="i18n_cpld">Versão de CPLD:</sys:String>
     <sys:String x:Key="i18n_flash">Memória Flash Livre:</sys:String>
 
     <!--Slot Table-->
@@ -101,7 +102,7 @@
     <!--Config Wizard Dialog-->
     <sys:String x:Key="i18n_netCfg">Configuração de Rede</sys:String>
     <sys:String x:Key="i18n_mngtIp">Endereço IP de Gerenciamento</sys:String>
-    <sys:String x:Key="i18n_mask">Máscara</sys:String>
+    <sys:String x:Key="i18n_mask">Máscara de subrede</sys:String>
     <sys:String x:Key="i18n_admPwd">Senha do Administrador</sys:String>
     <sys:String x:Key="i18n_sysName">Nome do Sistema</sys:String>
     <sys:String x:Key="i18n_sysCont">Contato</sys:String>
@@ -143,7 +144,7 @@
     <sys:String x:Key="i18n_pwRep">Relatório do Assistente de PoE:</sys:String>
     <sys:String x:Key="i18n_pwRun">Executando Assistente de PoE na porta</sys:String>
     <sys:String x:Key="i18n_pwDur">Durarção total:</sys:String>
-    <sys:String x:Key="i18n_pwEnd">Assustente de PoE completo na porta</sys:String>
+    <sys:String x:Key="i18n_pwEnd">Assistente de PoE completo na porta</sys:String>
     <sys:String x:Key="i18n_pwDev">com dispositivo do tipo</sys:String>
     <sys:String x:Key="i18n_pwPst">Status da Porta:</sys:String>
     <sys:String x:Key="i18n_pwDevMac">MAC do dispositivo:</sys:String>
@@ -185,197 +186,197 @@
     <sys:String x:Key="i18n_maxpw">Potência max. =</sys:String>
     <sys:String x:Key="i18n_chgprio">Alterando prioridade na porta</sys:String>
     <sys:String x:Key="i18n_pmaysolve">pode resolver o problema</sys:String>
-    <sys:String x:Key="i18n_pnoneed"> No need to change power prioriry on port</sys:String>
-    <sys:String x:Key="i18n_palready">priority is already</sys:String>
-    <sys:String x:Key="i18n_pback">Chaging priority back to</sys:String>
-    <sys:String x:Key="i18n_rcpoe">Power cycling PoE on port</sys:String>
-    <sys:String x:Key="i18n_pwoff">Turning power off</sys:String>
-    <sys:String x:Key="i18n_pwon">Turning power on</sys:String>
-    <sys:String x:Key="i18n_waitp">Waiting for port</sys:String>
-    <sys:String x:Key="i18n_spoeoff">PoE is turned off on slot</sys:String>
-    <sys:String x:Key="i18n_cmdnosup">Command not supported by switch</sys:String>
+    <sys:String x:Key="i18n_pnoneed">Não é necessário alterar a prioridade do PoE na porta</sys:String>
+    <sys:String x:Key="i18n_palready">A prioridade priority já é</sys:String>
+    <sys:String x:Key="i18n_pback">Alterando a prioridade de volta a</sys:String>
+    <sys:String x:Key="i18n_rcpoe">Reaplicando PoE na porta</sys:String>
+    <sys:String x:Key="i18n_pwoff">Desligando a alimentação</sys:String>
+    <sys:String x:Key="i18n_pwon">Ligando a alimentação</sys:String>
+    <sys:String x:Key="i18n_waitp">Aguradando a porta</sys:String>
+    <sys:String x:Key="i18n_spoeoff">PoE está desligado no slot</sys:String>
+    <sys:String x:Key="i18n_cmdnosup">Comando não suportado pela switch</sys:String>
 
     <!--About box-->
     <sys:String x:Key="i18n_descr">
-        This application allows you to apply basic configuration and troubleshoot PoE issues on an 
-        Alcatel-Lucent Enterprise OmniSwitch®, equipped with AOS 8 version.\n
-        The application communicates with the switch via REST API, to gather information on the power 
-        supplies and PoE ports, and allows the user to perform some configuration changes to mitigate 
-        common PoE issues. In case the wizard is unable to fix the problem, it allows the user to collect 
-        relevant information to be sent to TAC.\r\n
+        Essa aplicação pode ser utilizada para auxiliar o usuário a resolver problemas relacionados a PoE
+        em OmniSwitches® da Alcatel-Lucent Enterprise, equipados com AOS versao 8.\n
+        A aplicação se comunica com a switch via REST API, para obter informações sobre fontes de alimentação
+        e portas PoE, permitindo que o usuário execute mudanças na configuração para resolver problemas
+        comuns de PoE. Caso o assistente não consiga resolver o problema, ele permite ao usuário coletar
+        informações relevantes para serem enviadas ao TAC.\n
     </sys:String>
     <sys:String x:Key="i18n_cpright">
-        \r\nPermission to use, copy, modify, and distribute this source code, product, and its documentation 
-        without a fee and without a signed license agreement is hereby granted, provided that the copyright 
-        notice, this paragraph, and the following two paragraphs appear in all copies, modifications, and distributions."\r\n \r\n
-        IN NO EVENT SHALL ALE USA INC. BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, 
-        INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOURCE CODE, PRODUCT, AND ITS DOCUMENTATION, EVEN IF ALE USA INC. 
-        HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\r\n \r\n
-        ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTES 
-        OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOURCE CODE, PRODUCT, AND ACCOMPANYING DOCUMENTATION, 
-        IF ANY, PROVIDED HEREUNDER IS PROVIDED “AS IS.” ALE USA INC. HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, 
-        UPDATES, ENHANCEMENTS, OR MODIFICATIONS.\r\n"
+        \nPermissão de uso, cópia, modificação, e distribuição desse código fonte, produto, e sua documentação
+        sem custo e sem um contrato de licença assinado é por este meio concedido, desde que a nota de direitos
+        autorais, este parágrafo e os dois parágrafos seguintes apareçam em todas as cópias, alterações, e distrubuições.\n\n
+        
+        EM NENHUM CASO A ALE USA INC. SERÁ RESPONSÁVEL PERANTE QUALQUER ENTIDADE POR DANOS DIRETOS, INDIRETOS, ESPECIAIS, 
+        INCIDENTAIS OU CONSEQUENCIAIS,INCLUINDO LUCROS CESSANTES, DECORRENTES DO USO DESTE CÓDIGO FONTE, PRODUTO E SUA DOCUMENTAÇÃO, 
+        MESMO QUE ALE USA INC. TENHA SIDO AVISADA DA POSSIBILIDADE DE TAIS DANOS.\n\n
+        A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS NÃO SE LIMITANDO A, GARANTIAS IMPLÍCITAS 
+        DE COMERCIALIZAÇÃO E ADEQUAÇÃO A UM DETERMINADO FIM. O CÓDIGO FONTE, O PRODUTO E A DOCUMENTAÇÃO QUE OS ACOMPANHA, SE EXISTIR, 
+        SÃO FORNECIDOS “COMO ESTÃO”. A ALE USA INC. NÃO TEM OBRIGAÇÃO DE FORNECER MANUTENÇÃO, SUPORTE, ATUALIZAÇÕES, 
+        MELHORIAS OU MODIFICAÇÕES.\n
     </sys:String>
 
     <!--Switch scan-->
-    <sys:String x:Key="i18n_rest">Connecting REST API</sys:String>
-    <sys:String x:Key="i18n_scan">Scanning switch</sys:String>
-    <sys:String x:Key="i18n_sys">Reading system information on switch</sys:String>
-    <sys:String x:Key="i18n_chas">Reading chassis and port information</sys:String>
-    <sys:String x:Key="i18n_psi">Reading power supply information</sys:String>
-    <sys:String x:Key="i18n_flashd">Reading flash data of chassis</sys:String>
-    <sys:String x:Key="i18n_ss">Get Snapshot</sys:String>
-    <sys:String x:Key="i18n_ssr">Reading configuration snapshot</sys:String>
-    <sys:String x:Key="i18n_lldp">Enable LLDP description</sys:String>
-    <sys:String x:Key="i18n_getLog">Get Switch Log</sys:String>
-    <sys:String x:Key="i18n_nodp">Could not get data for port</sys:String>
-    <sys:String x:Key="i18n_clog">Collecting logs on switch</sys:String>
-    <sys:String x:Key="i18n_lanpw">Getting LAN power information of slot</sys:String>
-    <sys:String x:Key="i18n_rlldp">Readin LLDP remote information</sys:String>
-    <sys:String x:Key="i18n_rmac">Reading MAC address information</sys:String>
-    <sys:String x:Key="i18n_prfsh">Refreshing ports information on switch</sys:String>
-    <sys:String x:Key="i18n_noslt">Could not get data for slot</sys:String>
-    <sys:String x:Key="i18n_nopt">Could not get data for port</sys:String>
-    <sys:String x:Key="i18n_pdbg">Setting PoE log debug level to</sys:String>
-    <sys:String x:Key="i18n_cdbg">Setting CMM log debug level to</sys:String>
-    <sys:String x:Key="i18n_rpdbg">Resetting PoE debug level back to</sys:String>
-    <sys:String x:Key="i18n_rcdbg">Resetting CMM debug level back to</sys:String>
-    <sys:String x:Key="i18n_prst1">Resetting port</sys:String>
-    <sys:String x:Key="i18n_prst2">to capture log</sys:String>
-    <sys:String x:Key="i18n_tarf">Generating tar file</sys:String>
-    <sys:String x:Key="i18n_chasoff">Turning power off on all slots of chassis</sys:String>
-    <sys:String x:Key="i18n_chason">Turning power on on all slots of chassis</sys:String>
-    <sys:String x:Key="i18n_clogl">Getting current log levles</sys:String>
+    <sys:String x:Key="i18n_rest">Conectando à REST API</sys:String>
+    <sys:String x:Key="i18n_scan">Escaneando a switch</sys:String>
+    <sys:String x:Key="i18n_sys">Obtendo informações de systema na switch</sys:String>
+    <sys:String x:Key="i18n_chas">Obtendo informações de chassis e portas</sys:String>
+    <sys:String x:Key="i18n_psi">Obtendo informações de fonte de alimentação</sys:String>
+    <sys:String x:Key="i18n_flashd">Obtendo dados da flash do chassis</sys:String>
+    <sys:String x:Key="i18n_ss">Obter Snapshot</sys:String>
+    <sys:String x:Key="i18n_ssr">Obtendo snapshot da configuração</sys:String>
+    <sys:String x:Key="i18n_lldp">Ativar dscrição de LLDP</sys:String>
+    <sys:String x:Key="i18n_getLog">Obter Logs da switch</sys:String>
+    <sys:String x:Key="i18n_nodp">Não foi possível ler dados da porta</sys:String>
+    <sys:String x:Key="i18n_clog">Coletando logs da switch</sys:String>
+    <sys:String x:Key="i18n_lanpw">Obtendo informações de PoE no slot</sys:String>
+    <sys:String x:Key="i18n_rlldp">Obtendo informações de LLDP remoto</sys:String>
+    <sys:String x:Key="i18n_rmac">Obtendo informações de MAC</sys:String>
+    <sys:String x:Key="i18n_prfsh">Atualizando informações de portas na switch</sys:String>
+    <sys:String x:Key="i18n_noslt">Não foi possível ler dados do slot</sys:String>
+    <sys:String x:Key="i18n_pdbg">Configurando o nível de log de PoE em</sys:String>
+    <sys:String x:Key="i18n_cdbg">Configurando o nível de log de CMM em</sys:String>
+    <sys:String x:Key="i18n_rpdbg">Configurando o nível de log de PoE de volta a</sys:String>
+    <sys:String x:Key="i18n_rcdbg">Configurando o nível de log de CMM de volta a</sys:String>
+    <sys:String x:Key="i18n_prst1">Reiniciando a porta</sys:String>
+    <sys:String x:Key="i18n_prst2">Para capturar os logs</sys:String>
+    <sys:String x:Key="i18n_tarf">Gerando arquivo tar</sys:String>
+    <sys:String x:Key="i18n_chasoff">Desligando energia em todos os slots do chassis</sys:String>
+    <sys:String x:Key="i18n_chason">Ligando energia em todos os slots do chassis</sys:String>
+    <sys:String x:Key="i18n_clogl">Obtendo níveis de log atuais</sys:String>
 
-    <sys:String x:Key="i18n_swmem">Writing memory on switch</sys:String>
-    <sys:String x:Key="i18n_fwmem">Write memory completed</sys:String>
+    <sys:String x:Key="i18n_swmem">Salvando a memória na switch</sys:String>
+    <sys:String x:Key="i18n_fwmem">Escrita da memória completada</sys:String>
 
-    <sys:String x:Key="i18n_wreboot">Waiting for switch</sys:String>
-    <sys:String x:Key="i18n_rtout">did not come back within</sys:String>
+    <sys:String x:Key="i18n_wreboot">Aguardando a switch</sys:String>
+    <sys:String x:Key="i18n_rtout">Não retornou dentro de</sys:String>
 
     <!--Traffic Analysis-->
-    <sys:String x:Key="i18n_taerr">Traffic analysis on switch</sys:String>
-    <sys:String x:Key="i18n_taRun">Running...</sys:String>
-    <sys:String x:Key="i18n_taIdle">Traffic Analysys</sys:String>
-    <sys:String x:Key="i18n_taSave">Do you want to save the traffic analysis report</sys:String>
-    <sys:String x:Key="i18n_taInt">interrupted by the user before</sys:String>
-    <sys:String x:Key="i18n_taDisc">Disconnecting switch</sys:String>
-    <sys:String x:Key="i18n_tappLog">Application Log</sys:String>
-    <sys:String x:Key="i18n_tactLog">Activity Log</sys:String>
-    <sys:String x:Key="i18n_tastop">Are you sure you want to stop it</sys:String>
-    <sys:String x:Key="i18n_tarun">The traffic analysis is still running (selected duration:</sys:String>
-    <sys:String x:Key="i18n_hour">hour</sys:String>
+    <sys:String x:Key="i18n_taerr">Análise de tráfego na switch</sys:String>
+    <sys:String x:Key="i18n_taRun">Executando...</sys:String>
+    <sys:String x:Key="i18n_taIdle">Análise de Tráfego</sys:String>
+    <sys:String x:Key="i18n_taSave">Deseja salvar o relatório de Análise de tráfego?</sys:String>
+    <sys:String x:Key="i18n_taInt">interrompido pelo usuário antes de</sys:String>
+    <sys:String x:Key="i18n_taDisc">Desconectando da switch</sys:String>
+    <sys:String x:Key="i18n_tappLog">Log da Aplicação</sys:String>
+    <sys:String x:Key="i18n_tactLog">Log de Atividades</sys:String>
+    <sys:String x:Key="i18n_tastop">Tem certeza que deseja interromper</sys:String>
+    <sys:String x:Key="i18n_tarun">A Análise de Tráfego ainda está  em execução (duracao selecionada:</sys:String>
+    <sys:String x:Key="i18n_hour">hora</sys:String>
     <sys:String x:Key="i18n_min">min</sys:String>
-    <sys:String x:Key="i18n_sec">sec</sys:String>
-    <sys:String x:Key="i18n_tadur">Current duration:</sys:String>
-    <sys:String x:Key="i18n_tacont">Do you still want to continue</sys:String>
+    <sys:String x:Key="i18n_sec">s</sys:String>
+    <sys:String x:Key="i18n_tadur">duração atual:</sys:String>
+    <sys:String x:Key="i18n_tacont">Ainda deseja continuar</sys:String>
 
     <!--Other Messages-->
-    <sys:String x:Key="i18n_closing">closing the application</sys:String>
-    <sys:String x:Key="i18n_tvcboot">VCBoot config file</sys:String>
-    <sys:String x:Key="i18n_lvcboot">Loading vcboot.cfg file...</sys:String>
-    <sys:String x:Key="i18n_fromsw">from switch</sys:String>
-    <sys:String x:Key="i18n_noSftp">Cannot connect secure FTP on switch</sys:String>
-    <sys:String x:Key="i18n_lsnap">Reading configuration snapshot...</sys:String>
-    <sys:String x:Key="i18n_tsnap">Configuration Shapshot</sys:String>
-    <sys:String x:Key="i18n_sport">Search Port</sys:String>
-    <sys:String x:Key="i18n_fmac">Could not find MAC Address</sys:String>
-    <sys:String x:Key="i18n_onsw">on switch</sys:String>
-    <sys:String x:Key="i18n_tfrst">Factory Reset</sys:String>
-    <sys:String x:Key="i18n_cfrst">The switch configuration will be restored to factory default. Please confirm your action.</sys:String>
-    <sys:String x:Key="i18n_badPwd">Invalid password</sys:String>
-    <sys:String x:Key="i18n_afrst">Applying factory default...</sys:String>
-    <sys:String x:Key="i18n_rebsw">Reboot Switch</sys:String>
-    <sys:String x:Key="i18n_crebsw">Are you sure you want to reboot switch</sys:String>
-    <sys:String x:Key="i18n_frebsw1">Cannot rebot switch</sys:String>
-    <sys:String x:Key="i18n_frebsw2">because it is not certified</sys:String>
-    <sys:String x:Key="i18n_recsw">Do you wanto to reconnect to switch</sys:String>
-    <sys:String x:Key="i18n_prst">Restarting</sys:String>
-    <sys:String x:Key="i18n_cprst">Are you sure you want to reset this port?</sys:String>
-    <sys:String x:Key="i18n_tclogs">Collect Logs</sys:String>
-    <sys:String x:Key="i18n_pclogs1">Do you want to power cycle PoE on all ports of switch</sys:String>
-    <sys:String x:Key="i18n_pclogs2">to collect the logs?</sys:String>
-    <sys:String x:Key="i18n_rclogs">Collecting logs on switch</sys:String>
-    <sys:String x:Key="i18n_cclogs">Cleaning up current log ...</sys:String>
-    <sys:String x:Key="i18n_wclogs">Waiting from tar file ready</sys:String>
-    <sys:String x:Key="i18n_fsize">File size:</sys:String>
-    <sys:String x:Key="i18n_lclogs">Downloading tar file from switch...\nFile creation duration:</sys:String>
-    <sys:String x:Key="i18n_ttar">Downloading tar file</sys:String>
-    <sys:String x:Key="i18n_tfail">Failed to downlad file</sys:String>
-    <sys:String x:Key="i18n_sfile">Save switch logs</sys:String>
-    <sys:String x:Key="i18n_ffail">Failed to create file</sys:String>
-    <sys:String x:Key="i18n_fileTout">Timeout waiting for tar file</sys:String>
-    <sys:String x:Key="i18n_sprio">Selected priority</sys:String>
-    <sys:String x:Key="i18n_cprio1">Changing Priority to</sys:String>
-    <sys:String x:Key="i18n_cprio2">on port</sys:String>
-    <sys:String x:Key="i18n_stprio">set to</sys:String>
-    <sys:String x:Key="i18n_chprio">Power Priority Change</sys:String>
-    <sys:String x:Key="i18n_alprio">Some other devices with lower priority mas stop.</sys:String>
-    <sys:String x:Key="i18n_rprio">Change priority report:</sys:String>
-    <sys:String x:Key="i18n_spoeOff">Slot PoE Off</sys:String>
-    <sys:String x:Key="i18n_cpoeoff">Are you sure you want to turn PoE Off on all ports in slot</sys:String>
-    <sys:String x:Key="i18n_spoeon">Slot PoE On</sys:String>
-    <sys:String x:Key="i18n_wpoeon">Please wait for slot</sys:String>
-    <sys:String x:Key="i18n_waitup">to come up</sys:String>
-    <sys:String x:Key="i18n_enable">Enabling</sys:String>
-    <sys:String x:Key="i18n_disable">Disabling</sys:String>
-    <sys:String x:Key="i18n_onsl">on slot</sys:String>
-    <sys:String x:Key="i18n_cnsw">Connect to switch</sys:String>
-    <sys:String x:Key="i18n_dcnsw">Disconnect switch</sys:String>
+    <sys:String x:Key="i18n_closing">fechando a aplicação</sys:String>
+    <sys:String x:Key="i18n_tvcboot">Arquivo de configuração VCBoot</sys:String>
+    <sys:String x:Key="i18n_lvcboot">Carregando arquivo vcboot.cfg...</sys:String>
+    <sys:String x:Key="i18n_fromsw">da switch</sys:String>
+    <sys:String x:Key="i18n_noSftp">Falha na conexão SFTP com a switch</sys:String>
+    <sys:String x:Key="i18n_lsnap">Lendo snapshot da configuração...</sys:String>
+    <sys:String x:Key="i18n_tsnap">Snapshot da Configuração</sys:String>
+    <sys:String x:Key="i18n_sport">Procurar Porta</sys:String>
+    <sys:String x:Key="i18n_fmac">Endereço MAC não encontrado</sys:String>
+    <sys:String x:Key="i18n_onsw">na switch</sys:String>
+    <sys:String x:Key="i18n_tfrst">Configuração de fábrica</sys:String>
+    <sys:String x:Key="i18n_cfrst">A configuração da switch será restaurada para o padrão de fábrica. Por favor, confirme sua ação.</sys:String>
+    <sys:String x:Key="i18n_badPwd">Senha inválida</sys:String>
+    <sys:String x:Key="i18n_afrst">Aplicando configuração padrão de fábrica...</sys:String>
+    <sys:String x:Key="i18n_rebsw">Reiniciar Switch</sys:String>
+    <sys:String x:Key="i18n_crebsw">Tem certeza que deseja reiniciar a switch</sys:String>
+    <sys:String x:Key="i18n_frebsw1">Não foi possível reiniciar a switch</sys:String>
+    <sys:String x:Key="i18n_frebsw2">porque ela não está certificada</sys:String>
+    <sys:String x:Key="i18n_recsw">Deseja reconectar à switch</sys:String>
+    <sys:String x:Key="i18n_prst">Reiniciando</sys:String>
+    <sys:String x:Key="i18n_cprst">Tem certeza que deseja reiniciar essa porta?</sys:String>
+    <sys:String x:Key="i18n_tclogs">Coletar Logs</sys:String>
+    <sys:String x:Key="i18n_pclogs1">Deseja reiniciar o PoE em todas as portas da switch</sys:String>
+    <sys:String x:Key="i18n_pclogs2">para coletar os logs?</sys:String>
+    <sys:String x:Key="i18n_rclogs">Coletando logs da switch</sys:String>
+    <sys:String x:Key="i18n_cclogs">Limpando os logs atuais...</sys:String>
+    <sys:String x:Key="i18n_wclogs">Aguardando arquivo tar completo</sys:String>
+    <sys:String x:Key="i18n_fsize">Tamanho do arquivo:</sys:String>
+    <sys:String x:Key="i18n_lclogs">Carregando arquivo tar da switch...\nTempo de criacão do arquivo:</sys:String>
+    <sys:String x:Key="i18n_ttar">Carregando arquivo tar</sys:String>
+    <sys:String x:Key="i18n_tfail">Falha na carga do arquivo</sys:String>
+    <sys:String x:Key="i18n_sfile">Salvar logs da switch</sys:String>
+    <sys:String x:Key="i18n_ffail">Falha na criação do arquivo</sys:String>
+    <sys:String x:Key="i18n_fileTout">Tempo esgotado aguardando arquivo tar</sys:String>
+    <sys:String x:Key="i18n_sprio">Prioridade Selecionada</sys:String>
+    <sys:String x:Key="i18n_cprio1">Alterando a prioridade para</sys:String>
+    <sys:String x:Key="i18n_cprio2">na porta</sys:String>
+    <sys:String x:Key="i18n_stprio">definida como</sys:String>
+    <sys:String x:Key="i18n_chprio">Modificar Prioridade</sys:String>
+    <sys:String x:Key="i18n_alprio">Alguns dispositivos com prioridade mais baixa podem parar.</sys:String>
+    <sys:String x:Key="i18n_rprio">Relatório de mudança de prioridade:</sys:String>
+    <sys:String x:Key="i18n_spoeOff">PoE desligado no slot</sys:String>
+    <sys:String x:Key="i18n_cpoeoff">Tem certeza que deseja desligar PoE em todas as portas do slot</sys:String>
+    <sys:String x:Key="i18n_spoeon">PoE ligado no slot</sys:String>
+    <sys:String x:Key="i18n_wpoeon">Favor aguardar o slot</sys:String>
+    <sys:String x:Key="i18n_waitup">entrar em serviço</sys:String>
+    <sys:String x:Key="i18n_enable">Ativando</sys:String>
+    <sys:String x:Key="i18n_disable">Desativando</sys:String>
+    <sys:String x:Key="i18n_onsl">no slot</sys:String>
+    <sys:String x:Key="i18n_cnsw">Conectar na switch</sys:String>
+    <sys:String x:Key="i18n_dcnsw">Desconectar da switch</sys:String>
     <sys:String x:Key="i18n_cert">
-        The switch booted on certified directory, no changes can be saved.\n
-        Do you want to reboot the switch on Working directory?"
+        A switch inicializou no diretório Certified, mudanças de configuração não podem ser salvas.\n
+        Deseja reiniciar a switch no diretório Working?
     </sys:String>
-    <sys:String x:Key="i18n_wmem">Write memory required</sys:String>
-    <sys:String x:Key="i18n_refrsw">Refresh switch</sys:String>
-    <sys:String x:Key="i18n_cfgCh">Checking configuration changes on switch</sys:String>
-    <sys:String x:Key="i18n_nochg">No configuration changes on switch</sys:String>
-    <sys:String x:Key="i18n_turnon">Do you want to turn it on?</sys:String>
-    <sys:String x:Key="i18n_warn">warning</sys:String>
-    <sys:String x:Key="i18n_wpUp">Waiting for ports to come up on switch</sys:String>
-    <sys:String x:Key="i18n_compl">completed</sys:String>
-    <sys:String x:Key="i18n_dur">duration:</sys:String>
-    <sys:String x:Key="i18n_slon">Turning PoE On on slot</sys:String>
-    <sys:String x:Key="i18n_sloff">Turning PoE Off on slot</sys:String>
-    <sys:String x:Key="i18n_pbtEn">Enable 802.3bt</sys:String>
-    <sys:String x:Key="i18n_cbtEn">To enable 802.3bt all devices on the same slot will restart</sys:String>
-    <sys:String x:Key="i18n_proceed">Do you want to proceed?</sys:String>
-    <sys:String x:Key="i18n_dmaxpw">Changing max. power to default on port</sys:String>
-    <sys:String x:Key="i18n_tmaxpw">Check default Max. Power</sys:String>
-    <sys:String x:Key="i18n_nosync">Flash memory is not synchronized</sys:String>
-    <sys:String x:Key="i18n_cfgch">Significant configuration changes.</sys:String>
-    <sys:String x:Key="i18n_cfsave">Do you want to save it now?\nIt may take up to 30 sec to execute Write Memroy</sys:String>
-    <sys:String x:Key="i18n_swrst">Rebooting switch</sys:String>
-    <sys:String x:Key="i18n_swrsti">interrupted by the user before</sys:String>
-    <sys:String x:Key="i18n_swready">ready to connect\nReboot duration:</sys:String>
-    <sys:String x:Key="i18n_rst">restarted</sys:String>
-    <sys:String x:Key="i18n_pfrst">failed to restart</sys:String>
-    <sys:String x:Key="i18n_urst">restarted by the user</sys:String>
-    <sys:String x:Key="i18n_pstup">Starting up port</sys:String>
-    <sys:String x:Key="i18n_ppoff">Turning off power on port</sys:String>
+    <sys:String x:Key="i18n_wmem">Escrita de memória necessária</sys:String>
+    <sys:String x:Key="i18n_refrsw">Atualizar switch</sys:String>
+    <sys:String x:Key="i18n_cfgCh">Verificando mudanças de configuração na switch</sys:String>
+    <sys:String x:Key="i18n_nochg">Nenhuma mudança de configuração na switch</sys:String>
+    <sys:String x:Key="i18n_turnon">Deseja ligar?</sys:String>
+    <sys:String x:Key="i18n_warn">alerta</sys:String>
+    <sys:String x:Key="i18n_wpUp">Aguardando as portas da switch entrarem em serviço</sys:String>
+    <sys:String x:Key="i18n_compl">completado</sys:String>
+    <sys:String x:Key="i18n_dur">duração:</sys:String>
+    <sys:String x:Key="i18n_slon">Ligando PoE no slot</sys:String>
+    <sys:String x:Key="i18n_sloff">Desligando PoE no slot</sys:String>
+    <sys:String x:Key="i18n_pbtEn">Ativar 802.3bt</sys:String>
+    <sys:String x:Key="i18n_cbtEn">Para ativar 802.3bt todos os dispositivos PoE desse slot serão reiniciados</sys:String>
+    <sys:String x:Key="i18n_proceed">Deseja continuar?</sys:String>
+    <sys:String x:Key="i18n_dmaxpw">Alterando potência  max. para valor default na porta</sys:String>
+    <sys:String x:Key="i18n_tmaxpw">Verificando potência Máxima</sys:String>
+    <sys:String x:Key="i18n_nosync">Memória Flash não está sincronizada</sys:String>
+    <sys:String x:Key="i18n_cfgch">Mudanças significativas na configuração.</sys:String>
+    <sys:String x:Key="i18n_cfsave">Deseja salvar agora?\nA operação de escrita pode durar cerca de 30 segundos</sys:String>
+    <sys:String x:Key="i18n_swrst">Reiniciando a switch</sys:String>
+    <sys:String x:Key="i18n_swrsti">interrompida pelo usuário antes de</sys:String>
+    <sys:String x:Key="i18n_swready">Pronto para conectar\nDuração da reinicialização:</sys:String>
+    <sys:String x:Key="i18n_rst">reiniciada</sys:String>
+    <sys:String x:Key="i18n_pfrst">não foi possível reiniciar</sys:String>
+    <sys:String x:Key="i18n_urst">reiniciada pelo usuário</sys:String>
+    <sys:String x:Key="i18n_pstup">Iniciando port</sys:String>
+    <sys:String x:Key="i18n_ppoff">Desligando PoE na porta</sys:String>
 
     <!--Tool Tips-->
-    <sys:String x:Key="i18n_pwr_tt">Actual power consumed by the device connected to the port</sys:String>
-    <sys:String x:Key="i18n_maxPwr_tt">Maximum power allowed by the hardware</sys:String>
-    <sys:String x:Key="i18n_release_tt">Switch AOS version is too old. Please buy a support contract and upgrade your switch</sys:String>
-    <sys:String x:Key="i18n_temp_tt">Switch may reduce PoE output because temperature is too high</sys:String>
-    <sys:String x:Key="i18n_fpga_tt">Switch FPGA version is too old.Please buy a support contract and upgrade your switch</sys:String>
-    <sys:String x:Key="i18n_cpld_tt">Switch CPLD version is too old.Please buy a support contract and upgrade your switch</sys:String>
-    <sys:String x:Key="i18n_poe_tt">Turn PoE on/off on this port</sys:String>
-    <sys:String x:Key="i18n_fpoe_tt">Fast PoE is disabled when PoE is turned off or 802.3bt is enabled</sys:String>
-    <sys:String x:Key="i18n_ppoe_tt">Perpetual PoE is disabled when PoE is turned off or 802.3bt is enabled</sys:String>
-    <sys:String x:Key="i18n_disc_tt">Click to disconnect</sys:String>
-    <sys:String x:Key="i18n_recon_tt">Click to reconnect</sys:String>
-    <sys:String x:Key="i18n_cpun_tt">CPU usage near threshold</sys:String>
-    <sys:String x:Key="i18n_cpuo_tt">CPU usage over threshold</sys:String>
-    <sys:String x:Key="i18n_on_tt">PoE power activation is complete, and the attached device is receiving power</sys:String>
-    <sys:String x:Key="i18n_off_tt">PoE has been disabled for this port</sys:String>
-    <sys:String x:Key="i18n_srch_tt">PoE is enabled, and the switch is sending PoE probes looking for a device, but activation or class detection is incomplete</sys:String>
-    <sys:String x:Key="i18n_fault_tt">PoE activation or class detection has failed</sys:String>
-    <sys:String x:Key="i18n_deny_tt">PoE power management has denied power to the port due to priority disconnect or over subscription</sys:String>
-    <sys:String x:Key="i18n_test_tt">Port has been forced on and will remain on until it is forced off by RTP functions</sys:String>
-    <sys:String x:Key="i18n_dld_tt">Delayed start is enabled</sys:String>
-    <sys:String x:Key="i18n_conf_tt">Two PoE ports have been connected and failed to disable PoE on one port</sys:String>
-    <sys:String x:Key="i18n_nop_tt">Port does not support PoE</sys:String>
+    <sys:String x:Key="i18n_pwr_tt">Potência consumida pelo dispositivo connectado à porta</sys:String>
+    <sys:String x:Key="i18n_maxPwr_tt">Potência máxima permitida pelo hardware</sys:String>
+    <sys:String x:Key="i18n_release_tt">A versão de AOS da switch é velha. Favor adquirir um contrato de suporte para atualizar sua switch</sys:String>
+    <sys:String x:Key="i18n_temp_tt">A switch pode reduzir a potência no PoE porque a temperatura está muito alta</sys:String>
+    <sys:String x:Key="i18n_fpga_tt">A versão de FPGA é velha. Favor adquirir um contrato de suporte para atualizar sua switch</sys:String>
+    <sys:String x:Key="i18n_cpld_tt">A versão de CPLD é velha. Favor adquirir um contrato de suporte para atualizar sua switch</sys:String>
+    <sys:String x:Key="i18n_poe_tt">Liar/Desligar PoE nessa porta</sys:String>
+    <sys:String x:Key="i18n_fpoe_tt">PoE rápido é desabilitado quando o PoE está desligado ou 802.3bt está ativo</sys:String>
+    <sys:String x:Key="i18n_ppoe_tt">O PoE perpétuo é desabilitado quando o PoE está desligado ou 802.3bt está ativo</sys:String>
+    <sys:String x:Key="i18n_disc_tt">Clique para desconectar</sys:String>
+    <sys:String x:Key="i18n_recon_tt">Clique para reconectar</sys:String>
+    <sys:String x:Key="i18n_cpun_tt">Utilização da CPU próximo ao limite</sys:String>
+    <sys:String x:Key="i18n_cpuo_tt">Utilização da CPU acima do limite</sys:String>
+    <sys:String x:Key="i18n_on_tt">PoE ativo e dispositivo conectado está recebendo energia</sys:String>
+    <sys:String x:Key="i18n_off_tt">PoE desativado nessa porta</sys:String>
+    <sys:String x:Key="i18n_srch_tt">PoE está ativado e a switch está tentando detectar um dispositivo, mas ativação ou detecção de classe está incompleta</sys:String>
+    <sys:String x:Key="i18n_fault_tt">Ativação do PoE ou detecção de classe falhou</sys:String>
+    <sys:String x:Key="i18n_deny_tt">Gerenciamento de PoE rejeitou ativação na porta devido a prioridade ou potência requerida muito alta</sys:String>
+    <sys:String x:Key="i18n_test_tt">PoE na porta foi forçado e permanecerá ligado até ser desligado por funções RTP</sys:String>
+    <sys:String x:Key="i18n_dld_tt">Ativação atrasada está habilitada</sys:String>
+    <sys:String x:Key="i18n_conf_tt">Duas portas PoE conectadas e não foi desativado PoE em uma das portas</sys:String>
+    <sys:String x:Key="i18n_nop_tt">Porta não suporta PoE</sys:String>
 
 </ResourceDictionary>
