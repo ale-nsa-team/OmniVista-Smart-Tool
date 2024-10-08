@@ -128,7 +128,7 @@ namespace PoEWizard.Comm
                 GetLanPower();
                 progressBarCnt += 3;
                 UpdateProgressBar(progressBarCnt); // 16, 17, 18
-                GetMacAndLldpInfo();
+                GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
                 progressBarCnt += 3;
                 UpdateProgressBar(progressBarCnt); // 19, 20, 21
                 if (!File.Exists(Path.Combine(Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
@@ -776,7 +776,7 @@ namespace PoEWizard.Comm
                     Activity.Log(SwitchModel, "Traffic analysis interrupted.");
                     return null;
                 }
-                GetMacAndLldpInfo();
+                GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
                 GetPortsTrafficInformation();
                 report = new TrafficReport(_switchTraffic, stopTrafficAnalysisReason, duration, GetDdmReport());
                 if (stopTrafficAnalysis == AbortType.CanceledByUser)
@@ -793,7 +793,7 @@ namespace PoEWizard.Comm
             return report;
         }
 
-        private void GetMacAndLldpInfo()
+        private void GetMacAndLldpInfo(int maxNbMacPerPort)
         {
             SendProgressReport("Reading lldp remote information");
             object lldpList = SendCommand(new CmdRequest(Command.SHOW_LLDP_REMOTE, ParseType.LldpRemoteTable));
@@ -802,7 +802,7 @@ namespace PoEWizard.Comm
             SwitchModel.LoadLldpFromList(lldpList as Dictionary<string, List<Dictionary<string, string>>>, DictionaryType.LldpInventoryList);
             SendProgressReport("Reading MAC address information");
             _dictList = SendCommand(new CmdRequest(Command.SHOW_MAC_LEARNING, ParseType.Htable)) as List<Dictionary<string, string>>;
-            SwitchModel.LoadFromList(_dictList, DictionaryType.MacAddressList);
+            SwitchModel.LoadMacAddressFromList(_dictList, maxNbMacPerPort);
         }
 
         private void GetPortsTrafficInformation()
@@ -1014,12 +1014,12 @@ namespace PoEWizard.Comm
             GetSystemInfo();
             GetLanPower();
             RefreshPortsInformation();
-            GetMacAndLldpInfo();
+            GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
         }
 
         public void RefreshMacAndLldpInfo()
         {
-            GetMacAndLldpInfo();
+            GetMacAndLldpInfo(MAX_SEARCH_NB_MAC_PER_PORT);
         }
 
         private void RefreshPortsInformation()
@@ -1721,7 +1721,7 @@ namespace PoEWizard.Comm
             _dictList = SendCommand(new CmdRequest(Command.SHOW_PORT_STATUS, ParseType.Htable3, new string[1] { _wizardSwitchPort.Name })) as List<Dictionary<string, string>>;
             if (_dictList?.Count > 0) _wizardSwitchPort.UpdatePortStatus(_dictList[0]);
             _dictList = SendCommand(new CmdRequest(Command.SHOW_PORT_MAC_ADDRESS, ParseType.Htable, new string[1] { _wizardSwitchPort.Name })) as List<Dictionary<string, string>>;
-            _wizardSwitchPort.UpdateMacList(_dictList);
+            _wizardSwitchPort.UpdateMacList(_dictList, MAX_SCAN_NB_MAC_PER_PORT);
             Dictionary<string, List<Dictionary<string, string>>> lldpList = SendCommand(new CmdRequest(Command.SHOW_LLDP_REMOTE, ParseType.LldpRemoteTable,
                 new string[] { _wizardSwitchPort.Name })) as Dictionary<string, List<Dictionary<string, string>>>;
             if (lldpList.ContainsKey(_wizardSwitchPort.Name)) _wizardSwitchPort.LoadLldpRemoteTable(lldpList[_wizardSwitchPort.Name]);

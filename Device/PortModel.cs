@@ -203,14 +203,14 @@ namespace PoEWizard.Device
             Alias = Utils.GetDictValue(dict, ALIAS).Replace("\"", string.Empty);
         }
 
-        public void UpdateMacList(List<Dictionary<string, string>> dictList)
+        public void UpdateMacList(List<Dictionary<string, string>> dictList, int maxNbMacPerPort)
         {
             MacList.Clear();
             if (dictList?.Count > 0)
             {
                 foreach (Dictionary<string, string> dict in dictList)
                 {
-                    if (MacList.Count >= MAX_NB_MAC_PER_PORT) break;
+                    if (MacList.Count >= maxNbMacPerPort) break;
                     AddMacToList(dict);
                 }
             }

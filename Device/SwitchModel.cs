@@ -173,35 +173,6 @@ namespace PoEWizard.Device
                     }
                     break;
 
-                case DictionaryType.MacAddressList:
-                    string prevPort = "";
-                    Dictionary<string, PortModel> ports = new Dictionary<string, PortModel>();
-                    foreach (Dictionary<string, string> dict in dictList)
-                    {
-                        string currPort = Utils.GetDictValue(dict, INTERFACE);
-                        ChassisSlotPort slotPort = new ChassisSlotPort(currPort);
-                        chassis = GetChassis(slotPort.ChassisNr);
-                        if (chassis == null) continue;
-                        SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
-                        if (slot == null) continue;
-                        PortModel port = slot.GetPort(currPort);
-                        if (port == null) continue;
-                        if (currPort != prevPort)
-                        {
-                            port.MacList.Clear();
-                            prevPort = currPort;
-                        }
-                        if (port.MacList?.Count >= MAX_NB_MAC_PER_PORT) continue;
-                        port.AddMacToList(dict);
-                        ports[port.Name] = port;
-                    }
-                    foreach(string key in ports.Keys)
-                    {
-                        PortModel port = ports[key];
-                        port.CreateVirtualDeviceEndpoint();
-                    }
-                    break;
-
                 case DictionaryType.TemperatureList:
                     SwitchTemperature temperature = new SwitchTemperature();
                     foreach (var dic in dictList)
@@ -248,6 +219,38 @@ namespace PoEWizard.Device
                         }
                     }
                     break;
+            }
+        }
+
+        public void LoadMacAddressFromList(List<Dictionary<string, string>> dictList, int maxNbMacPerPort)
+        {
+            if (dictList == null || dictList.Count == 0) return;
+            ChassisModel chassis;
+            string prevPort = "";
+            Dictionary<string, PortModel> ports = new Dictionary<string, PortModel>();
+            foreach (Dictionary<string, string> dict in dictList)
+            {
+                string currPort = Utils.GetDictValue(dict, INTERFACE);
+                ChassisSlotPort slotPort = new ChassisSlotPort(currPort);
+                chassis = GetChassis(slotPort.ChassisNr);
+                if (chassis == null) continue;
+                SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
+                if (slot == null) continue;
+                PortModel port = slot.GetPort(currPort);
+                if (port == null) continue;
+                if (currPort != prevPort)
+                {
+                    port.MacList.Clear();
+                    prevPort = currPort;
+                }
+                if (port.MacList?.Count >= maxNbMacPerPort) continue;
+                port.AddMacToList(dict);
+                ports[port.Name] = port;
+            }
+            foreach (string key in ports.Keys)
+            {
+                PortModel port = ports[key];
+                port.CreateVirtualDeviceEndpoint();
             }
         }
 
