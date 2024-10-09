@@ -489,7 +489,15 @@ namespace PoEWizard
                 MsgBoxResult restartPoE = ShowMessageBox("Collect Logs", $"Do you want to power cycle PoE on all ports of switch {device.Name} to collect the logs?", MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
                 if (restartPoE == MsgBoxResult.Cancel) return;
                 string txt = $"Collect Logs launched by the user";
-                if (restartPoE == MsgBoxResult.Yes) txt += " (power cycle PoE on all ports)";
+                if (restartPoE == MsgBoxResult.Yes)
+                {
+                    maxCollectLogsDur = MAX_COLLECT_LOGS_RESET_POE_DURATION;
+                    txt += " (power cycle PoE on all ports)";
+                }
+                else
+                {
+                    maxCollectLogsDur = MAX_COLLECT_LOGS_DURATION;
+                }
                 Logger.Activity($"{txt} on switch {device.Name}");
                 Activity.Log(device, $"{txt}.");
                 DisableButtons();
@@ -1034,7 +1042,8 @@ namespace PoEWizard
                     MsgBoxResult res = ShowMessageBox("Wizard", "It looks like the wizard was unable to fix the problem.\nDo you want to collect information to send to technical support?",
                                               MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                     if (res == MsgBoxResult.No) return;
-                    string sftpError = await RunCollectLogs(true, selectedPort.Name);
+                    maxCollectLogsDur = MAX_COLLECT_LOGS_WIZARD_DURATION;
+                    string sftpError = await RunCollectLogs(true, selectedPort);
                     if (!string.IsNullOrEmpty(sftpError)) ShowMessageBox(barText, $"Cannot connect secure FTP on switch {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
                 }
                 await GetSyncStatus(null);
@@ -1054,7 +1063,7 @@ namespace PoEWizard
             }
         }
 
-        private async Task<string> RunCollectLogs(bool restartPoE, string port = null)
+        private async Task<string> RunCollectLogs(bool restartPoE, PortModel port)
         {
             ShowInfoBox($"Collecting logs on switch {device.Name}{WAITING}");
             string sftpError = null;
@@ -1065,7 +1074,6 @@ namespace PoEWizard
                 if (string.IsNullOrEmpty(sftpError)) sftpService.DeleteFile(SWLOG_PATH);
             });
             if (!string.IsNullOrEmpty(sftpError)) return sftpError;
-            maxCollectLogsDur = Utils.GetEstimateCollectLogDuration(restartPoE, port);
             string barText = "Cleaning up current log{WAITING}";
             ShowInfoBox(barText);
             StartProgressBar(barText);
@@ -1074,7 +1082,7 @@ namespace PoEWizard
             return null;
         }
 
-        private async Task GenerateSwitchLogFile(bool restartPoE, string port)
+        private async Task GenerateSwitchLogFile(bool restartPoE, PortModel port)
         {
             const double MAX_WAIT_SFTP_RECONNECT_SEC = 60;
             const double MAX_WAIT_TAR_FILE_SEC = 180;
@@ -1083,7 +1091,8 @@ namespace PoEWizard
             {
                 StartProgressBar($"Collecting logs on switch {device.Name}{WAITING}");
                 DateTime initialTime = DateTime.Now;
-                await RunGetSwitchLog(SwitchDebugLogLevel.Debug3, restartPoE, port);
+                debugSwitchLog = new SwitchDebugModel(reportResult, SwitchDebugLogLevel.Debug3);
+                await Task.Run(() => restApiService.RunGetSwitchLog(debugSwitchLog, restartPoE, maxCollectLogsDur, port?.Name));
                 StartProgressBar($"Downloading tar file{WAITING}");
                 long fsize = 0;
                 long previousSize = -1;
@@ -1158,7 +1167,7 @@ namespace PoEWizard
                     info = new FileInfo(saveas);
                 }
                 UpdateSwitchLogBar(initialTime);
-                debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, selectedPort);
+                debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, port);
                 StringBuilder txt = new StringBuilder("Log tar file \"").Append(SWLOG_PATH).Append("\" downloaded from the switch ").Append(device.IpAddress);
                 txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\" (").Append(Utils.PrintNumberBytes(info.Length));
                 txt.Append(")\n\tDuration of tar file creation: ").Append(strDur);
@@ -1496,12 +1505,6 @@ namespace PoEWizard
         private async Task RunPoeWizard(List<Command> cmdList, int waitSec = 15)
         {
             await Task.Run(() => restApiService.RunPoeWizard(selectedPort.Name, reportResult, cmdList, waitSec));
-        }
-
-        private async Task RunGetSwitchLog(SwitchDebugLogLevel debugLevel, bool restartPoE = false, string port = null)
-        {
-            debugSwitchLog = new SwitchDebugModel(reportResult, debugLevel);
-            await Task.Run(() => restApiService.RunGetSwitchLog(debugSwitchLog, restartPoE));
         }
 
         private async void StartTrafficAnalysis()

@@ -299,22 +299,22 @@ namespace PoEWizard.Comm
             return null;
         }
 
-        public void RunGetSwitchLog(SwitchDebugModel debugLog, bool restartPoE, string port = null)
+        public void RunGetSwitchLog(SwitchDebugModel debugLog, bool restartPoE, double maxLogDur, string slotPortNr)
         {
             try
             {
                 _debugSwitchLog = debugLog;
-                if (port != null)
+                if (!string.IsNullOrEmpty(slotPortNr))
                 {
-                    GetSwitchSlotPort(port);
+                    GetSwitchSlotPort(slotPortNr);
                     if (_wizardSwitchPort == null)
                     {
-                        SendProgressError("Get Switch Log", $"Couldn't get data for port {port}");
+                        SendProgressError("Get Switch Log", $"Couldn't get data for port {slotPortNr}");
                         return;
                     }
                 }
                 progressStartTime = DateTime.Now;
-                StartProgressBar($"Collecting logs on switch {SwitchModel.Name}{WAITING}", Utils.GetEstimateCollectLogDuration(restartPoE, port));
+                StartProgressBar($"Collecting logs on switch {SwitchModel.Name}{WAITING}", maxLogDur);
                 ConnectAosSsh();
                 UpdateSwitchLogBar();
                 int debugSelected = _debugSwitchLog.IntDebugLevelSelected;
