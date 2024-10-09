@@ -186,7 +186,7 @@ namespace PoEWizard.Device
 
         public void UpdateLanPowerStatus(string cliCmd, string resp)
         {
-            if (!string.IsNullOrEmpty(resp) && !string.IsNullOrEmpty(cliCmd)) this.LanPowerStatus += $"\n\nResponse of the CLI command \"{cliCmd}\":\n\n{resp}";
+            if (!string.IsNullOrEmpty(resp) && !string.IsNullOrEmpty(cliCmd)) this.LanPowerStatus += $"\n\n\tResponse of the CLI command \"{cliCmd}\":\n\n{resp}";
         }
 
         public void CreateTacTextFile(DeviceType deviceType, string localTarFilepath, SwitchModel device, PortModel port)
@@ -196,20 +196,18 @@ namespace PoEWizard.Device
             StringBuilder txt = new StringBuilder("Hello tech support,\n");
             if (device != null)
             {
-                string model = device.Model.Replace(SLAVE, string.Empty).Replace(SLAVE, string.Empty);
-                string serialNumber = device.SerialNumber.Replace(SLAVE, string.Empty).Replace(SLAVE, string.Empty);
-                string[] split = port != null ? port.Name.Split('/') : new string[] { "1" };
                 txt.Append("\n\tThe switch name is ").Append(device.Name).Append(" (").Append(device.IpAddress).Append(") running on Release ").Append(device.Version);
                 txt.Append(" with ").Append(device.ChassisList.Count).Append(" chassis:");
                 foreach(ChassisModel chassisModel in device.ChassisList)
                 {
-                    txt.Append("\n\t - Chassis ").Append(chassisModel.Number).Append($" {(device.Model.Contains(SLAVE) ? "(Slave)" : "(Master)")} model ");
+                    txt.Append("\n\t - Chassis ").Append(chassisModel.Number).Append($" {(chassisModel.IsMaster ? "(Master)" : "(Slave)")} model ");
                     txt.Append(chassisModel.Model).Append(" with serial number ").Append(chassisModel.SerialNumber);
                 }
             }
+            txt.Append("\n\n\t");
             if (port != null)
             {
-                txt.Append("\n\tI am having problems with a PoE device on port ").Append(port.Name).Append(".");
+                txt.Append("I am having problems with a PoE device on port ").Append(port.Name).Append(".");
                 if (port.EndPointDevice == null) txt.Append("  It is a ").Append(deviceType).Append(".");
                 else if (port.EndPointDevice != null && !string.IsNullOrEmpty(port.EndPointDevice.Type))
                 {
@@ -227,7 +225,7 @@ namespace PoEWizard.Device
             }
             else
             {
-                txt.Append("\n\tI have collected the logs.");
+                txt.Append("I have collected the logs.");
             }
             if (!string.IsNullOrEmpty(this.LanPowerStatus)) txt.Append(this.LanPowerStatus);
             txt.Append("\n\n\tThe switch log tech support .tar file is attached.\n\n\t\tThanks.\n");
