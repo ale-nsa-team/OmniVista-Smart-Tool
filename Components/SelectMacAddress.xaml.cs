@@ -41,7 +41,7 @@ namespace PoEWizard.Components
 
         private bool HasErrors()
         {
-            return string.IsNullOrEmpty(_macAddr.Text) || _macAddr.GetBindingExpression(TextBox.TextProperty).HasError;
+            return _macAddr.GetBindingExpression(TextBox.TextProperty).HasError;
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)

@@ -493,7 +493,7 @@ namespace PoEWizard
                 Logger.Activity($"{txt} on switch {device.Name}");
                 Activity.Log(device, $"{txt}.");
                 DisableButtons();
-                string sftpError = await RunCollectLogs(restartPoE == MsgBoxResult.Yes, null, false);
+                string sftpError = await RunCollectLogs(restartPoE == MsgBoxResult.Yes, null);
                 if (!string.IsNullOrEmpty(sftpError)) ShowMessageBox($"Collecting logs on switch {device.Name}", $"Cannot connect secure FTP on switch {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
             }
             catch (Exception ex)
@@ -1054,7 +1054,7 @@ namespace PoEWizard
             }
         }
 
-        private async Task<string> RunCollectLogs(bool restartPoE, string port = null, bool createTacText = true)
+        private async Task<string> RunCollectLogs(bool restartPoE, string port = null)
         {
             ShowInfoBox($"Collecting logs on switch {device.Name} ...");
             string sftpError = null;
@@ -1070,11 +1070,11 @@ namespace PoEWizard
             ShowInfoBox(barText);
             StartProgressBar(barText);
             await Task.Run(() => sftpService.DeleteFile(SWLOG_PATH));
-            await GenerateSwitchLogFile(restartPoE, port, createTacText);
+            await GenerateSwitchLogFile(restartPoE, port);
             return null;
         }
 
-        private async Task GenerateSwitchLogFile(bool restartPoE, string port, bool createTacText = true)
+        private async Task GenerateSwitchLogFile(bool restartPoE, string port)
         {
             const double MAX_WAIT_SFTP_RECONNECT_SEC = 60;
             const double MAX_WAIT_TAR_FILE_SEC = 180;
@@ -1147,7 +1147,7 @@ namespace PoEWizard
                     Filter = "Tar File|*.tar",
                     Title = "Save switch logs",
                     InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
-                    FileName = Path.GetFileName(fname)
+                    FileName = $"{Path.GetFileName(fname)}-{device.Name}.tar"
                 };
                 FileInfo info = new FileInfo(fname);
                 if (sfd.ShowDialog() == true)
@@ -1158,7 +1158,7 @@ namespace PoEWizard
                     info = new FileInfo(saveas);
                 }
                 UpdateSwitchLogBar(initialTime);
-                if (createTacText) debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, selectedPort);
+                debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, selectedPort);
                 StringBuilder txt = new StringBuilder("Log tar file \"").Append(SWLOG_PATH).Append("\" downloaded from the switch ").Append(device.IpAddress);
                 txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\" (").Append(Utils.PrintNumberBytes(info.Length));
                 txt.Append(")\n\tDuration of tar file creation: ").Append(strDur);

@@ -210,6 +210,7 @@ namespace PoEWizard.Device
                 txt.Append(" model, running ").Append(device.Version).Append(" with serial number ").Append(device.SerialNumber).Append("\n");
             }
             if (WizardReport != null) txt.Append("\nPoE wizard attempts that have failed:").Append(WizardReport.Message);
+            if (!string.IsNullOrEmpty(this.LanPowerStatus)) txt.Append(this.LanPowerStatus);
             txt.Append("\n\n\tThe switch log tech support .tar file is attached.\n\n\t\tThanks.\n");
             Utils.CreateTextFile(filePath, txt);
         }

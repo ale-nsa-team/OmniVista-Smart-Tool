@@ -319,12 +319,7 @@ namespace PoEWizard.Comm
                 UpdateSwitchLogBar();
                 int debugSelected = _debugSwitchLog.IntDebugLevelSelected;
                 // Getting current lan power status
-                if (_wizardSwitchSlot != null)
-                {
-                    SendProgressReport($"Getting lan power information of slot {_wizardSwitchSlot.Name}");
-                    _debugSwitchLog.LanPowerStatus = SendCommand(new CmdRequest(Command.DEBUG_SHOW_LAN_POWER_STATUS, ParseType.NoParsing, new string[1] { _wizardSwitchSlot.Name })) as string;
-                }
-                UpdateSwitchLogBar();
+                GetShowDebugLanPower();
                 // Getting current switch debug level
                 GetCurrentSwitchDebugLevel();
                 int prevLpNiDebug = SwitchModel.LpNiDebugLevel;
@@ -334,16 +329,8 @@ namespace PoEWizard.Comm
                 SetAppDebugLevel($"Setting CMM debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
                 if (restartPoE)
                 {
-                    if (_wizardSwitchPort != null)
-                    {
-                        // Recycling power on switch port
-                        RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 5);
-                    }
-                    else
-                    {
-                        // Recycling power on all chassis of the switch
-                        RestartChassisPoE();
-                    }
+                    if (_wizardSwitchPort != null) RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 5);
+                    else RestartChassisPoE();
                 }
                 else
                 {
@@ -369,6 +356,32 @@ namespace PoEWizard.Comm
             {
                 DisconnectAosSsh();
             }
+        }
+
+        private void GetShowDebugLanPower()
+        {
+            if (_wizardSwitchSlot != null)
+            {
+                GetShowDebugSlotPower(_wizardSwitchSlot.Name);
+            }
+            else
+            {
+                foreach (var chassis in this.SwitchModel.ChassisList)
+                {
+                    foreach (var slot in chassis.Slots)
+                    {
+                        GetShowDebugSlotPower(slot.Name);
+                    }
+                }
+            }
+        }
+
+        private void GetShowDebugSlotPower(string slotNr)
+        {
+            SendProgressReport($"Getting lan power information of slot {slotNr}");
+            string resp = SendCommand(new CmdRequest(Command.DEBUG_SHOW_LAN_POWER_STATUS, ParseType.NoParsing, new string[1] { slotNr })) as string;
+            if (!string.IsNullOrEmpty(resp)) _debugSwitchLog.LanPowerStatus = $"\n\nResult of the CLI command \"debug show lanpower slot {slotNr} status ni\":\n\n{resp}";
+            UpdateSwitchLogBar();
         }
 
         private void RestartChassisPoE()

@@ -26,6 +26,10 @@
             <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,10,0,10" Text="{Binding DeviceMac}" Style="{DynamicResource aboutParagraph}" />
             <TextBlock Grid.Row="0" Grid.Column="2" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}">#MAC addresses found:</TextBlock>
             <TextBlock Grid.Row="0" Grid.Column="3" Margin="10,10,0,10" Text="{Binding NbMacAddressesFound}" Style="{DynamicResource aboutParagraph}" />
+            <TextBlock Grid.Row="0" Grid.Column="4" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}">#Ports found:</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="5" Margin="10,10,0,10" Text="{Binding NbPortsFound}" Style="{DynamicResource aboutParagraph}" />
+            <TextBlock Grid.Row="0" Grid.Column="6" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}">Total #MAC addresses found:</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="7" Margin="10,10,0,10" Text="{Binding NbTotalMacAddressesFound}" Style="{DynamicResource aboutParagraph}" />
         </StackPanel>
         <Border Grid.Row="1" Style="{DynamicResource gridBorder}" Margin="5">
             <DataGrid x:Name="_portsListView" 
