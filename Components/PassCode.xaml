@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
                 <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-ptBr.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -21,7 +22,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" Style="{DynamicResource titleLabel}" Margin="0,10,0,0">Please enter the password for this operation</Label>
+        <Label Grid.Row="0" Style="{DynamicResource titleLabel}" 
+               Margin="0,10,0,0" Content="{DynamicResource i18n_pcode}"/>
         <PasswordBox Grid.Row="1" x:Name="_pwd"
                      Foreground="{DynamicResource fontColor}"
                      Background="{DynamicResource barBackground}"
@@ -34,10 +36,12 @@
         </PasswordBox>
         <Border Grid.Row="2" Style="{DynamicResource propsBorder}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Click="BtnOk_Click" Style="{DynamicResource smallButton}" Margin="2,0,0,0">OK</Button>
-                <Button Click="BtnCancel_Click" Style="{DynamicResource smallButton}" Margin="20,0,0,0">Cancel</Button>
+                <Button Click="BtnOk_Click" Style="{DynamicResource smallButton}"
+                        MinWidth="40" Margin="2,0,0,0" Content="{DynamicResource i18n_okBtn}"/>
+                <Button Click="BtnCancel_Click" Style="{DynamicResource smallButton}" 
+                        MinWidth="50" Margin="20,0,0,0" Content="{DynamicResource i18n_canBtn}"/>
                 <Button Click="ChgPwd_Click" Style="{DynamicResource smallButton}"
-                        Margin="50,0,0,0" Width="100" FontSize="10">Change Password</Button>
+                        Margin="50,0,0,0" MinWidth="100" FontSize="10" Content="{DynamicResource i18n_chcode}"/>
             </StackPanel>
         </Border>
     </Grid>

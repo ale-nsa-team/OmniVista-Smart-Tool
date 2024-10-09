@@ -257,7 +257,7 @@
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="*">
 						<DataGridTemplateColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_ptPwr}" />
+							<TextBlock Text="{DynamicResource i18n_slPw}" />
 						</DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -412,7 +412,7 @@
                             </Style>
                         </DataGridComboBoxColumn.EditingElementStyle>
                     </DataGridComboBoxColumn>
-                    <DataGridTemplateColumn Width="*" IsReadOnly="True">
+                    <DataGridTemplateColumn Width="1.1*" IsReadOnly="True">
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{DynamicResource i18n_ptPwr}" Style="{DynamicResource toolTip}"
@@ -426,7 +426,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Width="1.3*" IsReadOnly="True">
+                    <DataGridTemplateColumn Width="1.4*" IsReadOnly="True">
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{DynamicResource i18n_maxPwr}" Style="{DynamicResource toolTip}"
