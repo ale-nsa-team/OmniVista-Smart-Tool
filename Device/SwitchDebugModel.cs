@@ -193,10 +193,15 @@ namespace PoEWizard.Device
         {
             LocalSavedFilePath = localTarFilepath;
             string filePath = Path.Combine(Path.GetDirectoryName(LocalSavedFilePath), $"{Path.GetFileNameWithoutExtension(localTarFilepath)}.txt");
-            StringBuilder txt = new StringBuilder("Hello tech support,\n\n\tI am having problems with a PoE device");
+            StringBuilder txt = new StringBuilder("Hello tech support,\n");
+            if (device != null)
+            {
+                txt.Append("\n\tThe switch IP address is ").Append(device.IpAddress).Append(". It is a ").Append(device.Model);
+                txt.Append(" model, running ").Append(device.Version).Append(" with serial number ").Append(device.SerialNumber).Append("\n");
+            }
             if (port != null)
             {
-                txt.Append(" on port ").Append(port.Name).Append(".");
+                txt.Append("\n\tI am having problems with a PoE device on port ").Append(port.Name).Append(".");
                 if (port.EndPointDevice == null) txt.Append("  It is a ").Append(deviceType).Append(".");
                 else if (port.EndPointDevice != null && !string.IsNullOrEmpty(port.EndPointDevice.Type))
                 {
@@ -207,15 +212,15 @@ namespace PoEWizard.Device
                     if (!string.IsNullOrEmpty(port.EndPointDevice.EthernetType)) txt.Append(", ").Append(port.EndPointDevice.EthernetType);
                     txt.Append(".");
                 }
+                if (WizardReport != null)
+                {
+                    txt.Append("\n\tI have run the PoE wizard and it did not repair the problem.").Append("\n\nPoE wizard attempts that have failed:").Append(WizardReport.Message);
+                }
             }
-            else txt.Append(".");
-            txt.Append("\n\tI have run the PoE wizard and it did not repair the problem.");
-            if (device != null)
+            else
             {
-                txt.Append("\n\tThe switch IP address is ").Append(device.IpAddress).Append(". It is a ").Append(device.Model);
-                txt.Append(" model, running ").Append(device.Version).Append(" with serial number ").Append(device.SerialNumber).Append("\n");
+                txt.Append("\n\tI have collected the logs.");
             }
-            if (WizardReport != null) txt.Append("\nPoE wizard attempts that have failed:").Append(WizardReport.Message);
             if (!string.IsNullOrEmpty(this.LanPowerStatus)) txt.Append(this.LanPowerStatus);
             txt.Append("\n\n\tThe switch log tech support .tar file is attached.\n\n\t\tThanks.\n");
             Utils.CreateTextFile(filePath, txt);

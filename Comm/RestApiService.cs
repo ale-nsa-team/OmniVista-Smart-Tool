@@ -334,7 +334,7 @@ namespace PoEWizard.Comm
                 }
                 else
                 {
-                    WaitSec($"Collecting logs on switch {SwitchModel.Name}{WAITING}", 5);
+                    WaitSec($"Collecting logs on switch {SwitchModel.Name}", 5);
                 }
                 UpdateSwitchLogBar();
                 // Setting switch debug level back to the previous values
@@ -388,8 +388,8 @@ namespace PoEWizard.Comm
         {
             foreach (var chassis in this.SwitchModel.ChassisList)
             {
-                string msg = $"Turning power OFF on all slots of chassis {chassis.Number} to capture logs{WAITING}";
-                _progress.Report(new ProgressReport(msg));
+                string msg = $"Turning power OFF on all slots of chassis {chassis.Number} to capture logs";
+                _progress.Report(new ProgressReport($"{msg}{WAITING}"));
                 foreach (SlotModel slot in chassis.Slots)
                 {
                     SendCommand(new CmdRequest(Command.POWER_DOWN_SLOT, new string[1] { slot.Name.ToString() }));
@@ -1417,7 +1417,7 @@ namespace PoEWizard.Comm
                 {
                     _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
                     _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
-                    string resultDescription = $"{wizardAction} didn't solve the problem\nCommand not supported on slot {_wizardSwitchSlot.Name}";
+                    string resultDescription = $"{wizardAction} didn't solve the problem\n    Command not supported on slot {_wizardSwitchSlot.Name}";
                     _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Fail, resultDescription);
                     Logger.Info($"{ex.Message}\n{resultDescription}");
                 }

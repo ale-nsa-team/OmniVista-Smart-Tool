@@ -1084,7 +1084,7 @@ namespace PoEWizard
                 StartProgressBar($"Collecting logs on switch {device.Name}{WAITING}");
                 DateTime initialTime = DateTime.Now;
                 await RunGetSwitchLog(SwitchDebugLogLevel.Debug3, restartPoE, port);
-                StartProgressBar("Downloading tar file ..");
+                StartProgressBar($"Downloading tar file{WAITING}");
                 long fsize = 0;
                 long previousSize = -1;
                 DateTime startTime = DateTime.Now;
@@ -1095,7 +1095,7 @@ namespace PoEWizard
                 while (waitCnt < 2)
                 {
                     strDur = Utils.CalcStringDuration(startTime, true);
-                    msg = !string.IsNullOrEmpty(strDur) ? $"Waiting for tar file ready ({strDur}){WAITING}" : "Waiting for tar file ready{WAITING}";
+                    msg = !string.IsNullOrEmpty(strDur) ? $"Waiting for tar file ready ({strDur}){WAITING}" : $"Waiting for tar file ready{WAITING}";
                     if (fsize > 0) msg += $"\nFile size: {Utils.PrintNumberBytes(fsize)}";
                     ShowInfoBox(msg);
                     UpdateSwitchLogBar(initialTime);
@@ -1130,7 +1130,7 @@ namespace PoEWizard
                 }
                 strDur = Utils.CalcStringDuration(startTime, true);
                 string strTotalDuration = Utils.CalcStringDuration(initialTime, true);
-                ShowInfoBox($"Downloading tar file from switch{WAITING}\nFile creation duration: {strDur}, File size: {Utils.PrintNumberBytes(fsize)}");
+                ShowInfoBox($"Downloading tar file from switch{device.Name}{WAITING}\nFile creation duration: {strDur}, File size: {Utils.PrintNumberBytes(fsize)}");
                 string fname = null;
                 await Task.Run(() =>
                 {
@@ -1147,7 +1147,7 @@ namespace PoEWizard
                     Filter = "Tar File|*.tar",
                     Title = "Save switch logs",
                     InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
-                    FileName = $"{Path.GetFileName(fname)}-{device.Name}.tar"
+                    FileName = $"{Path.GetFileName(fname)}-{device.Name}-{DateTime.Now:MM-dd-yyyy_hh_mm_ss}.tar"
                 };
                 FileInfo info = new FileInfo(fname);
                 if (sfd.ShowDialog() == true)
@@ -1439,12 +1439,6 @@ namespace PoEWizard
             Logger.Debug($"Enable 2-Pair Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
         }
 
-        private async Task DisableCapacitorDetection()
-        {
-            await RunPoeWizard(new List<Command>() { Command.CAPACITOR_DETECTION_DISABLE }, 30);
-            Logger.Debug($"Enable 2-Pair Power on port {selectedPort.Name} completed on switch {device.Name}, S/N {device.SerialNumber}, model {device.Model}");
-        }
-
         private async Task Enable2PairPower()
         {
             await RunPoeWizard(new List<Command>() { Command.POWER_2PAIR_PORT }, 30);
@@ -1524,7 +1518,7 @@ namespace PoEWizard
                     TextViewer tv = new TextViewer(TRAFFIC_ANALYSIS_IDLE, report.Summary)
                     {
                         Owner = this,
-                        SaveFilename = $"{switchName}-{DateTime.Now.ToString("MM-dd-yyyy_hh_mm_ss")}-traffic-analysis.txt",
+                        SaveFilename = $"{switchName}-{DateTime.Now:MM-dd-yyyy_hh_mm_ss}-traffic-analysis.txt",
                         CsvData = report.Data.ToString()
                     };
                     tv.ShowDialog();
