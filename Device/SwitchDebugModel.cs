@@ -196,8 +196,12 @@ namespace PoEWizard.Device
             StringBuilder txt = new StringBuilder("Hello tech support,\n");
             if (device != null)
             {
-                txt.Append("\n\tThe switch name is ").Append(device.Name).Append(" (").Append(device.IpAddress).Append(") running ").Append(device.Version);
-                txt.Append(". It is a ").Append(device.Model).Append(" model with serial number ").Append(device.SerialNumber).Append(".");
+                string model = device.Model.Replace(SLAVE, string.Empty).Replace(SLAVE, string.Empty);
+                string serialNumber = device.SerialNumber.Replace(SLAVE, string.Empty).Replace(SLAVE, string.Empty);
+                string[] split = port != null ? port.Name.Split('/') : new string[] { "1" };
+                txt.Append("\n\tThe switch name is ").Append(device.Name).Append(" (").Append(device.IpAddress).Append(") running on Release ").Append(device.Version);
+                txt.Append(" with ").Append(device.ChassisList.Count).Append(" chassis. It is a ").Append(model).Append(" model with serial number ");
+                txt.Append(serialNumber).Append($" on chassis {split[0]} {(device.Model.Contains(SLAVE) ? "(Slave)" : "(Master)")}.");
             }
             if (port != null)
             {
