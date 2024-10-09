@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
                 <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-ptBr.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -30,7 +31,7 @@
             <TextBlock Grid.Row="0" Grid.Column="5" Margin="10,10,0,10" Text="{Binding NbPortsFound}" Style="{DynamicResource aboutParagraph}" />
             <TextBlock Grid.Row="0" Grid.Column="6" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}">Note: All devices that match the search criteria are marked with (*)</TextBlock>
         </StackPanel>
-        <Border Grid.Row="1" Style="{DynamicResource gridBorder}" Margin="5">
+        <Border Grid.Row="1" Grid.ColumnSpan="3" Style="{DynamicResource gridBorder}" Margin="5">
             <DataGrid x:Name="_portsListView" 
                 Style="{DynamicResource defaultGrid}"
                 MaxHeight="630"
@@ -51,7 +52,10 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="PoE Status" Width="0.8*" IsReadOnly="True">
+                    <DataGridTemplateColumn Width="0.8*" IsReadOnly="True">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_poeSt}" />
+                        </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Port.Poe}" Style="{DynamicResource toolTip}"
@@ -65,8 +69,8 @@
                     <DataGridTemplateColumn Width="0.9*" IsReadOnly="True">
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Power (Watts)" Style="{DynamicResource toolTip}"
-                                        ToolTip="Actual power consumed by the device connected to the port" />
+                                <TextBlock Text="{DynamicResource i18n_ptPwr}" Style="{DynamicResource toolTip}"
+                                        ToolTip="{DynamicResource i18n_pwr_tt}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
@@ -79,8 +83,8 @@
                     <DataGridTemplateColumn Width="1.1*" IsReadOnly="True">
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Max Power (Watts)" Style="{DynamicResource toolTip}"
-                                        ToolTip="Maximum power allowed by the hardware" />
+                                <TextBlock Text="{DynamicResource i18n_maxPwr}" Style="{DynamicResource toolTip}"
+                                        ToolTip="{DynamicResource i18n_maxPwr_tt}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
@@ -105,7 +109,10 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Device Name" Width="1.2*" IsReadOnly="True">
+                    <DataGridTemplateColumn Width="1.2*" IsReadOnly="True">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_devName}" />
+                        </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Port.EndPointDevice.Label}" Style="{DynamicResource devToolTip}" >
@@ -124,8 +131,8 @@
         </Border>
         <TextBlock Grid.Row="2" Grid.Column="0"
                 Style="{DynamicResource aboutParagraph}"
-                Text="Note: You may double click on the port to close and select it on the main window."
-                Margin="15,5,0,0" >
+                Text="{DynamicResource i18n_srcNote}"
+                Margin="10,5,5,10" >
         </TextBlock>
         <Button Grid.Row="2"  Grid.Column="1"  Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="8">Close</Button>
     </Grid>

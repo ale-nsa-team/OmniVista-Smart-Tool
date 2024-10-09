@@ -28,7 +28,7 @@ namespace PoEWizard.Components
         private SystemModel sysOrig;
         private FeatureModel featOrig;
         private SnmpModel snmpOrig;
-        private ResourceDictionary strings;
+        private readonly ResourceDictionary strings;
 
         public bool MustDisconnect { get; set; } = false;
 
@@ -59,6 +59,7 @@ namespace PoEWizard.Components
             pageNo = 1;
             sysOrig = sysData.Clone() as SystemModel;
             _btnCfgBack.IsEnabled = false;
+            _btnCfgNext.IsEnabled = false;
             _cfgFrame.Navigate(new CfgWizPage1(sysData));
             //_btnSubmit.IsEnabled = false;
         }
@@ -68,7 +69,7 @@ namespace PoEWizard.Components
         private async void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
             _btnSubmit.IsEnabled = false;
-            ShowInfoBox(GetString("i18n_loading"));
+            ShowInfoBox(Translate("i18n_loading"));
             await Task.Run(() =>
             {
                 GetServerData();
@@ -80,6 +81,7 @@ namespace PoEWizard.Components
             featOrig = features.Clone() as FeatureModel;
             snmpOrig = snmpData.Clone() as SnmpModel;
             HideInfoBox();
+            _btnCfgNext.IsEnabled = true;
         }
 
         private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -170,7 +172,7 @@ namespace PoEWizard.Components
         {
             if (cmds.Count == 0) return false;
             bool res = false;
-            ShowInfoBox(GetString(key));
+            ShowInfoBox(Translate(key));
 
             foreach (CmdRequest cmd in cmds)
             {
@@ -263,7 +265,6 @@ namespace PoEWizard.Components
                         }
                     }
                 }
-
             }
         }
 
@@ -310,9 +311,9 @@ namespace PoEWizard.Components
             }
         }
 
-        private string GetString(string key)
+        private string Translate(string key)
         {
-            return (string)strings[key] ?? string.Empty;
+            return (string)strings[key] ?? key;
         }
 
         private void ShowInfoBox(string message)

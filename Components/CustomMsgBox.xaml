@@ -16,6 +16,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
                 <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-ptBr.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -39,14 +40,15 @@
             <Border Grid.Row="2" Grid.ColumnSpan="2" Style="{DynamicResource propsBorder}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button x:Name="msgYesBtn" Style="{DynamicResource defaultButton}" Margin="0,0,10,0" Click="MsgYesBtn_Click">
-                        <Label x:Name="_yBtnLabel" Style="{DynamicResource valLabel}">Yes</Label>
+                        <Label x:Name="_yBtnLabel" Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_yBtn}" />
                     </Button>
                     <Button x:Name="msgNoBtn" Style="{DynamicResource defaultButton}" Margin="0,0,10,0" Click="MsgNoBtn_Click">
-                        <Label x:Name="_nBtnLabel" Style="{DynamicResource valLabel}">No</Label>
+                        <Label x:Name="_nBtnLabel" Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_nBtn}"/>
                     </Button>
                     <Button x:Name="msgCancelBtn" Style="{DynamicResource defaultButton}" 
                             Margin="0,0,10,0" Visibility="Collapsed"
-                            Click="MsgCancelBtn_Click">Cancel</Button>
+                            Content="{DynamicResource i18n_canBtn}"
+                            Click="MsgCancelBtn_Click" />
                 </StackPanel>
             </Border>
         </Grid>

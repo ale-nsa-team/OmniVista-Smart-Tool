@@ -32,26 +32,5 @@ namespace PoEWizard.Components
         {
             _vlans.ItemsSource = features.Vlans;
         }
-
-        private void PoE_Changed(object sender, RoutedEventArgs e)
-        {
-            CheckBox cb = sender as CheckBox;
-            if (cb.IsKeyboardFocusWithin)
-            {
-               if (cb.IsChecked == false)
-                {
-                    CustomMsgBox dlg = new CustomMsgBox(MainWindow.Instance, MsgBoxButtons.YesNo)
-                    {
-                        Header = "PoE",
-                        Message = "This operation will turn off power on all PoE ports\nDo you want to continue?",
-                        Img = MsgBoxIcons.Warning
-                    };
-                    if (dlg.ShowDialog() == false)
-                    {
-                        cb.IsChecked = !cb.IsChecked;
-                    }
-                }
-            }
-        }
     }
 }
