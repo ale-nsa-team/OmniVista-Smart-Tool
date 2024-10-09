@@ -6,12 +6,13 @@
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
-        Title="PowerSupply" MinHeight="110" Height="200" Width="950" WindowStyle="None" ShowInTaskbar="False">
+        Title="PowerSupply" MinHeight="110" Height="200" Width="1000" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
                 <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-ptBr.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -29,13 +30,40 @@
                   IsHitTestVisible="False"
                   IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Chassis/PS" Width="0.8*" Binding="{Binding Path=Name}" />
-                    <DataGridTextColumn Header="Model" Width="*" Binding="{Binding Path=Model}" />
-                    <DataGridTextColumn Header="Type" Width="*" Binding="{Binding Path=Type}" />
-                    <DataGridTextColumn Header="Location" Width="*" Binding="{Binding Path=Location}" />
-                    <DataGridTextColumn Header="Description" Width="1.2*" Binding="{Binding Path=Description}" />
-                    <DataGridTextColumn Header="Power Provision" Width="1.2*" Binding="{Binding Path=PowerProvision}" />
-                    <DataGridTemplateColumn Header="Status" Width="0.8*">
+                    <DataGridTextColumn Width="*" Binding="{Binding Path=Name}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_psCh}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="*" Binding="{Binding Path=Model}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_psMod}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="*" Binding="{Binding Path=Type}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_psType}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="*" Binding="{Binding Path=Location}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_psLoc}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="*" Binding="{Binding Path=Description}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_psDesc}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="1.2*" Binding="{Binding Path=PowerProvision}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_psProv}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Width="0.8*">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_ptSt}" />
+                        </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Status}"
@@ -45,12 +73,25 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Part Number" Width="*" Binding="{Binding Path=PartNumber}" />
-                    <DataGridTextColumn Header="Hardware Revision" Width="1.25*" Binding="{Binding Path=HardwareRevision}" />
-                    <DataGridTextColumn Header="Serial Number" Width="1.2*" Binding="{Binding Path=SerialNumber}" />
+                    <DataGridTextColumn Width="1.5*" Binding="{Binding Path=PartNumber}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_psPN}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="1.6*" Binding="{Binding Path=HardwareRevision}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_psRev}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="1.3*" Binding="{Binding Path=SerialNumber}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_psSN}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
-        <Button Grid.Row="1" Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="5">Close</Button>
+        <Button Grid.Row="1" Click="BtnOk_Click" Style="{DynamicResource defaultButton}" 
+                Margin="5" Content="{DynamicResource i18n_closeBtn}"/>
     </Grid>
 </Window>

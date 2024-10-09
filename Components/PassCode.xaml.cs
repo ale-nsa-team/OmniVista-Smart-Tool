@@ -12,6 +12,7 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class PassCode : Window
     {
+        private readonly ResourceDictionary strings;
         public string SavedPassword;
         public string Password { get; set; }
         
@@ -26,6 +27,7 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+            strings = Resources.MergedDictionaries[1];
             DataContext = this;
             this.Owner = owner;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -91,8 +93,8 @@ namespace PoEWizard.Components
             {
                 CustomMsgBox cm = new CustomMsgBox(this.Owner)
                 {
-                    Title = "Change Password",
-                    Message = $"Could not change password: {ex.Message}"
+                    Title = (string)strings["i18n_chcode"],
+                    Message = $"{(string)strings["i18n_codeErr"]}: {ex.Message}"
                 };
                 cm.ShowDialog();
             }
