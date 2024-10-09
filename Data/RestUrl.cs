@@ -117,8 +117,6 @@ namespace PoEWizard.Data
             [Command.DEBUG_CLI_UPDATE_LPCMM_LEVEL] = $"swlog appid lpcmm subapp all level {DAT}",
             [Command.DEBUG_CLI_SHOW_LPNI_LEVEL] = "show swlog appid lpni",
             [Command.DEBUG_CLI_SHOW_LPCMM_LEVEL] = "show swlog appid lpcmm",
-            [Command.START_CHASSIS_POE] = $"lanpower chassis {DAT} start",
-            [Command.STOP_CHASSIS_POE ] = $"lanpower chassis {DAT} stop",
             #endregion
 
             #region Config Wizard commands

@@ -183,6 +183,12 @@ namespace PoEWizard.Device
                 }
             }
         }
+
+        public void UpdateLanPowerStatus(string cliCmd, string resp)
+        {
+            if (!string.IsNullOrEmpty(resp) && !string.IsNullOrEmpty(cliCmd)) this.LanPowerStatus += $"\n\nResponse of the CLI command \"{cliCmd}\":\n\n{resp}";
+        }
+
         public void CreateTacTextFile(DeviceType deviceType, string localTarFilepath, SwitchModel device, PortModel port)
         {
             LocalSavedFilePath = localTarFilepath;

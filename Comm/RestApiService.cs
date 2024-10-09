@@ -380,7 +380,7 @@ namespace PoEWizard.Comm
         {
             SendProgressReport($"Getting lan power information of slot {slotNr}");
             string resp = SendCommand(new CmdRequest(Command.DEBUG_SHOW_LAN_POWER_STATUS, ParseType.NoParsing, new string[1] { slotNr })) as string;
-            if (!string.IsNullOrEmpty(resp)) _debugSwitchLog.LanPowerStatus = $"\n\nResult of the CLI command \"debug show lanpower slot {slotNr} status ni\":\n\n{resp}";
+            if (!string.IsNullOrEmpty(resp)) _debugSwitchLog.UpdateLanPowerStatus($"debug show lanpower slot {slotNr} status ni", resp);
             UpdateSwitchLogBar();
         }
 
@@ -390,11 +390,17 @@ namespace PoEWizard.Comm
             {
                 string msg = $"Turning power OFF on all slots of chassis {chassis.Number} to capture logs ...";
                 _progress.Report(new ProgressReport(msg));
-                SendCommand(new CmdRequest(Command.STOP_CHASSIS_POE, new string[1] { chassis.Number.ToString() }));
+                foreach (SlotModel slot in chassis.Slots)
+                {
+                    SendCommand(new CmdRequest(Command.POWER_DOWN_SLOT, new string[1] { slot.Name.ToString() }));
+                }
                 UpdateSwitchLogBar();
                 WaitSec(msg, 5);
                 _progress.Report(new ProgressReport($"Turning power ON on all slots of chassis {chassis.Number} to capture logs ..."));
-                SendCommand(new CmdRequest(Command.START_CHASSIS_POE, new string[1] { chassis.Number.ToString() }));
+                foreach (SlotModel slot in chassis.Slots)
+                {
+                    SendCommand(new CmdRequest(Command.POWER_UP_SLOT, new string[1] { slot.Name.ToString() }));
+                }
                 foreach (var slot in chassis.Slots)
                 {
                     UpdateSwitchLogBar();
