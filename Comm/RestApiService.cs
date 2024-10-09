@@ -56,7 +56,7 @@ namespace PoEWizard.Comm
                 DateTime startTime = DateTime.Now;
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
-                string progrMsg = $"Connecting to switch {SwitchModel.IpAddress} ...";
+                string progrMsg = $"Connecting to switch {SwitchModel.IpAddress}{WAITING}";
                 StartProgressBar(progrMsg, 29);
                 _progress.Report(new ProgressReport(progrMsg));
                 RestApiClient.Login();
@@ -92,7 +92,7 @@ namespace PoEWizard.Comm
             {
                 if (totalProgressBar == 0)
                 {
-                    StartProgressBar($"Scanning switch {SwitchModel.Name} ...", 22);
+                    StartProgressBar($"Scanning switch {SwitchModel.Name}{WAITING}", 22);
                     closeProgressBar = true;
                 }
                 GetCurrentSwitchDebugLevel();
@@ -314,7 +314,7 @@ namespace PoEWizard.Comm
                     }
                 }
                 progressStartTime = DateTime.Now;
-                StartProgressBar($"Collecting logs on switch {SwitchModel.Name} ...", Utils.GetEstimateCollectLogDuration(restartPoE, port));
+                StartProgressBar($"Collecting logs on switch {SwitchModel.Name}{WAITING}", Utils.GetEstimateCollectLogDuration(restartPoE, port));
                 ConnectAosSsh();
                 UpdateSwitchLogBar();
                 int debugSelected = _debugSwitchLog.IntDebugLevelSelected;
@@ -334,7 +334,7 @@ namespace PoEWizard.Comm
                 }
                 else
                 {
-                    WaitSec($"Collecting logs on switch {SwitchModel.Name} ...", 5);
+                    WaitSec($"Collecting logs on switch {SwitchModel.Name}{WAITING}", 5);
                 }
                 UpdateSwitchLogBar();
                 // Setting switch debug level back to the previous values
@@ -388,7 +388,7 @@ namespace PoEWizard.Comm
         {
             foreach (var chassis in this.SwitchModel.ChassisList)
             {
-                string msg = $"Turning power OFF on all slots of chassis {chassis.Number} to capture logs ...";
+                string msg = $"Turning power OFF on all slots of chassis {chassis.Number} to capture logs{WAITING}";
                 _progress.Report(new ProgressReport(msg));
                 foreach (SlotModel slot in chassis.Slots)
                 {
@@ -396,7 +396,7 @@ namespace PoEWizard.Comm
                 }
                 UpdateSwitchLogBar();
                 WaitSec(msg, 5);
-                _progress.Report(new ProgressReport($"Turning power ON on all slots of chassis {chassis.Number} to capture logs ..."));
+                _progress.Report(new ProgressReport($"Turning power ON on all slots of chassis {chassis.Number} to capture logs{WAITING}"));
                 foreach (SlotModel slot in chassis.Slots)
                 {
                     SendCommand(new CmdRequest(Command.POWER_UP_SLOT, new string[1] { slot.Name.ToString() }));
@@ -435,7 +435,7 @@ namespace PoEWizard.Comm
         private void SetAppDebugLevel(string progressMsg, Command cmd, int dbgLevel)
         {
             Command showDbgCmd = cmd == Command.DEBUG_UPDATE_LPCMM_LEVEL ? Command.DEBUG_SHOW_LPCMM_LEVEL : Command.DEBUG_SHOW_LPNI_LEVEL;
-            _progress.Report(new ProgressReport($"{progressMsg} ..."));
+            _progress.Report(new ProgressReport($"{progressMsg}{WAITING}"));
             DateTime startCmdTime = DateTime.Now;
             SendSshUpdateLogCommand(cmd, new string[1] { dbgLevel.ToString() });
             UpdateSwitchLogBar();
@@ -444,7 +444,7 @@ namespace PoEWizard.Comm
             while (!done)
             {
                 Thread.Sleep(1000);
-                _progress.Report(new ProgressReport($"{progressMsg} ({loopCnt} sec) ..."));
+                _progress.Report(new ProgressReport($"{progressMsg} ({loopCnt} sec){WAITING}"));
                 UpdateSwitchLogBar();
                 if (loopCnt % 5 == 0) done = GetAppDebugLevel(showDbgCmd) == dbgLevel;
                 if (loopCnt >= 30)
@@ -571,7 +571,7 @@ namespace PoEWizard.Comm
             {
                 if (SwitchModel.SyncStatus == SyncStatusType.Synchronized) return;
                 string msg = $"Writing memory on switch {SwitchModel.Name}";
-                StartProgressBar($"{msg} ...", 30);
+                StartProgressBar($"{msg}{WAITING}", 30);
                 SendCommand(new CmdRequest(Command.WRITE_MEMORY));
                 progressStartTime = DateTime.Now;
                 double dur = 0;
@@ -586,7 +586,7 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                     if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
-                    UpdateProgressBarMessage($"{msg} ({(int)dur} sec) ...", dur);
+                    UpdateProgressBarMessage($"{msg} ({(int)dur} sec){WAITING}", dur);
                 }
                 LogActivity("Write memory completed", $", duration: {Utils.CalcStringDuration(progressStartTime)}");
                 SaveConfigSnapshot();
@@ -645,7 +645,7 @@ namespace PoEWizard.Comm
             {
                 string msg = $"Rebooting switch {SwitchModel.Name}";
                 Logger.Info(msg);
-                StartProgressBar($"{msg} ...", 320);
+                StartProgressBar($"{msg}{WAITING}", 320);
                 SendRebootSwitchRequest();
                 if (waitSec <= 0) return string.Empty;
                 msg = $"Waiting switch {SwitchModel.Name} reboot ";
@@ -660,7 +660,7 @@ namespace PoEWizard.Comm
                     }
                     Thread.Sleep(1000);
                     dur = Utils.GetTimeDuration(progressStartTime);
-                    UpdateProgressBarMessage($"{msg}({Utils.CalcStringDuration(progressStartTime, true)}) ...", dur);
+                    UpdateProgressBarMessage($"{msg}({Utils.CalcStringDuration(progressStartTime, true)}){WAITING}", dur);
                 }
                 while (dur < waitSec + 1)
                 {
@@ -670,7 +670,7 @@ namespace PoEWizard.Comm
                     }
                     Thread.Sleep(1000);
                     dur = (int)Utils.GetTimeDuration(progressStartTime);
-                    UpdateProgressBarMessage($"{msg}({Utils.CalcStringDuration(progressStartTime, true)}) ...", dur);
+                    UpdateProgressBarMessage($"{msg}({Utils.CalcStringDuration(progressStartTime, true)}){WAITING}", dur);
                     if (!Utils.IsReachable(SwitchModel.IpAddress)) continue;
                     try
                     {
@@ -977,12 +977,12 @@ namespace PoEWizard.Comm
         {
             string action = !string.IsNullOrEmpty(progressMessage) ? progressMessage : string.Empty;
             SendCommand(new CmdRequest(Command.ETHERNET_DISABLE, new string[1] { _wizardSwitchPort.Name }));
-            string msg = $"{action} ...\nShutting DOWN port";
+            string msg = $"{action}{WAITING}\nShutting DOWN port";
             _progress.Report(new ProgressReport($"{msg}{PrintPortStatus()}"));
             WaitSec(msg, 5);
             WaitEthernetStatus(waitTimeSec, PortStatus.Down, msg);
             SendCommand(new CmdRequest(Command.ETHERNET_ENABLE, new string[1] { _wizardSwitchPort.Name }));
-            msg = $"{action} ...\nStarting UP port";
+            msg = $"{action}{WAITING}\nStarting UP port";
             _progress.Report(new ProgressReport($"{msg}{PrintPortStatus()}"));
             WaitSec(msg, 5);
             WaitEthernetStatus(waitTimeSec, PortStatus.Up, msg);
@@ -992,7 +992,7 @@ namespace PoEWizard.Comm
         {
             string msg = !string.IsNullOrEmpty(progressMessage) ? $"{progressMessage}\n" : string.Empty;
             msg += $"Waiting port {_wizardSwitchPort.Name} to come UP";
-            _progress.Report(new ProgressReport($"{msg} ...{PrintPortStatus()}"));
+            _progress.Report(new ProgressReport($"{msg}{WAITING}{PrintPortStatus()}"));
             DateTime startTime = DateTime.Now;
             PortStatus ethStatus = UpdateEthStatus();
             int dur = 0;
@@ -1000,7 +1000,7 @@ namespace PoEWizard.Comm
             {
                 Thread.Sleep(1000);
                 dur = (int)Utils.GetTimeDuration(startTime);
-                _progress.Report(new ProgressReport($"{msg} ({Utils.CalcStringDuration(startTime, true)}) ...{PrintPortStatus()}"));
+                _progress.Report(new ProgressReport($"{msg} ({Utils.CalcStringDuration(startTime, true)}){WAITING}{PrintPortStatus()}"));
                 if (ethStatus == waitStatus) break;
                 if (dur % 5 == 0) ethStatus = UpdateEthStatus();
             }
@@ -1051,7 +1051,7 @@ namespace PoEWizard.Comm
         public void PowerSlotUpOrDown(Command cmd, string slotNr)
         {
             string msg = $"Turning slot {slotNr} PoE {(cmd == Command.POWER_UP_SLOT ? "ON" : "OFF")}";
-            _wizardProgressReport = new ProgressReport($"{msg} ...");
+            _wizardProgressReport = new ProgressReport($"{msg}{WAITING}");
             try
             {
                 _wizardSwitchSlot = SwitchModel.GetSlot(slotNr);
@@ -1081,7 +1081,7 @@ namespace PoEWizard.Comm
                     return;
                 }
                 string msg = "Running PoE Wizard";
-                _progress.Report(new ProgressReport($"{msg} ..."));
+                _progress.Report(new ProgressReport($"{msg}{WAITING}"));
                 if (!_wizardSwitchSlot.IsInitialized) PowerSlotUp();
                 _wizardReportResult = reportResult;
                 if (!IsPoeWizardAborted(msg)) ExecuteWizardCommands(commands, waitSec);
@@ -1616,11 +1616,11 @@ namespace PoEWizard.Comm
         {
             string action = !string.IsNullOrEmpty(progressMessage) ? progressMessage : string.Empty;
             SendCommand(new CmdRequest(Command.POWER_DOWN_PORT, new string[1] { _wizardSwitchPort.Name }));
-            string msg = $"{action} ...\nTurning power OFF";
+            string msg = $"{action}{WAITING}\nTurning power OFF";
             _progress.Report(new ProgressReport($"{msg}{PrintPortStatus()}"));
             WaitSec(msg, waitTimeSec);
             SendCommand(new CmdRequest(Command.POWER_UP_PORT, new string[1] { _wizardSwitchPort.Name }));
-            msg = $"{action} ...\nTurning power ON";
+            msg = $"{action}{WAITING}\nTurning power ON";
             _progress.Report(new ProgressReport($"{msg}{PrintPortStatus()}"));
             WaitSec(msg, 5);
         }
@@ -1639,7 +1639,7 @@ namespace PoEWizard.Comm
         {
             string msg = !string.IsNullOrEmpty(progressMessage) ? $"{progressMessage}\n" : string.Empty;
             msg += $"Waiting port {_wizardSwitchPort.Name} to come UP";
-            _progress.Report(new ProgressReport($"{msg} ...{PrintPortStatus()}"));
+            _progress.Report(new ProgressReport($"{msg}{WAITING}{PrintPortStatus()}"));
             DateTime startTime = DateTime.Now;
             UpdatePortData();
             int dur = 0;
@@ -1648,7 +1648,7 @@ namespace PoEWizard.Comm
             {
                 Thread.Sleep(1000);
                 dur = (int)Utils.GetTimeDuration(startTime);
-                _progress.Report(new ProgressReport($"{msg} ({Utils.CalcStringDuration(startTime, true)}) ...{PrintPortStatus()}"));
+                _progress.Report(new ProgressReport($"{msg} ({Utils.CalcStringDuration(startTime, true)}){WAITING}{PrintPortStatus()}"));
                 if (dur % 5 == 0)
                 {
                     UpdatePortData();
@@ -1689,7 +1689,7 @@ namespace PoEWizard.Comm
             string strDur = Utils.CalcStringDuration(startTime, true);
             string txt = $"{msg}";
             if (!string.IsNullOrEmpty(strDur)) txt += $" ({strDur})";
-            txt += $" ...{PrintPortStatus()}";
+            txt += $"{WAITING}{PrintPortStatus()}";
             _progress.Report(new ProgressReport(txt));
         }
 
@@ -2003,7 +2003,7 @@ namespace PoEWizard.Comm
             if (cmd == Command.POWER_823BT_ENABLE) txt.Append("Enabling");
             else if (cmd == Command.POWER_823BT_DISABLE) txt.Append("Disabling");
             txt.Append(" 802.3bt on slot ").Append(_wizardSwitchSlot.Name).Append(" of switch ").Append(SwitchModel.Name);
-            _progress.Report(new ProgressReport($"{txt} ..."));
+            _progress.Report(new ProgressReport($"{txt}{WAITING}"));
             PowerSlotDown();
             WaitSlotPower(false);
             SendCommand(new CmdRequest(cmd, new string[1] { _wizardSwitchSlot.Name }));
@@ -2028,13 +2028,13 @@ namespace PoEWizard.Comm
             StringBuilder txt = new StringBuilder("Turning slot ").Append(_wizardSwitchSlot.Name).Append(" PoE ");
             if (powerUp) txt.Append("ON"); else txt.Append("OFF");
             txt.Append(" on switch ").Append(SwitchModel.Name);
-            _progress.Report(new ProgressReport($"{txt} ..."));
+            _progress.Report(new ProgressReport($"{txt}{WAITING}"));
             int dur = 0;
             while (dur < 50)
             {
                 Thread.Sleep(1000);
                 dur = (int)Utils.GetTimeDuration(startTime);
-                _progress.Report(new ProgressReport($"{txt} ({dur} sec) ..."));
+                _progress.Report(new ProgressReport($"{txt} ({dur} sec){WAITING}"));
                 if (dur % 5 == 0)
                 {
                     GetSlotPowerStatus(_wizardSwitchSlot);

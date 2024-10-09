@@ -114,6 +114,7 @@ namespace PoEWizard.Data
         public const string MIN_AOS_VERSION = "8.9 R1";
         public const string VCBOOT_PATH = "/flash/working/vcboot.cfg";
         public const string SWLOG_PATH = "/flash/tech_support_complete.tar";
+        public const string WAITING = "  . . .";
         public const string C = " \u2103";
         public const string F = " \u2109";
         // Used by "Utils" class

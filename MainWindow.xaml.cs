@@ -58,7 +58,7 @@ namespace PoEWizard
         #endregion
 
         #region Local constants
-        const string TRAFFIC_ANALYSIS_RUNNING = "Running ...";
+        const string TRAFFIC_ANALYSIS_RUNNING = "Running";
         const string TRAFFIC_ANALYSIS_IDLE = "Traffic Analysis";
         const string ASK_SAVE_TRAFFIC_REPORT = "Do you want to save the traffic analysis report";
         #endregion
@@ -213,8 +213,8 @@ namespace PoEWizard
             {
                 string title = "Loading vcboot.cfg file...";
                 string msg = $"{title} from switch {device.Name}";
-                ShowInfoBox($"{msg} ...");
-                ShowProgress($"{title} ...");
+                ShowInfoBox($"{msg}{WAITING}");
+                ShowProgress($"{title}{WAITING}");
                 Logger.Debug(msg);
                 string res = string.Empty;
                 string sftpError = null;
@@ -437,7 +437,7 @@ namespace PoEWizard
                     return;
                 }
                 DisableButtons();
-                string barText = $"{title} ...";
+                string barText = $"{title}{WAITING}";
                 ShowInfoBox(barText);
                 ShowProgress(barText);
                 await Task.Run(() => restApiService.ResetPort(selectedPort.Name, 60));
@@ -872,7 +872,7 @@ namespace PoEWizard
                     bool save = StopTrafficAnalysis(AbortType.Close, textMsg, ASK_SAVE_TRAFFIC_REPORT, confirm);
                     if (!save) return;
                     await WaitSaveTrafficAnalysis();
-                    ShowProgress($"{textMsg} ...");
+                    ShowProgress($"{textMsg}{WAITING}");
                     await CloseRestApiService($"{textMsg}");
                     SetDisconnectedState();
                     return;
@@ -985,7 +985,7 @@ namespace PoEWizard
                 DisableButtons();
                 ProgressReport wizardProgressReport = new ProgressReport("PoE Wizard Report:");
                 reportResult = new WizardReport();
-                string barText = $"Running PoE Wizard on port {selectedPort.Name} ...";
+                string barText = $"Running PoE Wizard on port {selectedPort.Name}{WAITING}";
                 ShowProgress(barText);
                 DateTime startTime = DateTime.Now;
                 await Task.Run(() => restApiService.ScanSwitch($"Running PoE Wizard on port {selectedPort.Name}...", reportResult));
@@ -1056,7 +1056,7 @@ namespace PoEWizard
 
         private async Task<string> RunCollectLogs(bool restartPoE, string port = null)
         {
-            ShowInfoBox($"Collecting logs on switch {device.Name} ...");
+            ShowInfoBox($"Collecting logs on switch {device.Name}{WAITING}");
             string sftpError = null;
             await Task.Run(() =>
             {
@@ -1066,7 +1066,7 @@ namespace PoEWizard
             });
             if (!string.IsNullOrEmpty(sftpError)) return sftpError;
             maxCollectLogsDur = Utils.GetEstimateCollectLogDuration(restartPoE, port);
-            string barText = "Cleaning up current log ...";
+            string barText = "Cleaning up current log{WAITING}";
             ShowInfoBox(barText);
             StartProgressBar(barText);
             await Task.Run(() => sftpService.DeleteFile(SWLOG_PATH));
@@ -1081,7 +1081,7 @@ namespace PoEWizard
             const double PERIOD_SFTP_RECONNECT_SEC = 30;
             try
             {
-                StartProgressBar($"Collecting logs on switch {device.Name} ...");
+                StartProgressBar($"Collecting logs on switch {device.Name}{WAITING}");
                 DateTime initialTime = DateTime.Now;
                 await RunGetSwitchLog(SwitchDebugLogLevel.Debug3, restartPoE, port);
                 StartProgressBar("Downloading tar file ..");
@@ -1095,7 +1095,7 @@ namespace PoEWizard
                 while (waitCnt < 2)
                 {
                     strDur = Utils.CalcStringDuration(startTime, true);
-                    msg = !string.IsNullOrEmpty(strDur) ? $"Waiting for tar file ready ({strDur}) ..." : "Waiting for tar file ready ...";
+                    msg = !string.IsNullOrEmpty(strDur) ? $"Waiting for tar file ready ({strDur}){WAITING}" : "Waiting for tar file ready{WAITING}";
                     if (fsize > 0) msg += $"\nFile size: {Utils.PrintNumberBytes(fsize)}";
                     ShowInfoBox(msg);
                     UpdateSwitchLogBar(initialTime);
@@ -1130,7 +1130,7 @@ namespace PoEWizard
                 }
                 strDur = Utils.CalcStringDuration(startTime, true);
                 string strTotalDuration = Utils.CalcStringDuration(initialTime, true);
-                ShowInfoBox($"Downloading tar file from switch ...\nFile creation duration: {strDur}, File size: {Utils.PrintNumberBytes(fsize)}");
+                ShowInfoBox($"Downloading tar file from switch{WAITING}\nFile creation duration: {strDur}, File size: {Utils.PrintNumberBytes(fsize)}");
                 string fname = null;
                 await Task.Run(() =>
                 {
@@ -1324,7 +1324,7 @@ namespace PoEWizard
         {
             string msg = $"Turning slot {slotNr} PoE {(cmd == Command.POWER_UP_SLOT ? "ON" : "OFF")}";
             ShowProgress(msg);
-            progress.Report(new ProgressReport($"{msg} ..."));
+            progress.Report(new ProgressReport($"{msg}{WAITING}"));
             await Task.Run(() =>
             {
                 restApiService.PowerSlotUpOrDown(cmd, slotNr);
@@ -1347,12 +1347,12 @@ namespace PoEWizard
             string msg = $"Waiting Ports to come UP on Switch {device.Name}";
             DateTime startTime = DateTime.Now;
             int dur = 0;
-            progress.Report(new ProgressReport($"{msg} ..."));
+            progress.Report(new ProgressReport($"{msg}{WAITING}"));
             while (dur < WAIT_PORTS_UP_SEC)
             {
                 Thread.Sleep(1000);
                 dur = (int)Utils.GetTimeDuration(startTime);
-                progress.Report(new ProgressReport($"{msg} ({dur} sec) ..."));
+                progress.Report(new ProgressReport($"{msg} ({dur} sec){WAITING}"));
             }
             restApiService.RefreshSwitchPorts();
         }
@@ -1741,7 +1741,7 @@ namespace PoEWizard
         private async Task<string> GetSyncStatus(string title)
         {
             string cfgChanges = null;
-            if (!string.IsNullOrEmpty(title)) ShowInfoBox($"{title} ...");
+            if (!string.IsNullOrEmpty(title)) ShowInfoBox($"{title}{WAITING}");
             await Task.Run(() => cfgChanges = restApiService.GetSyncStatus());
             DataContext = null;
             DataContext = device;
