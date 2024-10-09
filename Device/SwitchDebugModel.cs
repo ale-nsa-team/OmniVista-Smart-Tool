@@ -200,8 +200,12 @@ namespace PoEWizard.Device
                 string serialNumber = device.SerialNumber.Replace(SLAVE, string.Empty).Replace(SLAVE, string.Empty);
                 string[] split = port != null ? port.Name.Split('/') : new string[] { "1" };
                 txt.Append("\n\tThe switch name is ").Append(device.Name).Append(" (").Append(device.IpAddress).Append(") running on Release ").Append(device.Version);
-                txt.Append(" with ").Append(device.ChassisList.Count).Append(" chassis. It is a ").Append(model).Append(" model with serial number ");
-                txt.Append(serialNumber).Append($" on chassis {split[0]} {(device.Model.Contains(SLAVE) ? "(Slave)" : "(Master)")}.");
+                txt.Append(" with ").Append(device.ChassisList.Count).Append(" chassis:");
+                foreach(ChassisModel chassisModel in device.ChassisList)
+                {
+                    txt.Append("\n\t - Chassis ").Append(chassisModel.Number).Append($" {(device.Model.Contains(SLAVE) ? "(Slave)" : "(Master)")} model ");
+                    txt.Append(chassisModel.Model).Append(" with serial number ").Append(chassisModel.SerialNumber);
+                }
             }
             if (port != null)
             {
