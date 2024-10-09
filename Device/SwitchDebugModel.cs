@@ -196,8 +196,8 @@ namespace PoEWizard.Device
             StringBuilder txt = new StringBuilder("Hello tech support,\n");
             if (device != null)
             {
-                txt.Append("\n\tThe switch IP address is ").Append(device.IpAddress).Append(". It is a ").Append(device.Model);
-                txt.Append(" model, running ").Append(device.Version).Append(" with serial number ").Append(device.SerialNumber).Append("\n");
+                txt.Append("\n\tThe switch name is ").Append(device.Name).Append(" (").Append(device.IpAddress).Append(") running ").Append(device.Version);
+                txt.Append(". It is a ").Append(device.Model).Append(" model with serial number ").Append(device.SerialNumber).Append(".");
             }
             if (port != null)
             {
