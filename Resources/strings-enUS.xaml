@@ -41,6 +41,9 @@
     <sys:String x:Key="i18n_nextBtn">Next</sys:String>
     <sys:String x:Key="i18n_prevBtn">Previous</sys:String>
     <sys:String x:Key="i18n_closeBtn">Close</sys:String>
+    <sys:String x:Key="i18n_creBtn">Create</sys:String>
+    <sys:String x:Key="i18n_clrBtn">Clear Log</sys:String>
+    <sys:String x:Key="i18n_svBtn">Save</sys:String>
 
     <!--System Information-->
     <sys:String x:Key="i18n_swName">Name:</sys:String>
@@ -99,6 +102,17 @@
     <sys:String x:Key="i18n_user">Username</sys:String>
     <sys:String x:Key="i18n_pwd">Password</sys:String>
     
+    <!--Power Supply dialog-->
+    <sys:String x:Key="i18n_psCh">Chassis/PS</sys:String>
+    <sys:String x:Key="i18n_psMod">MOdel</sys:String>
+    <sys:String x:Key="i18n_psType">Type</sys:String>
+    <sys:String x:Key="i18n_psLoc">Location</sys:String>
+    <sys:String x:Key="i18n_psDesc">Description</sys:String>
+    <sys:String x:Key="i18n_psProv">Power Privision</sys:String>
+    <sys:String x:Key="i18n_psPN">Part Number</sys:String>
+    <sys:String x:Key="i18n_psRev">Hardware Revision</sys:String>
+    <sys:String x:Key="i18n_psSN">Serial Number</sys:String>
+    
     <!--Config Wizard Dialog-->
     <sys:String x:Key="i18n_sysPar">System Parameters</sys:String>
     <sys:String x:Key="i18n_netCfg">Network Configuration</sys:String>
@@ -128,7 +142,7 @@
     <sys:String x:Key="i18n_snmp">SNMP Settings</sys:String>
     <sys:String x:Key="i18n_usrs">Users</sys:String>
     <sys:String x:Key="i18n_usr">User</sys:String>
-    <sys:String x:Key="i18n_comms">Communitites (v2 only)</sys:String>
+    <sys:String x:Key="i18n_comms">Communitites</sys:String>
     <sys:String x:Key="i18n_comm">Community</sys:String>
     <sys:String x:Key="i18n_recv">Trap Receivers</sys:String>
     <sys:String x:Key="i18n_usrName">Name</sys:String>
@@ -141,14 +155,30 @@
     <sys:String x:Key="i18n_runCW">Running config wizard...</sys:String>
     <sys:String x:Key="i18n_cwErr">The following errors where reported:</sys:String>
     <sys:String x:Key="i18n_twiz">Config Wizard</sys:String>
-    <sys:String x:Key="i18n_discWiz" xml:space="preserve">Application will disconnect from switch because IP address wad changed.
-    Please reconnect using the new address.
+    <sys:String x:Key="i18n_discWiz" xml:space="preserve">
+Application will disconnect from switch because IP address wad changed.
+Please reconnect using the new address.
     </sys:String>
     <sys:String x:Key="i18n_loading">Loading current parameters, please wait...</sys:String>
     <sys:String x:Key="i18n_appDns">Applying DNS and NPT parameters...</sys:String>
     <sys:String x:Key="i18n_appFeat">Applying Features...</sys:String>
     <sys:String x:Key="i18n_appSys">Applying System parameters...</sys:String>
     <sys:String x:Key="i18n_reloading">Reloading switch data, please wait...</sys:String>
+    <sys:String x:Key="i18n_and">and</sys:String>
+    <sys:String x:Key="i18n_dupObj" xml:space="preserve">already created</sys:String>
+    <sys:String x:Key="i18n_delUser">
+Related to this user will be deleted.
+Please confirm your action.        
+    </sys:String>
+    <sys:String x:Key="i18n_delComm"  xml:space="preserve">
+Related stations will also be deleted.
+Please confirm your action.
+    </sys:String>
+    <sys:String x:Key="i18n_withIp">Station with IP address</sys:String>
+    <sys:String x:Key="i18n_newUsr">New User</sys:String>
+    <sys:String x:Key="i18n_newComm">New Community</sys:String>
+    <sys:String x:Key="i18n_commUsr">Associated User</sys:String>
+    <sys:String x:Key="i18n_newRec">New Trap Receiver</sys:String>
     
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwRep">PoE Wizard Report:</sys:String>
@@ -161,8 +191,9 @@
     <sys:String x:Key="i18n_pwExec">PoE Wizard Execution</sys:String>
     <sys:String x:Key="i18n_fail">failed</sys:String>
     <sys:String x:Key="i18n_succes">succeeded</sys:String>
-    <sys:String x:Key="i18n_pwNoRes">It looks like the wizard was unable to fix the problem.\n
-        Do you want to collect information to send the Technical Support?
+    <sys:String x:Key="i18n_pwNoRes" xml:space="preserve">
+It looks like the wizard was unable to fix the problem.
+Do you want to collect information to send the Technical Support?
     </sys:String>
     <sys:String x:Key="i18n_pwGood">solved the problem</sys:String>
     <sys:String x:Key="i18n_noact">Nothing to do</sys:String>
@@ -205,6 +236,7 @@
     <sys:String x:Key="i18n_waitp">Waiting for port</sys:String>
     <sys:String x:Key="i18n_spoeoff">PoE is turned off on slot</sys:String>
     <sys:String x:Key="i18n_cmdnosup">Command not supported by switch</sys:String>
+    <sys:String x:Key="i18n_devSel">Please, select the type of device connected to port</sys:String>
     
     <!--About box-->
 	<sys:String x:Key="i18n_aboutTitle">About ALE Installer Toolkit</sys:String>
@@ -272,6 +304,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_sec">sec</sys:String>
     <sys:String x:Key="i18n_tadur">Current duration:</sys:String>
     <sys:String x:Key="i18n_tacont">Do you still want to continue</sys:String>
+    <sys:String x:Key="i18n_selDur">Please, select the traffic analysis duration</sys:String>
 
     <!--Other Messages-->
     <sys:String x:Key="i18n_closing">closing the application</sys:String>
@@ -302,7 +335,10 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_cclogs">Cleaning up current log ...</sys:String>
     <sys:String x:Key="i18n_wclogs">Waiting from tar file ready</sys:String>
     <sys:String x:Key="i18n_fsize">File size:</sys:String>
-    <sys:String x:Key="i18n_lclogs">Downloading tar file from switch...\nFile creation duration:</sys:String>
+    <sys:String x:Key="i18n_lclogs" xml:space="preserve">
+Downloading tar file from switch...
+File creation duration:
+    </sys:String>
     <sys:String x:Key="i18n_ttar">Downloading tar file</sys:String>
     <sys:String x:Key="i18n_tfail">Failed to downlad file</sys:String>
     <sys:String x:Key="i18n_sfile">Save switch logs</sys:String>
@@ -325,9 +361,9 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_onsl">on slot</sys:String>
     <sys:String x:Key="i18n_cnsw">Connect to switch</sys:String>
     <sys:String x:Key="i18n_dcnsw">Disconnect switch</sys:String>
-    <sys:String x:Key="i18n_cert">
-        The switch booted on Certified directory, no changes can be saved.\n
-        Do you want to reboot the switch on Working directory?"
+    <sys:String x:Key="i18n_cert" xml:space="preserve">
+The switch booted on Certified directory, no changes can be saved.
+Do you want to reboot the switch on Working directory?"
     </sys:String>
     <sys:String x:Key="i18n_wmem">Write memory required</sys:String>
     <sys:String x:Key="i18n_refrsw">Refresh switch</sys:String>
@@ -347,16 +383,29 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_tmaxpw">Check default Max. Power</sys:String>
     <sys:String x:Key="i18n_nosync">Flash memory is not synchronized</sys:String>
     <sys:String x:Key="i18n_cfgch">Significant configuration changes.</sys:String>
-    <sys:String x:Key="i18n_cfsave">Do you want to save it now?\nIt may take up to 30 sec to execute Write Memory</sys:String>
+    <sys:String x:Key="i18n_cfsave" xml:space="preserve">
+Do you want to save it now?
+It may take up to 30 sec to execute Write Memory
+    </sys:String>
     <sys:String x:Key="i18n_swrst">Rebooting switch</sys:String>
     <sys:String x:Key="i18n_swrsti">interrupted by the user before</sys:String>
-    <sys:String x:Key="i18n_swready">ready to connect\nReboot duration:</sys:String>
+    <sys:String x:Key="i18n_swready" xml:space="preserve">
+ready to connect
+Reboot duration:
+    </sys:String>
     <sys:String x:Key="i18n_rst">restarted</sys:String>
     <sys:String x:Key="i18n_pfrst">failed to restart</sys:String>
     <sys:String x:Key="i18n_urst">restarted by the user</sys:String>
     <sys:String x:Key="i18n_pstup">Starting up port</sys:String>
     <sys:String x:Key="i18n_ppoff">Turning off power on port</sys:String>
-    
+    <sys:String x:Key="i18n_pcode">Please enter the password for this operation</sys:String>
+    <sys:String x:Key="i18n_chcode">Change Password</sys:String>
+    <sys:String x:Key="i18n_codeErr">Could not change password</sys:String>
+    <sys:String x:Key="i18n_srcNote">Note: You may double click on the port to close and select it on the main window.</sys:String>
+    <sys:String x:Key="i18n_srcText">Please enter the MAC address, Device or Vendor Name</sys:String>
+    <sys:String x:Key="i18n_fload">Loading file, please wait...</sys:String>
+    <sys:String x:Key="i18n_ftxt">Text File</sys:String>
+   
     <!--Tool Tips-->
     <sys:String x:Key="i18n_pwr_tt">Actual power consumed by the device connected to the port</sys:String>
     <sys:String x:Key="i18n_maxPwr_tt">Maximum power allowed by the hardware</sys:String>

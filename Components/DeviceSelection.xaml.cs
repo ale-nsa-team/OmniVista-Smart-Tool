@@ -12,7 +12,7 @@ namespace PoEWizard.Components
     /// Interaction logic for DeviceSelection.xaml
     /// </summary>
     public partial class DeviceSelection : Window
-    {
+    {   
         public List<string> Devices { get;  set; }
         public string Device { get; set; }
         public DeviceType DeviceType { get; set; }
@@ -30,7 +30,8 @@ namespace PoEWizard.Components
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
 
-            _header.Text = $"Please, select the type of device connected to port {port}";
+            ResourceDictionary strings = Resources.MergedDictionaries[1];
+            _header.Text = $"{(string)strings["i18n_devSel"]} {port}";
             Devices = Enum.GetValues(typeof(DeviceType)).OfType<DeviceType>().ToList().Select(d => GetDescription(d)).ToList();
         }
 

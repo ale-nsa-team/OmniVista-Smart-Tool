@@ -14,6 +14,7 @@ namespace PoEWizard.Components
         private readonly ResourceDictionary light;
         private readonly ResourceDictionary dark;
         private readonly ResourceDictionary currDict;
+        private readonly ResourceDictionary strings;
 
         public string Header { get; set; }
         public string Message { get; set; }
@@ -38,6 +39,7 @@ namespace PoEWizard.Components
                 Resources.MergedDictionaries.Remove(dark);
                 currDict = light;
             }
+            strings = Resources.MergedDictionaries[1];
             this.Owner = owner;
             Buttons = buttons;
             msgIcon.Source = null;
@@ -114,7 +116,7 @@ namespace PoEWizard.Components
 
         private void SetButtons(bool ok, bool cancel, bool yes, bool no)
         {
-            msgYesBtn.Content = ok ? "OK" : "Yes";
+            msgYesBtn.Content = ok ? (string)strings["i18n_okBtn"] : (string)strings["i18n_yBtn"];
             msgYesBtn.Visibility = ok || yes ? Visibility.Visible : Visibility.Collapsed;
             msgNoBtn.Visibility = no ? Visibility.Visible : Visibility.Collapsed;
             msgCancelBtn.Visibility = cancel ? Visibility.Visible : Visibility.Collapsed;

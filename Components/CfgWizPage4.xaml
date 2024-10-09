@@ -138,10 +138,14 @@
                     </DataGridTextColumn>
                     <DataGridTextColumn Binding="{Binding User}" Width="*">
                         <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_user}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Binding="{Binding Community}" Width="1.5*">
+                        <DataGridTextColumn.Header>
                             <TextBlock Text="{DynamicResource i18n_comm}" />
                         </DataGridTextColumn.Header>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="Community" Binding="{Binding Community}" Width="1.5*" />
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>

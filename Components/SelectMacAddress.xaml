@@ -5,12 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
-        Title="Select Mac Address" Height="180" Width="380" WindowStyle="None" ShowInTaskbar="False">
+        Title="Select Mac Address" Height="180" Width="400" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
                 <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-ptBr.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -20,7 +21,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" Style="{DynamicResource titleLabel}" Margin="0,25,0,5">Please enter the MAC address, Device or Vendor Name</Label>
+        <Label Grid.Row="0" Style="{DynamicResource titleLabel}" Margin="0,25,0,5" Content="{DynamicResource i18n_srcText}" />
         <TextBox Grid.Row="1" x:Name="_macAddr"
                      Foreground="{DynamicResource fontColor}"
                      Background="{DynamicResource barBackground}"
@@ -30,8 +31,10 @@
         </TextBox>
         <Border Grid.Row="2" Style="{DynamicResource propsBorder}" Margin="0,15,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Click="BtnOk_Click" Style="{DynamicResource smallButton}" Margin="5,10,0,0">OK</Button>
-                <Button Click="BtnCancel_Click" Style="{DynamicResource smallButton}" Margin="20,10,0,0">Cancel</Button>
+                <Button Click="BtnOk_Click" Style="{DynamicResource smallButton}" MinWidth="50"
+                        Margin="5,10,0,0" Content="{DynamicResource i18n_okBtn}"/>
+                <Button Click="BtnCancel_Click" Style="{DynamicResource smallButton}" MinWidth="50"
+                        Margin="20,10,0,0" Content="{DynamicResource i18n_canBtn}"/>
             </StackPanel>
         </Border>
     </Grid>
