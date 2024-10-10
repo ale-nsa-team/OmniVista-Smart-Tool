@@ -127,6 +127,6 @@
                 Text="Note: You may double click on the port to close and select it on the main window."
                 Margin="15,5,0,0" >
         </TextBlock>
-        <Button Grid.Row="2"  Grid.Column="2"  Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="8">Close</Button>
+        <Button Grid.Row="2"  Grid.Column="1"  Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="8">Close</Button>
     </Grid>
 </Window>
