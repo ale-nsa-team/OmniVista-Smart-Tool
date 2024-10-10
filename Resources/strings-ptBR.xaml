@@ -432,7 +432,5 @@ Duração da reinicialização:
     <sys:String x:Key="i18n_dld_tt">Ativação atrasada está habilitada</sys:String>
     <sys:String x:Key="i18n_conf_tt">Duas portas PoE conectadas e não foi desativado PoE em uma das portas</sys:String>
     <sys:String x:Key="i18n_nop_tt">Porta não suporta PoE</sys:String>
-    <sys:String x:Key="i18n_srcNote">Nota: Você pode clicar duas vezes na porta para selecioná-la na janela principal e fechar essa janela.</sys:String>
-
 
 </ResourceDictionary>
