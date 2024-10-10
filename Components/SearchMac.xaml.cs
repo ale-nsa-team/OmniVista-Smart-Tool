@@ -165,9 +165,9 @@ namespace PoEWizard.Components
 
         private void Mouse_DoubleClick(Object sender, RoutedEventArgs e)
         {
-            if (_portsListView.SelectedItem is PortModel port)
+            if (_portsListView.SelectedItem is PortViewModel port)
             {
-                SelectedPort = port;
+                SelectedPort = port.Port;
                 this.Close();
             }
         }
