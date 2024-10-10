@@ -24,6 +24,8 @@
         <Label Grid.Row="0" Style="{DynamicResource titleLabel}" Margin="0,25,0,5">Please enter the MAC address, Device or Vendor Name</Label>
         <TextBox Grid.Row="1" x:Name="_macAddr" x:FieldModifier="private" 
                      Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                     Foreground="{DynamicResource fontColor}"
+                     Background="{DynamicResource barBackground}"
                      KeyUp="SelectMac_KeyUp"
                      Margin="50,10" >
             <TextBox.Text>
