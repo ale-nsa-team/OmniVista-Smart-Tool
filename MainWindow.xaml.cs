@@ -1152,7 +1152,8 @@ namespace PoEWizard
                     ShowMessageBox("Downloading tar file", $"Failed to download file \"{SWLOG_PATH}\" from the switch {device.Name}!", MsgBoxIcons.Error);
                     return;
                 }
-                string text = $"Tar file downloaded from switch{device.Name}{WAITING}\nDownload duration: {Utils.CalcStringDuration(startDowanloadTime, true)}";
+                string downloadDur = Utils.CalcStringDuration(startDowanloadTime);
+                string text = $"Tar file downloaded from switch{device.Name}{WAITING}\nDownload duration: {downloadDur}";
                 text += $", File size: {Utils.PrintNumberBytes(fsize)}\nFile creation duration: {strDur}";
                 ShowInfoBox(text);
                 var sfd = new SaveFileDialog()
@@ -1173,8 +1174,8 @@ namespace PoEWizard
                 UpdateSwitchLogBar(initialTime);
                 debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, port);
                 StringBuilder txt = new StringBuilder("Log tar file \"").Append(SWLOG_PATH).Append("\" downloaded from the switch ").Append(device.IpAddress);
-                txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\" (").Append(Utils.PrintNumberBytes(info.Length));
-                txt.Append(")\n\tDuration of tar file creation: ").Append(strDur);
+                txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\"\n\tFile size: ").Append(Utils.PrintNumberBytes(info.Length));
+                txt.Append("\n\tDownload duration: ").Append(downloadDur).Append("\n\tTar file creation duration: ").Append(strDur);
                 txt.Append("\n\tTotal duration to generate log file in ").Append(SwitchDebugLogLevel.Debug3).Append(" level: ").Append(strTotalDuration);
                 Logger.Activity(txt.ToString());
             }
