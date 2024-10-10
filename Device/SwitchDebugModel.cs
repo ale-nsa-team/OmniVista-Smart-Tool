@@ -186,7 +186,7 @@ namespace PoEWizard.Device
 
         public void UpdateLanPowerStatus(string cliCmd, string resp)
         {
-            if (!string.IsNullOrEmpty(resp) && !string.IsNullOrEmpty(cliCmd)) this.LanPowerStatus += $"\n\n\tCLI command \"{cliCmd}\" response:\n\n{resp}";
+            if (!string.IsNullOrEmpty(resp) && !string.IsNullOrEmpty(cliCmd)) this.LanPowerStatus += $"\n\n\t - CLI command \"{cliCmd}\" response:\n\n{resp}";
         }
 
         public void CreateTacTextFile(DeviceType deviceType, string localTarFilepath, SwitchModel device, PortModel port)
