@@ -303,6 +303,7 @@ namespace PoEWizard.Comm
         {
             try
             {
+                _wizardSwitchSlot = null;
                 _debugSwitchLog = debugLog;
                 if (!string.IsNullOrEmpty(slotPortNr))
                 {
@@ -319,7 +320,7 @@ namespace PoEWizard.Comm
                 UpdateSwitchLogBar();
                 int debugSelected = _debugSwitchLog.IntDebugLevelSelected;
                 // Getting current lan power status
-                GetShowDebugLanPower();
+                GetCurrentLanPowerStatus();
                 // Getting current switch debug level
                 GetCurrentSwitchDebugLevel();
                 int prevLpNiDebug = SwitchModel.LpNiDebugLevel;
@@ -358,7 +359,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void GetShowDebugLanPower()
+        private void GetCurrentLanPowerStatus()
         {
             if (_wizardSwitchSlot != null)
             {

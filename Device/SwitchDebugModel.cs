@@ -227,7 +227,7 @@ namespace PoEWizard.Device
             {
                 txt.Append("I have collected the logs.");
             }
-            if (!string.IsNullOrEmpty(this.LanPowerStatus)) txt.Append(this.LanPowerStatus);
+            if (!string.IsNullOrEmpty(this.LanPowerStatus)) txt.Append("\n\nLanpower current status:").Append(this.LanPowerStatus);
             txt.Append("\n\n\tThe switch log tech support .tar file is attached.\n\n\t\tThanks.\n");
             Utils.CreateTextFile(filePath, txt);
         }
