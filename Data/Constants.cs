@@ -330,6 +330,7 @@ namespace PoEWizard.Data
         // Used to display switch data related to chassis Master or Slave
         public const string MASTER = " (Master)";
         public const string SLAVE = " (Slave)";
+        public const string MAC_MATCH_MARK = " (*)";
         #endregion
 
         #region regex patterns

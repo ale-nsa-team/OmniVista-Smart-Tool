@@ -123,54 +123,46 @@ namespace PoEWizard.Device
 
         public string ToFilterTooltip(bool isMacAddress, string searchText)
         {
-            List<string> tip = ToMaintTooltip();
+            List<string> tip = ToMainTooltip(isMacAddress ? null : searchText);
             bool found = false;
             if (this.Label.Contains(","))
             {
                 string[] split = this.Label.Split(',');
                 tip.Add($"MAC List:");
                 int cntMac = 0;
-                foreach (string mac in split)
+                foreach (string macAddr in split)
                 {
-                    string vendor = Utils.GetVendorName(mac);
-                    if ((isMacAddress && mac.StartsWith(searchText)) || vendor.ToLower().Contains(searchText))
+                    string vendor = Utils.GetVendorName(macAddr);
+                    if (Utils.IsValidMacAddress(vendor)) vendor = string.Empty;
+                    string mac = macAddr;
+                    found = (isMacAddress && mac.ToLower().StartsWith(searchText)) || (!string.IsNullOrEmpty(vendor) && vendor.ToLower().Contains(searchText));
+                    cntMac++;
+                    if (cntMac > MAX_NB_MAC_TOOL_TIP)
                     {
-                        found = true;
-                        cntMac++;
-                        if (cntMac > MAX_NB_MAC_TOOL_TIP)
-                        {
-                            tip.Add("          . . .");
-                            break;
-                        }
-                        if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) tip.Add($" {mac} ({vendor})"); else tip.Add($" {mac}");
+                        tip.Add("          . . .");
+                        break;
                     }
+                    if (!string.IsNullOrEmpty(vendor)) mac = $" {mac} ({vendor})";
+                    if (found) mac += MAC_MATCH_MARK;
+                    tip.Add($" {mac}");
                 }
             }
             else if (!string.IsNullOrEmpty(this.MacAddress))
             {
                 string mac = this.MacAddress;
-                if (isMacAddress) found = this.MacAddress.StartsWith(searchText);
-                else if (this.Name.ToLower().Contains(searchText)) found = true;
-                else if (this.Vendor.ToLower().Contains(searchText)) found = true;
-                else
-                {
-                    string vendor = Utils.GetVendorName(this.MacAddress);
-                    if (vendor.ToLower().Contains(searchText))
-                    {
-                        found = true;
-                        mac += $" ({vendor})";
-                    }
-                }
+                string vendor = Utils.GetVendorName(this.MacAddress);
+                if (string.IsNullOrEmpty(this.Label) && string.IsNullOrEmpty(this.Vendor) && vendor.ToLower().Contains(searchText)) mac += $" ({vendor})";
+                if (isMacAddress && this.MacAddress.StartsWith(searchText)) mac += MAC_MATCH_MARK;
                 tip.Add($"MAC: {mac}");
             }
-            if (!found) return null;
+            //if (!found) return null;
             if (this.Capabilities.Count > 0) tip.Add($"Capabilities: {string.Join(",", this.Capabilities)}");
             return tip.Count > 0 ? string.Join("\n", tip) : null;
         }
 
         public string ToTooltip()
         {
-            List<string> tip = ToMaintTooltip();
+            List<string> tip = ToMainTooltip();
             if (this.Label.Contains(","))
             {
                 string[] split = this.Label.Split(',');
@@ -192,29 +184,37 @@ namespace PoEWizard.Device
             return tip.Count > 0 ? string.Join("\n", tip) : null;
         }
 
-        private List<string> ToMaintTooltip()
+        private List<string> ToMainTooltip(string searchText = null)
         {
             List<string> tip = new List<string>();
-            if (!string.IsNullOrEmpty(Type)) tip.Add($"Type: {Type}");
-            if (!string.IsNullOrEmpty(Label))
+            if (!string.IsNullOrEmpty(this.Type)) tip.Add($"Type: {this.Type}");
+            string nameVendor;
+            if (!string.IsNullOrEmpty(this.Label))
             {
                 if (!IsMacName)
                 {
-                    if (!Label.Contains("Remote port")) tip.Add($"Name: {Label}");
+                    nameVendor = this.Label;
+                    if (!string.IsNullOrEmpty(searchText) && this.Label.ToLower().Contains(searchText)) nameVendor += MAC_MATCH_MARK;
+                    if (!this.Label.Contains("Remote port")) tip.Add($"Name: {nameVendor}");
                 }
-                else if (string.IsNullOrEmpty(Vendor) && !Label.Contains(","))
+                else if (string.IsNullOrEmpty(this.Vendor) && !this.Label.Contains(","))
                 {
-                    Vendor = Utils.GetVendorName(Label);
+                    this.Vendor = Utils.GetVendorName(this.Label);
                 }
             }
-            if (!string.IsNullOrEmpty(Vendor)) tip.Add($"Vendor: {Vendor}");
-            if (!string.IsNullOrEmpty(Description)) tip.Add($"Description: {Description}");
-            if (!string.IsNullOrEmpty(Model)) tip.Add($"Model: {Model}");
-            if (!string.IsNullOrEmpty(SoftwareVersion)) tip.Add($"Version: {SoftwareVersion}");
-            if (!string.IsNullOrEmpty(SerialNumber)) tip.Add($"Serial #: {SerialNumber}");
-            if (!string.IsNullOrEmpty(IpAddress)) tip.Add($"IP: {IpAddress}");
-            if (!string.IsNullOrEmpty(RemotePort)) tip.Add($"Remote Port: {RemotePort}");
-            if (!string.IsNullOrEmpty(PortDescription)) tip.Add($"Port Description: {PortDescription}");
+            if (!string.IsNullOrEmpty(this.Vendor))
+            {
+                nameVendor = this.Vendor;
+                if (!string.IsNullOrEmpty(searchText) && this.Vendor.ToLower().Contains(searchText)) nameVendor += MAC_MATCH_MARK;
+                tip.Add($"Vendor: {nameVendor}");
+            }
+            if (!string.IsNullOrEmpty(this.Description)) tip.Add($"Description: {this.Description}");
+            if (!string.IsNullOrEmpty(this.Model)) tip.Add($"Model: {this.Model}");
+            if (!string.IsNullOrEmpty(this.SoftwareVersion)) tip.Add($"Version: {this.SoftwareVersion}");
+            if (!string.IsNullOrEmpty(this.SerialNumber)) tip.Add($"Serial #: {this.SerialNumber}");
+            if (!string.IsNullOrEmpty(this.IpAddress)) tip.Add($"IP: {this.IpAddress}");
+            if (!string.IsNullOrEmpty(this.RemotePort)) tip.Add($"Remote Port: {this.RemotePort}");
+            if (!string.IsNullOrEmpty(this.PortDescription)) tip.Add($"Port Description: {this.PortDescription}");
             return tip;
         }
 
