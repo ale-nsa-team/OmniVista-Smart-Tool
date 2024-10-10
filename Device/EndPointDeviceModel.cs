@@ -124,7 +124,6 @@ namespace PoEWizard.Device
         public string ToFilterTooltip(bool isMacAddress, string searchText)
         {
             List<string> tip = ToMainTooltip(isMacAddress ? null : searchText);
-            bool found = false;
             if (this.Label.Contains(","))
             {
                 string[] split = this.Label.Split(',');
@@ -135,7 +134,7 @@ namespace PoEWizard.Device
                     string vendor = Utils.GetVendorName(macAddr);
                     if (Utils.IsValidMacAddress(vendor)) vendor = string.Empty;
                     string mac = macAddr;
-                    found = (isMacAddress && mac.ToLower().StartsWith(searchText)) || (!string.IsNullOrEmpty(vendor) && vendor.ToLower().Contains(searchText));
+                    bool found = (isMacAddress && mac.ToLower().StartsWith(searchText)) || (!string.IsNullOrEmpty(vendor) && vendor.ToLower().Contains(searchText));
                     cntMac++;
                     if (cntMac > MAX_NB_MAC_TOOL_TIP)
                     {
@@ -151,8 +150,12 @@ namespace PoEWizard.Device
             {
                 string mac = this.MacAddress;
                 string vendor = Utils.GetVendorName(this.MacAddress);
-                if (string.IsNullOrEmpty(this.Label) && string.IsNullOrEmpty(this.Vendor) && vendor.ToLower().Contains(searchText)) mac += $" ({vendor})";
-                if (isMacAddress && this.MacAddress.StartsWith(searchText)) mac += MAC_MATCH_MARK;
+                if (!string.IsNullOrEmpty(this.Vendor))
+                {
+                    mac += $" ({vendor})";
+                    if ((!isMacAddress && vendor.ToLower().Contains(searchText)) || (isMacAddress && this.MacAddress.StartsWith(searchText))) mac += MAC_MATCH_MARK;
+                }
+                else if (isMacAddress && this.MacAddress.StartsWith(searchText)) mac += MAC_MATCH_MARK;
                 tip.Add($"MAC: {mac}");
             }
             //if (!found) return null;
