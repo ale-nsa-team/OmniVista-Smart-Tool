@@ -89,7 +89,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="PoE Class" Width="*" Binding="{Binding Path=Class}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="PoE Class" Width="*" Binding="{Binding Path=Port.Class}" IsReadOnly="True" />
                     <DataGridTemplateColumn Header="Device Type" Width="1.4*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
