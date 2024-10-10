@@ -62,13 +62,13 @@ namespace PoEWizard.Components
             this.Top = this.Owner.Height> this.Height ? this.Owner.Top + (this.Owner.Height - this.Height)/2 : this.Top;
         }
 
-        private void SearchMacAddress(SwitchModel device, string macAddr)
+        private void SearchMacAddress(SwitchModel switchModel, string macAddr)
         {
             this.IsMacAddress = Utils.IsValidMacSequence(this.SearchText);
             this.PortsFound = new ObservableCollection<PortViewModel>();
             this.NbMacAddressesFound = 0;
             this.NbTotalMacAddressesFound = 0;
-            foreach (var chas in device.ChassisList)
+            foreach (var chas in switchModel.ChassisList)
             {
                 foreach (var slot in chas.Slots)
                 {
@@ -76,10 +76,23 @@ namespace PoEWizard.Components
                     {
                         if (port.EndPointDevicesList?.Count > 0)
                         {
-                            if (IsDevicePortFound(GetDeviceNameOrVendor(port)) && this.PortsFound.FirstOrDefault(p => p.Port == port) == null)
+                            string nameVendor = GetDeviceNameOrVendor(port);
+                            if (IsDevicePortFound(nameVendor) && this.PortsFound.FirstOrDefault(p => p.Port == port) == null)
                             {
                                 if (port.MacList?.Count == 0) port.MacList.Add(port.EndPointDevicesList[0].MacAddress);
-                                AddMacFound(port);
+                                if (!this.IsMacAddress)
+                                {
+                                    if (!string.IsNullOrEmpty(nameVendor)) this.NbMacAddressesFound++;
+                                }
+                                else
+                                {
+                                    foreach (EndPointDeviceModel device in port.EndPointDevicesList)
+                                    {
+                                        if (string.IsNullOrEmpty(device.MacAddress)) continue;
+                                        if (!device.MacAddress.Contains(",")) this.NbMacAddressesFound++;
+                                        else AddMacFound(new List<string>(device.MacAddress.Split(',')));
+                                    }
+                                }
                                 this.PortsFound.Add(new PortViewModel(port, SearchText));
                                 this.NbTotalMacAddressesFound += port.MacList.Count;
                             }
@@ -89,7 +102,7 @@ namespace PoEWizard.Components
                         {
                             if (IsDevicePortFound(mac) && this.PortsFound.FirstOrDefault(p => p.Port == port) == null)
                             {
-                                AddMacFound(port);
+                                AddMacFound(port.MacList);
                                 this.PortsFound.Add(new PortViewModel(port, SearchText));
                                 this.NbTotalMacAddressesFound += port.MacList.Count;
                                 port.CreateVirtualDeviceEndpoint();
@@ -103,10 +116,10 @@ namespace PoEWizard.Components
             this.NbPortsFound = this.PortsFound.Count;
         }
 
-        private void AddMacFound(PortModel port)
+        private void AddMacFound(List<string> macList)
         {
             if (string.IsNullOrEmpty(this.SearchText)) return;
-            foreach (string macAddr in port.MacList)
+            foreach (string macAddr in macList)
             {
                 if (IsDevicePortFound(macAddr)) this.NbMacAddressesFound++;
             }
@@ -114,7 +127,7 @@ namespace PoEWizard.Components
 
         private bool IsDevicePortFound(string macAddr)
         {
-            if (this.IsMacAddress && macAddr.StartsWith(this.SearchText)) return true;
+            if (this.IsMacAddress && !string.IsNullOrEmpty(macAddr) && macAddr.StartsWith(this.SearchText)) return true;
             else return Utils.GetVendorName(macAddr).ToLower().Contains(this.SearchText);
         }
 
@@ -122,16 +135,16 @@ namespace PoEWizard.Components
         {
             foreach(EndPointDeviceModel device in port.EndPointDevicesList)
             {
-                string mac = device.Name.ToLower();
-                if (string.IsNullOrEmpty(mac) || !mac.Contains(this.SearchText)) mac = device.Vendor.ToLower();
-                if (string.IsNullOrEmpty(mac) || !mac.Contains(this.SearchText)) mac = SearchMacList(new List<string>(device.MacAddress.Split(',')));
-                if (string.IsNullOrEmpty(mac) || !mac.Contains(this.SearchText)) continue;
-                return mac;
+                string nameVendor = device.Name.ToLower();
+                if (string.IsNullOrEmpty(nameVendor) || !nameVendor.Contains(this.SearchText)) nameVendor = device.Vendor.ToLower();
+                if (string.IsNullOrEmpty(nameVendor) || !nameVendor.Contains(this.SearchText)) nameVendor = SearchVendorInMacList(new List<string>(device.MacAddress.Split(',')));
+                if (string.IsNullOrEmpty(nameVendor) || !nameVendor.Contains(this.SearchText)) continue;
+                return nameVendor;
             }
             return string.Empty;
         }
 
-        private string SearchMacList(List<string> macList)
+        private string SearchVendorInMacList(List<string> macList)
         {
             foreach (string mac in macList)
             {
