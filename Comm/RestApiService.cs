@@ -326,8 +326,22 @@ namespace PoEWizard.Comm
                 int prevLpNiDebug = SwitchModel.LpNiDebugLevel;
                 int prevLpCmmDebug = SwitchModel.LpCmmDebugLevel;
                 // Setting switch debug level
-                SetAppDebugLevel($"Setting PoE debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPNI_LEVEL, debugSelected);
-                SetAppDebugLevel($"Setting CMM debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
+                if (SwitchModel.LpNiDebugLevel != (int)SwitchDebugLogLevel.Unknown)
+                {
+                    SetAppDebugLevel($"Setting PoE debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPNI_LEVEL, debugSelected);
+                }
+                else
+                {
+                    Logger.Warn($"Couldn't set the {LPNI} debug level because the switch {SwitchModel.IpAddress} doesn't support PoE!");
+                }
+                if (SwitchModel.LpCmmDebugLevel != (int)SwitchDebugLogLevel.Unknown)
+                {
+                    SetAppDebugLevel($"Setting CMM debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
+                }
+                else
+                {
+                    Logger.Warn($"Couldn't set the {LPCMM} debug level because the switch {SwitchModel.IpAddress} doesn't support PoE!");
+                }
                 if (restartPoE)
                 {
                     if (_wizardSwitchPort != null) RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 5);
@@ -339,8 +353,22 @@ namespace PoEWizard.Comm
                 }
                 UpdateSwitchLogBar();
                 // Setting switch debug level back to the previous values
-                SetAppDebugLevel($"Resetting PoE debug level back to {Utils.IntToSwitchDebugLevel(prevLpNiDebug)}", Command.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
-                SetAppDebugLevel($"Resetting CMM debug level back to {Utils.IntToSwitchDebugLevel(prevLpCmmDebug)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
+                if (prevLpNiDebug != (int)SwitchDebugLogLevel.Unknown)
+                {
+                    SetAppDebugLevel($"Resetting PoE debug level back to {Utils.IntToSwitchDebugLevel(prevLpNiDebug)}", Command.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
+                }
+                else
+                {
+                    Logger.Warn($"Couldn't set the {LPNI} debug level because the switch {SwitchModel.IpAddress} doesn't support PoE!");
+                }
+                if (prevLpCmmDebug != (int)SwitchDebugLogLevel.Unknown)
+                {
+                    SetAppDebugLevel($"Resetting CMM debug level back to {Utils.IntToSwitchDebugLevel(prevLpCmmDebug)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
+                }
+                else
+                {
+                    Logger.Warn($"Couldn't set the {LPCMM} debug level because the switch {SwitchModel.IpAddress} doesn't support PoE!");
+                }
                 // Generating tar file
                 string msg = "Generating tar file";
                 SendProgressReport(msg);
@@ -363,12 +391,22 @@ namespace PoEWizard.Comm
         {
             if (_wizardSwitchSlot != null)
             {
+                if (!_wizardSwitchSlot.SupportsPoE)
+                {
+                    Logger.Warn($"Cannot get the lanpower status on slot {_wizardSwitchSlot.Name} because it doesn't support PoE!");
+                    return;
+                }
                 GetShowDebugSlotPower(_wizardSwitchSlot.Name);
             }
             else
             {
-                foreach (var chassis in this.SwitchModel.ChassisList)
+                foreach (ChassisModel chassis in this.SwitchModel.ChassisList)
                 {
+                    if (!chassis.SupportsPoE)
+                    {
+                        Logger.Warn($"Cannot get the lanpower status on chassis {chassis.Number} because it doesn't support PoE!");
+                        continue;
+                    }
                     foreach (var slot in chassis.Slots)
                     {
                         GetShowDebugSlotPower(slot.Name);
@@ -389,6 +427,11 @@ namespace PoEWizard.Comm
         {
             foreach (var chassis in this.SwitchModel.ChassisList)
             {
+                if (!chassis.SupportsPoE)
+                {
+                    Logger.Warn($"Cannot turn the power OFF on chassis {chassis.Number} of the switch {SwitchModel.IpAddress} because it doesn't support PoE!");
+                    continue;
+                }
                 string msg = $"Turning power OFF on all slots of chassis {chassis.Number} to capture logs";
                 _progress.Report(new ProgressReport($"{msg}{WAITING}"));
                 foreach (SlotModel slot in chassis.Slots)
