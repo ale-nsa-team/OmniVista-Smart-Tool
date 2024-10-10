@@ -476,18 +476,17 @@ namespace PoEWizard.Components
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            const int MAX_NB_DEVICES = 5;
             try
             {
                 if (Utils.IsInvalid(value)) return null;
                 if (value is List<EndPointDeviceModel> edmList)
                 {
                     if (edmList.Count < 1) return null;
-                    bool hasmore = edmList.Count > MAX_NB_DEVICES;
-                    List<EndPointDeviceModel> displayList = hasmore ? edmList.GetRange(0, MAX_NB_DEVICES) : edmList;
+                    bool hasmore = edmList.Count > MAX_NB_DEVICES_TOOL_TIP;
+                    List<EndPointDeviceModel> displayList = hasmore ? edmList.GetRange(0, MAX_NB_DEVICES_TOOL_TIP) : edmList;
                     List<string> tooltip = displayList.Select(x => x.ToTooltip()).ToList();
                     int maxlen = tooltip.Max(t => MaxLineLen(t));
-                    if (hasmore) tooltip.Add($"{new string(' ', maxlen/2 -6)}({edmList.Count - MAX_NB_DEVICES} more...)");
+                    if (hasmore) tooltip.Add($"{new string(' ', maxlen / 2 - 6)}({edmList.Count - MAX_NB_DEVICES_TOOL_TIP} more...)");
                     string separator = $"\n{new string('-', maxlen)}\n";
                     return string.Join(separator, tooltip);
                 }
@@ -510,6 +509,62 @@ namespace PoEWizard.Components
         {
             return s.Split('\n').Max(l => l.Length);
         }
+    }
+
+    public class DeviceFilterToTooltipConverter : IMultiValueConverter
+    {
+
+        private bool isMacAddress = false;
+        private string searchText = string.Empty;
+
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                if (Utils.IsInvalid(values[0])) return null;
+                List<EndPointDeviceModel> edmList = values[0] as List<EndPointDeviceModel>;
+                if (edmList.Count < 1) return DependencyProperty.UnsetValue;
+                searchText = Utils.IsInvalid(values[1]) ? string.Empty : values[1].ToString();
+                isMacAddress = Utils.IsValidMacSequence(searchText);
+                bool hasmore = edmList.Count > MAX_NB_DEVICES_TOOL_TIP;
+                List<EndPointDeviceModel> displayList = hasmore ? edmList.GetRange(0, MAX_NB_DEVICES_TOOL_TIP) : edmList;
+                List<string> tooltip = new List<string>();
+                if (!string.IsNullOrEmpty(searchText))
+                {
+                    foreach (EndPointDeviceModel dev in displayList)
+                    {
+                        string tip = dev.ToFilterTooltip(isMacAddress, searchText);
+                        if (!string.IsNullOrEmpty(tip)) tooltip.Add(tip);
+                    }
+                }
+                else
+                {
+                    tooltip = displayList.Select(x => x.ToTooltip()).ToList();
+                }
+                int maxlen = tooltip.Max(t => MaxLineLen(t));
+                if (hasmore) tooltip.Add($"{new string(' ', maxlen / 2 - 6)}({edmList.Count - MAX_NB_DEVICES_TOOL_TIP} more...)");
+                string separator = $"\n{new string('-', maxlen)}\n";
+                return string.Join(separator, tooltip);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return DependencyProperty.UnsetValue;
+            }
+
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            string[] splitValues = (value?.ToString() ?? string.Empty).Split(' ');
+            return splitValues;
+        }
+
+        private int MaxLineLen(string s)
+        {
+            return s.Split('\n').Max(l => l.Length);
+        }
+
     }
 
     public class PoeToTooltipConverter : IValueConverter

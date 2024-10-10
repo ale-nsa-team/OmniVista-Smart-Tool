@@ -1139,7 +1139,8 @@ namespace PoEWizard
                 }
                 strDur = Utils.CalcStringDuration(startTime, true);
                 string strTotalDuration = Utils.CalcStringDuration(initialTime, true);
-                ShowInfoBox($"Downloading tar file from switch{device.Name}{WAITING}\nFile creation duration: {strDur}, File size: {Utils.PrintNumberBytes(fsize)}");
+                ShowInfoBox($"Downloading tar file from switch{device.Name}{WAITING}");
+                DateTime startDowanloadTime = DateTime.Now;
                 string fname = null;
                 await Task.Run(() =>
                 {
@@ -1151,6 +1152,9 @@ namespace PoEWizard
                     ShowMessageBox("Downloading tar file", $"Failed to download file \"{SWLOG_PATH}\" from the switch {device.Name}!", MsgBoxIcons.Error);
                     return;
                 }
+                string text = $"Tar file downloaded from switch{device.Name}{WAITING}\nDownload duration: {Utils.CalcStringDuration(startDowanloadTime, true)}";
+                text += $", File size: {Utils.PrintNumberBytes(fsize)}\nFile creation duration: {strDur}";
+                ShowInfoBox(text);
                 var sfd = new SaveFileDialog()
                 {
                     Filter = "Tar File|*.tar",

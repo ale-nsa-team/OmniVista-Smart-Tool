@@ -28,8 +28,6 @@
             <TextBlock Grid.Row="0" Grid.Column="3" Margin="10,10,0,10" Text="{Binding NbMacAddressesFound}" Style="{DynamicResource aboutParagraph}" />
             <TextBlock Grid.Row="0" Grid.Column="4" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}">#Ports found:</TextBlock>
             <TextBlock Grid.Row="0" Grid.Column="5" Margin="10,10,0,10" Text="{Binding NbPortsFound}" Style="{DynamicResource aboutParagraph}" />
-            <TextBlock Grid.Row="0" Grid.Column="6" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}">Total #MAC addresses found:</TextBlock>
-            <TextBlock Grid.Row="0" Grid.Column="7" Margin="10,10,0,10" Text="{Binding NbTotalMacAddressesFound}" Style="{DynamicResource aboutParagraph}" />
         </StackPanel>
         <Border Grid.Row="1" Style="{DynamicResource gridBorder}" Margin="5">
             <DataGrid x:Name="_portsListView" 
@@ -42,24 +40,24 @@
                 MouseDoubleClick="Mouse_DoubleClick"
                 IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Port" Width="0.8*" Binding="{Binding Path=Name}" />
+                    <DataGridTextColumn Header="Port" Width="0.8*" Binding="{Binding Path=Port.Name}" />
                     <DataGridTemplateColumn Header="Alias" Width="1.2*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Alias}" Style="{DynamicResource toolTip}"
+                                <TextBlock Text="{Binding Path=Port.Alias}" Style="{DynamicResource toolTip}"
                                 Foreground="{DynamicResource fontColor}"
-                                ToolTip="{Binding Path=Alias, Converter={StaticResource ToStringConverter}}" />
+                                ToolTip="{Binding Path=Port.Alias, Converter={StaticResource ToStringConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="PoE Status" Width="0.8*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Poe}" Style="{DynamicResource toolTip}"
-                                Foreground="{Binding Path=Poe, 
+                                <TextBlock Text="{Binding Path=Port.Poe}" Style="{DynamicResource toolTip}"
+                                Foreground="{Binding Path=Port.Poe, 
                                     Converter={StaticResource ValueToColorConverter}, 
                                     ConverterParameter=Poe}" 
-                                ToolTip="{Binding Path=Poe, Converter={StaticResource PoeToTooltipConverter}}" />
+                                ToolTip="{Binding Path=Port.Poe, Converter={StaticResource PoeToTooltipConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -72,7 +70,7 @@
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Power}" Style="{DynamicResource toolTip}"
+                                <TextBlock Text="{Binding Path=Port.Power}" Style="{DynamicResource toolTip}"
                                         ToolTip="Actual power consumed by the device connected to the port" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -86,7 +84,7 @@
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=MaxPower}" Style="{DynamicResource toolTip}"
+                                <TextBlock Text="{Binding Path=Port.MaxPower}" Style="{DynamicResource toolTip}"
                                         ToolTip="Maximum power allowed by the hardware" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -95,18 +93,28 @@
                     <DataGridTemplateColumn Header="Device Type" Width="1.4*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=EndPointDevice.Type}"
-                                        ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
-                                        Style="{DynamicResource devToolTip}" />
+                                <TextBlock Text="{Binding Path=Port.EndPointDevice.Type}" Style="{DynamicResource devToolTip}" >
+                                    <TextBlock.ToolTip>
+                                        <MultiBinding Converter="{StaticResource DeviceFilterToTooltipConverter}">
+                                            <Binding Path="Port.EndPointDevicesList" />
+                                            <Binding Path="SearchText" Mode="OneWay" />
+                                        </MultiBinding>
+                                    </TextBlock.ToolTip>                                    
+                                </TextBlock>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Device Name" Width="1.2*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=EndPointDevice.Label}"
-                                        ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
-                                        Style="{DynamicResource devToolTip}" />
+                                <TextBlock Text="{Binding Path=Port.EndPointDevice.Label}" Style="{DynamicResource devToolTip}" >
+                                    <TextBlock.ToolTip>
+                                            <MultiBinding Converter="{StaticResource DeviceFilterToTooltipConverter}">
+                                            <Binding Path="Port.EndPointDevicesList" />
+                                            <Binding Path="SearchText" Mode="OneWay" />
+                                        </MultiBinding>
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

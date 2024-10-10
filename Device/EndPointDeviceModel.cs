@@ -121,7 +121,78 @@ namespace PoEWizard.Device
             return valueDict;
         }
 
+        public string ToFilterTooltip(bool isMacAddress, string searchText)
+        {
+            List<string> tip = ToMaintTooltip();
+            bool found = false;
+            if (this.Label.Contains(","))
+            {
+                string[] split = this.Label.Split(',');
+                tip.Add($"MAC List:");
+                int cntMac = 0;
+                foreach (string mac in split)
+                {
+                    string vendor = Utils.GetVendorName(mac);
+                    if ((isMacAddress && mac.StartsWith(searchText)) || vendor.ToLower().Contains(searchText))
+                    {
+                        found = true;
+                        cntMac++;
+                        if (cntMac > MAX_NB_MAC_TOOL_TIP)
+                        {
+                            tip.Add("          . . .");
+                            break;
+                        }
+                        if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) tip.Add($" {mac} ({vendor})"); else tip.Add($" {mac}");
+                    }
+                }
+            }
+            else if (!string.IsNullOrEmpty(this.MacAddress))
+            {
+                string mac = this.MacAddress;
+                if (isMacAddress) found = this.MacAddress.StartsWith(searchText);
+                else if (this.Name.ToLower().Contains(searchText)) found = true;
+                else if (this.Vendor.ToLower().Contains(searchText)) found = true;
+                else
+                {
+                    string vendor = Utils.GetVendorName(this.MacAddress);
+                    if (vendor.ToLower().Contains(searchText))
+                    {
+                        found = true;
+                        mac += $" ({vendor})";
+                    }
+                }
+                tip.Add($"MAC: {mac}");
+            }
+            if (!found) return null;
+            if (this.Capabilities.Count > 0) tip.Add($"Capabilities: {string.Join(",", this.Capabilities)}");
+            return tip.Count > 0 ? string.Join("\n", tip) : null;
+        }
+
         public string ToTooltip()
+        {
+            List<string> tip = ToMaintTooltip();
+            if (this.Label.Contains(","))
+            {
+                string[] split = this.Label.Split(',');
+                tip.Add($"MAC List:");
+                int cntMac = 0;
+                foreach (string mac in split)
+                {
+                    cntMac++;
+                    if (cntMac > MAX_NB_MAC_TOOL_TIP)
+                    {
+                        tip.Add("          . . .");
+                        break;
+                    }
+                    string vendor = Utils.GetVendorName(mac);
+                    if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) tip.Add($" {mac} ({vendor})"); else tip.Add($" {mac}");
+                }
+            } else if (!string.IsNullOrEmpty(this.MacAddress)) tip.Add($"MAC: {this.MacAddress}");
+            if (this.Capabilities.Count > 0) tip.Add($"Capabilities: {string.Join(",", this.Capabilities)}");
+            return tip.Count > 0 ? string.Join("\n", tip) : null;
+        }
+
+        private List<string> ToMaintTooltip()
         {
             List<string> tip = new List<string>();
             if (!string.IsNullOrEmpty(Type)) tip.Add($"Type: {Type}");
@@ -144,25 +215,7 @@ namespace PoEWizard.Device
             if (!string.IsNullOrEmpty(IpAddress)) tip.Add($"IP: {IpAddress}");
             if (!string.IsNullOrEmpty(RemotePort)) tip.Add($"Remote Port: {RemotePort}");
             if (!string.IsNullOrEmpty(PortDescription)) tip.Add($"Port Description: {PortDescription}");
-            if (Label.Contains(","))
-            {
-                string[] split = Label.Split(',');
-                tip.Add($"MAC List:");
-                int cntMac = 0;
-                foreach (string mac in split)
-                {
-                    cntMac++;
-                    if (cntMac > MAX_NB_MAC_TOOL_TIP)
-                    {
-                        tip.Add("          . . .");
-                        break;
-                    }
-                    string vendor = Utils.GetVendorName(mac);
-                    if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) tip.Add($" {mac} ({vendor})"); else tip.Add($" {mac}");
-                }
-            } else if (!string.IsNullOrEmpty(MacAddress)) tip.Add($"MAC: {MacAddress}");
-            if (Capabilities.Count > 0) tip.Add($"Capabilities: {string.Join(",", Capabilities)}");
-            return tip.Count > 0 ? string.Join("\n", tip) : null;
+            return tip;
         }
 
     }

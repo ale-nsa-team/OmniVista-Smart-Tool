@@ -21,6 +21,7 @@
     <converters:DeviceToTooltipConverter x:Key="DeviceToTooltipConverter" />
     <converters:PoeToTooltipConverter x:Key="PoeToTooltipConverter" />
     <converters:ToStringConverter x:Key="ToStringConverter" />
+    <converters:DeviceFilterToTooltipConverter x:Key="DeviceFilterToTooltipConverter" />
 
     <BitmapImage x:Key="connected" UriSource="Img/connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="Img/disconnected-light.png" />
