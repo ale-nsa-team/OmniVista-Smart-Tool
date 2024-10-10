@@ -155,8 +155,9 @@
     <sys:String x:Key="i18n_runCW">Executando assistente de configuração...</sys:String>
     <sys:String x:Key="i18n_cwErr">Os seguintes erros foram reportados:</sys:String>
     <sys:String x:Key="i18n_twiz">Assistente de Configuração</sys:String>
-    <sys:String x:Key="i18n_discWiz" xml:space="preserve">A aplicação vai se desconectar da switch porque o endereço IP foi alterado.
-    Favor Reconectar usando o novo endereço.
+    <sys:String x:Key="i18n_discWiz" xml:space="preserve">
+A aplicação vai se desconectar da switch porque o endereço IP foi alterado.
+Favor Reconectar usando o novo endereço.
     </sys:String>
     <sys:String x:Key="i18n_loading">Carregando parâmetros atuais, aguarde...</sys:String>
     <sys:String x:Key="i18n_appDns">Configurando parâmetros de DNS e NPT...</sys:String>
@@ -191,8 +192,8 @@ Por favor, confirme sua ação.
     <sys:String x:Key="i18n_fail">falhou</sys:String>
     <sys:String x:Key="i18n_succes">sucesso</sys:String>
     <sys:String x:Key="i18n_pwNoRes" xml:space="preserve">
-        Parece que o assistente não conseguiu resolver o problema.
-        Deseja coletar informações para enviar ao Supporte técnico?
+Parece que o assistente não conseguiu resolver o problema.
+Deseja coletar informações para enviar ao Supporte técnico?
     </sys:String>
     <sys:String x:Key="i18n_pwGood">resolveu o problema</sys:String>
     <sys:String x:Key="i18n_noact">Nada a fazer</sys:String>
@@ -254,22 +255,21 @@ A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS 
     </sys:String>
 
     <!--Switch scan-->
+    <sys:String x:Key="i18n_rsCnx">Conectando à switch</sys:String>
     <sys:String x:Key="i18n_rest">Conectando à REST API</sys:String>
     <sys:String x:Key="i18n_scan">Escaneando a switch</sys:String>
     <sys:String x:Key="i18n_sys">Obtendo informações de systema na switch</sys:String>
     <sys:String x:Key="i18n_chas">Obtendo informações de chassis e portas</sys:String>
     <sys:String x:Key="i18n_psi">Obtendo informações de fonte de alimentação</sys:String>
     <sys:String x:Key="i18n_flashd">Obtendo dados da flash do chassis</sys:String>
-    <sys:String x:Key="i18n_ss">Obter Snapshot</sys:String>
-    <sys:String x:Key="i18n_ssr">Obtendo snapshot da configuração</sys:String>
-    <sys:String x:Key="i18n_lldp">Ativar dscrição de LLDP</sys:String>
-    <sys:String x:Key="i18n_getLog">Obter Logs da switch</sys:String>
-    <sys:String x:Key="i18n_nodp">Não foi possível ler dados da porta</sys:String>
-    <sys:String x:Key="i18n_clog">Coletando logs da switch</sys:String>
     <sys:String x:Key="i18n_lanpw">Obtendo informações de PoE no slot</sys:String>
     <sys:String x:Key="i18n_rlldp">Obtendo informações de LLDP remoto</sys:String>
     <sys:String x:Key="i18n_rmac">Obtendo informações de MAC</sys:String>
-    <sys:String x:Key="i18n_prfsh">Atualizando informações de portas na switch</sys:String>
+
+    <!--Collect Logs-->
+    <sys:String x:Key="i18n_getLog">Obter Logs da switch</sys:String>
+    <sys:String x:Key="i18n_nodp">Não foi possível ler dados da porta</sys:String>
+    <sys:String x:Key="i18n_clog">Coletando logs da switch</sys:String>
     <sys:String x:Key="i18n_noslt">Não foi possível ler dados do slot</sys:String>
     <sys:String x:Key="i18n_pdbg">Configurando o nível de log de PoE em</sys:String>
     <sys:String x:Key="i18n_cdbg">Configurando o nível de log de CMM em</sys:String>
@@ -281,12 +281,22 @@ A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS 
     <sys:String x:Key="i18n_chasoff">Desligando energia em todos os slots do chassis</sys:String>
     <sys:String x:Key="i18n_chason">Ligando energia em todos os slots do chassis</sys:String>
     <sys:String x:Key="i18n_clogl">Obtendo níveis de log atuais</sys:String>
-
-    <sys:String x:Key="i18n_swmem">Salvando a memória na switch</sys:String>
-    <sys:String x:Key="i18n_fwmem">Escrita da memória completada</sys:String>
-
-    <sys:String x:Key="i18n_wreboot">Aguardando a switch</sys:String>
-    <sys:String x:Key="i18n_rtout">Não retornou dentro de</sys:String>
+    <sys:String x:Key="i18n_tclogs">Coletar Logs</sys:String>
+    <sys:String x:Key="i18n_pclogs1">Deseja reiniciar o PoE em todas as portas da switch</sys:String>
+    <sys:String x:Key="i18n_pclogs2">para coletar os logs?</sys:String>
+    <sys:String x:Key="i18n_rclogs">Coletando logs da switch</sys:String>
+    <sys:String x:Key="i18n_cclogs">Limpando os logs atuais...</sys:String>
+    <sys:String x:Key="i18n_ttar">Carregando arquivo tar</sys:String>
+    <sys:String x:Key="i18n_tfail">Falha na carga do arquivo</sys:String>
+    <sys:String x:Key="i18n_sfile">Salvar logs da switch</sys:String>
+    <sys:String x:Key="i18n_ffail">Falha na criação do arquivo</sys:String>
+    <sys:String x:Key="i18n_wclogs">Aguardando arquivo tar completo</sys:String>
+    <sys:String x:Key="i18n_fileTout">Tempo esgotado aguardando arquivo tar</sys:String>
+    <sys:String x:Key="i18n_fsize">Tamanho do arquivo:</sys:String>
+    <sys:String x:Key="i18n_lclogs" xml:space="preserve">
+Carregando arquivo tar da switch...
+Tempo de criacão do arquivo:
+    </sys:String>
 
     <!--Traffic Analysis-->
     <sys:String x:Key="i18n_taerr">Análise de tráfego na switch</sys:String>
@@ -307,6 +317,15 @@ A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS 
     <sys:String x:Key="i18n_selDur">Selecione a duracao para a análise de tráfego</sys:String>
 
     <!--Other Messages-->
+    <sys:String x:Key="i18n_rsNocnx">Não foi possível conectar na switch</sys:String>
+    <sys:String x:Key="i18n_rsConn">Connexão</sys:String>
+    <sys:String x:Key="i18n_rsMem">Salvando a memória na switch</sys:String>
+    <sys:String x:Key="i18n_rsMemc">Escrita da memória completada</sys:String>
+    <sys:String x:Key="i18n_rsReboot">Aguardando a switch</sys:String>
+    <sys:String x:Key="i18n_rsTout">Não retornou dentro de</sys:String>
+    <sys:String x:Key="i18n_rsLldp">Ativar dscrição de LLDP</sys:String>
+    <sys:String x:Key="i18n_rsGs">Obter Snapshot</sys:String>
+    <sys:String x:Key="i18n_rsPrfsh">Atualizando informações de portas na switch</sys:String>
     <sys:String x:Key="i18n_closing">fechando a aplicação</sys:String>
     <sys:String x:Key="i18n_tvcboot">Arquivo de configuração VCBoot</sys:String>
     <sys:String x:Key="i18n_lvcboot">Carregando arquivo vcboot.cfg...</sys:String>
@@ -328,22 +347,6 @@ A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS 
     <sys:String x:Key="i18n_recsw">Deseja reconectar à switch</sys:String>
     <sys:String x:Key="i18n_prst">Reiniciando</sys:String>
     <sys:String x:Key="i18n_cprst">Tem certeza que deseja reiniciar essa porta?</sys:String>
-    <sys:String x:Key="i18n_tclogs">Coletar Logs</sys:String>
-    <sys:String x:Key="i18n_pclogs1">Deseja reiniciar o PoE em todas as portas da switch</sys:String>
-    <sys:String x:Key="i18n_pclogs2">para coletar os logs?</sys:String>
-    <sys:String x:Key="i18n_rclogs">Coletando logs da switch</sys:String>
-    <sys:String x:Key="i18n_cclogs">Limpando os logs atuais...</sys:String>
-    <sys:String x:Key="i18n_wclogs">Aguardando arquivo tar completo</sys:String>
-    <sys:String x:Key="i18n_fsize">Tamanho do arquivo:</sys:String>
-    <sys:String x:Key="i18n_lclogs" xml:space="preserve">
-Carregando arquivo tar da switch...
-Tempo de criacão do arquivo:
-    </sys:String>
-    <sys:String x:Key="i18n_ttar">Carregando arquivo tar</sys:String>
-    <sys:String x:Key="i18n_tfail">Falha na carga do arquivo</sys:String>
-    <sys:String x:Key="i18n_sfile">Salvar logs da switch</sys:String>
-    <sys:String x:Key="i18n_ffail">Falha na criação do arquivo</sys:String>
-    <sys:String x:Key="i18n_fileTout">Tempo esgotado aguardando arquivo tar</sys:String>
     <sys:String x:Key="i18n_sprio">Prioridade Selecionada</sys:String>
     <sys:String x:Key="i18n_cprio1">Alterando a prioridade para</sys:String>
     <sys:String x:Key="i18n_cprio2">na porta</sys:String>
@@ -401,9 +404,10 @@ Duração da reinicialização:
     <sys:String x:Key="i18n_pcode">Digite a senha para essa operação</sys:String>
     <sys:String x:Key="i18n_chcode">Trocar a Senha</sys:String>
     <sys:String x:Key="i18n_codeErr">Não foi possível trocar a senha</sys:String>
+    <sys:String x:Key="i18n_srcNote">Nota: Você pode clicar duas vezes na porta para selecioná-la na janela principal e fechar essa janela.</sys:String>
     <sys:String x:Key="i18n_srcText">Digite o Endereço MAC, Nome do Dispositivo ou Fabricante</sys:String>
     <sys:String x:Key="i18n_fload">Carregando o arquivo, aguarde...</sys:String>
-    <sys:String x:Key="i18n_ftxt">Text File</sys:String>
+    <sys:String x:Key="i18n_ftxt">Arquivo texto</sys:String>
 
     <!--Tool Tips-->
     <sys:String x:Key="i18n_pwr_tt">Potência consumida pelo dispositivo connectado à porta</sys:String>
@@ -428,7 +432,5 @@ Duração da reinicialização:
     <sys:String x:Key="i18n_dld_tt">Ativação atrasada está habilitada</sys:String>
     <sys:String x:Key="i18n_conf_tt">Duas portas PoE conectadas e não foi desativado PoE em uma das portas</sys:String>
     <sys:String x:Key="i18n_nop_tt">Porta não suporta PoE</sys:String>
-    <sys:String x:Key="i18n_srcNote">Nota: Você pode clicar duas vezes na porta para selecioná-la na janela principal e fechar essa janela.</sys:String>
-
 
 </ResourceDictionary>

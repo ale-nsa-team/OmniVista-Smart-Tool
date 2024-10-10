@@ -229,24 +229,23 @@ IN NO EVENT SHALL ALE USA INC. BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPEC
 
 ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOURCE CODE, PRODUCT, AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED “AS IS.” ALE USA INC. HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
     </sys:String>
-    
+
     <!--Switch scan-->
+    <sys:String x:Key="i18n_rsCnx">Connecting to switch</sys:String>
     <sys:String x:Key="i18n_rest">Connecting REST API</sys:String>
     <sys:String x:Key="i18n_scan">Scanning switch</sys:String>
     <sys:String x:Key="i18n_sys">Reading system information on switch</sys:String>
     <sys:String x:Key="i18n_chas">Reading chassis and port information</sys:String>
     <sys:String x:Key="i18n_psi">Reading power supply information</sys:String>
     <sys:String x:Key="i18n_flashd">Reading flash data of chassis</sys:String>
-    <sys:String x:Key="i18n_ss">Get Snapshot</sys:String>
-    <sys:String x:Key="i18n_ssr">Reading configuration snapshot</sys:String>
-    <sys:String x:Key="i18n_lldp">Enable LLDP description</sys:String>
-    <sys:String x:Key="i18n_getLog">Get Switch Log</sys:String>
-    <sys:String x:Key="i18n_nodp">Could not get data for port</sys:String>
-    <sys:String x:Key="i18n_clog">Collecting logs on switch</sys:String>
     <sys:String x:Key="i18n_lanpw">Getting LAN power information on slot</sys:String>
     <sys:String x:Key="i18n_rlldp">Reading LLDP remote information</sys:String>
     <sys:String x:Key="i18n_rmac">Reading MAC address information</sys:String>
-    <sys:String x:Key="i18n_prfsh">Refreshing ports information on switch</sys:String>
+
+    <!--Collect Logs-->
+    <sys:String x:Key="i18n_getLog">Get Switch Log</sys:String>
+    <sys:String x:Key="i18n_nodp">Could not get data for port</sys:String>
+    <sys:String x:Key="i18n_clog">Collecting logs on switch</sys:String>
     <sys:String x:Key="i18n_noslt">Could not get data for slot</sys:String>
     <sys:String x:Key="i18n_pdbg">Setting PoE log debug level to</sys:String>
     <sys:String x:Key="i18n_cdbg">Setting CMM log debug level to</sys:String>
@@ -258,13 +257,23 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_chasoff">Turning power off on all slots of chassis</sys:String>
     <sys:String x:Key="i18n_chason">Turning power on on all slots of chassis</sys:String>
     <sys:String x:Key="i18n_clogl">Getting current log levels</sys:String>
-
-    <sys:String x:Key="i18n_swmem">Writing memory on switch</sys:String>
-    <sys:String x:Key="i18n_fwmem">Write memory completed</sys:String>
-
-    <sys:String x:Key="i18n_wreboot">Waiting for switch</sys:String>
-    <sys:String x:Key="i18n_rtout">did not come back within</sys:String>
-
+    <sys:String x:Key="i18n_tclogs">Collect Logs</sys:String>
+    <sys:String x:Key="i18n_pclogs1">Do you want to power cycle PoE on all ports of switch</sys:String>
+    <sys:String x:Key="i18n_pclogs2">to collect the logs?</sys:String>
+    <sys:String x:Key="i18n_rclogs">Collecting logs on switch</sys:String>
+    <sys:String x:Key="i18n_cclogs">Cleaning up current log ...</sys:String>
+    <sys:String x:Key="i18n_ttar">Downloading tar file</sys:String>
+    <sys:String x:Key="i18n_tfail">Failed to downlad file</sys:String>
+    <sys:String x:Key="i18n_sfile">Save switch logs</sys:String>
+    <sys:String x:Key="i18n_ffail">Failed to create file</sys:String>
+    <sys:String x:Key="i18n_wclogs">Waiting from tar file ready</sys:String>
+    <sys:String x:Key="i18n_fileTout">Timeout waiting for tar file</sys:String>
+    <sys:String x:Key="i18n_fsize">File size:</sys:String>
+    <sys:String x:Key="i18n_lclogs" xml:space="preserve">
+Downloading tar file from switch...
+File creation duration:
+    </sys:String>
+    
     <!--Traffic Analysis-->
     <sys:String x:Key="i18n_taerr">Traffic analysis on switch</sys:String>
     <sys:String x:Key="i18n_taRun">Running...</sys:String>
@@ -284,6 +293,15 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_selDur">Please, select the traffic analysis duration</sys:String>
 
     <!--Other Messages-->
+    <sys:String x:Key="i18n_rsNocnx">Could not connect to switch</sys:String>
+    <sys:String x:Key="i18n_rsConn">Connection</sys:String>
+    <sys:String x:Key="i18n_rsMem">Writing memory on switch</sys:String>
+    <sys:String x:Key="i18n_rsMemc">Write memory completed</sys:String>
+    <sys:String x:Key="i18n_rsReboot">Waiting for switch</sys:String>
+    <sys:String x:Key="i18n_rsTout">did not come back within</sys:String>
+    <sys:String x:Key="i18n_rsLldp">Enable LLDP description</sys:String>
+    <sys:String x:Key="i18n_rsGs">Get Snapshot</sys:String>
+    <sys:String x:Key="i18n_rsPrfsh">Refreshing ports information on switch</sys:String>
     <sys:String x:Key="i18n_closing">closing the application</sys:String>
     <sys:String x:Key="i18n_tvcboot">VCBoot config file</sys:String>
     <sys:String x:Key="i18n_lvcboot">Loading vcboot.cfg file...</sys:String>
@@ -305,22 +323,6 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_recsw">Do you want to reconnect to switch</sys:String>
     <sys:String x:Key="i18n_prst">Restarting</sys:String>
     <sys:String x:Key="i18n_cprst">Are you sure you want to reset this port?</sys:String>
-    <sys:String x:Key="i18n_tclogs">Collect Logs</sys:String>
-    <sys:String x:Key="i18n_pclogs1">Do you want to power cycle PoE on all ports of switch</sys:String>
-    <sys:String x:Key="i18n_pclogs2">to collect the logs?</sys:String>
-    <sys:String x:Key="i18n_rclogs">Collecting logs on switch</sys:String>
-    <sys:String x:Key="i18n_cclogs">Cleaning up current log ...</sys:String>
-    <sys:String x:Key="i18n_wclogs">Waiting from tar file ready</sys:String>
-    <sys:String x:Key="i18n_fsize">File size:</sys:String>
-    <sys:String x:Key="i18n_lclogs" xml:space="preserve">
-Downloading tar file from switch...
-File creation duration:
-    </sys:String>
-    <sys:String x:Key="i18n_ttar">Downloading tar file</sys:String>
-    <sys:String x:Key="i18n_tfail">Failed to downlad file</sys:String>
-    <sys:String x:Key="i18n_sfile">Save switch logs</sys:String>
-    <sys:String x:Key="i18n_ffail">Failed to create file</sys:String>
-    <sys:String x:Key="i18n_fileTout">Timeout waiting for tar file</sys:String>
     <sys:String x:Key="i18n_sprio">Selected priority</sys:String>
     <sys:String x:Key="i18n_cprio1">Changing Priority to</sys:String>
     <sys:String x:Key="i18n_cprio2">on port</sys:String>
