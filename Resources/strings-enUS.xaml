@@ -5,7 +5,7 @@
     <sys:String x:Key="i18n_cnx">Connection</sys:String>
     <sys:String x:Key="i18n_view">View</sys:String>
     <sys:String x:Key="i18n_cfg">Configuration</sys:String>
-    <sys:String x:Key="i18n_sw">Switch...</sys:String>
+    <sys:String x:Key="i18n_msw">Switch...</sys:String>
     <sys:String x:Key="i18n_disc">Disconnect</sys:String>
     <sys:String x:Key="i18n_exit">Exit</sys:String>
     <sys:String x:Key="i18n_log">Log</sys:String>
@@ -87,6 +87,7 @@
     <sys:String x:Key="i18n_class">PoE Class</sys:String>
     <sys:String x:Key="i18n_mode">PoE Mode</sys:String>
     <sys:String x:Key="i18n_bt">802.3BT</sys:String>
+    <sys:String x:Key="i18n_dev">Device</sys:String>
     <sys:String x:Key="i18n_devModel">Device Model</sys:String>
     <sys:String x:Key="i18n_devType">Device Type</sys:String>
     <sys:String x:Key="i18n_devName">Device Name</sys:String>
@@ -101,6 +102,7 @@
     <sys:String x:Key="i18n_ip">IP Address</sys:String>
     <sys:String x:Key="i18n_user">Username</sys:String>
     <sys:String x:Key="i18n_pwd">Password</sys:String>
+    <sys:String x:Key="i18n_lifail">Log in failed on switch</sys:String>
     
     <!--Power Supply dialog-->
     <sys:String x:Key="i18n_psCh">Chassis/PS</sys:String>
@@ -183,12 +185,14 @@ Please confirm your action.
     <sys:String x:Key="i18n_newRec">New Trap Receiver</sys:String>
     
     <!--PoE Wizard Messages-->
+    <sys:String x:Key="i18n_pwiz">PoE Wizard</sys:String>
     <sys:String x:Key="i18n_pwRep">PoE Wizard Report:</sys:String>
-    <sys:String x:Key="i18n_pwRun">Running PoE Wizard on port</sys:String>
+    <sys:String x:Key="i18n_pwRun">Running PoE Wizard</sys:String>
     <sys:String x:Key="i18n_pwDur">Total duration:</sys:String>
     <sys:String x:Key="i18n_pwEnd">PoE Wizard completed on port</sys:String>
     <sys:String x:Key="i18n_pwDev"> with device type </sys:String>
     <sys:String x:Key="i18n_pwPst">Port Status:</sys:String>
+    <sys:String x:Key="i18n_power">Power:</sys:String>
     <sys:String x:Key="i18n_pwDevMac">Device MAC:</sys:String>
     <sys:String x:Key="i18n_pwExec">PoE Wizard Execution</sys:String>
     <sys:String x:Key="i18n_fail">failed</sys:String>
@@ -197,7 +201,7 @@ Please confirm your action.
 It looks like the wizard was unable to fix the problem.
 Do you want to collect information to send the Technical Support?
     </sys:String>
-    <sys:String x:Key="i18n_pwGood">solved the problem</sys:String>
+    <sys:String x:Key="i18n_wizOk">solved the problem</sys:String>
     <sys:String x:Key="i18n_noact">Nothing to do</sys:String>
     <sys:String x:Key="i18n_nopoe">does not support PoE</sys:String>
     <sys:String x:Key="i18n_hdmi">Enabling power over HDMI on port</sys:String>
@@ -205,14 +209,15 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_extmdi">Enabling LLDP extended power via MDI on port</sys:String>
     <sys:String x:Key="i18n_capdet">Checking capacitor detection on port</sys:String>
     <sys:String x:Key="i18n_cdeten">Enabling capacitor detection on port</sys:String>
-    <sys:String x:Key="i18n_dtetdis">Disabling capacitor detection on port</sys:String>
+    <sys:String x:Key="i18n_cdetdis">Disabling capacitor detection on port</sys:String>
     <sys:String x:Key="i18n_nocdet">Cannot enable capacitor detection for device type</sys:String>
+    <sys:String x:Key="i18n_cdnoten">Capacitor detection is already disabled on port</sys:String>
     <sys:String x:Key="i18n_nspb">did not solve the problem</sys:String>
     <sys:String x:Key="i18n_rstcfg">to restore the previous config</sys:String>
     <sys:String x:Key="i18n_ckmxpw">Checking max. power on port</sys:String>
-    <sys:String x:Key="i18n_bmxpw">Max. power on port {str1} is {str2} Watts, it should be {str3} Watts</sys:String>
-    <sys:String x:Key="i18n_gmxpw">Max. power on port {str1} is already the maximum allowed ({str2} Watts)</sys:String>
-    <sys:String x:Key="i18n_rstmxpw">Restoring max. power on port {str1} from {str2} Watts to maximum allowed {str3} Watts</sys:String>
+    <sys:String x:Key="i18n_bmxpw">Max. power on port $1 is $2 Watts, it should be $3 Watts</sys:String>
+    <sys:String x:Key="i18n_gmxpw">Max. power on port $1 is already the maximum allowed ($2 Watts)</sys:String>
+    <sys:String x:Key="i18n_rstmxpw">Restoring max. power on port $1 from $2 Watts to maximum allowed $3 Watts</sys:String>
     <sys:String x:Key="i18n_rfsw">Refreshing PoE information on switch</sys:String>
     <sys:String x:Key="i18n_r2pair">Re-enabling 2-pair power on port</sys:String>
     <sys:String x:Key="i18n_nosup">Command not supported on slot</sys:String>
@@ -224,6 +229,8 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_bten">802.3bt already enabled on port</sys:String>
     <sys:String x:Key="i18n_sbten">Enabling 802.3bt on slot</sys:String>
     <sys:String x:Key="i18n_sbtdis">Disabling 802.3bt on slot</sys:String>
+    <sys:String x:Key="i18n_sprio">Priority on port</sys:String>
+    <sys:String x:Key="i18n_set">Set to</sys:String>
     <sys:String x:Key="i18n_ckprio">Checking power priority on port</sys:String>
     <sys:String x:Key="i18n_rempw">Remaining power = </sys:String>
     <sys:String x:Key="i18n_maxpw">max. power = </sys:String>
@@ -240,11 +247,21 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_spoeoff">PoE is turned off on slot</sys:String>
     <sys:String x:Key="i18n_cmdnosup">Command not supported by switch</sys:String>
     <sys:String x:Key="i18n_devSel">Please, select the type of device connected to port</sys:String>
+    <sys:String x:Key="i18n_isupl">is a switch uplink</sys:String>
+    <sys:String x:Key="i18n_noen">Cannot enable</sys:String>
+    <sys:String x:Key="i18n_nodis">Connot disable</sys:String>
+    <sys:String x:Key="i18n_pwdown">because it is powered down</sys:String>
+    <sys:String x:Key="i18n_isbt">because 802.3bt is supported</sys:String>
+    <sys:String x:Key="18n_isen">is already enabled</sys:String>
+    <sys:String x:Key="i18n_isdis">is already disabled</sys:String>
+    <sys:String x:Key="i18n_exec">executed</sys:String>
+    <sys:String x:Key="i18n_notex">failed to execute</sys:String>
     
     <!--About box-->
 	<sys:String x:Key="i18n_aboutTitle">About ALE Installer Toolkit</sys:String>
 	<sys:String x:Key="i18n_cpright">Copyright</sys:String>
 	<sys:String x:Key="i18n_reserved">All Rights Reserved</sys:String>
+    <sys:String x:Key="i18n_authors">Authors:</sys:String>
     <sys:String x:Key="i18n_descr" xml:space="preserve">
 This application allows you to apply basic configuration and troubleshoot PoE issues on an Alcatel-Lucent Enterprise OmniSwitch®, equipped with AOS 8 version.
 The application communicates with the switch via REST API, to gather information on the power supplies and PoE ports, and allows the user to perform some configuration changes to mitigate common PoE issues. In case the wizard is unable to fix the problem, it allows the user to collect relevant information to be sent to TAC.
@@ -261,8 +278,10 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_rest">Connecting REST API</sys:String>
     <sys:String x:Key="i18n_scan">Scanning switch</sys:String>
     <sys:String x:Key="i18n_sys">Reading system information</sys:String>
+    <sys:String x:Key="i18n_vinfo">Reading version information</sys:String>
     <sys:String x:Key="i18n_chas">Reading chassis and port information</sys:String>
     <sys:String x:Key="i18n_psi">Reading power supply information</sys:String>
+    <sys:String x:Key="i18n_rpoe">Reading PoE information</sys:String>
     <sys:String x:Key="i18n_flashd">Reading flash data of chassis</sys:String>
     <sys:String x:Key="i18n_lanpw">Getting LAN power information on slot</sys:String>
     <sys:String x:Key="i18n_rlldp">Reading LLDP remote information</sys:String>
@@ -347,11 +366,13 @@ File creation duration:
     <sys:String x:Key="i18n_frebsw1">Cannot rebot switch</sys:String>
     <sys:String x:Key="i18n_frebsw2">because it is not certified</sys:String>
     <sys:String x:Key="i18n_recsw">Do you want to reconnect to switch</sys:String>
-    <sys:String x:Key="i18n_prst">Restarting</sys:String>
+    <sys:String x:Key="i18n_rstg">Restarting</sys:String>
+    <sys:String x:Key="i18n_rstp">Restarting port</sys:String>
+    <sys:String x:Key="i18n_rstpp">Restarting power on port</sys:String>
     <sys:String x:Key="i18n_cprst">Are you sure you want to reset this port?</sys:String>
-    <sys:String x:Key="i18n_sprio">Selected priority</sys:String>
-    <sys:String x:Key="i18n_cprio1">Changing Priority to</sys:String>
-    <sys:String x:Key="i18n_cprio2">on port</sys:String>
+    <sys:String x:Key="i18n_selprio">Selected priority</sys:String>
+    <sys:String x:Key="i18n_cprio">Changing Priority to</sys:String>
+    <sys:String x:Key="i18n_onport">on port</sys:String>
     <sys:String x:Key="i18n_stprio">set to</sys:String>
     <sys:String x:Key="i18n_chprio">Power Priority Change</sys:String>
     <sys:String x:Key="i18n_alprio">Some other devices with lower priority may stop.</sys:String>
@@ -359,6 +380,8 @@ File creation duration:
     <sys:String x:Key="i18n_spoeOff">Slot PoE Off</sys:String>
     <sys:String x:Key="i18n_cpoeoff">Are you sure you want to turn PoE Off on all ports in slot</sys:String>
     <sys:String x:Key="i18n_spoeon">Slot PoE On</sys:String>
+    <sys:String x:Key="i18n_poeon">Turning PoE On</sys:String>
+    <sys:String x:Key="i18n_poeoff">Truning PoE Off</sys:String>
     <sys:String x:Key="i18n_wpoeon">Please wait for slot</sys:String>
     <sys:String x:Key="i18n_waitup">to come up</sys:String>
     <sys:String x:Key="i18n_enable">Enabling</sys:String>
@@ -378,11 +401,10 @@ Do you want to reboot the switch on Working directory?"
     <sys:String x:Key="i18n_warn">warning</sys:String>
     <sys:String x:Key="i18n_wpUp">Waiting for ports to come up on switch</sys:String>
     <sys:String x:Key="i18n_compl">completed</sys:String>
-    <sys:String x:Key="i18n_dur">duration:</sys:String>
-    <sys:String x:Key="i18n_slon">Turning PoE On on slot</sys:String>
-    <sys:String x:Key="i18n_sloff">Turning PoE Off on slot</sys:String>
+    <sys:String x:Key="i18n_dur">Duration:</sys:String>
     <sys:String x:Key="i18n_pbtEn">Enable 802.3bt</sys:String>
     <sys:String x:Key="i18n_cbtEn">To enable 802.3bt all devices on the same slot will restart</sys:String>
+    <sys:String x:Key="i18n_fpen">Fast PoE is enabled on slot</sys:String>
     <sys:String x:Key="i18n_proceed">Do you want to proceed?</sys:String>
     <sys:String x:Key="i18n_dmaxpw">Changing max. power to default on port</sys:String>
     <sys:String x:Key="i18n_tmaxpw">Check default Max. Power</sys:String>
@@ -402,6 +424,7 @@ Reboot duration:
     <sys:String x:Key="i18n_pfrst">failed to restart</sys:String>
     <sys:String x:Key="i18n_urst">restarted by the user</sys:String>
     <sys:String x:Key="i18n_pstup">Starting up port</sys:String>
+    <sys:String x:Key="i18n_pstdonw">Shutting down port</sys:String>
     <sys:String x:Key="i18n_ppoff">Turning off power on port</sys:String>
     <sys:String x:Key="i18n_pcode">Please enter the password for this operation</sys:String>
     <sys:String x:Key="i18n_chcode">Change Password</sys:String>

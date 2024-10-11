@@ -30,7 +30,7 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" x:Name="_mainMenu" Style="{DynamicResource _mainMenu}">
             <MenuItem Header="{DynamicResource i18n_cnx}">
-                <MenuItem Header="{DynamicResource i18n_sw}" x:Name="_switchMenuItem" Click="SwitchMenuItem_Click" />
+                <MenuItem Header="{DynamicResource i18n_msw}" x:Name="_switchMenuItem" Click="SwitchMenuItem_Click" />
                 <MenuItem Header="{DynamicResource i18n_disc}" x:Name="_disconnectMenuItem" Click="DisconnectMenuItem_Click" Visibility="Collapsed"/>
                 <Separator/>
                 <MenuItem Header="{DynamicResource i18n_exit}" Click="Exit_Click"/>

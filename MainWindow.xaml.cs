@@ -31,6 +31,7 @@ namespace PoEWizard
         #region Private Variables
         private readonly ResourceDictionary darkDict;
         private readonly ResourceDictionary lightDict;
+        private readonly ResourceDictionary strings;
         private ResourceDictionary currentDict;
         private readonly IProgress<ProgressReport> progress;
         private bool reportAck;
@@ -85,6 +86,7 @@ namespace PoEWizard
             this.Title += $" (V {string.Join(".", fileVersionInfo.ProductVersion.Split('.').ToList().Take(2))})";
             lightDict = Resources.MergedDictionaries[0];
             darkDict = Resources.MergedDictionaries[1];
+            strings = Resources.MergedDictionaries[2];
             currentDict = darkDict;
             Instance = this;
             Activity.DataPath = dataPath;
@@ -631,7 +633,7 @@ namespace PoEWizard
             string t = mi.Header.ToString();
             if (mi.IsChecked) return;
             mi.IsChecked = true;
-            if (t == "Dark")
+            if (t == Translate("i18n_dark"))
             {
                 _lightMenuItem.IsChecked = false;
                 theme = ThemeType.Dark;
@@ -866,6 +868,11 @@ namespace PoEWizard
 
         #region private methods
 
+        private string Translate(string key)
+        {
+            return (string)strings[key] ?? key;
+        }
+
         private async void Connect()
         {
             try
@@ -891,7 +898,7 @@ namespace PoEWizard
                 }
                 restApiService = new RestApiService(device, progress)
                 {
-                    Strings = Resources.MergedDictionaries[1]
+                    Strings = strings
                 };
                 isClosing = false;
                 DateTime startTime = DateTime.Now;

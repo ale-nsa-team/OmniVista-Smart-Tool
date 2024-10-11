@@ -31,7 +31,7 @@
             </Grid.RowDefinitions>
             <Image Grid.Row="0" Source="../Resources/Img/ale-icon.png" Stretch="None" Margin="0,100,0,0"/>
             <StackPanel Grid.Row="1" Margin="40,0,0,10">
-                <TextBlock Style="{DynamicResource aboutParagraph}" Text="Autors:"  Margin="0"/>
+                <TextBlock Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_authors}"  Margin="0"/>
                 <TextBlock Style="{DynamicResource aboutParagraph}" Margin="0,5,0,8">
                 Luiz Felix<LineBreak />Joao Almeida
                 </TextBlock>
@@ -58,7 +58,8 @@
             </TextBox>
         </StackPanel>
         <Border Grid.Row="1" Grid.Column="1" Style="{DynamicResource aboutBorder}">
-            <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" HorizontalAlignment="Right">OK</Button>
+            <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" 
+                    HorizontalAlignment="Right" Content="{DynamicResource i18n_okBtn}"/>
         </Border>
     </Grid>
 </Window>

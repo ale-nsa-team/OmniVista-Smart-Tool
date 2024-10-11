@@ -5,7 +5,7 @@
     <sys:String x:Key="i18n_cnx">Conectar</sys:String>
     <sys:String x:Key="i18n_view">Mostrar</sys:String>
     <sys:String x:Key="i18n_cfg">Configuração</sys:String>
-    <sys:String x:Key="i18n_sw">Switch...</sys:String>
+    <sys:String x:Key="i18n_msw">Switch...</sys:String>
     <sys:String x:Key="i18n_disc">Desconectar</sys:String>
     <sys:String x:Key="i18n_exit">Sair</sys:String>
     <sys:String x:Key="i18n_log">Log</sys:String>
@@ -87,6 +87,7 @@
     <sys:String x:Key="i18n_class">Classe de PoE</sys:String>
     <sys:String x:Key="i18n_mode">Modo de PoE</sys:String>
     <sys:String x:Key="i18n_bt">802.3BT</sys:String>
+    <sys:String x:Key="i18n_dev">Dispositivo</sys:String>
     <sys:String x:Key="i18n_devModel">Modelo do Dispositivo</sys:String>
     <sys:String x:Key="i18n_devType">Tipo do Dispositivo</sys:String>
     <sys:String x:Key="i18n_devName">Nome do Dispositivo</sys:String>
@@ -183,12 +184,14 @@ Por favor, confirme sua ação.
     <sys:String x:Key="i18n_newRec">Novo Receptor de Trap</sys:String>
 
     <!--PoE Wizard Messages-->
+    <sys:String x:Key="i18n_pwiz">Assistente de PoE</sys:String>
     <sys:String x:Key="i18n_pwRep">Relatório do Assistente de PoE:</sys:String>
-    <sys:String x:Key="i18n_pwRun">Executando Assistente de PoE na porta</sys:String>
+    <sys:String x:Key="i18n_pwRun">Executando Assistente de PoE</sys:String>
     <sys:String x:Key="i18n_pwDur">Durarção total:</sys:String>
     <sys:String x:Key="i18n_pwEnd">Assistente de PoE completo na porta</sys:String>
     <sys:String x:Key="i18n_pwDev">com dispositivo do tipo</sys:String>
     <sys:String x:Key="i18n_pwPst">Status da Porta:</sys:String>
+    <sys:String x:Key="i18n_power">Potência:</sys:String>
     <sys:String x:Key="i18n_pwDevMac">MAC do dispositivo:</sys:String>
     <sys:String x:Key="i18n_pwExec">Execução do Assistente de PoE</sys:String>
     <sys:String x:Key="i18n_fail">falhou</sys:String>
@@ -197,7 +200,7 @@ Por favor, confirme sua ação.
 Parece que o assistente não conseguiu resolver o problema.
 Deseja coletar informações para enviar ao Supporte técnico?
     </sys:String>
-    <sys:String x:Key="i18n_pwGood">resolveu o problema</sys:String>
+    <sys:String x:Key="i18n_wizOk">resolveu o problema</sys:String>
     <sys:String x:Key="i18n_noact">Nada a fazer</sys:String>
     <sys:String x:Key="i18n_nopoe">não suporta PoE</sys:String>
     <sys:String x:Key="i18n_hdmi">Ativando Energia sobre HDMI na porta</sys:String>
@@ -205,14 +208,15 @@ Deseja coletar informações para enviar ao Supporte técnico?
     <sys:String x:Key="i18n_extmdi">Ativando energia estendida via MDI na porta</sys:String>
     <sys:String x:Key="i18n_capdet">Verficando detecção de capacitor na porta</sys:String>
     <sys:String x:Key="i18n_cdeten">Ativando detecção de capacitor na porta</sys:String>
-    <sys:String x:Key="i18n_dtetdis">Desativando detecção de capacitor na porta</sys:String>
+    <sys:String x:Key="i18n_cdetdis">Desativando detecção de capacitor na porta</sys:String>
     <sys:String x:Key="i18n_nocdet">Não se pode ativar detecção de capacitor para dispositivo do tipo</sys:String>
+    <sys:String x:Key="i18n_cdnoten">Detecção de capacitor já está desativada na porta</sys:String>
     <sys:String x:Key="i18n_nspb">não resolveu o problema</sys:String>
     <sys:String x:Key="i18n_rstcfg">para restaurar a configuração anterior</sys:String>
     <sys:String x:Key="i18n_ckmxpw">Verificando potência max. na porta</sys:String>
-    <sys:String x:Key="i18n_bmxpw">Potência max. na porta {str1} é {str2} Watts, deveria ser {str3} Watts</sys:String>
-    <sys:String x:Key="i18n_gmxpw">Potência max. na porta {str1} já está no máximo permitido ({str2} Watts)</sys:String>
-    <sys:String x:Key="i18n_rstmxpw">Restaurnado potência max. na porta {str1} de {str2} para o máximo permitido {str3} Watts</sys:String>
+    <sys:String x:Key="i18n_bmxpw">Potência max. na porta $1 é $2 Watts, deveria ser $3 Watts</sys:String>
+    <sys:String x:Key="i18n_gmxpw">Potência max. na porta $1 já está no máximo permitido ($2 Watts)</sys:String>
+    <sys:String x:Key="i18n_rstmxpw">Restaurnado potência max. na porta $1 de $2 para o máximo permitido $3 Watts</sys:String>
     <sys:String x:Key="i18n_rfsw">Atualizando informações de PoE</sys:String>
     <sys:String x:Key="i18n_r2pair">Reativando modo 2-pares na porta</sys:String>
     <sys:String x:Key="i18n_nosup">Comando não suportado no slot</sys:String>
@@ -224,13 +228,15 @@ Deseja coletar informações para enviar ao Supporte técnico?
     <sys:String x:Key="i18n_bten">802.3bt já está ativo na porta</sys:String>
     <sys:String x:Key="i18n_sbten">Ativando 802.3bt on slot</sys:String>
     <sys:String x:Key="i18n_sbtdis">Desativando 802.3bt no slot</sys:String>
+    <sys:String x:Key="i18n_sprio">Prioridade na porta</sys:String>
+    <sys:String x:Key="i18n_set">Alterada para</sys:String>
     <sys:String x:Key="i18n_ckprio">Verificando prioridade na porta</sys:String>
     <sys:String x:Key="i18n_rempw">Potência Restante =</sys:String>
     <sys:String x:Key="i18n_maxpw">Potência max. =</sys:String>
     <sys:String x:Key="i18n_chgprio">Alterando prioridade na porta</sys:String>
     <sys:String x:Key="i18n_pmaysolve">pode resolver o problema</sys:String>
     <sys:String x:Key="i18n_pnoneed">Não é necessário alterar a prioridade do PoE na porta</sys:String>
-    <sys:String x:Key="i18n_palready">A prioridade priority já é</sys:String>
+    <sys:String x:Key="i18n_palready">A prioridade já é</sys:String>
     <sys:String x:Key="i18n_pback">Alterando a prioridade de volta a</sys:String>
     <sys:String x:Key="i18n_cpRep">Relatório de mudança da prioridade:</sys:String>
     <sys:String x:Key="i18n_rcpoe">Reaplicando PoE na porta</sys:String>
@@ -240,13 +246,23 @@ Deseja coletar informações para enviar ao Supporte técnico?
     <sys:String x:Key="i18n_spoeoff">PoE está desligado no slot</sys:String>
     <sys:String x:Key="i18n_cmdnosup">Comando não suportado pela switch</sys:String>
     <sys:String x:Key="i18n_devSel">Selecione o tipo de dispositivo conectado na porta</sys:String>
+    <sys:String x:Key="i18n_isupl">é um uplink</sys:String>
+    <sys:String x:Key="i18n_noen">Não se pode ativar</sys:String>
+    <sys:String x:Key="i18n_nodis">Não se pode desativar</sys:String>
+    <sys:String x:Key="i18n_pwdown">porque ele está desligado</sys:String>
+    <sys:String x:Key="i18n_isbt">porque 802.3bt é suportado</sys:String>
+    <sys:String x:Key="18n_isen">já está ativo</sys:String>
+    <sys:String x:Key="i18n_isdis">já está desativado</sys:String>
+    <sys:String x:Key="i18n_exec">executado</sys:String>
+    <sys:String x:Key="i18n_notex">não foi executado</sys:String>
 
     <!--About box-->
 	<sys:String x:Key="i18n_aboutTitle">Sobre ALE Installer Toolkit</sys:String>
 	<sys:String x:Key="i18n_cpright">Direitos Autorais</sys:String>
 	<sys:String x:Key="i18n_reserved">Todos os Direitos Reservados</sys:String>
+    <sys:String x:Key="i18n_authors">Autores:</sys:String>
     <sys:String x:Key="i18n_descr" xml:space="preserve">
-Essa aplicação pode ser utilizada para auxiliar o usuário a resolver problemas relacionados a PoE em OmniSwitches® da Alcatel-Lucent Enterprise, equipados com AOS versao 8.
+Essa aplicação pode ser utilizada para auxiliar o usuário a resolver problemas relacionados a PoE em OmniSwitches® da Alcatel-Lucent Enterprise, equipados com AOS versão 8.
 A aplicação se comunica com a switch via REST API, para obter informações sobre fontes de alimentação e portas PoE, permitindo que o usuário execute mudanças na configuração para resolver problemas comuns de PoE.
 Caso o assistente não consiga resolver o problema, ele permite ao usuário coletar informações relevantes para serem enviadas ao TAC.
 		
@@ -261,9 +277,11 @@ A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS 
     <sys:String x:Key="i18n_rsCnx">Conectando à switch</sys:String>
     <sys:String x:Key="i18n_rest">Conectando à REST API</sys:String>
     <sys:String x:Key="i18n_scan">Escaneando a switch</sys:String>
-    <sys:String x:Key="i18n_sys">Obtendo informações de systema na switch</sys:String>
+    <sys:String x:Key="i18n_sys">Obtendo informações de sistema</sys:String>
+    <sys:String x:Key="i18n_vinfo">Obtendo informações da versão do AOS</sys:String>
     <sys:String x:Key="i18n_chas">Obtendo informações de chassis e portas</sys:String>
     <sys:String x:Key="i18n_psi">Obtendo informações de fonte de alimentação</sys:String>
+    <sys:String x:Key="i18n_rpoe">Obtendo informações de PoE</sys:String>
     <sys:String x:Key="i18n_flashd">Obtendo dados da flash do chassis</sys:String>
     <sys:String x:Key="i18n_lanpw">Obtendo informações de PoE no slot</sys:String>
     <sys:String x:Key="i18n_rlldp">Obtendo informações de LLDP remoto</sys:String>
@@ -348,11 +366,13 @@ Tempo de criacão do arquivo:
     <sys:String x:Key="i18n_frebsw1">Não foi possível reiniciar a switch</sys:String>
     <sys:String x:Key="i18n_frebsw2">porque ela não está certificada</sys:String>
     <sys:String x:Key="i18n_recsw">Deseja reconectar à switch</sys:String>
-    <sys:String x:Key="i18n_prst">Reiniciando</sys:String>
+    <sys:String x:Key="i18n_rstg">Reiniciando</sys:String>
+    <sys:String x:Key="i18n_rstp">Reiniciando porta</sys:String>
+    <sys:String x:Key="i18n_rstpp">Reiniciando PoE na porta</sys:String>
     <sys:String x:Key="i18n_cprst">Tem certeza que deseja reiniciar essa porta?</sys:String>
-    <sys:String x:Key="i18n_sprio">Prioridade Selecionada</sys:String>
-    <sys:String x:Key="i18n_cprio1">Alterando a prioridade para</sys:String>
-    <sys:String x:Key="i18n_cprio2">na porta</sys:String>
+    <sys:String x:Key="i18n_selprio">Prioridade Selecionada</sys:String>
+    <sys:String x:Key="i18n_cprio">Alterando a prioridade para</sys:String>
+    <sys:String x:Key="i18n_onport">na porta</sys:String>
     <sys:String x:Key="i18n_stprio">definida como</sys:String>
     <sys:String x:Key="i18n_chprio">Modificar Prioridade</sys:String>
     <sys:String x:Key="i18n_alprio">Alguns dispositivos com prioridade mais baixa podem parar.</sys:String>
@@ -360,6 +380,8 @@ Tempo de criacão do arquivo:
     <sys:String x:Key="i18n_spoeOff">PoE desligado no slot</sys:String>
     <sys:String x:Key="i18n_cpoeoff">Tem certeza que deseja desligar PoE em todas as portas do slot</sys:String>
     <sys:String x:Key="i18n_spoeon">PoE ligado no slot</sys:String>
+    <sys:String x:Key="i18n_poeon">Ligando PoE</sys:String>
+    <sys:String x:Key="i18n_poeoff">Desligando PoE</sys:String>
     <sys:String x:Key="i18n_wpoeon">Favor aguardar o slot</sys:String>
     <sys:String x:Key="i18n_waitup">entrar em serviço</sys:String>
     <sys:String x:Key="i18n_enable">Ativando</sys:String>
@@ -379,11 +401,10 @@ Deseja reiniciar a switch no diretório Working?
     <sys:String x:Key="i18n_warn">alerta</sys:String>
     <sys:String x:Key="i18n_wpUp">Aguardando as portas da switch entrarem em serviço</sys:String>
     <sys:String x:Key="i18n_compl">completado</sys:String>
-    <sys:String x:Key="i18n_dur">duração:</sys:String>
-    <sys:String x:Key="i18n_slon">Ligando PoE no slot</sys:String>
-    <sys:String x:Key="i18n_sloff">Desligando PoE no slot</sys:String>
+    <sys:String x:Key="i18n_dur">Duração:</sys:String>
     <sys:String x:Key="i18n_pbtEn">Ativar 802.3bt</sys:String>
     <sys:String x:Key="i18n_cbtEn">Para ativar 802.3bt todos os dispositivos PoE desse slot serão reiniciados</sys:String>
+    <sys:String x:Key="i18n_fpen">PoE PoE rápido está desabilitado no slot</sys:String>
     <sys:String x:Key="i18n_proceed">Deseja continuar?</sys:String>
     <sys:String x:Key="i18n_dmaxpw">Alterando potência  max. para valor default na porta</sys:String>
     <sys:String x:Key="i18n_tmaxpw">Verificando potência Máxima</sys:String>
@@ -402,7 +423,8 @@ Duração da reinicialização:
     <sys:String x:Key="i18n_rst">reiniciada</sys:String>
     <sys:String x:Key="i18n_pfrst">não foi possível reiniciar</sys:String>
     <sys:String x:Key="i18n_urst">reiniciada pelo usuário</sys:String>
-    <sys:String x:Key="i18n_pstup">Iniciando port</sys:String>
+    <sys:String x:Key="i18n_pstup">Iniciando a porta</sys:String>
+    <sys:String x:Key="i18n_pstdonw">Desligando a porta</sys:String>
     <sys:String x:Key="i18n_ppoff">Desligando PoE na porta</sys:String>
     <sys:String x:Key="i18n_pcode">Digite a senha para essa operação</sys:String>
     <sys:String x:Key="i18n_chcode">Trocar a Senha</sys:String>
