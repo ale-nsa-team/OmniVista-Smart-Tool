@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
-        Title="About ALE Configuration Wizard" Height="480" Width="560" WindowStyle="None" ShowInTaskbar="False">
+        Title="About ALE Configuration Wizard" Height="480" Width="570" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
