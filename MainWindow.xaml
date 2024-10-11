@@ -289,16 +289,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="VC Master/Slave" Width="1.1*">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=MasterSlave}"
-                                           Foreground="{Binding Path=IsMaster,
-                                           Converter={StaticResource ValueToColorConverter},
-                                           ConverterParameter=Boolean}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="VC Master/Slave" Width="1.1*" Binding="{Binding Path=MasterSlave}" />
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

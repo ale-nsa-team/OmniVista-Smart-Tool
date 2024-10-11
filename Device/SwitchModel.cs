@@ -284,12 +284,12 @@ namespace PoEWizard.Device
             if (string.IsNullOrEmpty(SelectedSlot)) SelectedSlot = "1/1";
             ChassisModel chassis = GetChassis(SelectedSlot);
             if (chassis == null) return;
-            Model = SetMasterSlave(chassis, chassis.Model);
-            SerialNumber = SetMasterSlave(chassis, chassis.SerialNumber);
+            Model = chassis.Model;
+            SerialNumber = chassis.SerialNumber;
             MacAddress = SetMasterSlave(chassis, chassis.MacAddress);
-            Fpga = !string.IsNullOrEmpty(chassis.Fpga) ? SetMasterSlave(chassis, chassis.Fpga) : string.Empty;
-            Cpld = !string.IsNullOrEmpty(chassis.Cpld) ? SetMasterSlave(chassis, chassis.Cpld) : string.Empty;
-            FreeFlash = SetMasterSlave(chassis, chassis.FreeFlash);
+            Fpga = !string.IsNullOrEmpty(chassis.Fpga) ? chassis.Fpga : string.Empty;
+            Cpld = !string.IsNullOrEmpty(chassis.Cpld) ? chassis.Cpld : string.Empty;
+            FreeFlash = chassis.FreeFlash;
         }
 
         private void UpdateTemperatureSelectedSlot()
@@ -297,7 +297,7 @@ namespace PoEWizard.Device
             if (string.IsNullOrEmpty(SelectedSlot)) SelectedSlot = "1/1";
             ChassisModel chassis = GetChassis(SelectedSlot);
             if (chassis == null) return;
-            CurrTemperature = SetMasterSlave(chassis, $"{(chassis.Temperature.Current * 9 / 5) + 32}{F} ({chassis.Temperature.Current}{C})");
+            CurrTemperature = $"{(chassis.Temperature.Current * 9 / 5) + 32}{F} ({chassis.Temperature.Current}{C})";
             TemperatureStatus = chassis.Temperature.Status;
         }
 
@@ -306,7 +306,7 @@ namespace PoEWizard.Device
             if (string.IsNullOrEmpty(SelectedSlot)) SelectedSlot = "1/1";
             ChassisModel chassis = GetChassis(SelectedSlot);
             if (chassis == null) return;
-            Cpu = SetMasterSlave(chassis, $"{chassis.Cpu}%");
+            Cpu = $"{chassis.Cpu}%";
         }
 
         public void LoadFlashSizeFromList(string data, ChassisModel chassis)
@@ -385,7 +385,7 @@ namespace PoEWizard.Device
 
         private string SetMasterSlave(ChassisModel chassis, string sValue)
         {
-            if (ChassisList.Count > 1) return $"{sValue}{(chassis.IsMaster ? MASTER : SLAVE)}"; else return sValue;
+            if (ChassisList.Count > 1) return $"{sValue} (Chassis {chassis.Number}, {(chassis.IsMaster ? MASTER : SLAVE)})"; else return sValue;
         }
 
         private PowerSupplyState GetPowerSupplyState()

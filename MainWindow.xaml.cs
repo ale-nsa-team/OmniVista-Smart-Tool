@@ -976,6 +976,7 @@ namespace PoEWizard
                         }
                     }
                     restApiService.Close();
+                    restApiService = null;
                 }
                 await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
             }

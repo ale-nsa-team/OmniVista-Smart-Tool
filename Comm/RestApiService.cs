@@ -2117,6 +2117,7 @@ namespace PoEWizard.Comm
             DisconnectAosSsh();
             RestApiClient?.Close();
             LogActivity("Switch disconnected");
+            RestApiClient = null;
         }
 
         private void LogActivity(string action, string data = null)

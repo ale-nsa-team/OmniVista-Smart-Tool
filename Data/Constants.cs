@@ -328,8 +328,8 @@ namespace PoEWizard.Data
         public const string DISK_USAGE = "Usage";
         public const string MOUNTED = "Mounted";
         // Used to display switch data related to chassis Master or Slave
-        public const string MASTER = " (Master)";
-        public const string SLAVE = " (Slave)";
+        public const string MASTER = "Master";
+        public const string SLAVE = "Slave";
         public const string MAC_MATCH_MARK = " (*)";
         #endregion
 
