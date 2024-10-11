@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
@@ -37,7 +38,6 @@ namespace PoEWizard.Comm
         private const string HEADER_KEY = "HEADER";
         private const string TEXT_KEY = "TEXT";
         private const string EMPTY_KEY = "EMPTY";
-        private const string SWITCH_ERROR = "ERROR: ";
         private const string CMD = "COMMAND";
         private const string PROMPT = "SESSION_PROMPT";
 
@@ -650,36 +650,39 @@ namespace PoEWizard.Comm
                 this._shell_stream.Flush();
             }
         }
+
+        #region Parsing Error
         private Dictionary<string, string> ParseResponse(string response, string cmd)
         {
-            if (!IsResponseError(response, cmd, this.SessionPrompt))
+            if (!string.IsNullOrEmpty(response) && response.Contains(ERROR))
             {
-                Dictionary<string, string> result = new Dictionary<string, string>
-                {
-                    [CMD] = cmd,
-                    [OUTPUT] = response,
-                    [PROMPT] = this.SessionPrompt
-                };
-                return result;
+                string error = GetResponseError(response, cmd);
+                if (error != null) throw new SwitchCommandError(error);
             }
-            return null;
+            Dictionary<string, string> result = new Dictionary<string, string>
+            {
+                [CMD] = cmd,
+                [OUTPUT] = response,
+                [PROMPT] = this.SessionPrompt
+            };
+            return result;
         }
 
-        #region Commands
-        public static bool IsResponseError(string response, string cmd, string prompt)
+        public string GetResponseError(string response, string cmd)
         {
-            try
+            if (!string.IsNullOrEmpty(response) && response.Contains(ERROR))
             {
-                if (!string.IsNullOrEmpty(response) && response.Contains(SWITCH_ERROR))
+                string[] errors = Regex.Split(response.Replace(cmd, string.Empty).Trim().Replace("^", "").Replace(this.SessionPrompt, "").Trim(), @"\r\n\r|\n");
+                string error = string.Empty;
+                foreach(string err in errors)
                 {
-                    string resp = response.ToLower().Replace("^", "").Replace(prompt, "").Replace("\r\n", "").Trim();
-                    StringBuilder error = new StringBuilder("Command: \"");
-                    error.Append(cmd).Append("\"\r\nError: ").Append(response);
-                    throw new SwitchCommandError(error.ToString());
+                    if (string.IsNullOrEmpty(err)) continue;
+                    if (error.Length > 0) error += "\r\n";
+                    error += $"{err.Trim()}";
                 }
+                return $"Command: \"{cmd}\"\r\nError: {error}";
             }
-            catch { }
-            return false;
+            return null;
         }
         #endregion
 

@@ -130,6 +130,7 @@ namespace PoEWizard.Components
                     case "LpNiDebugLevel":
                         SwitchDebugLogLevel level = Utils.StringToSwitchDebugLevel(val);
                         return level == SwitchDebugLogLevel.Info ? Colors.Clear :
+                               level == SwitchDebugLogLevel.Invalid ? Colors.Danger :
                                level == SwitchDebugLogLevel.Off ? Colors.Danger :
                                level > SwitchDebugLogLevel.Off && level < SwitchDebugLogLevel.Warn ? Colors.Problem :
                                level >= SwitchDebugLogLevel.Warn && level < SwitchDebugLogLevel.Info ? Colors.Warn :

@@ -383,7 +383,11 @@ namespace PoEWizard
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             bool wasApplyed = (bool)wiz.ShowDialog();
-            if (!wasApplyed) return;
+            if (!wasApplyed)
+            {
+                HideProgress();
+                return;
+            }
             if (wiz.Errors.Count > 0)
             {
                 string errMsg = $"The following {(wiz.Errors.Count > 1 ? "errors where" : "error was")} reported:";
