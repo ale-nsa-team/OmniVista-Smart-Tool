@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
-        Title="About ALE Configuration Wizard" Height="480" Width="550" WindowStyle="None" ShowInTaskbar="False">
+        Title="About ALE Configuration Wizard" Height="480" Width="560" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -31,7 +31,7 @@
             <Image Grid.Row="0" Source="../Resources/Img/ale-icon.png" Stretch="None" Margin="0,100,0,0"/>
             <StackPanel Grid.Row="1" Margin="40,0,0,10">
                 <TextBlock Style="{DynamicResource aboutParagraph}" Text="Autors:"  Margin="0"/>
-                <TextBlock Style="{DynamicResource aboutParagraph}">
+                <TextBlock Style="{DynamicResource aboutParagraph}" Margin="0,5,0,8">
                 Luiz Felix<LineBreak />Joao Almeida
                 </TextBlock>
             </StackPanel>
@@ -48,7 +48,11 @@
                      Background="{DynamicResource popupBackgroundColor}"
                      Foreground="{DynamicResource fontColor}"
                      ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                     ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <TextBox.Resources>
+                    <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource defaultScrollbar}" />
+                </TextBox.Resources>
+            </TextBox>
         </StackPanel>
         <Border Grid.Row="1" Grid.Column="1" Style="{DynamicResource aboutBorder}">
             <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" HorizontalAlignment="Right">OK</Button>
