@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
-        Title="About ALE Configuration Wizard" Height="500" Width="550" WindowStyle="None" ShowInTaskbar="False">
+        Title="About ALE Configuration Wizard" Height="480" Width="550" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -29,7 +29,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Image Grid.Row="0" Source="../Resources/Img/ale-icon.png" Stretch="None" Margin="0,100,0,0"/>
-            <StackPanel Grid.Row="1" Margin="40,0,0,32">
+            <StackPanel Grid.Row="1" Margin="40,0,0,10">
                 <TextBlock Style="{DynamicResource aboutParagraph}" Text="Autors:"  Margin="0"/>
                 <TextBlock Style="{DynamicResource aboutParagraph}">
                 Luiz Felix<LineBreak />Joao Almeida
