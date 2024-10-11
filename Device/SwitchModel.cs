@@ -380,7 +380,7 @@ namespace PoEWizard.Device
         public void SetAppLogLevel(string app, int logLevel)
         {
             if (!string.IsNullOrEmpty(app) && this.DebugApp.ContainsKey(app)) this.DebugApp[app].DebugLevel = logLevel;
-            else this.DebugApp[app] = new SwitchDebugApp(app);
+            else this.DebugApp[app] = new SwitchDebugApp(app, logLevel);
         }
 
         private string SetMasterSlave(ChassisModel chassis, string sValue)

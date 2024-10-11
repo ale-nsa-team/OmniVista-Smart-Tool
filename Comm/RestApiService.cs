@@ -326,22 +326,8 @@ namespace PoEWizard.Comm
                 int prevLpNiDebug = SwitchModel.LpNiDebugLevel;
                 int prevLpCmmDebug = SwitchModel.LpCmmDebugLevel;
                 // Setting switch debug level
-                if (SwitchModel.LpNiDebugLevel != (int)SwitchDebugLogLevel.Unknown)
-                {
-                    SetAppDebugLevel($"Setting PoE debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPNI_LEVEL, debugSelected);
-                }
-                else
-                {
-                    Logger.Warn($"Couldn't set the {LPNI} debug level because the switch {SwitchModel.IpAddress} doesn't support PoE!");
-                }
-                if (SwitchModel.LpCmmDebugLevel != (int)SwitchDebugLogLevel.Unknown)
-                {
-                    SetAppDebugLevel($"Setting CMM debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
-                }
-                else
-                {
-                    Logger.Warn($"Couldn't set the {LPCMM} debug level because the switch {SwitchModel.IpAddress} doesn't support PoE!");
-                }
+                SetAppDebugLevel($"Setting PoE debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPNI_LEVEL, debugSelected);
+                SetAppDebugLevel($"Setting CMM debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
                 if (restartPoE)
                 {
                     if (_wizardSwitchPort != null) RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 5);
@@ -353,22 +339,8 @@ namespace PoEWizard.Comm
                 }
                 UpdateSwitchLogBar();
                 // Setting switch debug level back to the previous values
-                if (prevLpNiDebug != (int)SwitchDebugLogLevel.Unknown)
-                {
-                    SetAppDebugLevel($"Resetting PoE debug level back to {Utils.IntToSwitchDebugLevel(prevLpNiDebug)}", Command.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
-                }
-                else
-                {
-                    Logger.Warn($"Couldn't set the {LPNI} debug level because the switch {SwitchModel.IpAddress} doesn't support PoE!");
-                }
-                if (prevLpCmmDebug != (int)SwitchDebugLogLevel.Unknown)
-                {
-                    SetAppDebugLevel($"Resetting CMM debug level back to {Utils.IntToSwitchDebugLevel(prevLpCmmDebug)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
-                }
-                else
-                {
-                    Logger.Warn($"Couldn't set the {LPCMM} debug level because the switch {SwitchModel.IpAddress} doesn't support PoE!");
-                }
+                SetAppDebugLevel($"Resetting PoE debug level back to {Utils.IntToSwitchDebugLevel(prevLpNiDebug)}", Command.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
+                SetAppDebugLevel($"Resetting CMM debug level back to {Utils.IntToSwitchDebugLevel(prevLpCmmDebug)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
                 // Generating tar file
                 string msg = "Generating tar file";
                 SendProgressReport(msg);
@@ -478,28 +450,41 @@ namespace PoEWizard.Comm
 
         private void SetAppDebugLevel(string progressMsg, Command cmd, int dbgLevel)
         {
-            Command showDbgCmd = cmd == Command.DEBUG_UPDATE_LPCMM_LEVEL ? Command.DEBUG_SHOW_LPCMM_LEVEL : Command.DEBUG_SHOW_LPNI_LEVEL;
-            _progress.Report(new ProgressReport($"{progressMsg}{WAITING}"));
-            DateTime startCmdTime = DateTime.Now;
-            SendSshUpdateLogCommand(cmd, new string[1] { dbgLevel.ToString() });
-            UpdateSwitchLogBar();
-            bool done = false;
-            int loopCnt = 1;
-            while (!done)
+            string appName = cmd == Command.DEBUG_SHOW_LPNI_LEVEL ? LPNI : LPCMM;
+            try
             {
-                Thread.Sleep(1000);
-                _progress.Report(new ProgressReport($"{progressMsg} ({loopCnt} sec){WAITING}"));
-                UpdateSwitchLogBar();
-                if (loopCnt % 5 == 0) done = GetAppDebugLevel(showDbgCmd) == dbgLevel;
-                if (loopCnt >= 30)
+                if (dbgLevel == (int)SwitchDebugLogLevel.Invalid || dbgLevel == (int)SwitchDebugLogLevel.Unknown)
                 {
-                    Logger.Error($"Took too long ({Utils.CalcStringDuration(startCmdTime)}) to complete\"{cmd}\" to \"{dbgLevel}\"!");
+                    Logger.Warn(GetSwitchDebugLevelError(appName, $"Invalid switch debug level {dbgLevel}!"));
                     return;
                 }
-                loopCnt++;
+                Command showDbgCmd = cmd == Command.DEBUG_UPDATE_LPCMM_LEVEL ? Command.DEBUG_SHOW_LPCMM_LEVEL : Command.DEBUG_SHOW_LPNI_LEVEL;
+                _progress.Report(new ProgressReport($"{progressMsg}{WAITING}"));
+                DateTime startCmdTime = DateTime.Now;
+                SendSshUpdateLogCommand(cmd, new string[1] { dbgLevel.ToString() });
+                UpdateSwitchLogBar();
+                bool done = false;
+                int loopCnt = 1;
+                while (!done)
+                {
+                    Thread.Sleep(1000);
+                    _progress.Report(new ProgressReport($"{progressMsg} ({loopCnt} sec){WAITING}"));
+                    UpdateSwitchLogBar();
+                    if (loopCnt % 5 == 0) done = GetAppDebugLevel(showDbgCmd) == dbgLevel;
+                    if (loopCnt >= 30)
+                    {
+                        Logger.Error($"Took too long ({Utils.CalcStringDuration(startCmdTime)}) to complete\"{cmd}\" to \"{dbgLevel}\"!");
+                        return;
+                    }
+                    loopCnt++;
+                }
+                Logger.Info($"\"{appName}\" debug level set to \"{dbgLevel}\", Duration: {Utils.CalcStringDuration(startCmdTime)}");
+                UpdateSwitchLogBar();
             }
-            Logger.Info($"{(cmd == Command.DEBUG_UPDATE_LPCMM_LEVEL ? "\"lpCmm\"" : "\"lpNi\"")} debug level set to \"{dbgLevel}\", Duration: {Utils.CalcStringDuration(startCmdTime)}");
-            UpdateSwitchLogBar();
+            catch (Exception ex)
+            {
+                Logger.Warn(GetSwitchDebugLevelError(appName, ex.Message));
+            }
         }
 
         private void GetCurrentSwitchDebugLevel()
@@ -542,42 +527,41 @@ namespace PoEWizard.Comm
 
         private void GetSshDebugLevel(Command cmd)
         {
+            string appName = cmd == Command.DEBUG_SHOW_LPCMM_LEVEL ? LPCMM : LPNI;
             try
             {
                 Dictionary<string, string> response = SendSshUpdateLogCommand(cmd);
                 if (response != null && response.ContainsKey(OUTPUT) && !string.IsNullOrEmpty(response[OUTPUT]))
                 {
-                    string appName = cmd == Command.DEBUG_SHOW_LPCMM_LEVEL ? LPCMM : LPNI;
-                    SwitchModel.DebugApp[appName] = new SwitchDebugApp(appName);
                     _debugSwitchLog.LoadFromDictionary(CliParseUtils.ParseCliSwitchDebugLevel(response[OUTPUT]));
                 }
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                if (appName == LPNI) _debugSwitchLog.LpNiApp.SetDebugLevel(SwitchDebugLogLevel.Invalid);
+                else _debugSwitchLog.LpCmmApp.SetDebugLevel(SwitchDebugLogLevel.Invalid);
+                Logger.Warn(GetSwitchDebugLevelError(appName, ex.Message));
             }
+        }
+
+        private string GetSwitchDebugLevelError(string appName, string error)
+        {
+            return $"Switch {SwitchModel.Name} ({SwitchModel.IpAddress}) doesn't support \"{appName}\" debug level!\n{error}";
         }
 
         private Dictionary<string, string> SendSshUpdateLogCommand(Command cmd, string[] data = null)
         {
-            try
+            ConnectAosSsh();
+            Dictionary<Command, Command> cmdTranslation = new Dictionary<Command, Command>
             {
-                ConnectAosSsh();
-                Dictionary<Command, Command> cmdTranslation = new Dictionary<Command, Command>
-                {
-                    [Command.DEBUG_UPDATE_LPNI_LEVEL] = Command.DEBUG_CLI_UPDATE_LPNI_LEVEL,
-                    [Command.DEBUG_UPDATE_LPCMM_LEVEL] = Command.DEBUG_CLI_UPDATE_LPCMM_LEVEL,
-                    [Command.DEBUG_SHOW_LPNI_LEVEL] = Command.DEBUG_CLI_SHOW_LPNI_LEVEL,
-                    [Command.DEBUG_SHOW_LPCMM_LEVEL] = Command.DEBUG_CLI_SHOW_LPCMM_LEVEL
-                };
-                if (cmdTranslation.ContainsKey(cmd))
-                {
-                    return SshService?.SendCommand(new RestUrlEntry(cmdTranslation[cmd]), data);
-                }
-            }
-            catch (Exception ex)
+                [Command.DEBUG_UPDATE_LPNI_LEVEL] = Command.DEBUG_CLI_UPDATE_LPNI_LEVEL,
+                [Command.DEBUG_UPDATE_LPCMM_LEVEL] = Command.DEBUG_CLI_UPDATE_LPCMM_LEVEL,
+                [Command.DEBUG_SHOW_LPNI_LEVEL] = Command.DEBUG_CLI_SHOW_LPNI_LEVEL,
+                [Command.DEBUG_SHOW_LPCMM_LEVEL] = Command.DEBUG_CLI_SHOW_LPCMM_LEVEL
+            };
+            if (cmdTranslation.ContainsKey(cmd))
             {
-                SendSwitchError("Connect", ex);
+                return SshService?.SendCommand(new RestUrlEntry(cmdTranslation[cmd]), data);
             }
             return null;
         }
