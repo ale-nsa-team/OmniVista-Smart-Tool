@@ -29,14 +29,13 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Image Grid.Row="0" Source="../Resources/Img/ale-icon.png" Stretch="None" Margin="0,100,0,0"/>
-            <StackPanel Grid.Row="1" Margin="40,0,0,45">
+            <StackPanel Grid.Row="1" Margin="40,0,0,32">
                 <TextBlock Style="{DynamicResource aboutParagraph}" Text="Autors:"  Margin="0"/>
                 <TextBlock Style="{DynamicResource aboutParagraph}">
                 Luiz Felix<LineBreak />Joao Almeida
                 </TextBlock>
             </StackPanel>
         </Grid>
- 
         <StackPanel Grid.Row="0" Grid.Column="1">
             <TextBlock x:Name="_aboutTitle" Style="{DynamicResource aboutTitle}" Margin="0,10,0,0"/>
             <TextBlock x:Name="_version" Style="{DynamicResource aboutParagraph}" />
