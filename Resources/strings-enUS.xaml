@@ -183,7 +183,7 @@ Please confirm your action.
     <sys:String x:Key="i18n_newComm">New Community</sys:String>
     <sys:String x:Key="i18n_commUsr">Associated User</sys:String>
     <sys:String x:Key="i18n_newRec">New Trap Receiver</sys:String>
-    
+
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwiz">PoE Wizard</sys:String>
     <sys:String x:Key="i18n_pwRep">PoE Wizard Report:</sys:String>
@@ -438,7 +438,7 @@ Reboot duration:
     <sys:String x:Key="i18n_nmfound">#MAC addresses found:</sys:String>
     <sys:String x:Key="i18n_npfound">#Ports found:</sys:String>
     <sys:String x:Key="i18n_any">Any</sys:String>
-
+   
     <!--Tool Tips-->
     <sys:String x:Key="i18n_pwr_tt">Actual power consumed by the device connected to the port</sys:String>
     <sys:String x:Key="i18n_maxPwr_tt">Maximum power allowed by the hardware</sys:String>
