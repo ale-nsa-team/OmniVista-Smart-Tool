@@ -22,7 +22,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" Style="{DynamicResource titleLabel}" Margin="0,25,0,5">Please enter the MAC address, Device or Vendor Name</Label>
+        <Label Grid.Row="0" Style="{DynamicResource titleLabel}" Margin="0,25,0,5" Content="{DynamicResource i18n_srcText}"/>
         <TextBox Grid.Row="1" x:Name="_macAddr" x:FieldModifier="private" 
                      Validation.ErrorTemplate="{DynamicResource validationTemplate}"
                      Foreground="{DynamicResource fontColor}"
@@ -41,7 +41,7 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Click="BtnOk_Click" Style="{DynamicResource smallButton}" MinWidth="50"
                         Margin="5,10,0,0" Content="{DynamicResource i18n_okBtn}"/>
-                <Button Click="BtnCancel_Click" Style="{DynamicResource smallButton}" MinWidth="50"
+                <Button Click="BtnCancel_Click" Style="{DynamicResource smallButton}" MinWidth="55"
                         Margin="20,10,0,0" Content="{DynamicResource i18n_canBtn}"/>
             </StackPanel>
         </Border>

@@ -138,7 +138,9 @@
 	<sys:String x:Key="i18n_dhcp">DHCP Server</sys:String>
     <sys:String x:Key="i18n_multicast">Enable Multicast</sys:String>
     <sys:String x:Key="i18n_vlan">VLAN</sys:String>
+    <sys:String x:Key="i18n_pRep">Report:</sys:String>
     <sys:String x:Key="i18n_en">Enable</sys:String>
+    <sys:String x:Key="i18n_dis">Disable</sys:String>
     <sys:String x:Key="i18n_snmp">SNMP Settings</sys:String>
     <sys:String x:Key="i18n_usrs">Users</sys:String>
     <sys:String x:Key="i18n_usr">User</sys:String>
@@ -155,8 +157,31 @@
     <sys:String x:Key="i18n_runCW">Running config wizard...</sys:String>
     <sys:String x:Key="i18n_cwErr">The following errors where reported:</sys:String>
     <sys:String x:Key="i18n_twiz">Config Wizard</sys:String>
-    <sys:String x:Key="i18n_discWiz">Application will disconnect from switch because IP address wad changed.\nPlease reconnect using the new address.</sys:String>
-
+    <sys:String x:Key="i18n_discWiz" xml:space="preserve">
+Application will disconnect from switch because IP address wad changed.
+Please reconnect using the new address.
+    </sys:String>
+    <sys:String x:Key="i18n_loading">Loading current parameters, please wait...</sys:String>
+    <sys:String x:Key="i18n_appDns">Applying DNS and NPT parameters...</sys:String>
+    <sys:String x:Key="i18n_appFeat">Applying Features...</sys:String>
+    <sys:String x:Key="i18n_appSys">Applying System parameters...</sys:String>
+    <sys:String x:Key="i18n_reloading">Reloading switch data, please wait...</sys:String>
+    <sys:String x:Key="i18n_and">and</sys:String>
+    <sys:String x:Key="i18n_dupObj">already created</sys:String>
+    <sys:String x:Key="i18n_delUser">
+        related to this user will be deleted.
+Please confirm your action.
+    </sys:String>
+    <sys:String x:Key="i18n_delComm"  xml:space="preserve">
+Related stations will also be deleted.
+Please confirm your action.
+    </sys:String>
+    <sys:String x:Key="i18n_withIp">Station with IP address</sys:String>
+    <sys:String x:Key="i18n_newUsr">New User</sys:String>
+    <sys:String x:Key="i18n_newComm">New Community</sys:String>
+    <sys:String x:Key="i18n_commUsr">Associated User</sys:String>
+    <sys:String x:Key="i18n_newRec">New Trap Receiver</sys:String>
+    
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwRep">PoE Wizard Report:</sys:String>
     <sys:String x:Key="i18n_pwRun">Running PoE Wizard on port</sys:String>
@@ -207,6 +232,7 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_pnoneed">No need to change power prioriry on port</sys:String>
     <sys:String x:Key="i18n_palready">priority is already</sys:String>
     <sys:String x:Key="i18n_pback">Chaging priority back to</sys:String>
+    <sys:String x:Key="i18n_cpRep">Priority Change Report:</sys:String>
     <sys:String x:Key="i18n_rcpoe">Power cycling PoE on port</sys:String>
     <sys:String x:Key="i18n_pwoff">Turning power off</sys:String>
     <sys:String x:Key="i18n_pwon">Turning power on</sys:String>
@@ -234,7 +260,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_rsCnx">Connecting to switch</sys:String>
     <sys:String x:Key="i18n_rest">Connecting REST API</sys:String>
     <sys:String x:Key="i18n_scan">Scanning switch</sys:String>
-    <sys:String x:Key="i18n_sys">Reading system information on switch</sys:String>
+    <sys:String x:Key="i18n_sys">Reading system information</sys:String>
     <sys:String x:Key="i18n_chas">Reading chassis and port information</sys:String>
     <sys:String x:Key="i18n_psi">Reading power supply information</sys:String>
     <sys:String x:Key="i18n_flashd">Reading flash data of chassis</sys:String>
@@ -251,8 +277,8 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_cdbg">Setting CMM log debug level to</sys:String>
     <sys:String x:Key="i18n_rpdbg">Resetting PoE debug level back to</sys:String>
     <sys:String x:Key="i18n_rcdbg">Resetting CMM debug level back to</sys:String>
-    <sys:String x:Key="i18n_prst1">Resetting port</sys:String>
-    <sys:String x:Key="i18n_prst2">to capture log</sys:String>
+    <sys:String x:Key="i18n_prst">Resetting port</sys:String>
+    <sys:String x:Key="i18n_caplog">to capture logs</sys:String>
     <sys:String x:Key="i18n_tarf">Generating tar file</sys:String>
     <sys:String x:Key="i18n_chasoff">Turning power off on all slots of chassis</sys:String>
     <sys:String x:Key="i18n_chason">Turning power on on all slots of chassis</sys:String>
@@ -381,10 +407,15 @@ Reboot duration:
     <sys:String x:Key="i18n_chcode">Change Password</sys:String>
     <sys:String x:Key="i18n_codeErr">Could not change password</sys:String>
     <sys:String x:Key="i18n_srcNote">Note: You may double click on the port to close and select it on the main window.</sys:String>
+    <sys:String x:Key="i18n_macNote">Note: All devices that match the search criteria are marked with (*)</sys:String>
     <sys:String x:Key="i18n_srcText">Please enter the MAC address, Device or Vendor Name</sys:String>
     <sys:String x:Key="i18n_fload">Loading file, please wait...</sys:String>
     <sys:String x:Key="i18n_ftxt">Text File</sys:String>
-   
+    <sys:String x:Key="i18n_crit">Search:</sys:String>
+    <sys:String x:Key="i18n_nmfound">#MAC addresses found:</sys:String>
+    <sys:String x:Key="i18n_npfound">#Ports found:</sys:String>
+    <sys:String x:Key="i18n_any">Any</sys:String>
+
     <!--Tool Tips-->
     <sys:String x:Key="i18n_pwr_tt">Actual power consumed by the device connected to the port</sys:String>
     <sys:String x:Key="i18n_maxPwr_tt">Maximum power allowed by the hardware</sys:String>

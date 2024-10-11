@@ -22,14 +22,19 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5,0,0,0" >
-            <TextBlock Grid.Row="0" Grid.Column="0" Margin="10,10,0,10" Style="{DynamicResource aboutParagraph}">Selection:</TextBlock>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.5*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="1.5*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="5,0,0,0" >
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="10,10,0,10" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_crit}"/>
             <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,10,0,10" Text="{Binding DeviceMac}" Style="{DynamicResource aboutParagraph}" />
-            <TextBlock Grid.Row="0" Grid.Column="2" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}">#MAC addresses found:</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="2" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_nmfound}"/>
             <TextBlock Grid.Row="0" Grid.Column="3" Margin="10,10,0,10" Text="{Binding NbMacAddressesFound}" Style="{DynamicResource aboutParagraph}" />
-            <TextBlock Grid.Row="0" Grid.Column="4" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}">#Ports found:</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="4" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_npfound}"/>
             <TextBlock Grid.Row="0" Grid.Column="5" Margin="10,10,0,10" Text="{Binding NbPortsFound}" Style="{DynamicResource aboutParagraph}" />
-            <TextBlock Grid.Row="0" Grid.Column="6" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}">Note: All devices that match the search criteria are marked with (*)</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="6" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_macNote}"/>
         </StackPanel>
         <Border Grid.Row="1" Grid.ColumnSpan="3" Style="{DynamicResource gridBorder}" Margin="5">
             <DataGrid x:Name="_portsListView" 
@@ -42,8 +47,15 @@
                 MouseDoubleClick="Mouse_DoubleClick"
                 IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Port" Width="0.8*" Binding="{Binding Path=Port.Name}" />
-                    <DataGridTemplateColumn Header="Alias" Width="1.2*" IsReadOnly="True">
+                    <DataGridTextColumn Width="0.8*" Binding="{Binding Path=Port.Name}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_port}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Width="1.2*" IsReadOnly="True">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_alias}" />
+                        </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Port.Alias}" Style="{DynamicResource toolTip}"
@@ -94,8 +106,15 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="PoE Class" Width="*" Binding="{Binding Path=Port.Class}" IsReadOnly="True" />
-                    <DataGridTemplateColumn Header="Device Type" Width="1.4*" IsReadOnly="True">
+                    <DataGridTextColumn Width="*" Binding="{Binding Path=Port.Class}" IsReadOnly="True">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_class}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Width="1.4*" IsReadOnly="True">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_devType}" />
+                        </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Port.EndPointDevice.Type}" Style="{DynamicResource devToolTip}" >
@@ -134,6 +153,7 @@
                 Text="{DynamicResource i18n_srcNote}"
                 Margin="10,5,5,10" >
         </TextBlock>
-        <Button Grid.Row="2"  Grid.Column="1"  Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="8">Close</Button>
+        <Button Grid.Row="2"  Grid.Column="1"  Click="BtnOk_Click" Style="{DynamicResource defaultButton}" 
+                Margin="8" Content="{DynamicResource i18n_closeBtn}"/>
     </Grid>
 </Window>

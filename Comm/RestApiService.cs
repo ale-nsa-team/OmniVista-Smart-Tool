@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Windows;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
 
@@ -32,7 +33,8 @@ namespace PoEWizard.Comm
         private double totalProgressBar;
         private double progressBarCnt;
         private DateTime progressStartTime;
-
+        
+        public ResourceDictionary Strings { get; set; }
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
         public ResultCallback Callback { get; set; }
@@ -56,14 +58,14 @@ namespace PoEWizard.Comm
                 DateTime startTime = DateTime.Now;
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
-                string progrMsg = $"Connecting to switch {SwitchModel.IpAddress}{WAITING}";
+                string progrMsg = $"{Translate("i18n_rsCnx")} {SwitchModel.IpAddress}{WAITING}";
                 StartProgressBar(progrMsg, 29);
                 _progress.Report(new ProgressReport(progrMsg));
                 RestApiClient.Login();
                 UpdateProgressBar(++progressBarCnt); //  1
-                if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"Could not connect to switch {SwitchModel.IpAddress}!");
+                if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"{Translate("i18n_rsNocnx")} {SwitchModel.IpAddress}!");
                 SwitchModel.IsConnected = true;
-                _progress.Report(new ProgressReport($"Reading system information on switch {SwitchModel.IpAddress}"));
+                _progress.Report(new ProgressReport($"{Translate("i18n_sys")} {Translate("i18n_onsw")} {SwitchModel.IpAddress}"));
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_MICROCODE, ParseType.Htable)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromDictionary(_dictList[0], DictionaryType.MicroCode);
                 UpdateProgressBar(++progressBarCnt); //  2
@@ -79,7 +81,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError("Connect", ex);
+                SendSwitchError(Translate("i18n_Conn"), ex);
             }
             CloseProgressBar();
             DisconnectAosSsh();
@@ -92,7 +94,7 @@ namespace PoEWizard.Comm
             {
                 if (totalProgressBar == 0)
                 {
-                    StartProgressBar($"Scanning switch {SwitchModel.Name}{WAITING}", 22);
+                    StartProgressBar($"{Translate("i18n_scan")} {SwitchModel.Name}{WAITING}", 22);
                     closeProgressBar = true;
                 }
                 GetCurrentSwitchDebugLevel();
@@ -105,7 +107,7 @@ namespace PoEWizard.Comm
                 else this._wizardReportResult = new WizardReport();
                 GetSystemInfo();
                 UpdateProgressBar(++progressBarCnt); //  9
-                SendProgressReport("Reading chassis and port information");
+                SendProgressReport(Translate("i18n_chas"));
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_CMM, ParseType.MVTable, DictionaryType.Cmm)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.Cmm);
                 UpdateProgressBar(++progressBarCnt); //  10
@@ -118,7 +120,7 @@ namespace PoEWizard.Comm
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_PORTS_LIST, ParseType.Htable3)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.PortsList);
                 UpdateProgressBar(++progressBarCnt); // 13
-                SendProgressReport("Reading power supply information");
+                SendProgressReport(Translate("i18n_psi"));
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_POWER_SUPPLIES, ParseType.Htable2)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.PowerSupply);
                 UpdateProgressBar(++progressBarCnt); // 14
@@ -140,7 +142,7 @@ namespace PoEWizard.Comm
                     PurgeConfigSnapshotFiles();
                 }
                 UpdateProgressBar(++progressBarCnt); // 22
-                string title = string.IsNullOrEmpty(source) ? $"Refresh switch {SwitchModel.Name}" : source;
+                string title = string.IsNullOrEmpty(source) ? $"{Translate("i18n_refrsw")} {SwitchModel.Name}" : source;
             }
             catch (Exception ex)
             {
@@ -188,7 +190,7 @@ namespace PoEWizard.Comm
 
         public void GetSystemInfo()
         {
-            SendProgressReport("Reading system information");
+            SendProgressReport(Translate("i18n_sys"));
             GetSyncStatus();
             _dictList = SendCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
             _dict = _dictList.FirstOrDefault(d => d[IP_ADDR] == SwitchModel.IpAddress);
@@ -214,7 +216,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError("Get Snapshot", ex);
+                SendSwitchError(Translate("i18n_rsGs"), ex);
             }
             return null;
         }
@@ -223,17 +225,17 @@ namespace PoEWizard.Comm
         {
             try
             {
-                SendProgressReport("Reading configuration snapshot");
+                SendProgressReport(Translate("i18n_lsnap"));
                 SwitchModel.ConfigSnapshot = SendCommand(new CmdRequest(Command.SHOW_CONFIGURATION, ParseType.NoParsing)) as string;
                 if (!SwitchModel.ConfigSnapshot.Contains(CMD_TBL[Command.LLDP_SYSTEM_DESCRIPTION_ENABLE]))
                 {
-                    SendProgressReport("Enabling LLDP description");
+                    SendProgressReport(Translate("i18n_rsLldp"));
                     SendCommand(new CmdRequest(Command.LLDP_SYSTEM_DESCRIPTION_ENABLE));
                 }
             }
             catch (Exception ex)
             {
-                SendSwitchError("Get Snapshot", ex);
+                SendSwitchError(Translate("i18n_rsGs"), ex);
             }
         }
 
@@ -310,12 +312,12 @@ namespace PoEWizard.Comm
                     GetSwitchSlotPort(slotPortNr);
                     if (_wizardSwitchPort == null)
                     {
-                        SendProgressError("Get Switch Log", $"Couldn't get data for port {slotPortNr}");
+                        SendProgressError(Translate("i18n_getLog"), $"{Translate("i18n_nodp")} {slotPortNr}");
                         return;
                     }
                 }
                 progressStartTime = DateTime.Now;
-                StartProgressBar($"Collecting logs on switch {SwitchModel.Name}{WAITING}", maxLogDur);
+                StartProgressBar($"{Translate("i18n_clog")} {SwitchModel.Name}{WAITING}", maxLogDur);
                 ConnectAosSsh();
                 UpdateSwitchLogBar();
                 int debugSelected = _debugSwitchLog.IntDebugLevelSelected;
@@ -326,23 +328,23 @@ namespace PoEWizard.Comm
                 int prevLpNiDebug = SwitchModel.LpNiDebugLevel;
                 int prevLpCmmDebug = SwitchModel.LpCmmDebugLevel;
                 // Setting switch debug level
-                SetAppDebugLevel($"Setting PoE debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPNI_LEVEL, debugSelected);
-                SetAppDebugLevel($"Setting CMM debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
+                SetAppDebugLevel($"{Translate("i18n_pdbg")} {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPNI_LEVEL, debugSelected);
+                SetAppDebugLevel($"{Translate("i18n_pdbg")} {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
                 if (restartPoE)
                 {
-                    if (_wizardSwitchPort != null) RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 5);
+                    if (_wizardSwitchPort != null) RestartDeviceOnPort($"{Translate("i18n_prst")} {_wizardSwitchPort.Name} {Translate("i18n_caplog")}", 5);
                     else RestartChassisPoE();
                 }
                 else
                 {
-                    WaitSec($"Collecting logs on switch {SwitchModel.Name}", 5);
+                    WaitSec($"{Translate("i18n_clog")} {SwitchModel.Name}", 5);
                 }
                 UpdateSwitchLogBar();
                 // Setting switch debug level back to the previous values
-                SetAppDebugLevel($"Resetting PoE debug level back to {Utils.IntToSwitchDebugLevel(prevLpNiDebug)}", Command.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
-                SetAppDebugLevel($"Resetting CMM debug level back to {Utils.IntToSwitchDebugLevel(prevLpCmmDebug)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
+                SetAppDebugLevel($"{Translate("i18n_rpdbg")} {Utils.IntToSwitchDebugLevel(prevLpNiDebug)}", Command.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
+                SetAppDebugLevel($"{Translate("i18n_rcdbg")} {Utils.IntToSwitchDebugLevel(prevLpCmmDebug)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
                 // Generating tar file
-                string msg = "Generating tar file";
+                string msg = Translate("i18n_tarf");
                 SendProgressReport(msg);
                 WaitSec(msg, 5);
                 SendCommand(new CmdRequest(Command.DEBUG_CREATE_LOG));
@@ -351,7 +353,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError("Get Switch Log", ex);
+                SendSwitchError(Translate("i18n_getLog"), ex);
             }
             finally
             {
@@ -389,7 +391,7 @@ namespace PoEWizard.Comm
 
         private void GetShowDebugSlotPower(string slotNr)
         {
-            SendProgressReport($"Getting lan power information of slot {slotNr}");
+            SendProgressReport($"{Translate("i18n_lanpw")} {slotNr}");
             string resp = SendCommand(new CmdRequest(Command.DEBUG_SHOW_LAN_POWER_STATUS, ParseType.NoParsing, new string[1] { slotNr })) as string;
             if (!string.IsNullOrEmpty(resp)) _debugSwitchLog.UpdateLanPowerStatus($"debug show lanpower slot {slotNr} status ni", resp);
             UpdateSwitchLogBar();
@@ -412,7 +414,7 @@ namespace PoEWizard.Comm
                 }
                 UpdateSwitchLogBar();
                 WaitSec(msg, 5);
-                _progress.Report(new ProgressReport($"Turning power ON on all slots of chassis {chassis.Number} to capture logs{WAITING}"));
+                _progress.Report(new ProgressReport($"{Translate("i18n_chason")} {chassis.Number} {Translate("i18n_caplog")}{WAITING}"));
                 foreach (SlotModel slot in chassis.Slots)
                 {
                     SendCommand(new CmdRequest(Command.POWER_UP_SLOT, new string[1] { slot.Name.ToString() }));
@@ -489,7 +491,7 @@ namespace PoEWizard.Comm
 
         private void GetCurrentSwitchDebugLevel()
         {
-            SendProgressReport($"Getting current log levels");
+            SendProgressReport(Translate("i18n_clogl"));
             if (_debugSwitchLog == null) _debugSwitchLog = new SwitchDebugModel();
             GetAppDebugLevel(Command.DEBUG_SHOW_LPNI_LEVEL);
             UpdateSwitchLogBar();
@@ -574,7 +576,7 @@ namespace PoEWizard.Comm
                 UpdateProgressBar(++progressBarCnt); //  1
                 DateTime startTime = DateTime.Now;
                 ConnectAosSsh();
-                string msg = $"{progressMsg} on switch {SwitchModel.Name}";
+                string msg = $"{progressMsg} {Translate("i18n_onsw")} {SwitchModel.Name}";
                 Dictionary<string, string> response = new Dictionary<string, string>();
                 cmdEntry.StartTime = DateTime.Now;
                 foreach (LinuxCommand cmdLinux in cmdEntry.CommandSeq)
@@ -598,7 +600,7 @@ namespace PoEWizard.Comm
             try
             {
                 if (SwitchModel.SyncStatus == SyncStatusType.Synchronized) return;
-                string msg = $"Writing memory on switch {SwitchModel.Name}";
+                string msg = $"{Translate("i18n_rsMem")} {SwitchModel.Name}";
                 StartProgressBar($"{msg}{WAITING}", 30);
                 SendCommand(new CmdRequest(Command.WRITE_MEMORY));
                 progressStartTime = DateTime.Now;
@@ -671,12 +673,12 @@ namespace PoEWizard.Comm
             progressStartTime = DateTime.Now;
             try
             {
-                string msg = $"Rebooting switch {SwitchModel.Name}";
+                string msg = $"{Translate("i18n_swrst")} {SwitchModel.Name}";
                 Logger.Info(msg);
                 StartProgressBar($"{msg}{WAITING}", 320);
                 SendRebootSwitchRequest();
                 if (waitSec <= 0) return string.Empty;
-                msg = $"Waiting switch {SwitchModel.Name} reboot ";
+                msg = $"{Translate("i18n_rsReboot")} {SwitchModel.Name} {Translate("i18n_reboot")} ";
                 WaitSec(msg, 5);
                 _progress.Report(new ProgressReport($"{msg}..."));
                 double dur = 0;
@@ -694,7 +696,7 @@ namespace PoEWizard.Comm
                 {
                     if (dur >= waitSec)
                     {
-                        throw new Exception($"Switch {SwitchModel.Name} didn't come back within {Utils.CalcStringDuration(progressStartTime, true)}!");
+                        throw new Exception($"{SwitchModel.Name} {Translate("i18n_rsTout")} {Utils.CalcStringDuration(progressStartTime, true)}!");
                     }
                     Thread.Sleep(1000);
                     dur = (int)Utils.GetTimeDuration(progressStartTime);
@@ -714,7 +716,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError($"Reboot switch {SwitchModel.Name}", ex);
+                SendSwitchError($"{Translate("i18n_rebsw")} {SwitchModel.Name}", ex);
                 return null;
             }
             CloseProgressBar();
@@ -806,7 +808,7 @@ namespace PoEWizard.Comm
             try
             {
                 stopTrafficAnalysis = AbortType.Running;
-                stopTrafficAnalysisReason = "completed";
+                stopTrafficAnalysisReason = Translate("i18n_compl");
                 _switchTraffic = null;
                 GetPortsTrafficInformation();
                 DateTime startTime = DateTime.Now;
@@ -834,7 +836,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError($"Traffic analysis on switch {SwitchModel.Name}", ex);
+                SendSwitchError($"{Translate("i18n_taerr")} {SwitchModel.Name}", ex);
                 return null;
             }
             return report;
@@ -842,12 +844,12 @@ namespace PoEWizard.Comm
 
         private void GetMacAndLldpInfo(int maxNbMacPerPort)
         {
-            SendProgressReport("Reading lldp remote information");
+            SendProgressReport(Translate("i18n_rlldp"));
             object lldpList = SendCommand(new CmdRequest(Command.SHOW_LLDP_REMOTE, ParseType.LldpRemoteTable));
             SwitchModel.LoadLldpFromList(lldpList as Dictionary<string, List<Dictionary<string, string>>>, DictionaryType.LldpRemoteList);
             lldpList = SendCommand(new CmdRequest(Command.SHOW_LLDP_INVENTORY, ParseType.LldpRemoteTable));
             SwitchModel.LoadLldpFromList(lldpList as Dictionary<string, List<Dictionary<string, string>>>, DictionaryType.LldpInventoryList);
-            SendProgressReport("Reading MAC address information");
+            SendProgressReport(Translate("i18n_rmac"));
             _dictList = SendCommand(new CmdRequest(Command.SHOW_MAC_LEARNING, ParseType.Htable)) as List<Dictionary<string, string>>;
             SwitchModel.LoadMacAddressFromList(_dictList, maxNbMacPerPort);
         }
@@ -865,7 +867,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError($"Traffic analysis on switch {SwitchModel.Name}", ex);
+                SendSwitchError($"{Translate("i18n_taerr")} {SwitchModel.Name}", ex);
             }
         }
 
@@ -903,9 +905,10 @@ namespace PoEWizard.Comm
         public bool SetPerpetualOrFastPoe(SlotModel slot, Command cmd)
         {
             bool enable = cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_FAST_ENABLE;
-            string poeType = (cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
-            string action = $"{(enable ? "Enable" : "Disable")} {poeType}";
-            ProgressReport progressReport = new ProgressReport($"{action} PoE Report:")
+            string poeType = (cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_PERPETUAL_DISABLE) 
+                ? Translate("i18n_ppoe") : Translate("i18n_fpoe");
+            string action = $"{(enable ? Translate("i18n_en") : Translate("i18n_dis"))} {poeType}";
+            ProgressReport progressReport = new ProgressReport($"{action} {Translate("i18n_pRep")}")
             {
                 Type = ReportType.Info
             };
@@ -918,21 +921,21 @@ namespace PoEWizard.Comm
                 string result = ChangePerpetualOrFastPoe(cmd);
                 RefreshPortsInformation();
                 progressReport.Message += result;
-                progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
+                progressReport.Message += $"\n - {Translate("i18n_dur")}: {Utils.PrintTimeDurationSec(startTime)}";
                 _progress.Report(progressReport);
-                LogActivity($"{action} PoE on slot {_wizardSwitchSlot.Name} completed", $"\n{progressReport.Message}");
+                LogActivity($"{action} on slot {_wizardSwitchSlot.Name} completed", $"\n{progressReport.Message}");
                 return true;
             }
             catch (Exception ex)
             {
-                SendSwitchError($"Set {poeType} PoE", ex);
+                SendSwitchError(action, ex);
             }
             return false;
         }
 
         public bool ChangePowerPriority(string port, PriorityLevelType priority)
         {
-            ProgressReport progressReport = new ProgressReport($"Change priority Report:")
+            ProgressReport progressReport = new ProgressReport(Translate("i18n_cpRep"))
             {
                 Type = ReportType.Info
             };
@@ -2117,6 +2120,11 @@ namespace PoEWizard.Comm
             DisconnectAosSsh();
             RestApiClient?.Close();
             LogActivity("Switch disconnected");
+        }
+
+        private string Translate(string key)
+        {
+            return (string)Strings[key] ?? key;
         }
 
         private void LogActivity(string action, string data = null)

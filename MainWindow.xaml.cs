@@ -889,7 +889,10 @@ namespace PoEWizard
                     SetDisconnectedState();
                     return;
                 }
-                restApiService = new RestApiService(device, progress);
+                restApiService = new RestApiService(device, progress)
+                {
+                    Strings = Resources.MergedDictionaries[1]
+                };
                 isClosing = false;
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();

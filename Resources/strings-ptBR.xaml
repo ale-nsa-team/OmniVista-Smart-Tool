@@ -138,7 +138,9 @@
 	<sys:String x:Key="i18n_dhcp">Servidor DHCP</sys:String>
     <sys:String x:Key="i18n_multicast">Ativar Multicast</sys:String>
     <sys:String x:Key="i18n_vlan">VLAN</sys:String>
-    <sys:String x:Key="i18n_en">Ativo</sys:String>
+    <sys:String x:Key="i18n_pRep"> - Relatório:</sys:String>
+    <sys:String x:Key="i18n_en">Ativar</sys:String>
+    <sys:String x:Key="i18n_dis">Desativar</sys:String>
     <sys:String x:Key="i18n_snmp">SNMP</sys:String>
     <sys:String x:Key="i18n_usrs">Usuários</sys:String>
     <sys:String x:Key="i18n_usr">Usuário</sys:String>
@@ -230,6 +232,7 @@ Deseja coletar informações para enviar ao Supporte técnico?
     <sys:String x:Key="i18n_pnoneed">Não é necessário alterar a prioridade do PoE na porta</sys:String>
     <sys:String x:Key="i18n_palready">A prioridade priority já é</sys:String>
     <sys:String x:Key="i18n_pback">Alterando a prioridade de volta a</sys:String>
+    <sys:String x:Key="i18n_cpRep">Relatório de mudança da prioridade:</sys:String>
     <sys:String x:Key="i18n_rcpoe">Reaplicando PoE na porta</sys:String>
     <sys:String x:Key="i18n_pwoff">Desligando a alimentação</sys:String>
     <sys:String x:Key="i18n_pwon">Ligando a alimentação</sys:String>
@@ -275,8 +278,8 @@ A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS 
     <sys:String x:Key="i18n_cdbg">Configurando o nível de log de CMM em</sys:String>
     <sys:String x:Key="i18n_rpdbg">Configurando o nível de log de PoE de volta a</sys:String>
     <sys:String x:Key="i18n_rcdbg">Configurando o nível de log de CMM de volta a</sys:String>
-    <sys:String x:Key="i18n_prst1">Reiniciando a porta</sys:String>
-    <sys:String x:Key="i18n_prst2">Para capturar os logs</sys:String>
+    <sys:String x:Key="i18n_prst">Reiniciando a porta</sys:String>
+    <sys:String x:Key="i18n_caplog">Para capturar os logs</sys:String>
     <sys:String x:Key="i18n_tarf">Gerando arquivo tar</sys:String>
     <sys:String x:Key="i18n_chasoff">Desligando energia em todos os slots do chassis</sys:String>
     <sys:String x:Key="i18n_chason">Ligando energia em todos os slots do chassis</sys:String>
@@ -405,9 +408,14 @@ Duração da reinicialização:
     <sys:String x:Key="i18n_chcode">Trocar a Senha</sys:String>
     <sys:String x:Key="i18n_codeErr">Não foi possível trocar a senha</sys:String>
     <sys:String x:Key="i18n_srcNote">Nota: Você pode clicar duas vezes na porta para selecioná-la na janela principal e fechar essa janela.</sys:String>
+    <sys:String x:Key="i18n_macNote">Nota: Todos os dispositivos que satisfazem o critério de busca são marcados com (*)</sys:String>
     <sys:String x:Key="i18n_srcText">Digite o Endereço MAC, Nome do Dispositivo ou Fabricante</sys:String>
     <sys:String x:Key="i18n_fload">Carregando o arquivo, aguarde...</sys:String>
     <sys:String x:Key="i18n_ftxt">Arquivo texto</sys:String>
+    <sys:String x:Key="i18n_crit">Procura:</sys:String>
+    <sys:String x:Key="i18n_nmfound">#MAC encontrados:</sys:String>
+    <sys:String x:Key="i18n_npfound">#Portas encontradas:</sys:String>
+    <sys:String x:Key="i18n_any">Qualquer</sys:String>
 
     <!--Tool Tips-->
     <sys:String x:Key="i18n_pwr_tt">Potência consumida pelo dispositivo connectado à porta</sys:String>

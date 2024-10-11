@@ -1,5 +1,6 @@
 ﻿using PoEWizard.Data;
 using PoEWizard.Device;
+using PoEWizard.Properties;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -26,9 +27,10 @@ namespace PoEWizard.Components
             } 
         }
 
-
+        private readonly ResourceDictionary strings;
+        private readonly string any;
         public string SearchText { get; set; }
-        public string DeviceMac => $"{(!string.IsNullOrEmpty(this.SearchText) ? $"\"{this.SearchText}\"" : "Any")}";
+        public string DeviceMac => $"{(!string.IsNullOrEmpty(this.SearchText) ? $"\"{this.SearchText}\"" : any)}";
         public ObservableCollection<PortViewModel> PortsFound { get; set; }
         public PortModel SelectedPort { get; set; }
         public bool IsMacAddress {  get; set; }
@@ -49,6 +51,8 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+            strings = Resources.MergedDictionaries[1];
+            any = (string)strings["i18n_any"];
             this.SelectedPort = null;
             SearchMacAddress(device, macAddress);
             if (this.PortsFound.Count == 1) this.SelectedPort = this.PortsFound[0].Port;
