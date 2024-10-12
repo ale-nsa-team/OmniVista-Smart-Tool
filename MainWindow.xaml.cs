@@ -961,28 +961,26 @@ namespace PoEWizard
         {
             try
             {
-                if (restApiService != null && !isClosing)
+                if (restApiService == null || isClosing) return;
+                string cfgChanges = await GetSyncStatus(title);
+                isClosing = true;
+                if (device?.RunningDir != CERTIFIED_DIR && device?.SyncStatus == SyncStatusType.NotSynchronized)
                 {
-                    string cfgChanges = await GetSyncStatus(title);
-                    isClosing = true;
-                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized)
+                    if (AuthorizeWriteMemory("Write Memory required", cfgChanges))
                     {
-                        if (AuthorizeWriteMemory("Write Memory required", cfgChanges))
-                        {
-                            DisableButtons();
-                            _comImg.Visibility = Visibility.Collapsed;
-                            await Task.Run(() => restApiService.WriteMemory());
-                            _comImg.Visibility = Visibility.Visible;
-                        }
+                        DisableButtons();
+                        _comImg.Visibility = Visibility.Collapsed;
+                        await Task.Run(() => restApiService?.WriteMemory());
+                        _comImg.Visibility = Visibility.Visible;
                     }
-                    restApiService.Close();
-                    restApiService = null;
                 }
+                restApiService?.Close();
+                restApiService = null;
                 await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
             }
             catch (Exception ex)
             {
-                Logger.Warn(ex.Message);
+                Logger.Error(ex);
             }
             finally
             {
