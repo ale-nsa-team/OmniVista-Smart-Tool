@@ -219,24 +219,29 @@ namespace PoEWizard.Device
                         }
                     }
                     break;
+
+                case DictionaryType.ShowInterfacesList:
+                    foreach (Dictionary<string, string> dict in dictList)
+                    {
+                        string slotPortNr = Utils.GetDictValue(dict, PORT);
+                        if (string.IsNullOrEmpty(slotPortNr)) continue;
+                        PortModel port = GetPort(slotPortNr);
+                        if (port == null) continue;
+                        port.LoadDetailInfo(dict);
+                    }
+                    break;
             }
         }
 
         public void LoadMacAddressFromList(List<Dictionary<string, string>> dictList, int maxNbMacPerPort)
         {
             if (dictList == null || dictList.Count == 0) return;
-            ChassisModel chassis;
             string prevPort = "";
             Dictionary<string, PortModel> ports = new Dictionary<string, PortModel>();
             foreach (Dictionary<string, string> dict in dictList)
             {
                 string currPort = Utils.GetDictValue(dict, INTERFACE);
-                ChassisSlotPort slotPort = new ChassisSlotPort(currPort);
-                chassis = GetChassis(slotPort.ChassisNr);
-                if (chassis == null) continue;
-                SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
-                if (slot == null) continue;
-                PortModel port = slot.GetPort(currPort);
+                PortModel port = GetPort(currPort);
                 if (port == null) continue;
                 if (currPort != prevPort)
                 {
@@ -259,16 +264,21 @@ namespace PoEWizard.Device
             if (list == null || list.Count < 1) return;
             foreach (string key in list.Keys.ToList())
             {
-                ChassisSlotPort slotPort = new ChassisSlotPort(key);
-                ChassisModel chassis = GetChassis(slotPort.ChassisNr);
-                if (chassis == null) continue;
-                SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
-                if (slot == null) continue;
-                PortModel port = slot.GetPort(key);
+                PortModel port = GetPort(key);
                 if (port == null) continue;
                 List<Dictionary<string, string>> dictList = list[key];
                 if (dt == DictionaryType.LldpRemoteList) port.LoadLldpRemoteTable(dictList); else port.LoadLldpInventoryTable(dictList);
             }
+        }
+
+        public PortModel GetPort(string slotPortNr)
+        {
+            ChassisSlotPort slotPort = new ChassisSlotPort(slotPortNr);
+            ChassisModel chassis = GetChassis(slotPort.ChassisNr);
+            if (chassis == null) return null;
+            SlotModel slot = chassis.GetSlot(slotPort.SlotNr);
+            if (slot == null) return null;
+            return slot.GetPort(slotPortNr);
         }
 
         public void UpdateSelectedSlotData(string slotNr)

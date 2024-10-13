@@ -57,7 +57,7 @@ namespace PoEWizard.Comm
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
                 string progrMsg = $"Connecting to switch {SwitchModel.IpAddress}{WAITING}";
-                StartProgressBar(progrMsg, 29);
+                StartProgressBar(progrMsg, 30);
                 _progress.Report(new ProgressReport(progrMsg));
                 RestApiClient.Login();
                 UpdateProgressBar(++progressBarCnt); //  1
@@ -75,6 +75,8 @@ namespace PoEWizard.Comm
                 UpdateProgressBar(++progressBarCnt); // 4
                 ScanSwitch(progrMsg, reportResult);
                 UpdateFlashInfo(progrMsg);
+                UpdateProgressBar(++progressBarCnt); // 30
+                ShowInterfacesList();
                 LogActivity($"Switch connected", $", duration: {Utils.CalcStringDuration(startTime)}");
             }
             catch (Exception ex)
@@ -856,7 +858,7 @@ namespace PoEWizard.Comm
         {
             try
             {
-                _dictList = SendCommand(new CmdRequest(Command.SHOW_INTERFACES, ParseType.TrafficTable)) as List<Dictionary<string, string>>;
+                ShowInterfacesList();
                 if (_dictList?.Count > 0)
                 {
                     if (_switchTraffic == null) _switchTraffic = new SwitchTrafficModel(SwitchModel, _dictList);
@@ -866,6 +868,23 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 SendSwitchError($"Traffic analysis on switch {SwitchModel.Name}", ex);
+            }
+        }
+
+        private void ShowInterfacesList()
+        {
+            try
+            {
+                SendProgressReport("Reading ports detail information");
+                _dictList = SendCommand(new CmdRequest(Command.SHOW_INTERFACES, ParseType.TrafficTable)) as List<Dictionary<string, string>>;
+                if (_dictList?.Count > 0)
+                {
+                    SwitchModel.LoadFromList(_dictList, DictionaryType.ShowInterfacesList);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
             }
         }
 

@@ -27,12 +27,24 @@ namespace PoEWizard.Device
         public ConfigType Protocol8023bt { get; set; }
         public bool IsEnabled { get; set; } = false;
         public string Class { get; set; }
-        public string Type { get; set; }
         public List<string> MacList { get; set; }
         public EndPointDeviceModel EndPointDevice { get; set; }
         public List<EndPointDeviceModel> EndPointDevicesList { get; set; }
         public string Alias { get; set; }
         public List<PriorityLevelType> Priorities => Enum.GetValues(typeof(PriorityLevelType)).Cast<PriorityLevelType>().ToList();
+
+        #region Port detail information
+        public string Violation { get; set; }
+        public string Type { get; set; }
+        public string InterfaceType { get; set; }
+        public string Bandwidth { get; set; }
+        public string Duplex { get; set; }
+        public string AutoNegotiation { get; set; }
+        public string Transceiver { get; set; }
+        public string EPP {  get; set; }
+        public string LinkQuality { get; set; }
+        public List<string> DetailsInfo => ToTooltip();
+        #endregion
 
         public PortModel(Dictionary<string, string> dict)
         {
@@ -101,7 +113,6 @@ namespace PoEWizard.Device
             {
                 Class = string.Empty;
             }
-            Type = Utils.GetDictValue(dict, TYPE);
         }
 
         public void LoadPoEConfig(Dictionary<string, string> dict) 
@@ -228,6 +239,38 @@ namespace PoEWizard.Device
             IsUplink = MacList.Count > MIN_NB_MAC_UPLINK;
         }
 
+        public void LoadDetailInfo(Dictionary<string, string> dict)
+        {
+            Violation = GetDictValue(dict, PORT_VIOLATION);
+            Type = GetDictValue(dict, PORT_TYPE);
+            InterfaceType = GetDictValue(dict, PORT_INTERFACE_TYPE);
+            Bandwidth = GetDictValue(dict, PORT_BANDWIDTH);
+            Duplex = GetDictValue(dict, PORT_DUPLEX);
+            AutoNegotiation = GetDictValue(dict, PORT_AUTO_NEGOTIATION);
+            Transceiver = GetDictValue(dict, PORT_TRANSCEIVER);
+            EPP = GetDictValue(dict, PORT_EPP);
+            LinkQuality = GetDictValue(dict, PORT_LINK_QUALITY);
+        }
+
+        private string GetDictValue(Dictionary<string, string> dict, string param)
+        {
+            string sVal = Utils.GetDictValue(dict, param).Replace("-", "");
+            switch (param)
+            {
+                case PORT_BANDWIDTH:
+                    sVal = !string.IsNullOrEmpty(sVal) ? $"{sVal} Mbps" : INFO_UNAVAILABLE;
+                    break;
+                case PORT_AUTO_NEGOTIATION:
+                    sVal = !string.IsNullOrEmpty(sVal) && !sVal.StartsWith("0") ? sVal : INFO_UNAVAILABLE;
+                    break;
+                default:
+                    if (string.IsNullOrEmpty(sVal)) sVal = INFO_UNAVAILABLE;
+                    else if (sVal.ToLower() == "notpresent" || sVal.ToLower() == "none" || sVal == NOT_AVAILABLE) sVal = INFO_UNAVAILABLE;
+                    break;
+            }
+            return sVal;
+        }
+
         public bool IsSwitchUplink()
         {
             return this.EndPointDevicesList?.Count > 0 && !string.IsNullOrEmpty(this.EndPointDevicesList[0].Type) && this.EndPointDevicesList[0].Type == MED_SWITCH;
@@ -243,6 +286,24 @@ namespace PoEWizard.Device
         public double ParseNumber(string val)
         {
             return double.TryParse(val.Replace("*", ""), out double n) ? n : 0;
+        }
+
+        public List<string> ToTooltip()
+        {
+            List<string> tip = new List<string> {
+                $"Port: {this.Name}"
+            };
+            if (!string.IsNullOrEmpty(this.InterfaceType)) tip.Add($"Interface Type: {this.InterfaceType}");
+            if (!string.IsNullOrEmpty(this.Bandwidth)) tip.Add($"Bandwidth: {this.Bandwidth}");
+            if (!string.IsNullOrEmpty(this.Duplex)) tip.Add($"Duplex: {this.Duplex}");
+            if (!string.IsNullOrEmpty(this.AutoNegotiation)) tip.Add($"Auto Negotiation: {this.AutoNegotiation}");
+            if (!string.IsNullOrEmpty(this.Violation)) tip.Add($"Violation: {this.Violation}");
+            if (!string.IsNullOrEmpty(this.Transceiver)) tip.Add($"Transceiver: {this.Transceiver}");
+            if (!string.IsNullOrEmpty(this.EPP)) tip.Add($"EPP: {this.EPP}");
+            if (!string.IsNullOrEmpty(this.LinkQuality)) tip.Add($"Link Quality: {this.LinkQuality}");
+            string note = "Note: Run traffic analysis to update port details information";
+            tip.Add($"\n{note}\n");
+            return tip;
         }
 
     }
