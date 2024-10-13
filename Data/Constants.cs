@@ -266,9 +266,14 @@ namespace PoEWizard.Data
         public const string PORT_TRANSCEIVER = "SFP/XFP";
         public const string PORT_EPP = "EPP";
         public const string PORT_LINK_QUALITY = "Link-Quality";
+        public const string PORT_COPPER = "Copper";
+        public const string PORT_FIBER = "Fiber";
         public const string NOT_AVAILABLE = "N/A";
-        public const string INFO_UNAVAILABLE = "-";
+        public const string INFO_UNAVAILABLE = "";
         public const char UNDERLINE = '_';
+        public const string FULL_DUPLEX = "Full Duplex";
+        public const string HALF_DUPLEX = "Half Duplex";
+        public const string HALF_FULL_DUPLEX = "Half/Full Duplex";
         // Used by Traffic Analysis
         public const string TRAF_SLOT_PORT = "Chassis/Slot/Port";
         public const string TRAF_STATUS = "Operational Status";

@@ -258,10 +258,28 @@ namespace PoEWizard.Device
             switch (param)
             {
                 case PORT_BANDWIDTH:
-                    sVal = !string.IsNullOrEmpty(sVal) ? $"{sVal} Mbps" : INFO_UNAVAILABLE;
+                    sVal = GetNetworkSpeed(sVal);
                     break;
                 case PORT_AUTO_NEGOTIATION:
-                    sVal = !string.IsNullOrEmpty(sVal) && !sVal.StartsWith("0") ? sVal : INFO_UNAVAILABLE;
+                    if (!string.IsNullOrEmpty(sVal))
+                    {
+                        if (sVal.StartsWith("0")) sVal = "Disabled";
+                        else if (sVal.StartsWith("1"))
+                        {
+                            string[] split = sVal.Replace("1 ", string.Empty).Replace("[", string.Empty).Replace("]", string.Empty).Trim().Split(' ');
+                            List<string> options = new List<string>();
+                            for (int idx = 0; idx < split.Length; idx++)
+                            {
+                                string strVal = split[idx].Trim();
+                                if (string.IsNullOrEmpty(strVal)) continue;
+                                string speed = GetNetworkSpeed(strVal);
+                                if (strVal.Contains("F")) AddToAutonegotiationOptions(options, speed, FULL_DUPLEX, HALF_DUPLEX);
+                                else if (strVal.Contains("H")) AddToAutonegotiationOptions(options, speed, HALF_DUPLEX, FULL_DUPLEX);
+                            }
+                            sVal = "Enabled";
+                            if (options.Count > 0) sVal += $"{string.Join(",", options)}";
+                        }
+                    }
                     break;
                 default:
                     if (string.IsNullOrEmpty(sVal)) sVal = INFO_UNAVAILABLE;
@@ -269,6 +287,25 @@ namespace PoEWizard.Device
                     break;
             }
             return sVal;
+        }
+
+        private void AddToAutonegotiationOptions(List<string> options, string speed, string currDuplex, string prevDuplex)
+        {
+            string item = options.Where(x => x.Contains($"{speed} {prevDuplex}")).FirstOrDefault();
+            if (!string.IsNullOrEmpty(item))
+            {
+                int index = options.IndexOf(item);
+                if (index > 0 && index < options.Count) options[index] = options[index].Replace($"{speed} {prevDuplex}", $"{speed} {HALF_FULL_DUPLEX}");
+            }
+            else options.Add($"\n - {speed} {currDuplex}");
+        }
+
+        private static string GetNetworkSpeed(string sVal)
+        {
+            int speed = Utils.StringToInt(sVal);
+            if (speed >= 1000) return $"{speed / 1000} Gbps";
+            else if (speed > 1 && speed < 1000) return $"{speed} Mbps";
+            else return string.Empty;
         }
 
         public bool IsSwitchUplink()
@@ -293,7 +330,15 @@ namespace PoEWizard.Device
             List<string> tip = new List<string> {
                 $"Port: {this.Name}"
             };
-            if (!string.IsNullOrEmpty(this.InterfaceType)) tip.Add($"Interface Type: {this.InterfaceType}");
+            if (!string.IsNullOrEmpty(this.Type))
+            {
+                string sInterface = this.Type;
+                if (!string.IsNullOrEmpty(this.InterfaceType))
+                {
+                    if (!string.IsNullOrEmpty(this.Type)) sInterface = $"{this.InterfaceType.Replace(PORT_COPPER, "Wired").Replace(PORT_FIBER, "Optical Fiber")} {this.Type}";
+                }
+                tip.Add($"Interface Type: {sInterface}");
+            }
             if (!string.IsNullOrEmpty(this.Bandwidth)) tip.Add($"Bandwidth: {this.Bandwidth}");
             if (!string.IsNullOrEmpty(this.Duplex)) tip.Add($"Duplex: {this.Duplex}");
             if (!string.IsNullOrEmpty(this.AutoNegotiation)) tip.Add($"Auto Negotiation: {this.AutoNegotiation}");
@@ -301,8 +346,6 @@ namespace PoEWizard.Device
             if (!string.IsNullOrEmpty(this.Transceiver)) tip.Add($"Transceiver: {this.Transceiver}");
             if (!string.IsNullOrEmpty(this.EPP)) tip.Add($"EPP: {this.EPP}");
             if (!string.IsNullOrEmpty(this.LinkQuality)) tip.Add($"Link Quality: {this.LinkQuality}");
-            string note = "Note: Run traffic analysis to update port details information";
-            tip.Add($"\n{note}\n");
             return tip;
         }
 

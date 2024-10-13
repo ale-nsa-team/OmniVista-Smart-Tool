@@ -57,7 +57,7 @@ namespace PoEWizard.Comm
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
                 string progrMsg = $"Connecting to switch {SwitchModel.IpAddress}{WAITING}";
-                StartProgressBar(progrMsg, 30);
+                StartProgressBar(progrMsg, 31);
                 _progress.Report(new ProgressReport(progrMsg));
                 RestApiClient.Login();
                 UpdateProgressBar(++progressBarCnt); //  1
@@ -77,6 +77,7 @@ namespace PoEWizard.Comm
                 UpdateFlashInfo(progrMsg);
                 UpdateProgressBar(++progressBarCnt); // 30
                 ShowInterfacesList();
+                UpdateProgressBar(++progressBarCnt); // 31
                 LogActivity($"Switch connected", $", duration: {Utils.CalcStringDuration(startTime)}");
             }
             catch (Exception ex)
@@ -87,6 +88,14 @@ namespace PoEWizard.Comm
             DisconnectAosSsh();
         }
 
+        public void RefreshSwitch(string source, WizardReport reportResult = null)
+        {
+            StartProgressBar($"Scanning switch {SwitchModel.Name}{WAITING}", 24);
+            ScanSwitch(source, reportResult);
+            ShowInterfacesList();
+            UpdateProgressBar(++progressBarCnt); // 24
+        }
+
         public void ScanSwitch(string source, WizardReport reportResult = null)
         {
             bool closeProgressBar = false;
@@ -94,7 +103,7 @@ namespace PoEWizard.Comm
             {
                 if (totalProgressBar == 0)
                 {
-                    StartProgressBar($"Scanning switch {SwitchModel.Name}{WAITING}", 22);
+                    StartProgressBar($"Scanning switch {SwitchModel.Name}{WAITING}", 23);
                     closeProgressBar = true;
                 }
                 GetCurrentSwitchDebugLevel();

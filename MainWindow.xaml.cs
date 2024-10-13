@@ -1235,7 +1235,7 @@ namespace PoEWizard
                 DisableButtons();
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
-                await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.Name}", reportResult));
+                await Task.Run(() => restApiService.RefreshSwitch($"Refresh switch {device.Name}", reportResult));
                 await CheckSwitchScanResult($"Refresh switch {device.Name}", startTime);
                 RefreshSlotAndPortsView();
                 if (device.RunningDir == CERTIFIED_DIR)
