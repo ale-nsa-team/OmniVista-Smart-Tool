@@ -231,7 +231,7 @@ namespace PoEWizard.Comm
                 }
                 string error;
                 int nbRetry = 1;
-                while (http_response.IsCanceled || http_response.Result == null)
+                while (http_response.IsCanceled || http_response?.Result == null)
                 {
                     error = GetHttpResponseError(url, http_response);
                     Logger.Warn($"{error ?? "Unknown error"} (Try #{nbRetry}, duration: {Utils.CalcStringDuration(entry.StartTime)})");
@@ -269,6 +269,7 @@ namespace PoEWizard.Comm
         private Task<HttpResponseMessage> SendHttpRequest(RestUrlEntry entry, string url)
         {
             Task<HttpResponseMessage> http_response = SendAsyncRequest(entry, url);
+            if (http_response.IsCanceled) return http_response;
             if (http_response?.Result?.StatusCode == HttpStatusCode.Unauthorized)
             {
                 Logger.Info($"Switch {this._ip_address} token expired after {Utils.CalcStringDuration(this._start_connect_time, true)}, reconnecting to the switch.");

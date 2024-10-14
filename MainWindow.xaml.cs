@@ -148,6 +148,7 @@ namespace PoEWizard
                 sftpService = null;
                 await CloseRestApiService("Closing the application");
                 this.Closing -= OnWindowClosing;
+                await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
                 this.Close();
             }
             catch (Exception ex)
@@ -961,27 +962,25 @@ namespace PoEWizard
         {
             try
             {
-                if (restApiService != null && !isClosing)
+                if (restApiService == null || isClosing) return;
+                string cfgChanges = await GetSyncStatus(title);
+                isClosing = true;
+                if (device?.RunningDir != CERTIFIED_DIR && device?.SyncStatus == SyncStatusType.NotSynchronized)
                 {
-                    string cfgChanges = await GetSyncStatus(title);
-                    isClosing = true;
-                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized)
+                    if (AuthorizeWriteMemory("Write Memory required", cfgChanges))
                     {
-                        if (AuthorizeWriteMemory("Write Memory required", cfgChanges))
-                        {
-                            DisableButtons();
-                            _comImg.Visibility = Visibility.Collapsed;
-                            await Task.Run(() => restApiService.WriteMemory());
-                            _comImg.Visibility = Visibility.Visible;
-                        }
+                        DisableButtons();
+                        _comImg.Visibility = Visibility.Collapsed;
+                        await Task.Run(() => restApiService?.WriteMemory());
+                        _comImg.Visibility = Visibility.Visible;
                     }
-                    restApiService.Close();
                 }
-                await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
+                restApiService?.Close();
+                restApiService = null;
             }
             catch (Exception ex)
             {
-                Logger.Warn(ex.Message);
+                Logger.Error(ex);
             }
             finally
             {
@@ -1236,7 +1235,7 @@ namespace PoEWizard
                 DisableButtons();
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
-                await Task.Run(() => restApiService.ScanSwitch($"Refresh switch {device.Name}", reportResult));
+                await Task.Run(() => restApiService.RefreshSwitch($"Refresh switch {device.Name}", reportResult));
                 await CheckSwitchScanResult($"Refresh switch {device.Name}", startTime);
                 RefreshSlotAndPortsView();
                 if (device.RunningDir == CERTIFIED_DIR)

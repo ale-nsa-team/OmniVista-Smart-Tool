@@ -361,7 +361,7 @@ namespace PoEWizard.Data
 
         public static string GetDictValue(Dictionary<string, string> dict, string param)
         {
-            return !dict.TryGetValue(param, out string val) || string.IsNullOrEmpty(val) ? string.Empty : val.Trim();
+            return string.IsNullOrEmpty(param) || !dict.TryGetValue(param, out string val) || string.IsNullOrEmpty(val) ? string.Empty : val.Trim();
         }
 
         public static bool IsInvalid(object[] values)

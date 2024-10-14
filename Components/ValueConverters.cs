@@ -488,7 +488,7 @@ namespace PoEWizard.Components
                     List<string> tooltip = displayList.Select(x => x.ToTooltip()).ToList();
                     int maxlen = tooltip.Max(t => MaxLineLen(t));
                     if (hasmore) tooltip.Add($"{new string(' ', maxlen / 2 - 6)}({edmList.Count - MAX_NB_DEVICES_TOOL_TIP} more...)");
-                    string separator = $"\n{new string('-', maxlen)}\n";
+                    string separator = $"\n{new string(UNDERLINE, maxlen)}\n\n";
                     return string.Join(separator, tooltip);
                 }
                 return null;
@@ -544,7 +544,7 @@ namespace PoEWizard.Components
                 }
                 int maxlen = tooltip.Max(t => MaxLineLen(t));
                 if (hasmore) tooltip.Add($"{new string(' ', maxlen / 2 - 6)}({edmList.Count - MAX_NB_DEVICES_TOOL_TIP} more...)");
-                string separator = $"\n{new string('-', maxlen)}\n";
+                string separator = $"\n{new string(UNDERLINE, maxlen)}\n\n";
                 return string.Join(separator, tooltip);
             }
             catch (Exception ex)
@@ -643,6 +643,31 @@ namespace PoEWizard.Components
         private int MaxLineLen(string s)
         {
             return s.Split('\n').Max(l => l.Length);
+        }
+    }
+
+    public class PortToTooltipConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                if (Utils.IsInvalid(value)) return DependencyProperty.UnsetValue;
+                if (!(value is List<string>)) return DependencyProperty.UnsetValue;
+                List<string> tooltip = value as List<string>;
+                return string.Join("\n", tooltip);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return null;
+            }
+
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
         }
     }
 

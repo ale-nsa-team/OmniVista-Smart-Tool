@@ -36,7 +36,7 @@ namespace PoEWizard.Data
         public enum DictionaryType
         {
             SystemRunningDir, Chassis, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList,
-            TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, None
+            TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, ShowInterfacesList, None
         }
         public enum ConfigType { Enable, Disable, Unavailable }
         public enum DeviceType
@@ -139,7 +139,6 @@ namespace PoEWizard.Data
         public const string PPOE = "PPOE";
         public const string PRIORITY = "Priority";
         public const string CLASS = "Class";
-        public const string TYPE = "Type";
         public const string PRIO_DISCONNECT = "Priority Disconnect";
         public const string ALIAS = "Alias";
         // Used by "SHOW_LAN_POWER"
@@ -257,6 +256,25 @@ namespace PoEWizard.Data
         public const string DEBUG_CLI_SUB_APP_LEVEL = "Level";
         public const string LPNI = "lpNi";
         public const string LPCMM = "lpCmm";
+        // Used by Ports detail information
+        public const string PORT_VIOLATION = "Port-Down/Violation Reason";
+        public const string PORT_TYPE = "Type";
+        public const string PORT_INTERFACE_TYPE = "Interface Type";
+        public const string PORT_BANDWIDTH = "BandWidth (Megabits)";
+        public const string PORT_DUPLEX = "Duplex";
+        public const string PORT_AUTO_NEGOTIATION = "Autonegotiation";
+        public const string PORT_TRANSCEIVER = "SFP/XFP";
+        public const string PORT_EPP = "EPP";
+        public const string PORT_LINK_QUALITY = "Link-Quality";
+        public const string PORT_COPPER = "Copper";
+        public const string PORT_FIBER = "Fiber";
+        public const string NOT_AVAILABLE = "N/A";
+        public const string QUALITY_NOT_AVAILABLE = "1: N/A 2: N/A 3: N/A 4: N/A";
+        public const string INFO_UNAVAILABLE = "";
+        public const char UNDERLINE = '_';
+        public const string FULL_DUPLEX = "Full Duplex";
+        public const string HALF_DUPLEX = "Half Duplex";
+        public const string HALF_FULL_DUPLEX = "Half/Full Duplex";
         // Used by Traffic Analysis
         public const string TRAF_SLOT_PORT = "Chassis/Slot/Port";
         public const string TRAF_STATUS = "Operational Status";
@@ -328,8 +346,8 @@ namespace PoEWizard.Data
         public const string DISK_USAGE = "Usage";
         public const string MOUNTED = "Mounted";
         // Used to display switch data related to chassis Master or Slave
-        public const string MASTER = " (Master)";
-        public const string SLAVE = " (Slave)";
+        public const string MASTER = "Master";
+        public const string SLAVE = "Slave";
         public const string MAC_MATCH_MARK = " (*)";
         #endregion
 
@@ -349,7 +367,7 @@ namespace PoEWizard.Data
         #region Number of Mac Addresses Limits
         public const int MAX_SEARCH_NB_MAC_PER_PORT = 1500;
         public const int MAX_SCAN_NB_MAC_PER_PORT = 52;
-        public const int MAX_NB_MAC_TOOL_TIP = 30;
+        public const int MAX_NB_MAC_TOOL_TIP = 50;
         public const int MAX_NB_DEVICES_TOOL_TIP = 10;
         public const int MIN_NB_MAC_UPLINK = 2;
         #endregion

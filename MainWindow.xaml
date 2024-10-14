@@ -289,16 +289,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="VC Master/Slave" Width="1.1*">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=MasterSlave}"
-                                           Foreground="{Binding Path=IsMaster,
-                                           Converter={StaticResource ValueToColorConverter},
-                                           ConverterParameter=Boolean}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="VC Master/Slave" Width="1.1*" Binding="{Binding Path=MasterSlave}" />
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
@@ -313,7 +304,15 @@
                       CellStyle="{DynamicResource gridCell}"
                       SelectionChanged="PortSelection_Changed">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header=" Port" Width="60" Binding="{Binding Path=Name}" IsReadOnly="True"/>
+                    <DataGridTemplateColumn Header="Port" Width="60" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Name}" Style="{DynamicResource devToolTip}"
+                                Foreground="{DynamicResource fontColor}"
+                                ToolTip="{Binding Path=DetailsInfo, Converter={StaticResource PortToTooltipConverter}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Alias" Width="1.2*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
