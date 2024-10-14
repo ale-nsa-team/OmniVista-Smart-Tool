@@ -254,11 +254,11 @@ namespace PoEWizard.Device
 
         private string GetDictValue(Dictionary<string, string> dict, string param)
         {
-            string sVal = Utils.GetDictValue(dict, param).Replace("-", "");
+            string sVal = Utils.GetDictValue(dict, param);
             switch (param)
             {
                 case PORT_BANDWIDTH:
-                    sVal = GetNetworkSpeed(sVal);
+                    sVal = GetNetworkSpeed(sVal.Replace("-", "").Trim());
                     break;
                 case PORT_AUTO_NEGOTIATION:
                     if (!string.IsNullOrEmpty(sVal))
@@ -266,6 +266,7 @@ namespace PoEWizard.Device
                         if (sVal.StartsWith("0")) sVal = "Disabled";
                         else if (sVal.StartsWith("1"))
                         {
+                            sVal = sVal.Replace("-", "").Trim();
                             string[] split = sVal.Replace("1 ", string.Empty).Replace("[", string.Empty).Replace("]", string.Empty).Trim().Split(' ');
                             List<string> options = new List<string>();
                             for (int idx = 0; idx < split.Length; idx++)
@@ -283,7 +284,7 @@ namespace PoEWizard.Device
                     break;
                 default:
                     if (string.IsNullOrEmpty(sVal)) sVal = INFO_UNAVAILABLE;
-                    else if (sVal.ToLower() == "notpresent" || sVal.ToLower() == "none" || sVal == NOT_AVAILABLE) sVal = INFO_UNAVAILABLE;
+                    else if (sVal.ToLower() == "notpresent" || sVal == "-" || sVal.ToLower() == "none" || sVal == NOT_AVAILABLE) sVal = INFO_UNAVAILABLE;
                     break;
             }
             return sVal;

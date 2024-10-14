@@ -148,6 +148,7 @@ namespace PoEWizard
                 sftpService = null;
                 await CloseRestApiService("Closing the application");
                 this.Closing -= OnWindowClosing;
+                await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
                 this.Close();
             }
             catch (Exception ex)
@@ -976,7 +977,6 @@ namespace PoEWizard
                 }
                 restApiService?.Close();
                 restApiService = null;
-                await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
             }
             catch (Exception ex)
             {
