@@ -269,6 +269,7 @@ namespace PoEWizard.Data
         public const string PORT_COPPER = "Copper";
         public const string PORT_FIBER = "Fiber";
         public const string NOT_AVAILABLE = "N/A";
+        public const string QUALITY_NOT_AVAILABLE = "1: N/A 2: N/A 3: N/A 4: N/A";
         public const string INFO_UNAVAILABLE = "";
         public const char UNDERLINE = '_';
         public const string FULL_DUPLEX = "Full Duplex";

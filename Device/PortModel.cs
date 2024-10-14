@@ -258,7 +258,7 @@ namespace PoEWizard.Device
             switch (param)
             {
                 case PORT_BANDWIDTH:
-                    sVal = GetNetworkSpeed(sVal.Replace("-", "").Trim());
+                    sVal = GetNetworkSpeed(sVal.Replace("-", string.Empty).Trim());
                     break;
                 case PORT_AUTO_NEGOTIATION:
                     if (!string.IsNullOrEmpty(sVal))
@@ -266,7 +266,7 @@ namespace PoEWizard.Device
                         if (sVal.StartsWith("0")) sVal = "Disabled";
                         else if (sVal.StartsWith("1"))
                         {
-                            sVal = sVal.Replace("-", "").Trim();
+                            sVal = sVal.Replace("-", string.Empty).Trim();
                             string[] split = sVal.Replace("1 ", string.Empty).Replace("[", string.Empty).Replace("]", string.Empty).Trim().Split(' ');
                             List<string> options = new List<string>();
                             for (int idx = 0; idx < split.Length; idx++)
@@ -284,7 +284,10 @@ namespace PoEWizard.Device
                     break;
                 default:
                     if (string.IsNullOrEmpty(sVal)) sVal = INFO_UNAVAILABLE;
-                    else if (sVal.ToLower() == "notpresent" || sVal == "-" || sVal.ToLower() == "none" || sVal == NOT_AVAILABLE) sVal = INFO_UNAVAILABLE;
+                    else if (sVal.ToLower() == "notpresent" || sVal == "-" || sVal.ToLower() == "none" || sVal == NOT_AVAILABLE || sVal == QUALITY_NOT_AVAILABLE)
+                    {
+                        sVal = INFO_UNAVAILABLE;
+                    }
                     break;
             }
             return sVal;
@@ -323,7 +326,7 @@ namespace PoEWizard.Device
 
         public double ParseNumber(string val)
         {
-            return double.TryParse(val.Replace("*", ""), out double n) ? n : 0;
+            return double.TryParse(val.Replace("*", string.Empty), out double n) ? n : 0;
         }
 
         public List<string> ToTooltip()
