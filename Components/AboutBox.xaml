@@ -30,7 +30,7 @@
             </Grid.RowDefinitions>
             <Image Grid.Row="0" Source="../Resources/Img/ale-icon.png" Stretch="None" Margin="0,100,0,0"/>
             <StackPanel Grid.Row="1" Margin="40,0,0,10">
-                <TextBlock Style="{DynamicResource aboutParagraph}" Text="Autors:"  Margin="0"/>
+                <TextBlock Style="{DynamicResource aboutParagraph}" Text="Authors:"  Margin="0"/>
                 <TextBlock Style="{DynamicResource aboutParagraph}" Margin="0,5,0,8">
                 Luiz Felix<LineBreak />Joao Almeida
                 </TextBlock>
