@@ -14,7 +14,7 @@ namespace PoEWizard.Components
         public AboutBox()
         {
             InitializeComponent();
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[0]);
             }
@@ -23,6 +23,9 @@ namespace PoEWizard.Components
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
 
             }
+
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
 
             int year = DateTime.Now.Year;
             Assembly assembly = Assembly.GetExecutingAssembly();

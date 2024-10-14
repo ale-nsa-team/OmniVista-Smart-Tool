@@ -19,7 +19,7 @@ namespace PoEWizard.Components
             this.DataContext = this;
             InitializeComponent();
 
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[0]);
             }
@@ -27,6 +27,8 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)

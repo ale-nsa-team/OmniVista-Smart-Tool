@@ -15,7 +15,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/ResourceDictionary-light.xaml"/>
                     <ResourceDictionary Source="Resources/ResourceDictionary-dark.xaml"/>
-                    <ResourceDictionary Source="Resources/strings-ptBr.xaml"/>
+                    <ResourceDictionary Source="Resources/strings-enUS.xaml"/>
                 </ResourceDictionary.MergedDictionaries>
             </ResourceDictionary>
         </Window.Resources>
@@ -39,30 +39,33 @@
                 <MenuItem Header="{DynamicResource i18n_log}">
                     <MenuItem Header="{DynamicResource i18n_appLog}" Click="ViewLog_Click" />
                     <MenuItem Header="{DynamicResource i18n_activ}" Click="ViewActivities_Click" />
-                    <MenuItem Header="{DynamicResource i18n_level}" x:Name="_logLevels">
-                        <MenuItem Header="Error" Click="LogLevelItem_Click" />
-                        <MenuItem Header="Warn" Click="LogLevelItem_Click" />
-                        <MenuItem Header="Basic" Click="LogLevelItem_Click" IsChecked="True" />
-                        <MenuItem Header="Info" Click="LogLevelItem_Click" />
-                        <MenuItem Header="Debug" Click="LogLevelItem_Click" />
-                        <MenuItem Header="Trace" Click="LogLevelItem_Click" />
-                    </MenuItem>
                 </MenuItem>
                 <MenuItem Header="{DynamicResource i18n_vcboot}" x:Name="_vcbootMenuItem" IsEnabled="False" Click="ViewVcBoot_Click" />
                 <MenuItem Header="{DynamicResource i18n_sshot}" x:Name="_snapshotMenuItem" IsEnabled="False" Click="ViewSnapshot_Click"/>
                 <MenuItem Header="{DynamicResource i18n_ps}" x:Name="_psMenuItem" IsEnabled="False" Click="ViewPS_Click" />
                 <MenuItem Header="{DynamicResource i18n_src}" x:Name="_searchMacMenuItem" IsEnabled="False" Click="SearchMac_Click" />
                 <Separator/>
-                <MenuItem Header="{DynamicResource i18n_theme}">
-                    <MenuItem Header="{DynamicResource i18n_dark}" x:Name="_darkMenuItem" IsChecked="True" Click="ThemeItem_Click"/>
-                    <MenuItem Header="{DynamicResource i18n_light}" x:Name="_lightMenuItem" Click="ThemeItem_Click"/>
-                </MenuItem>
                 <MenuItem Header="{DynamicResource i18n_help}" Click="Help_Click"/>
                 <MenuItem Header="{DynamicResource i18n_about}" Click="About_Click"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource i18n_cfg}">
                 <MenuItem Header="{DynamicResource i18n_frst}" x:Name="_factoryRst" IsEnabled="False" Click="FactoryReset" />
                 <MenuItem Header="{DynamicResource i18n_cfgWiz}" x:Name="_cfgMenuItem" IsEnabled="False" Click="LaunchConfigWizard"/>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource i18n_options}" HorizontalAlignment="Right">
+                <MenuItem Header="{DynamicResource i18n_level}" x:Name="_logLevels">
+                    <MenuItem Header="Error" Click="LogLevelItem_Click" />
+                    <MenuItem Header="Warn" Click="LogLevelItem_Click" />
+                    <MenuItem Header="Basic" Click="LogLevelItem_Click" IsChecked="True" />
+                    <MenuItem Header="Info" Click="LogLevelItem_Click" />
+                    <MenuItem Header="Debug" Click="LogLevelItem_Click" />
+                    <MenuItem Header="Trace" Click="LogLevelItem_Click" />
+                </MenuItem>
+                <MenuItem Header="{DynamicResource i18n_theme}">
+                    <MenuItem Header="{DynamicResource i18n_dark}" x:Name="_darkMenuItem" IsChecked="True" Click="ThemeItem_Click"/>
+                    <MenuItem Header="{DynamicResource i18n_light}" x:Name="_lightMenuItem" Click="ThemeItem_Click"/>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource i18n_lang}" x:Name="_langMenu" />
             </MenuItem>
         </Menu>
         <StackPanel Grid.Row="1" x:Name="_switchInfo" Margin="0,2,0,0">

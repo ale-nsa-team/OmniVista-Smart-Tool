@@ -4,13 +4,16 @@ using PoEWizard.Components;
 using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -31,8 +34,8 @@ namespace PoEWizard
         #region Private Variables
         private readonly ResourceDictionary darkDict;
         private readonly ResourceDictionary lightDict;
-        private readonly ResourceDictionary strings;
         private ResourceDictionary currentDict;
+        private IEnumerable<string> resourceDicts = null;
         private readonly IProgress<ProgressReport> progress;
         private bool reportAck;
         private SftpService sftpService;
@@ -58,16 +61,12 @@ namespace PoEWizard
         private string lastMacAddress = string.Empty;
         #endregion
 
-        #region Local constants
-        const string TRAFFIC_ANALYSIS_RUNNING = "Running";
-        const string TRAFFIC_ANALYSIS_IDLE = "Traffic Analysis";
-        const string ASK_SAVE_TRAFFIC_REPORT = "Do you want to save the traffic analysis report";
-        #endregion
-
         #region public variables
-        public static Window Instance;
-        public static ThemeType theme;
-        public static string dataPath;
+        public static Window Instance { get; private set; }
+        public static ThemeType Theme { get; private set; }
+        public static string DataPath { get; private set; }
+        public static ResourceDictionary Strings { get; private set; }
+
         public static RestApiService restApiService;
         public static Dictionary<string, string> ouiTable = new Dictionary<string, string>();
 
@@ -81,15 +80,15 @@ namespace PoEWizard
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
             //datapath
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            dataPath = Path.Combine(appData, fileVersionInfo.CompanyName, fileVersionInfo.ProductName);
+            DataPath = Path.Combine(appData, fileVersionInfo.CompanyName, fileVersionInfo.ProductName);
             InitializeComponent();
             this.Title += $" (V {string.Join(".", fileVersionInfo.ProductVersion.Split('.').ToList().Take(2))})";
             lightDict = Resources.MergedDictionaries[0];
             darkDict = Resources.MergedDictionaries[1];
-            strings = Resources.MergedDictionaries[2];
+            Strings = Resources.MergedDictionaries[2];
             currentDict = darkDict;
             Instance = this;
-            Activity.DataPath = dataPath;
+            Activity.DataPath = DataPath;
             BuildOuiTable();
 
             // progress report handling
@@ -128,6 +127,8 @@ namespace PoEWizard
                 device.Password = args[3].Replace("\r\n", string.Empty);
                 Connect();
             }
+
+            SetLanguageMenuOptions();
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
@@ -141,14 +142,14 @@ namespace PoEWizard
             try
             {
                 e.Cancel = true;
-                string confirm = "closing the application";
-                stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                bool save = StopTrafficAnalysis(AbortType.Close, $"Disconnecting switch {device.Name}", ASK_SAVE_TRAFFIC_REPORT, confirm);
+                string confirm = Translate("i18n_closing");
+                stopTrafficAnalysisReason = $"{Translate("i18n_swrsti")} {confirm}";
+                bool save = StopTrafficAnalysis(AbortType.Close, $"{Translate("i18n_taDisc")} {device.Name}", Translate("i18n_taSave"), confirm);
                 await WaitSaveTrafficAnalysis();
                 if (!save) return;
                 sftpService?.Disconnect();
                 sftpService = null;
-                await CloseRestApiService("Closing the application");
+                await CloseRestApiService(confirm);
                 this.Closing -= OnWindowClosing;
                 this.Close();
             }
@@ -191,7 +192,7 @@ namespace PoEWizard
 
         private void ViewLog_Click(object sender, RoutedEventArgs e)
         {
-            TextViewer tv = new TextViewer("Application Log", canClear: true)
+            TextViewer tv = new TextViewer(Translate("i18n_tappLog"), canClear: true)
             {
                 Owner = this,
                 Filename = Logger.LogPath,
@@ -201,7 +202,7 @@ namespace PoEWizard
 
         private void ViewActivities_Click(object sender, RoutedEventArgs e)
         {
-            TextViewer tv = new TextViewer("Activity Log", canClear: true)
+            TextViewer tv = new TextViewer(Translate("i18n_tactLog"), canClear: true)
             {
                 Owner = this,
                 Filename = Activity.FilePath
@@ -213,8 +214,8 @@ namespace PoEWizard
         {
             try
             {
-                string title = "Loading vcboot.cfg file";
-                string msg = $"{title} from switch {device.Name}";
+                string title =Translate("i18n_lvcboot");
+                string msg = $"{title} {Translate("i18n_fromsw")} {device.Name}";
                 ShowInfoBox($"{msg}{WAITING}");
                 ShowProgress($"{title}{WAITING}");
                 Logger.Debug(msg);
@@ -229,10 +230,10 @@ namespace PoEWizard
                 HideProgress();
                 if (!string.IsNullOrEmpty(sftpError))
                 {
-                    ShowMessageBox(msg, $"Cannot connect secure FTP on switch {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
+                    ShowMessageBox(msg, $"{Translate("i18n_noSftp")} {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
                     return;
                 }
-                TextViewer tv = new TextViewer("VCBoot config file", res)
+                TextViewer tv = new TextViewer(Translate("i18n_tvcboot"), res)
                 {
                     Owner = this,
                     SaveFilename = device.Name + "-vcboot.cfg"
@@ -251,11 +252,11 @@ namespace PoEWizard
         {
             try
             {
-                ShowProgress("Reading configuration snapshot...");
+                ShowProgress(Translate("i18n_lsnap");
                 await Task.Run(() => restApiService.GetSnapshot());
                 HideInfoBox();
                 HideProgress();
-                TextViewer tv = new TextViewer("Configuration Snapshot", device.ConfigSnapshot)
+                TextViewer tv = new TextViewer(Translate("i18n_tsnap"), device.ConfigSnapshot)
                 {
                     Owner = this,
                     SaveFilename = $"{device.Name}{SNAPSHOT_SUFFIX}"
@@ -303,7 +304,8 @@ namespace PoEWizard
                     JumpToSelectedPort(portSelected);
                     return;
                 }
-                ShowMessageBox("Search Port", $"Couldn't find {(sp.IsMacAddress ? $"MAC address {lastMacAddress}" : $"device or vendor \"{lastMacAddress}\"")} on switch {device.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
+                string msg = sp.IsMacAddress ? $"{Translate("i18n_fmac")} {lastMacAddress} " : $"{Translate("i18n_fdev")} \"{lastMacAddress}\")}}";
+                ShowMessageBox(Translate("i18n_sport"), $"{msg} {Translate("i18n_onsw")} {device.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
             }
             catch (Exception ex)
             {
@@ -352,32 +354,30 @@ namespace PoEWizard
 
         private async void FactoryReset(object sender, RoutedEventArgs e)
         {
-            MsgBoxResult res = ShowMessageBox("Factory reset", 
-                "The switch configuration will be restored to factory default. Please confirm your action.", 
-                MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
+            MsgBoxResult res = ShowMessageBox(Translate("i18n_tfrst"), Translate("i18n_cfrst"), MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
             if (res == MsgBoxResult.Cancel) return;
             PassCode pc = new PassCode(this);
             if (pc.ShowDialog() == false) return;
             if (pc.Password != pc.SavedPassword)
             {
-                ShowMessageBox("Factory Reset", "Invalid password", MsgBoxIcons.Error);
+                ShowMessageBox(Translate("i18n_tfrst"), Translate("i18n_badPwd"), MsgBoxIcons.Error);
                 return;
             }
             Logger.Warn($"Switch S/N {device.SerialNumber} Model {device.Model}: Factory reset applied!");
             Activity.Log(device, "Factory reset applied");
-            ShowProgress("Applying factory default...");
+            ShowProgress(Translate("i18n_afrst"));
             FactoryDefault.Progress = progress;
             await Task.Run(() => FactoryDefault.Reset(device));
             string tout = await RebootSwitch(420);
             SetDisconnectedState();
             if (string.IsNullOrEmpty(tout)) return;
-            res = ShowMessageBox("Reboot Switch", $"{tout}\nDo you want to reconnect to the switch {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo);
+            res = ShowMessageBox(Translate("i18n_rebsw"), $"{tout}\n{Translate("i18n_recsw")} {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo);
             if (res == MsgBoxResult.Yes) Connect();
         }
 
         private void LaunchConfigWizard(object sender, RoutedEventArgs e)
         {
-            _status.Text = "Running config wizard...";
+            _status.Text = Translate("i18n_runCW");
 
             ConfigWiz wiz = new ConfigWiz(device)
             {
@@ -392,7 +392,7 @@ namespace PoEWizard
             }
             if (wiz.Errors.Count > 0)
             {
-                string errMsg = $"The following {(wiz.Errors.Count > 1 ? "errors where" : "error was")} reported:";
+                string errMsg = wiz.Errors.Count > 1 ? Translate("i18n_cwErrs").Replace("$1", $"{wiz.Errors.Count}") : Translate("i18n_cwErr");
                 ShowMessageBox("Wizard", $"{errMsg}\n\n\u2022 {string.Join("\n\u2022 ", wiz.Errors)}", MsgBoxIcons.Error);
                 Logger.Warn($"Configuration from Wizard applyed with errors:\n\t{string.Join("\n\t", wiz.Errors)}");
                 Activity.Log(device, "Wizard applied with errors");
@@ -404,9 +404,8 @@ namespace PoEWizard
             HideInfoBox();
             if (wiz.MustDisconnect)
             {
-                string msg = "Application will disconnect from switch because IP address was changed.\nPlease reconnect with the new address.";
-                ShowMessageBox("Config Wiz", msg);
-                isClosing = true; // to avoid write memory message
+                ShowMessageBox("Config Wiz", Translate("i18n_discWiz"));
+                isClosing = true; // to avoid write memory prompt
                 Connect();
                 return;
             }
@@ -434,11 +433,12 @@ namespace PoEWizard
 
         private async void ResetPort_Click(object sender, RoutedEventArgs e)
         {
-            string title = $"Restarting power on port {selectedPort.Name}";
+            string title = $"{Translate("i18n_rstpp")} {selectedPort.Name}";
             if (selectedPort == null) return;
             try
             {
-                if (ShowMessageBox(title, $"Are you sure you want to reset the port {selectedPort.Name} of switch {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
+                if (ShowMessageBox(title, $"{Translate("i18n_cprst")} {selectedPort.Name} {Translate("i18n_onsw")} {device.Name}?", 
+                    MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
                 {
                     return;
                 }
@@ -479,7 +479,7 @@ namespace PoEWizard
             {
                 if (pc.Password != pc.SavedPassword)
                 {
-                    ShowMessageBox("Reboot", "Invalid password", MsgBoxIcons.Error);
+                    ShowMessageBox(Translate("i18n_reboot"), Translate("i18n_badPwd"), MsgBoxIcons.Error);
                 }
                 else
                 {
@@ -523,7 +523,7 @@ namespace PoEWizard
         {
             try
             {
-                isTrafficRunning = _trafficLabel.Content.ToString() != TRAFFIC_ANALYSIS_IDLE;
+                isTrafficRunning = _trafficLabel.Content.ToString() != Translate("i18n_taIdle");
                 if (!isTrafficRunning)
                 {
                     var ds = new TrafficAnalysis() { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
@@ -603,7 +603,7 @@ namespace PoEWizard
 
         private void Help_Click(object sender, RoutedEventArgs e)
         {
-            string hlpFile = theme == ThemeType.Dark ? "help-dark.html" : "help-light.html";
+            string hlpFile = Theme == ThemeType.Dark ? "help-dark.html" : "help-light.html";
             HelpViewer hv = new HelpViewer(hlpFile)
             {
                 Owner = this,
@@ -636,7 +636,7 @@ namespace PoEWizard
             if (t == Translate("i18n_dark"))
             {
                 _lightMenuItem.IsChecked = false;
-                theme = ThemeType.Dark;
+                Theme = ThemeType.Dark;
                 Resources.MergedDictionaries.Remove(lightDict);
                 Resources.MergedDictionaries.Add(darkDict);
                 currentDict = darkDict;
@@ -644,7 +644,7 @@ namespace PoEWizard
             else
             {
                 _darkMenuItem.IsChecked = false;
-                theme = ThemeType.Light;
+                Theme = ThemeType.Light;
                 Resources.MergedDictionaries.Remove(darkDict);
                 Resources.MergedDictionaries.Add(lightDict);
                 currentDict = lightDict;
@@ -657,6 +657,25 @@ namespace PoEWizard
             //force color converters to run
             DataContext = null;
             DataContext = device;
+        }
+
+        private void LangItem_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem mi = sender as MenuItem;
+            if (mi.IsChecked) return;
+            string l = mi.Header.ToString().Replace("-", "").ToLower();
+            var dict = resourceDicts.FirstOrDefault(d => d.Contains(l));
+            Resources.MergedDictionaries.Remove(Strings);
+            Strings = new ResourceDictionary
+            {
+                Source = new Uri(dict, UriKind.Relative)
+            };
+            Resources.MergedDictionaries.Add(Strings);
+            mi.IsChecked = true;
+            foreach (MenuItem i in _langMenu.Items)
+            {
+                if (i != mi) i.IsChecked = false;
+            }
         }
 
         private void About_Click(object sender, RoutedEventArgs e)
@@ -684,7 +703,6 @@ namespace PoEWizard
                 _btnResetPort.IsEnabled = false;
                 _btnRunWiz.IsEnabled = false;
             }
-
         }
 
         private void PortSelection_Changed(Object sender, RoutedEventArgs e)
@@ -868,9 +886,42 @@ namespace PoEWizard
 
         #region private methods
 
+        private void SetLanguageMenuOptions()
+        {
+            string pattern = @"(.*)(strings-)(.+)(.xaml)";
+            List<string> langs = new List<string>();
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourcesName = assembly.GetName().Name + ".g";
+            var manager = new System.Resources.ResourceManager(resourcesName, assembly);
+            var resourceSet = manager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
+            var resDict = resourceSet.OfType<DictionaryEntry>();
+            resourceDicts =
+              from entry in resourceSet.OfType<DictionaryEntry>()
+              let fileName = (string)entry.Key
+              where fileName.StartsWith("resources") && fileName.EndsWith(".baml")
+              select fileName.Substring(0, fileName.Length - 5) + ".xaml";
+
+            List<string> sorted = resourceDicts.ToList();
+            sorted.Sort();
+
+            foreach (var file in sorted)
+            {
+                Match match = Regex.Match(file, pattern);
+                if (match.Success )
+                {
+                    string name = match.Groups[match.Groups.Count - 2].Value;
+                    string iheader = name.Substring(0, name.Length - 2) + "-" + name.Substring(name.Length - 2).ToUpper();
+                    MenuItem item = new MenuItem { Header = iheader };
+                    if (Strings.Source.ToString().ToLower().Contains(name)) item.IsChecked = true;
+                    item.Click += new RoutedEventHandler(LangItem_Click);
+                    _langMenu.Items.Add(item);
+                }
+            }
+        }
+
         private string Translate(string key)
         {
-            return (string)strings[key] ?? key;
+            return (string)Strings[key] ?? key;
         }
 
         private async void Connect()
@@ -888,7 +939,7 @@ namespace PoEWizard
                     string textMsg = $"Disconnecting switch {device.Name}";
                     string confirm = $"disconnecting the switch {device.Name}";
                     stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                    bool save = StopTrafficAnalysis(AbortType.Close, textMsg, ASK_SAVE_TRAFFIC_REPORT, confirm);
+                    bool save = StopTrafficAnalysis(AbortType.Close, textMsg, Translate("i18n_taSave"), confirm);
                     if (!save) return;
                     await WaitSaveTrafficAnalysis();
                     ShowProgress($"{textMsg}{WAITING}");
@@ -896,10 +947,7 @@ namespace PoEWizard
                     SetDisconnectedState();
                     return;
                 }
-                restApiService = new RestApiService(device, progress)
-                {
-                    Strings = strings
-                };
+                restApiService = new RestApiService(device, progress);
                 isClosing = false;
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
@@ -952,7 +1000,7 @@ namespace PoEWizard
             }
             else
             {
-                filePath = Path.Combine(MainWindow.dataPath, OUI_FILE);
+                filePath = Path.Combine(MainWindow.DataPath, OUI_FILE);
                 if (File.Exists(filePath)) ouiEntries = File.ReadAllLines(filePath);
 
             }
@@ -1532,12 +1580,12 @@ namespace PoEWizard
             {
                 startTrafficAnalysisTime = DateTime.Now;
                 isTrafficRunning = true;
-                _trafficLabel.Content = TRAFFIC_ANALYSIS_RUNNING;
+                _trafficLabel.Content = Translate("i18n_taRun");
                 string switchName = device.Name;
                 TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(selectedTrafficDuration));
                 if (report != null)
                 {
-                    TextViewer tv = new TextViewer(TRAFFIC_ANALYSIS_IDLE, report.Summary)
+                    TextViewer tv = new TextViewer(Translate("i18n_taIdle"), report.Summary)
                     {
                         Owner = this,
                         SaveFilename = $"{switchName}-{DateTime.Now:MM-dd-yyyy_hh_mm_ss}-traffic-analysis.txt",
@@ -1552,7 +1600,7 @@ namespace PoEWizard
             }
             finally
             {
-                _trafficLabel.Content = TRAFFIC_ANALYSIS_IDLE;
+                _trafficLabel.Content = Translate("i18n_taIdle");
                 isTrafficRunning = false;
                 if (device.IsConnected) _traffic.IsEnabled = true; else _traffic.IsEnabled = false;
                 HideProgress();
@@ -1788,7 +1836,7 @@ namespace PoEWizard
                 string confirm = $"rebooting the switch {device.Name}";
                 stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
                 string title = $"Rebooting switch {device.Name}";
-                bool save = StopTrafficAnalysis(AbortType.Close, title, ASK_SAVE_TRAFFIC_REPORT, confirm);
+                bool save = StopTrafficAnalysis(AbortType.Close, title, Translate("i18n_taSave"), confirm);
                 if (!save) return null;
                 await WaitSaveTrafficAnalysis();
                 DisableButtons();

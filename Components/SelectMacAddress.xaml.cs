@@ -14,7 +14,7 @@ namespace PoEWizard.Components
         public SelectMacAddress(Window owner)
         {
             InitializeComponent();
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[0]);
             }
@@ -22,6 +22,9 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
+
             DataContext = this;
             this.Owner = owner;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;

@@ -31,8 +31,8 @@ namespace PoEWizard.Data
         public static void SetTitleColor(Window window)
         {
             IntPtr handle = new WindowInteropHelper(window).Handle;
-            int bckgndColor = MainWindow.theme == ThemeType.Dark ? 0x333333 : 0xF0F0F0;
-            int textColor = MainWindow.theme == ThemeType.Dark ? 0xFFFFFF : 0x000000;
+            int bckgndColor = MainWindow.Theme == ThemeType.Dark ? 0x333333 : 0xF0F0F0;
+            int textColor = MainWindow.Theme == ThemeType.Dark ? 0xFFFFFF : 0x000000;
             DwmSetWindowAttribute(handle, 35, ref bckgndColor, Marshal.SizeOf(bckgndColor));
             DwmSetWindowAttribute(handle, 36, ref textColor, Marshal.SizeOf(textColor));
         }

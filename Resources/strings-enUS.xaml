@@ -23,6 +23,8 @@
     <sys:String x:Key="i18n_about">About</sys:String>
     <sys:String x:Key="i18n_frst">Factory Reset...</sys:String>
     <sys:String x:Key="i18n_cfgWiz">Basic Configuration Wizard...</sys:String>
+    <sys:String x:Key="i18n_lang">Language</sys:String>
+    <sys:String x:Key="i18n_options">Options</sys:String>
     
     <!--Buttons-->
     <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>
@@ -157,7 +159,8 @@
     <sys:String x:Key="i18n_trapSt">Status</sys:String>
     <sys:String x:Key="i18n_ver">Version</sys:String>
     <sys:String x:Key="i18n_runCW">Running config wizard...</sys:String>
-    <sys:String x:Key="i18n_cwErr">The following errors where reported:</sys:String>
+    <sys:String x:Key="i18n_cwErr">The following error was reported:</sys:String>
+    <sys:String x:Key="i18n_cwErrs">The following $1 errors where reported:</sys:String>
     <sys:String x:Key="i18n_twiz">Config Wizard</sys:String>
     <sys:String x:Key="i18n_discWiz" xml:space="preserve">
 Application will disconnect from switch because IP address wad changed.
@@ -356,6 +359,7 @@ File creation duration:
     <sys:String x:Key="i18n_tsnap">Configuration Shapshot</sys:String>
     <sys:String x:Key="i18n_sport">Search Port</sys:String>
     <sys:String x:Key="i18n_fmac">Could not find MAC Address</sys:String>
+    <sys:String x:Key="i18n_fdev">Could not find device or vendor</sys:String>
     <sys:String x:Key="i18n_onsw">on switch</sys:String>
     <sys:String x:Key="i18n_tfrst">Factory Reset</sys:String>
     <sys:String x:Key="i18n_cfrst">The switch configuration will be restored to factory default. Please confirm your action.</sys:String>
@@ -369,7 +373,7 @@ File creation duration:
     <sys:String x:Key="i18n_rstg">Restarting</sys:String>
     <sys:String x:Key="i18n_rstp">Restarting port</sys:String>
     <sys:String x:Key="i18n_rstpp">Restarting power on port</sys:String>
-    <sys:String x:Key="i18n_cprst">Are you sure you want to reset this port?</sys:String>
+    <sys:String x:Key="i18n_cprst">Are you sure you want to reset port</sys:String>
     <sys:String x:Key="i18n_selprio">Selected priority</sys:String>
     <sys:String x:Key="i18n_cprio">Changing Priority to</sys:String>
     <sys:String x:Key="i18n_onport">on port</sys:String>

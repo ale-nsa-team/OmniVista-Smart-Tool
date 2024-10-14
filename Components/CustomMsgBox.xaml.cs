@@ -29,7 +29,7 @@ namespace PoEWizard.Components
             InitializeComponent();
             light = Resources.MergedDictionaries[0];
             dark = Resources.MergedDictionaries[1];
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(light);
                 currDict = dark;
@@ -39,7 +39,10 @@ namespace PoEWizard.Components
                 Resources.MergedDictionaries.Remove(dark);
                 currDict = light;
             }
-            strings = Resources.MergedDictionaries[1];
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
+
+            strings = MainWindow.Strings;
             this.Owner = owner;
             Buttons = buttons;
             msgIcon.Source = null;

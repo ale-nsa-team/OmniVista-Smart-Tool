@@ -28,7 +28,6 @@ namespace PoEWizard.Components
         private SystemModel sysOrig;
         private FeatureModel featOrig;
         private SnmpModel snmpOrig;
-        private readonly ResourceDictionary strings;
 
         public bool MustDisconnect { get; set; } = false;
 
@@ -39,7 +38,7 @@ namespace PoEWizard.Components
         public ConfigWiz(SwitchModel device)
         {
             InitializeComponent();
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[0]);
             }
@@ -47,7 +46,9 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
-            strings = Resources.MergedDictionaries[1];
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
+
             DataContext = this;
             this.device = device;
             restSrv = MainWindow.restApiService;
@@ -313,7 +314,7 @@ namespace PoEWizard.Components
 
         private string Translate(string key)
         {
-            return (string)strings[key] ?? key;
+            return (string)MainWindow.Strings[key] ?? key;
         }
 
         private void ShowInfoBox(string message)

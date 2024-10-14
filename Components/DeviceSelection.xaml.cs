@@ -21,7 +21,7 @@ namespace PoEWizard.Components
         {
             InitializeComponent();
 
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[0]);
             }
@@ -29,9 +29,10 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
 
-            ResourceDictionary strings = Resources.MergedDictionaries[1];
-            _header.Text = $"{(string)strings["i18n_devSel"]} {port}";
+            _header.Text = $"{(string)MainWindow.Strings["i18n_devSel"]} {port}";
             Devices = Enum.GetValues(typeof(DeviceType)).OfType<DeviceType>().ToList().Select(d => GetDescription(d)).ToList();
         }
 

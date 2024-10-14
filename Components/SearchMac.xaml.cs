@@ -27,7 +27,6 @@ namespace PoEWizard.Components
             } 
         }
 
-        private readonly ResourceDictionary strings;
         private readonly string any;
         public string SearchText { get; set; }
         public string DeviceMac => $"{(!string.IsNullOrEmpty(this.SearchText) ? $"\"{this.SearchText}\"" : any)}";
@@ -43,7 +42,7 @@ namespace PoEWizard.Components
             this.SearchText = !string.IsNullOrEmpty(macAddress) ? macAddress.ToLower().Trim() : string.Empty;
             InitializeComponent();
             DataContext = this;
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[0]);
             }
@@ -51,8 +50,10 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
-            strings = Resources.MergedDictionaries[1];
-            any = (string)strings["i18n_any"];
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
+
+            any = (string)MainWindow.Strings["i18n_any"];
             this.SelectedPort = null;
             SearchMacAddress(device, macAddress);
             if (this.PortsFound.Count == 1) this.SelectedPort = this.PortsFound[0].Port;

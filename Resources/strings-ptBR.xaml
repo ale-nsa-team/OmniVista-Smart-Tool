@@ -23,6 +23,8 @@
     <sys:String x:Key="i18n_about">Sobre</sys:String>
     <sys:String x:Key="i18n_frst">Restaurar Configuração de Fábrica...</sys:String>
     <sys:String x:Key="i18n_cfgWiz">Assistente de Configuração Básica ...</sys:String>
+    <sys:String x:Key="i18n_lang">Idioma</sys:String>
+    <sys:String x:Key="i18n_options">Opções</sys:String>
 
     <!--Buttons-->
     <sys:String x:Key="i18n_ptRst">Reiniciar Porta</sys:String>
@@ -156,7 +158,8 @@
     <sys:String x:Key="i18n_trapSt">Status</sys:String>
     <sys:String x:Key="i18n_ver">Versão</sys:String>
     <sys:String x:Key="i18n_runCW">Executando assistente de configuração...</sys:String>
-    <sys:String x:Key="i18n_cwErr">Os seguintes erros foram reportados:</sys:String>
+    <sys:String x:Key="i18n_cwErr">O seguinte erro foi reportado:</sys:String>
+    <sys:String x:Key="i18n_cwErrs">Os seguintes $1 erros foram reportados:</sys:String>
     <sys:String x:Key="i18n_twiz">Assistente de Configuração</sys:String>
     <sys:String x:Key="i18n_discWiz" xml:space="preserve">
 A aplicação vai se desconectar da switch porque o endereço IP foi alterado.
@@ -355,7 +358,8 @@ Tempo de criacão do arquivo:
     <sys:String x:Key="i18n_lsnap">Lendo snapshot da configuração...</sys:String>
     <sys:String x:Key="i18n_tsnap">Snapshot da Configuração</sys:String>
     <sys:String x:Key="i18n_sport">Procurar Porta</sys:String>
-    <sys:String x:Key="i18n_fmac">Endereço MAC não encontrado</sys:String>
+    <sys:String x:Key="i18n_fmac">Não foi encontrado o endereço MAC</sys:String>
+    <sys:String x:Key="i18n_fdev">Não foi encontrado o dispositivo ou fabricante</sys:String>
     <sys:String x:Key="i18n_onsw">na switch</sys:String>
     <sys:String x:Key="i18n_tfrst">Configuração de fábrica</sys:String>
     <sys:String x:Key="i18n_cfrst">A configuração da switch será restaurada para o padrão de fábrica. Por favor, confirme sua ação.</sys:String>
@@ -369,7 +373,7 @@ Tempo de criacão do arquivo:
     <sys:String x:Key="i18n_rstg">Reiniciando</sys:String>
     <sys:String x:Key="i18n_rstp">Reiniciando porta</sys:String>
     <sys:String x:Key="i18n_rstpp">Reiniciando PoE na porta</sys:String>
-    <sys:String x:Key="i18n_cprst">Tem certeza que deseja reiniciar essa porta?</sys:String>
+    <sys:String x:Key="i18n_cprst">Tem certeza que deseja reiniciar a porta</sys:String>
     <sys:String x:Key="i18n_selprio">Prioridade Selecionada</sys:String>
     <sys:String x:Key="i18n_cprio">Alterando a prioridade para</sys:String>
     <sys:String x:Key="i18n_onport">na porta</sys:String>

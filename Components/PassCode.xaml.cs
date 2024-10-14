@@ -12,14 +12,13 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class PassCode : Window
     {
-        private readonly ResourceDictionary strings;
         public string SavedPassword;
         public string Password { get; set; }
         
         public PassCode(Window owner)
         {
             InitializeComponent();
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[0]);
             }
@@ -27,7 +26,9 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
-            strings = Resources.MergedDictionaries[1];
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
+
             DataContext = this;
             this.Owner = owner;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -65,7 +66,7 @@ namespace PoEWizard.Components
 
         private string GetPassword()
         {
-            string filepath = Path.Combine(MainWindow.dataPath, "app.cfg");
+            string filepath = Path.Combine(MainWindow.DataPath, "app.cfg");
             if (File.Exists(filepath))
             {
                 string encPwd = File.ReadAllText(filepath);
@@ -80,7 +81,7 @@ namespace PoEWizard.Components
             {
                 if (newpwd != null)
                 {
-                    string filepath = Path.Combine(MainWindow.dataPath, "app.cfg");
+                    string filepath = Path.Combine(MainWindow.DataPath, "app.cfg");
                     string np = Utils.EncryptString(newpwd);
                     File.WriteAllText(filepath, np);
                     SavedPassword = newpwd;
@@ -93,8 +94,8 @@ namespace PoEWizard.Components
             {
                 CustomMsgBox cm = new CustomMsgBox(this.Owner)
                 {
-                    Title = (string)strings["i18n_chcode"],
-                    Message = $"{(string)strings["i18n_codeErr"]}: {ex.Message}"
+                    Title = (string)MainWindow.Strings["i18n_chcode"],
+                    Message = $"{(string)MainWindow.Strings["i18n_codeErr"]}: {ex.Message}"
                 };
                 cm.ShowDialog();
             }

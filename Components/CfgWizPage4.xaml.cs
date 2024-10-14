@@ -35,7 +35,7 @@ namespace PoEWizard.Components
         {
             InitializeComponent();
 
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[0]);
             }
@@ -43,6 +43,8 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
 
             eye_open = (ImageSource)Resources.MergedDictionaries[0]["eye_open"];
             eye_closed = (ImageSource)Resources.MergedDictionaries[0]["eye_closed"];
