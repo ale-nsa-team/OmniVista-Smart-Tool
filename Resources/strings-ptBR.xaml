@@ -81,7 +81,7 @@
 
     <!--Port Table-->
     <sys:String x:Key="i18n_port">Porta</sys:String>
-    <sys:String x:Key="i18n_alias">Apelido</sys:String>
+    <sys:String x:Key="i18n_alias">Nome</sys:String>
     <sys:String x:Key="i18n_ptSt">Status</sys:String>
     <sys:String x:Key="i18n_prio">Prioridade</sys:String>
     <sys:String x:Key="i18n_ptPwr">Potência (Watts)</sys:String>
@@ -289,6 +289,7 @@ A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS 
     <sys:String x:Key="i18n_lanpw">Obtendo informações de PoE no slot</sys:String>
     <sys:String x:Key="i18n_rlldp">Obtendo informações de LLDP remoto</sys:String>
     <sys:String x:Key="i18n_rmac">Obtendo informações de MAC</sys:String>
+    <sys:String x:Key="i18n_rpdet">Obtendo informações detalhadas das portas</sys:String>
 
     <!--Collect Logs-->
     <sys:String x:Key="i18n_getLog">Obter Logs da switch</sys:String>

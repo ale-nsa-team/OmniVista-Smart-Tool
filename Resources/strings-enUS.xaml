@@ -289,6 +289,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_lanpw">Getting LAN power information on slot</sys:String>
     <sys:String x:Key="i18n_rlldp">Reading LLDP remote information</sys:String>
     <sys:String x:Key="i18n_rmac">Reading MAC address information</sys:String>
+    <sys:String x:Key="i18n_rpdet">Reading ports detailed information</sys:String>
 
     <!--Collect Logs-->
     <sys:String x:Key="i18n_getLog">Get Switch Log</sys:String>

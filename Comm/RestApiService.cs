@@ -57,7 +57,7 @@ namespace PoEWizard.Comm
                 this.IsReady = true;
                 Logger.Info($"Connecting Rest API");
                 string progrMsg = $"{Translate("i18n_rsCnx")} {SwitchModel.IpAddress}{WAITING}";
-                StartProgressBar(progrMsg, 29);
+                StartProgressBar(progrMsg, 31);
                 _progress.Report(new ProgressReport(progrMsg));
                 RestApiClient.Login();
                 UpdateProgressBar(++progressBarCnt); //  1
@@ -75,6 +75,9 @@ namespace PoEWizard.Comm
                 UpdateProgressBar(++progressBarCnt); // 4
                 ScanSwitch(progrMsg, reportResult);
                 UpdateFlashInfo(progrMsg);
+                UpdateProgressBar(++progressBarCnt); // 30
+                ShowInterfacesList();
+                UpdateProgressBar(++progressBarCnt); // 31
                 LogActivity($"Switch connected", $", duration: {Utils.CalcStringDuration(startTime)}");
             }
             catch (Exception ex)
@@ -85,6 +88,14 @@ namespace PoEWizard.Comm
             DisconnectAosSsh();
         }
 
+        public void RefreshSwitch(string source, WizardReport reportResult = null)
+        {
+            StartProgressBar($"S{Translate("i18n_scan")} {SwitchModel.Name}{WAITING}", 24);
+            ScanSwitch(source, reportResult);
+            ShowInterfacesList();
+            UpdateProgressBar(++progressBarCnt); // 24
+        }
+
         public void ScanSwitch(string source, WizardReport reportResult = null)
         {
             bool closeProgressBar = false;
@@ -92,7 +103,7 @@ namespace PoEWizard.Comm
             {
                 if (totalProgressBar == 0)
                 {
-                    StartProgressBar($"{Translate("i18n_scan")} {SwitchModel.Name}{WAITING}", 22);
+                    StartProgressBar($"{Translate("i18n_scan")} {SwitchModel.Name}{WAITING}", 23);
                     closeProgressBar = true;
                 }
                 GetCurrentSwitchDebugLevel();
@@ -856,7 +867,7 @@ namespace PoEWizard.Comm
         {
             try
             {
-                _dictList = SendCommand(new CmdRequest(Command.SHOW_INTERFACES, ParseType.TrafficTable)) as List<Dictionary<string, string>>;
+                ShowInterfacesList();
                 if (_dictList?.Count > 0)
                 {
                     if (_switchTraffic == null) _switchTraffic = new SwitchTrafficModel(SwitchModel, _dictList);
@@ -866,6 +877,23 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 SendSwitchError($"{Translate("i18n_taerr")} {SwitchModel.Name}", ex);
+            }
+        }
+
+        private void ShowInterfacesList()
+        {
+            try
+            {
+                SendProgressReport(Translate("i18n_rpdet"));
+                _dictList = SendCommand(new CmdRequest(Command.SHOW_INTERFACES, ParseType.TrafficTable)) as List<Dictionary<string, string>>;
+                if (_dictList?.Count > 0)
+                {
+                    SwitchModel.LoadFromList(_dictList, DictionaryType.ShowInterfacesList);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
             }
         }
 
@@ -2133,6 +2161,7 @@ namespace PoEWizard.Comm
             DisconnectAosSsh();
             RestApiClient?.Close();
             LogActivity("Switch disconnected");
+            RestApiClient = null;
         }
 
         private string Translate(string key)
