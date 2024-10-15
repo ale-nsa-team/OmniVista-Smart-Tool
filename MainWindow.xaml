@@ -14,14 +14,14 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/ResourceDictionary-light.xaml"/>
-                    <ResourceDictionary Source="Resources/ResourceDictionary-dark.xaml"/>
-                    <ResourceDictionary Source="Resources/strings-enUS.xaml"/>
-                </ResourceDictionary.MergedDictionaries>
-            </ResourceDictionary>
-        </Window.Resources>
-        <Grid x:Name="_mainGrid" Style="{DynamicResource _mainGrid}">
-            <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>  
+                <ResourceDictionary Source="Resources/ResourceDictionary-dark.xaml"/>
+                <ResourceDictionary Source="Resources/strings-enUS.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid x:Name="_mainGrid" Style="{DynamicResource _mainGrid}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto" MaxHeight="150"/>
             <RowDefinition Height="*"/>
@@ -144,7 +144,7 @@
                                 <Binding Path="Cpu" />
                                 <Binding Path="CpuThreshold" />
                             </MultiBinding>
-                        </TextBlock.Foreground>                        
+                        </TextBlock.Foreground>
                     </TextBlock>
                     <Image x:Name="_cpuWarn" Style="{DynamicResource warnImg}">
                         <Image.Visibility>
@@ -220,35 +220,35 @@
                       IsReadOnly="True"
                       SelectionChanged="SlotSelection_Changed">
                 <DataGrid.Columns>
-					<DataGridTextColumn Width="*" Binding="{Binding Path=Name}">
-						<DataGridTextColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_slot}" />
-						</DataGridTextColumn.Header>
-					</DataGridTextColumn>
-					<DataGridTextColumn Width="*" Binding="{Binding Path=NbPorts}">
-						<DataGridTextColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_nports}" />
-						</DataGridTextColumn.Header>
-					</DataGridTextColumn>
-					<DataGridTextColumn Width="*" Binding="{Binding Path=NbPoePorts}">
-						<DataGridTextColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_npoe}" />
-						</DataGridTextColumn.Header>
-					</DataGridTextColumn>
-					<DataGridTextColumn Width="*" Binding="{Binding Path=Budget}">
-						<DataGridTextColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_buget}" />
-						</DataGridTextColumn.Header>
-					</DataGridTextColumn>
-					<DataGridTextColumn Width="1.1*" Binding="{Binding Path=Power}">
-						<DataGridTextColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_cons}" />
-						</DataGridTextColumn.Header>
-					</DataGridTextColumn>
+                    <DataGridTextColumn Width="*" Binding="{Binding Path=Name}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_slot}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="*" Binding="{Binding Path=NbPorts}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_nports}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="*" Binding="{Binding Path=NbPoePorts}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_npoe}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="*" Binding="{Binding Path=Budget}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_buget}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="1.1*" Binding="{Binding Path=Power}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_cons}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
                     <DataGridTemplateColumn Width="1.1*">
-						<DataGridTemplateColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_btSupp}" />
-						</DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_btSupp}" />
+                        </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Is8023btSupport, Converter={StaticResource BoolToSymbolConverter}}"
@@ -259,9 +259,9 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="*">
-						<DataGridTemplateColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_slPw}" />
-						</DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_slPw}" />
+                        </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox Style="{DynamicResource toggleSwitch}" Margin="4,0"
@@ -310,9 +310,9 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="*">
-						<DataGridTemplateColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_poeSt}" />
-						</DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_poeSt}" />
+                        </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=PoeStatusLabel}" 
@@ -323,15 +323,12 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="1.1*">
-						<DataGridTemplateColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_vcRole}" />
-						</DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_vcRole}" />
+                        </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=MasterSlave}"
-                                           Foreground="{Binding Path=IsMaster,
-                                           Converter={StaticResource ValueToColorConverter},
-                                           ConverterParameter=Boolean}"/>
+                                <TextBlock Text="{Binding Path=MasterSlave}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -349,15 +346,22 @@
                       CellStyle="{DynamicResource gridCell}"
                       SelectionChanged="PortSelection_Changed">
                 <DataGrid.Columns>
-					<DataGridTextColumn Width="60" Binding="{Binding Path=Name}" IsReadOnly="True">
-						<DataGridTextColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_port}" />
-						</DataGridTextColumn.Header>
-					</DataGridTextColumn>
+                    <DataGridTemplateColumn Width="60" IsReadOnly="True">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_port}" />
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Name}" Style="{DynamicResource devToolTip}"
+                                    Foreground="{DynamicResource fontColor}"
+                                    ToolTip="{Binding Path=DetailsInfo, Converter={StaticResource PortToTooltipConverter}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="1.2*" IsReadOnly="True">
-						<DataGridTemplateColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_alias}" />
-						</DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_alias}" />
+                        </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Alias}" Style="{DynamicResource toolTip}"
@@ -367,9 +371,9 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="50" IsReadOnly="True">
-						<DataGridTemplateColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_ptSt}" />
-						</DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_ptSt}" />
+                        </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Status}"
@@ -380,9 +384,9 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="0.9*" IsReadOnly="True">
-						<DataGridTemplateColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_poeSt}" />
-						</DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_poeSt}" />
+                        </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Poe}" Style="{DynamicResource toolTip}"
@@ -394,9 +398,9 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridComboBoxColumn Width="Auto" IsReadOnly="False">
-						<DataGridComboBoxColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_prio}" />
-						</DataGridComboBoxColumn.Header>
+                        <DataGridComboBoxColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_prio}" />
+                        </DataGridComboBoxColumn.Header>
                         <DataGridComboBoxColumn.SelectedItemBinding>
                             <MultiBinding Converter="{StaticResource PoeToPriorityLevelConverter}">
                                 <Binding Path="Poe" />
@@ -443,11 +447,11 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-					<DataGridTextColumn Width="*" Binding="{Binding Path=Class}" IsReadOnly="True">
-						<DataGridTextColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_class}" />
-						</DataGridTextColumn.Header>
-					</DataGridTextColumn>
+                    <DataGridTextColumn Width="*" Binding="{Binding Path=Class}" IsReadOnly="True">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_class}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
                     <DataGridTextColumn Width="0.9*" IsReadOnly="True">
                         <DataGridTextColumn.Header>
                             <TextBlock Text="{DynamicResource i18n_mode}" />
@@ -459,11 +463,11 @@
                             </MultiBinding>
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
-					<DataGridTextColumn Width="50" Binding="{Binding Path=Protocol8023bt, Converter={StaticResource ConfigTypeToSimbolConverter}}">
-						<DataGridTextColumn.Header>
-							<TextBlock Text="{DynamicResource i18n_bt}" />
-						</DataGridTextColumn.Header>
-					</DataGridTextColumn>
+                    <DataGridTextColumn Width="50" Binding="{Binding Path=Protocol8023bt, Converter={StaticResource ConfigTypeToSimbolConverter}}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_bt}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
                     <DataGridTemplateColumn Width="1.6*" IsReadOnly="True">
                         <DataGridTemplateColumn.Header>
                             <TextBlock Text="{DynamicResource i18n_devModel}" />
