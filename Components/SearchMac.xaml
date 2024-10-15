@@ -28,7 +28,6 @@
             <TextBlock Grid.Row="0" Grid.Column="3" Margin="10,10,0,10" Text="{Binding NbMacAddressesFound}" Style="{DynamicResource aboutParagraph}" />
             <TextBlock Grid.Row="0" Grid.Column="4" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}">#Ports found:</TextBlock>
             <TextBlock Grid.Row="0" Grid.Column="5" Margin="10,10,0,10" Text="{Binding NbPortsFound}" Style="{DynamicResource aboutParagraph}" />
-            <TextBlock Grid.Row="0" Grid.Column="6" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}">Note: All devices that match the search criteria are marked with (*)</TextBlock>
         </StackPanel>
         <Border Grid.Row="1" Style="{DynamicResource gridBorder}" Margin="5">
             <DataGrid x:Name="_portsListView" 

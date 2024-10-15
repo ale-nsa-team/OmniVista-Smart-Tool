@@ -529,7 +529,7 @@ namespace PoEWizard.Components
                 isMacAddress = Utils.IsValidMacSequence(searchText);
                 bool hasmore = edmList.Count > MAX_NB_DEVICES_TOOL_TIP;
                 List<EndPointDeviceModel> displayList = hasmore ? edmList.GetRange(0, MAX_NB_DEVICES_TOOL_TIP) : edmList;
-                List<string> tooltip = new List<string>();
+                List<string> tooltip = new List<string> { "\nAll matches are tagged with (*)" };
                 if (!string.IsNullOrEmpty(searchText))
                 {
                     foreach (EndPointDeviceModel dev in displayList)
