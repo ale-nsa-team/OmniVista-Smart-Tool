@@ -11,12 +11,13 @@ namespace PoEWizard.Data
         public enum ReportType { Error, Warning, Info, Status, Value }
         public enum MsgBoxButtons { Ok, Cancel, OkCancel, YesNo, YesNoCancel, None };
         public enum MsgBoxIcons { Info, Warning, Error, Question, None };
-        public enum MsgBoxResult { Yes, No, Cancel};
+        public enum MsgBoxResult { Yes, No, Cancel };
         public enum GridBorderions { Dhcp, Edge, Core, Lps, Lldp, Security, MaxConfigs };
         public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
         public enum PortStatus { Unknown, Up, Down }
         public enum PoeStatus { On, Off, Searching, Fault, Deny, Conflict, PoweredOff, Test, Delayed, NoPoe }
-        public enum SlotPoeStatus {
+        public enum SlotPoeStatus
+        {
             [Description("Under Threshold")]
             UnderThreshold,
             [Description("Near Threshold")]
@@ -36,7 +37,7 @@ namespace PoEWizard.Data
         public enum DictionaryType
         {
             SystemRunningDir, Chassis, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList,
-            TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, None
+            TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, ShowInterfacesList, None
         }
         public enum ConfigType { Enable, Disable, Unavailable }
         public enum DeviceType
@@ -87,7 +88,7 @@ namespace PoEWizard.Data
             {"OS6860N-P24M", "2"}, {"OS6860N-P24Z", "2"}
         };
 
-        public static readonly Dictionary<string, string> powerClassTable= new Dictionary<string, string>()
+        public static readonly Dictionary<string, string> powerClassTable = new Dictionary<string, string>()
         {
             {"0", "15.4 Watts"}, {"1", "4 Watts"}, {"2", "7 Watts"}, {"3", "15.4 Watts"},
             {"4", "30 Watts"}, {"5", "45 Watts"},{"6", "60 Watts"}, {"7", "75 Watts"},
@@ -102,7 +103,7 @@ namespace PoEWizard.Data
         {
             "EST", "CST", "PST", "MST", "AKST", "AST", "HST", "UTC", "GMT", "CET", "NST"
         };
-        public const string DEFAULT_APP_STATUS = "";
+        public const string DEFAULT_APP_STATUS = "Idle";
         public const string DEFAULT_PASSWORD = "switch";
         public const string DEFAULT_USERNAME = "admin";
         public const string ERROR = "ERROR: ";
@@ -139,7 +140,6 @@ namespace PoEWizard.Data
         public const string PPOE = "PPOE";
         public const string PRIORITY = "Priority";
         public const string CLASS = "Class";
-        public const string TYPE = "Type";
         public const string PRIO_DISCONNECT = "Priority Disconnect";
         public const string ALIAS = "Alias";
         // Used by "SHOW_LAN_POWER"
@@ -151,7 +151,7 @@ namespace PoEWizard.Data
         public const string BAD_VOLTAGE_INJECTION = "Bad!VoltInj";
         public const string TEST = "Test";
         public const string DELAYED = "Delayed";
-        public const string ON_OFF= "On/Off";
+        public const string ON_OFF = "On/Off";
         // Used by "SHOW_CHASSIS"
         public const string ID = "ID";
         public const string MODULE_TYPE = "Module Type";
@@ -257,6 +257,25 @@ namespace PoEWizard.Data
         public const string DEBUG_CLI_SUB_APP_LEVEL = "Level";
         public const string LPNI = "lpNi";
         public const string LPCMM = "lpCmm";
+        // Used by Ports detail information
+        public const string PORT_VIOLATION = "Port-Down/Violation Reason";
+        public const string PORT_TYPE = "Type";
+        public const string PORT_INTERFACE_TYPE = "Interface Type";
+        public const string PORT_BANDWIDTH = "BandWidth (Megabits)";
+        public const string PORT_DUPLEX = "Duplex";
+        public const string PORT_AUTO_NEGOTIATION = "Autonegotiation";
+        public const string PORT_TRANSCEIVER = "SFP/XFP";
+        public const string PORT_EPP = "EPP";
+        public const string PORT_LINK_QUALITY = "Link-Quality";
+        public const string PORT_COPPER = "Copper";
+        public const string PORT_FIBER = "Fiber";
+        public const string NOT_AVAILABLE = "N/A";
+        public const string QUALITY_NOT_AVAILABLE = "1: N/A 2: N/A 3: N/A 4: N/A";
+        public const string INFO_UNAVAILABLE = "";
+        public const char UNDERLINE = '_';
+        public const string FULL_DUPLEX = "Full Duplex";
+        public const string HALF_DUPLEX = "Half Duplex";
+        public const string HALF_FULL_DUPLEX = "Half/Full Duplex";
         // Used by Traffic Analysis
         public const string TRAF_SLOT_PORT = "Chassis/Slot/Port";
         public const string TRAF_STATUS = "Operational Status";
@@ -328,8 +347,8 @@ namespace PoEWizard.Data
         public const string DISK_USAGE = "Usage";
         public const string MOUNTED = "Mounted";
         // Used to display switch data related to chassis Master or Slave
-        public const string MASTER = " (Master)";
-        public const string SLAVE = " (Slave)";
+        public const string MASTER = "Master";
+        public const string SLAVE = "Slave";
         public const string MAC_MATCH_MARK = " (*)";
         #endregion
 
@@ -342,14 +361,14 @@ namespace PoEWizard.Data
         public const string MATCH_CHASSIS = @"([Local|Remote] Chassis ID )(\d+) \((.+)\)";
         public const string MATCH_CMM = @"(Chassis ID )(\d+)";
         public const string MATCH_AOS_VERSION = @"(\d+)\.(\d+)([\.\d +]+)(\.R)(\d+)";
-        public const string MATCH_POE_RUNNING =@"Lanpower chassis \d slot \d service running ...";
+        public const string MATCH_POE_RUNNING = @"Lanpower chassis \d slot \d service running ...";
         public const string MATCH_USER = @"(User name)\s*=\s*(.+),";
         #endregion
 
         #region Number of Mac Addresses Limits
         public const int MAX_SEARCH_NB_MAC_PER_PORT = 1500;
         public const int MAX_SCAN_NB_MAC_PER_PORT = 52;
-        public const int MAX_NB_MAC_TOOL_TIP = 30;
+        public const int MAX_NB_MAC_TOOL_TIP = 50;
         public const int MAX_NB_DEVICES_TOOL_TIP = 10;
         public const int MIN_NB_MAC_UPLINK = 2;
         #endregion
