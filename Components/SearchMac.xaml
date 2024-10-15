@@ -40,7 +40,15 @@
                 MouseDoubleClick="Mouse_DoubleClick"
                 IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Port" Width="0.8*" Binding="{Binding Path=Port.Name}" />
+                    <DataGridTemplateColumn Header="Port" Width="60" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Port.Name}" Style="{DynamicResource devToolTip}"
+                                Foreground="{DynamicResource fontColor}"
+                                ToolTip="{Binding Path=Port.DetailsInfo, Converter={StaticResource PortToTooltipConverter}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Alias" Width="1.2*" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
