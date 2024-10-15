@@ -162,7 +162,7 @@ namespace PoEWizard.Device
                 foreach (Dictionary<string, string> dict in dictList)
                 {
                     string appName = Utils.GetDictValue(dict, DEBUG_APP_NAME);
-                    if (!string.IsNullOrEmpty(appName) && (appName == LPNI || appName== LPCMM))
+                    if (!string.IsNullOrEmpty(appName) && (appName == LPNI || appName == LPCMM))
                     {
                         found = true;
                         string subAppName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
@@ -220,7 +220,7 @@ namespace PoEWizard.Device
             {
                 txt.Append("\n\tThe switch name is ").Append(device.Name).Append(" (").Append(device.IpAddress).Append(") running on Release ").Append(device.Version);
                 txt.Append(" with ").Append(device.ChassisList.Count).Append(" chassis:");
-                foreach(ChassisModel chassisModel in device.ChassisList)
+                foreach (ChassisModel chassisModel in device.ChassisList)
                 {
                     txt.Append("\n\t - Chassis ").Append(chassisModel.Number).Append($" {(chassisModel.IsMaster ? "(Master)" : "(Slave)")} model ");
                     txt.Append(chassisModel.Model).Append(" with serial number ").Append(chassisModel.SerialNumber);
@@ -274,6 +274,5 @@ namespace PoEWizard.Device
             }
             return (int)SwitchDebugLogLevel.Unknown;
         }
-
     }
 }

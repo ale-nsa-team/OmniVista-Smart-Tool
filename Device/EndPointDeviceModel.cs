@@ -9,13 +9,13 @@ namespace PoEWizard.Device
     public class EndPointDeviceModel
     {
         public string ID { get; set; } = string.Empty;
-        public string Vendor {  get; set; } = string.Empty;
+        public string Vendor { get; set; } = string.Empty;
         public string Model { get; set; } = string.Empty;
         public string SoftwareVersion { get; set; } = string.Empty;
         public string HardwareVersion { get; set; } = string.Empty;
         public string SerialNumber { get; set; } = string.Empty;
 
-        public string PowerClass {  get; set; } = string.Empty;
+        public string PowerClass { get; set; } = string.Empty;
         public string LocalPort { get; set; } = string.Empty;
         public PortSubType PortSubType { get; set; } = PortSubType.Unknown;
         public string MacAddress { get; set; } = string.Empty;
@@ -142,7 +142,10 @@ namespace PoEWizard.Device
                         break;
                     }
                     if (!string.IsNullOrEmpty(vendor)) mac = $" {mac} ({vendor})";
-                    if (found) mac += MAC_MATCH_MARK;
+                    if (found)
+                    {
+                        mac += MAC_MATCH_MARK; ;
+                    }
                     tip.Add($" {mac}");
                 }
             }
@@ -153,14 +156,26 @@ namespace PoEWizard.Device
                 if (!string.IsNullOrEmpty(this.Vendor))
                 {
                     mac += $" ({vendor})";
-                    if ((!isMacAddress && vendor.ToLower().Contains(searchText)) || (isMacAddress && this.MacAddress.StartsWith(searchText))) mac += MAC_MATCH_MARK;
+                    if ((!isMacAddress && vendor.ToLower().Contains(searchText)) || (isMacAddress && this.MacAddress.StartsWith(searchText)))
+                    {
+                        mac = AddSearchMark(tip, mac);
+                    }
                 }
-                else if (isMacAddress && this.MacAddress.StartsWith(searchText)) mac += MAC_MATCH_MARK;
+                else if (isMacAddress && this.MacAddress.StartsWith(searchText))
+                {
+                    mac = AddSearchMark(tip, mac);
+                }
                 tip.Add($"MAC: {mac}");
             }
-            //if (!found) return null;
             if (this.Capabilities.Count > 0) tip.Add($"Capabilities: {string.Join(",", this.Capabilities)}");
             return tip.Count > 0 ? string.Join("\n", tip) : null;
+        }
+
+        private string AddSearchMark(List<string> tip, string mac)
+        {
+            bool found = tip.Any(s => s.Contains(MAC_MATCH_MARK));
+            if (!found) mac += MAC_MATCH_MARK;
+            return mac;
         }
 
         public string ToTooltip()
@@ -182,7 +197,8 @@ namespace PoEWizard.Device
                     string vendor = Utils.GetVendorName(mac);
                     if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) tip.Add($" {mac} ({vendor})"); else tip.Add($" {mac}");
                 }
-            } else if (!string.IsNullOrEmpty(this.MacAddress)) tip.Add($"MAC: {this.MacAddress}");
+            }
+            else if (!string.IsNullOrEmpty(this.MacAddress)) tip.Add($"MAC: {this.MacAddress}");
             if (this.Capabilities.Count > 0) tip.Add($"Capabilities: {string.Join(",", this.Capabilities)}");
             return tip.Count > 0 ? string.Join("\n", tip) : null;
         }
@@ -192,12 +208,17 @@ namespace PoEWizard.Device
             List<string> tip = new List<string>();
             if (!string.IsNullOrEmpty(this.Type)) tip.Add($"Type: {this.Type}");
             string nameVendor;
+            bool addedMark = false;
             if (!string.IsNullOrEmpty(this.Label))
             {
                 if (!IsMacName)
                 {
                     nameVendor = this.Label;
-                    if (!string.IsNullOrEmpty(searchText) && this.Label.ToLower().Contains(searchText)) nameVendor += MAC_MATCH_MARK;
+                    if (!string.IsNullOrEmpty(searchText) && this.Label.ToLower().Contains(searchText))
+                    {
+                        nameVendor += MAC_MATCH_MARK;
+                        addedMark = true;
+                    }
                     if (!this.Label.Contains("Remote port")) tip.Add($"Name: {nameVendor}");
                 }
                 else if (string.IsNullOrEmpty(this.Vendor) && !this.Label.Contains(","))
@@ -208,7 +229,10 @@ namespace PoEWizard.Device
             if (!string.IsNullOrEmpty(this.Vendor))
             {
                 nameVendor = this.Vendor;
-                if (!string.IsNullOrEmpty(searchText) && this.Vendor.ToLower().Contains(searchText)) nameVendor += MAC_MATCH_MARK;
+                if (!string.IsNullOrEmpty(searchText) && this.Vendor.ToLower().Contains(searchText) && !addedMark)
+                {
+                    nameVendor += MAC_MATCH_MARK;
+                }
                 tip.Add($"Vendor: {nameVendor}");
             }
             if (!string.IsNullOrEmpty(this.Description)) tip.Add($"Description: {this.Description}");
@@ -220,6 +244,5 @@ namespace PoEWizard.Device
             if (!string.IsNullOrEmpty(this.PortDescription)) tip.Add($"Port Description: {this.PortDescription}");
             return tip;
         }
-
     }
 }
