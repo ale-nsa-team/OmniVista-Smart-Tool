@@ -1,6 +1,5 @@
 ﻿using PoEWizard.Data;
 using PoEWizard.Device;
-using PoEWizard.Properties;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,16 +23,19 @@ namespace PoEWizard.Components
             {
                 this.Port = port;
                 this.SearchText = searchText;
-            } 
+            }
         }
 
+        private List<string> deviceMacList = new List<string>();
+        private PortModel currPort = null;
         private readonly string any;
+
         public string SearchText { get; set; }
         public string DeviceMac => $"{(!string.IsNullOrEmpty(this.SearchText) ? $"\"{this.SearchText}\"" : any)}";
         public ObservableCollection<PortViewModel> PortsFound { get; set; }
         public PortModel SelectedPort { get; set; }
-        public bool IsMacAddress {  get; set; }
-        public int NbMacAddressesFound { get; set; }
+        public bool IsMacAddress { get; set; }
+        public int NbMacAddressesFound => !string.IsNullOrEmpty(this.SearchText) ? deviceMacList.Count : this.NbTotalMacAddressesFound;
         public int NbPortsFound { get; set; }
         public int NbTotalMacAddressesFound { get; set; }
 
@@ -64,81 +66,98 @@ namespace PoEWizard.Components
             this.MouseDown += delegate { this.DragMove(); };
 
             this.Height = this._portsListView.ActualHeight + 115;
-            this.Top = this.Owner.Height> this.Height ? this.Owner.Top + (this.Owner.Height - this.Height)/2 : this.Top;
+            this.Top = this.Owner.Height > this.Height ? this.Owner.Top + (this.Owner.Height - this.Height) / 2 : this.Top;
         }
 
         private void SearchMacAddress(SwitchModel switchModel, string macAddr)
         {
             this.IsMacAddress = Utils.IsValidMacSequence(this.SearchText);
             this.PortsFound = new ObservableCollection<PortViewModel>();
-            this.NbMacAddressesFound = 0;
             this.NbTotalMacAddressesFound = 0;
+            deviceMacList = new List<string>();
             foreach (var chas in switchModel.ChassisList)
             {
                 foreach (var slot in chas.Slots)
                 {
                     foreach (var port in slot.Ports)
                     {
+                        this.currPort = port;
+                        int foundCnt = 0;
                         if (port.EndPointDevicesList?.Count > 0)
                         {
-                            string nameVendor = GetDeviceNameOrVendor(port);
-                            if (IsDevicePortFound(nameVendor) && this.PortsFound.FirstOrDefault(p => p.Port == port) == null)
+                            foreach (EndPointDeviceModel device in port.EndPointDevicesList)
                             {
-                                if (port.MacList?.Count == 0) port.MacList.Add(port.EndPointDevicesList[0].MacAddress);
-                                if (!this.IsMacAddress)
+                                if (string.IsNullOrEmpty(device.MacAddress)) continue;
+                                if (!device.MacAddress.Contains(","))
                                 {
-                                    if (!string.IsNullOrEmpty(nameVendor)) this.NbMacAddressesFound++;
+                                    if (IsDevicePortFound(device.MacAddress, device))
+                                    {
+                                        AddToDevicesList(device.MacAddress);
+                                        foundCnt++;
+                                    }
                                 }
                                 else
                                 {
-                                    foreach (EndPointDeviceModel device in port.EndPointDevicesList)
-                                    {
-                                        if (string.IsNullOrEmpty(device.MacAddress)) continue;
-                                        if (!device.MacAddress.Contains(",")) this.NbMacAddressesFound++;
-                                        else AddMacFound(new List<string>(device.MacAddress.Split(',')));
-                                    }
+                                    if (AddMacFound(new List<string>(device.MacAddress.Split(',')))) foundCnt++;
                                 }
-                                this.PortsFound.Add(new PortViewModel(port, SearchText));
-                                this.NbTotalMacAddressesFound += port.MacList.Count;
                             }
-                        }
-                        if (port.MacList?.Count == 0) continue;
-                        foreach (string mac in port.MacList)
-                        {
-                            if (IsDevicePortFound(mac) && this.PortsFound.FirstOrDefault(p => p.Port == port) == null)
+                            if (foundCnt > 0 && this.PortsFound.FirstOrDefault(p => p.Port == port) == null)
                             {
-                                AddMacFound(port.MacList);
                                 this.PortsFound.Add(new PortViewModel(port, SearchText));
                                 this.NbTotalMacAddressesFound += port.MacList.Count;
-                                port.CreateVirtualDeviceEndpoint();
-                                break;
                             }
                         }
                     }
                 }
             }
-            if (string.IsNullOrEmpty(this.SearchText)) this.NbMacAddressesFound = this.NbTotalMacAddressesFound;
             this.NbPortsFound = this.PortsFound.Count;
         }
 
-        private void AddMacFound(List<string> macList)
+        private bool AddMacFound(List<string> macList)
         {
-            if (string.IsNullOrEmpty(this.SearchText)) return;
+            if (macList.Count == 0) return false;
+            if (string.IsNullOrEmpty(this.SearchText)) return true;
+            bool found = false;
             foreach (string macAddr in macList)
             {
-                if (IsDevicePortFound(macAddr)) this.NbMacAddressesFound++;
+                if (IsDevicePortFound(macAddr))
+                {
+                    found = true;
+                    AddToDevicesList(macAddr);
+                }
             }
+            return found;
         }
 
-        private bool IsDevicePortFound(string macAddr)
+        private void AddToDevicesList(string macAddr)
         {
-            if (this.IsMacAddress && !string.IsNullOrEmpty(macAddr) && macAddr.StartsWith(this.SearchText)) return true;
-            else return Utils.GetVendorName(macAddr).ToLower().Contains(this.SearchText);
+            if (!this.deviceMacList.Contains($"{this.currPort.Name}-{macAddr}")) this.deviceMacList.Add($"{this.currPort.Name}-{macAddr}");
+        }
+
+        private bool IsDevicePortFound(string macAddr, EndPointDeviceModel device = null)
+        {
+            if (string.IsNullOrEmpty(macAddr)) return false;
+            if (string.IsNullOrEmpty(this.SearchText)) return true;
+            if (this.IsMacAddress)
+            {
+                return macAddr.StartsWith(this.SearchText);
+            }
+            else
+            {
+                if (device != null)
+                {
+                    string nameVendor = device.Name.ToLower();
+                    if (nameVendor.Contains(this.SearchText)) return true;
+                    nameVendor = device.Vendor.ToLower();
+                    if (nameVendor.Contains(this.SearchText)) return true;
+                }
+                return Utils.GetVendorName(macAddr).ToLower().Contains(this.SearchText);
+            }
         }
 
         private string GetDeviceNameOrVendor(PortModel port)
         {
-            foreach(EndPointDeviceModel device in port.EndPointDevicesList)
+            foreach (EndPointDeviceModel device in port.EndPointDevicesList)
             {
                 string nameVendor = device.Name.ToLower();
                 if (string.IsNullOrEmpty(nameVendor) || !nameVendor.Contains(this.SearchText)) nameVendor = device.Vendor.ToLower();
@@ -181,6 +200,5 @@ namespace PoEWizard.Components
         {
             this.Close();
         }
-
     }
 }
