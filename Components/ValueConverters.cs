@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Media;
 using static PoEWizard.Data.Constants;
 
@@ -530,7 +529,7 @@ namespace PoEWizard.Components
                 isMacAddress = Utils.IsValidMacSequence(searchText);
                 bool hasmore = edmList.Count > MAX_NB_DEVICES_TOOL_TIP;
                 List<EndPointDeviceModel> displayList = hasmore ? edmList.GetRange(0, MAX_NB_DEVICES_TOOL_TIP) : edmList;
-                List<string> tooltip = new List<string>();
+                List<string> tooltip = new List<string>() { "All matches are tagged with (*)" };
                 if (!string.IsNullOrEmpty(searchText))
                 {
                     foreach (EndPointDeviceModel dev in displayList)
@@ -571,18 +570,17 @@ namespace PoEWizard.Components
 
     public class PoeToTooltipConverter : IValueConverter
     {
-
         static readonly Dictionary<PoeStatus, string> toolTip = new Dictionary<PoeStatus, string>
         {
-            [PoeStatus.On] = "PoE power activation is complete, and the attached device is receiving power.",
-            [PoeStatus.Off] = "PoE has been disabled for this port.",
-            [PoeStatus.Searching] = "PoE is enabled, and the switch is sending PoE probes looking for a device, but activation or class detection is incomplete.",
-            [PoeStatus.Fault] = "PoE activation or class detection has failed.",
-            [PoeStatus.Deny] = "PoE power management has denied power to the port due to priority disconnect or over subscription.",
-            [PoeStatus.Test] = "Port has been forced on and will remain on until it is forced off by RTP functions.",
-            [PoeStatus.Delayed] = "Delayed start is enabled.",
-            [PoeStatus.Conflict] = "Two PoE ports have been connected and failed to disable PoE on one port.",
-            [PoeStatus.NoPoe] = "Port doesn't support PoE."
+            [PoeStatus.On] = Translate("i18n_on_tt"),
+            [PoeStatus.Off] = Translate("i18n_off_tt"),
+            [PoeStatus.Searching] = Translate("i18n_srch_tt"),
+            [PoeStatus.Fault] = Translate("i18n_fault_tt"),
+            [PoeStatus.Deny] = Translate("i18n_deny_tt"),
+            [PoeStatus.Test] = Translate("i18n_test_tt"),
+            [PoeStatus.Delayed] = Translate("i18n_dld_tt"),
+            [PoeStatus.Conflict] = Translate("i18n_conf_tt"),
+            [PoeStatus.NoPoe] = Translate("i18n_nop_tt")
         };
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -603,6 +601,11 @@ namespace PoEWizard.Components
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return DependencyProperty.UnsetValue;
+        }
+
+        static string Translate(string key)
+        {
+            return (string)MainWindow.Strings[key] ?? key;
         }
 
     }

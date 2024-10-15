@@ -25,7 +25,7 @@
     <sys:String x:Key="i18n_cfgWiz">Basic Configuration Wizard...</sys:String>
     <sys:String x:Key="i18n_lang">Language</sys:String>
     <sys:String x:Key="i18n_options">Options</sys:String>
-    
+
     <!--Buttons-->
     <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>
     <sys:String x:Key="i18n_poeWiz">Run PoE Wizard</sys:String>
@@ -65,7 +65,7 @@
     <sys:String x:Key="i18n_fpga">FPGA Version:</sys:String>
     <sys:String x:Key="i18n_cpld">CPLD Version:</sys:String>
     <sys:String x:Key="i18n_flash">Free Flash Memory:</sys:String>
-    
+
     <!--Slot Table-->
     <sys:String x:Key="i18n_slot">Slot</sys:String>
     <sys:String x:Key="i18n_nports">#Ports</sys:String>
@@ -78,7 +78,7 @@
     <sys:String x:Key="i18n_ppoe">Perpetual PoE</sys:String>
     <sys:String x:Key="i18n_poeSt">PoE Status</sys:String>
     <sys:String x:Key="i18n_vcRole">VC Master/Slave</sys:String>
-    
+
     <!--Port Table-->
     <sys:String x:Key="i18n_port">Port</sys:String>
     <sys:String x:Key="i18n_alias">Alias</sys:String>
@@ -93,19 +93,19 @@
     <sys:String x:Key="i18n_devModel">Device Model</sys:String>
     <sys:String x:Key="i18n_devType">Device Type</sys:String>
     <sys:String x:Key="i18n_devName">Device Name</sys:String>
-    
+
     <!--Status Bar messages-->
     <sys:String x:Key="i18n_idle">Idle</sys:String>
     <sys:String x:Key="i18n_connTo">Connected to:</sys:String>
     <sys:String x:Key="i18n_upTime">Up time:</sys:String>
-    
+
     <!--Login Dialog-->
     <sys:String x:Key="i18n_cred">Enter Switch Credentials</sys:String>
     <sys:String x:Key="i18n_ip">IP Address</sys:String>
     <sys:String x:Key="i18n_user">Username</sys:String>
     <sys:String x:Key="i18n_pwd">Password</sys:String>
     <sys:String x:Key="i18n_lifail">Log in failed on switch</sys:String>
-    
+
     <!--Power Supply dialog-->
     <sys:String x:Key="i18n_psCh">Chassis/PS</sys:String>
     <sys:String x:Key="i18n_psMod">MOdel</sys:String>
@@ -116,7 +116,7 @@
     <sys:String x:Key="i18n_psPN">Part Number</sys:String>
     <sys:String x:Key="i18n_psRev">Hardware Revision</sys:String>
     <sys:String x:Key="i18n_psSN">Serial Number</sys:String>
-    
+
     <!--Config Wizard Dialog-->
     <sys:String x:Key="i18n_sysPar">System Parameters</sys:String>
     <sys:String x:Key="i18n_netCfg">Network Configuration</sys:String>
@@ -131,15 +131,15 @@
     <sys:String x:Key="i18n_ntp">NTP Servers</sys:String>
     <sys:String x:Key="i18n_srvs">Servers</sys:String>
     <sys:String x:Key="i18n_srv1">Server 1</sys:String>
-	<sys:String x:Key="i18n_srv2">Server 2</sys:String>
-	<sys:String x:Key="i18n_srv3">Server 3</sys:String>
-	<sys:String x:Key="i18n_domain">Domain Name</sys:String>
+    <sys:String x:Key="i18n_srv2">Server 2</sys:String>
+    <sys:String x:Key="i18n_srv3">Server 3</sys:String>
+    <sys:String x:Key="i18n_domain">Domain Name</sys:String>
     <sys:String x:Key="i18n_tz">Timezone</sys:String>
     <sys:String x:Key="i18n_feat">Features</sys:String>
     <sys:String x:Key="i18n_insProto">Disable Insecure Protocols</sys:String>
     <sys:String x:Key="i18n_ssh">Enable SSH</sys:String>
     <sys:String x:Key="i18n_relay">Enable DHCP Relay</sys:String>
-	<sys:String x:Key="i18n_dhcp">DHCP Server</sys:String>
+    <sys:String x:Key="i18n_dhcp">DHCP Server</sys:String>
     <sys:String x:Key="i18n_multicast">Enable Multicast</sys:String>
     <sys:String x:Key="i18n_vlan">VLAN</sys:String>
     <sys:String x:Key="i18n_pRep">Report:</sys:String>
@@ -193,7 +193,7 @@ Please confirm your action.
     <sys:String x:Key="i18n_pwRun">Running PoE Wizard</sys:String>
     <sys:String x:Key="i18n_pwDur">Total duration:</sys:String>
     <sys:String x:Key="i18n_pwEnd">PoE Wizard completed on port</sys:String>
-    <sys:String x:Key="i18n_pwDev"> with device type </sys:String>
+    <sys:String x:Key="i18n_pwDev">with device type</sys:String>
     <sys:String x:Key="i18n_pwPst">Port Status:</sys:String>
     <sys:String x:Key="i18n_power">Power:</sys:String>
     <sys:String x:Key="i18n_pwDevMac">Device MAC:</sys:String>
@@ -235,8 +235,8 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_sprio">Priority on port</sys:String>
     <sys:String x:Key="i18n_set">Set to</sys:String>
     <sys:String x:Key="i18n_ckprio">Checking power priority on port</sys:String>
-    <sys:String x:Key="i18n_rempw">Remaining power = </sys:String>
-    <sys:String x:Key="i18n_maxpw">max. power = </sys:String>
+    <sys:String x:Key="i18n_rempw">Remaining power =</sys:String>
+    <sys:String x:Key="i18n_maxpw">max. power =</sys:String>
     <sys:String x:Key="i18n_chgprio">Changing power priority on port</sys:String>
     <sys:String x:Key="i18n_pmaysolve">may solve the problem</sys:String>
     <sys:String x:Key="i18n_pnoneed">No need to change power prioriry on port</sys:String>
@@ -259,11 +259,11 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_isdis">is already disabled</sys:String>
     <sys:String x:Key="i18n_exec">executed</sys:String>
     <sys:String x:Key="i18n_notex">failed to execute</sys:String>
-    
+
     <!--About box-->
-	<sys:String x:Key="i18n_aboutTitle">About ALE Installer Toolkit</sys:String>
-	<sys:String x:Key="i18n_cpright">Copyright</sys:String>
-	<sys:String x:Key="i18n_reserved">All Rights Reserved</sys:String>
+    <sys:String x:Key="i18n_aboutTitle">About ALE Installer Toolkit</sys:String>
+    <sys:String x:Key="i18n_cpright">Copyright</sys:String>
+    <sys:String x:Key="i18n_reserved">All Rights Reserved</sys:String>
     <sys:String x:Key="i18n_authors">Authors:</sys:String>
     <sys:String x:Key="i18n_descr" xml:space="preserve">
 This application allows you to apply basic configuration and troubleshoot PoE issues on an Alcatel-Lucent Enterprise OmniSwitch®, equipped with AOS 8 version.
@@ -321,8 +321,8 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_tddur">Download duration:</sys:String>
     <sys:String x:Key="i18n_fileTout">Timeout waiting for tar file</sys:String>
     <sys:String x:Key="i18n_fsize">File size:</sys:String>
-    <sys:String x:Key="i18n_lclogs">File creation duration: </sys:String>
-    
+    <sys:String x:Key="i18n_lclogs">File creation duration:</sys:String>
+
     <!--Traffic Analysis-->
     <sys:String x:Key="i18n_taerr">Traffic analysis on switch</sys:String>
     <sys:String x:Key="i18n_taRun">Running...</sys:String>
@@ -437,7 +437,7 @@ Reboot duration:
     <sys:String x:Key="i18n_chcode">Change Password</sys:String>
     <sys:String x:Key="i18n_codeErr">Could not change password</sys:String>
     <sys:String x:Key="i18n_srcNote">Note: You may double click on the port to close and select it on the main window.</sys:String>
-    <sys:String x:Key="i18n_macNote">Note: All devices that match the search criteria are marked with (*)</sys:String>
+    <sys:String x:Key="i18n_macNote">All matches are tagged with (*)</sys:String>
     <sys:String x:Key="i18n_srcText">Please enter the MAC address, Device or Vendor Name</sys:String>
     <sys:String x:Key="i18n_fload">Loading file, please wait...</sys:String>
     <sys:String x:Key="i18n_ftxt">Text File</sys:String>
@@ -448,7 +448,7 @@ Reboot duration:
     <sys:String x:Key="i18n_currPwd">Current Password</sys:String>
     <sys:String x:Key="i18n_newPwd">New Password</sys:String>
     <sys:String x:Key="i18n_cfmPwd">Confirm Password</sys:String>
-   
+
     <!--Tool Tips-->
     <sys:String x:Key="i18n_pwr_tt">Actual power consumed by the device connected to the port</sys:String>
     <sys:String x:Key="i18n_maxPwr_tt">Maximum power allowed by the hardware</sys:String>
@@ -472,5 +472,4 @@ Reboot duration:
     <sys:String x:Key="i18n_dld_tt">Delayed start is enabled</sys:String>
     <sys:String x:Key="i18n_conf_tt">Two PoE ports have been connected and failed to disable PoE on one port</sys:String>
     <sys:String x:Key="i18n_nop_tt">Port does not support PoE</sys:String>
-    
 </ResourceDictionary>
