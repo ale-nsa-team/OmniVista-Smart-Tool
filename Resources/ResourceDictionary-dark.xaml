@@ -767,6 +767,7 @@
         <Setter Property="Margin" Value="10,10,10,5" />
         <Setter Property="Padding" Value="0,0,0,2" />
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">

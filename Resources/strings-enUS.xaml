@@ -301,7 +301,8 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_rcdbg">Resetting CMM debug level back to</sys:String>
     <sys:String x:Key="i18n_prst">Resetting port</sys:String>
     <sys:String x:Key="i18n_caplog">to capture logs</sys:String>
-    <sys:String x:Key="i18n_tarf">Generating tar file</sys:String>
+    <sys:String x:Key="i18n_tarf">Tar File</sys:String>
+    <sys:String x:Key="i18n_targ">Generating tar file</sys:String>
     <sys:String x:Key="i18n_chasoff">Turning power off on all slots of chassis</sys:String>
     <sys:String x:Key="i18n_chason">Turning power on on all slots of chassis</sys:String>
     <sys:String x:Key="i18n_clogl">Getting current log levels</sys:String>
@@ -309,25 +310,25 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_pclogs1">Do you want to power cycle PoE on all ports of switch</sys:String>
     <sys:String x:Key="i18n_pclogs2">to collect the logs?</sys:String>
     <sys:String x:Key="i18n_rclogs">Collecting logs on switch</sys:String>
-    <sys:String x:Key="i18n_cclogs">Cleaning up current log ...</sys:String>
+    <sys:String x:Key="i18n_cclogs">Cleaning up current log...</sys:String>
     <sys:String x:Key="i18n_ttar">Downloading tar file</sys:String>
     <sys:String x:Key="i18n_tfail">Failed to downlad file</sys:String>
     <sys:String x:Key="i18n_sfile">Save switch logs</sys:String>
     <sys:String x:Key="i18n_ffail">Failed to create file</sys:String>
     <sys:String x:Key="i18n_wclogs">Waiting from tar file ready</sys:String>
+    <sys:String x:Key="i18n_tloaded">Tar file downloaded from switch</sys:String>
+    <sys:String x:Key="i18n_tddur">Download duration:</sys:String>
     <sys:String x:Key="i18n_fileTout">Timeout waiting for tar file</sys:String>
     <sys:String x:Key="i18n_fsize">File size:</sys:String>
-    <sys:String x:Key="i18n_lclogs" xml:space="preserve">
-Downloading tar file from switch...
-File creation duration:
-    </sys:String>
+    <sys:String x:Key="i18n_lclogs">File creation duration: </sys:String>
     
     <!--Traffic Analysis-->
     <sys:String x:Key="i18n_taerr">Traffic analysis on switch</sys:String>
     <sys:String x:Key="i18n_taRun">Running...</sys:String>
     <sys:String x:Key="i18n_taIdle">Traffic Analysys</sys:String>
     <sys:String x:Key="i18n_taSave">Do you want to save the traffic analysis report</sys:String>
-    <sys:String x:Key="i18n_taInt">interrupted by the user before</sys:String>
+    <sys:String x:Key="i18n_taInt">interrupted by the user</sys:String>
+    <sys:String x:Key="i18n_taIntb">interrupted by the user before</sys:String>
     <sys:String x:Key="i18n_taDisc">Disconnecting switch</sys:String>
     <sys:String x:Key="i18n_tappLog">Application Log</sys:String>
     <sys:String x:Key="i18n_tactLog">Activity Log</sys:String>
@@ -413,7 +414,8 @@ Do you want to reboot the switch on Working directory?"
     <sys:String x:Key="i18n_dmaxpw">Changing max. power to default on port</sys:String>
     <sys:String x:Key="i18n_tmaxpw">Check default Max. Power</sys:String>
     <sys:String x:Key="i18n_nosync">Flash memory is not synchronized</sys:String>
-    <sys:String x:Key="i18n_cfgch">Significant configuration changes.</sys:String>
+    <sys:String x:Key="i18n_cfgch">Significant configuration changes</sys:String>
+    <sys:String x:Key="i18n_nocfgch">No significant configuration changes.</sys:String>
     <sys:String x:Key="i18n_cfsave" xml:space="preserve">
 Do you want to save it now?
 It may take up to 30 sec to execute Write Memory
@@ -442,6 +444,9 @@ Reboot duration:
     <sys:String x:Key="i18n_nmfound">#MAC addresses found:</sys:String>
     <sys:String x:Key="i18n_npfound">#Ports found:</sys:String>
     <sys:String x:Key="i18n_any">Any</sys:String>
+    <sys:String x:Key="i18n_currPwd">Current Password</sys:String>
+    <sys:String x:Key="i18n_newPwd">New Password</sys:String>
+    <sys:String x:Key="i18n_cfmPwd">Confirm Password</sys:String>
    
     <!--Tool Tips-->
     <sys:String x:Key="i18n_pwr_tt">Actual power consumed by the device connected to the port</sys:String>

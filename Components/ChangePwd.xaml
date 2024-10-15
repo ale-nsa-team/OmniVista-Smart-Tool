@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
                 <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-enUS.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -25,7 +26,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" Style="{DynamicResource keyLabel}" Margin="0,10,0,0">Current Password</Label>
+        <Label Grid.Row="0" Style="{DynamicResource keyLabel}" Margin="0,10,0,0" Content="{DynamicResource i18n_currPwd}"/>
         <PasswordBox Grid.Row="1" x:Name="_currpwd"
                      Foreground="{DynamicResource fontColor}"
                      Background="{DynamicResource barBackground}"
@@ -36,7 +37,7 @@
                 <Binding Path="CurrPwd" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" />
             </local:PasswordBoxAssistant.BoundPassword>
         </PasswordBox>
-        <Label Grid.Row="2" Style="{DynamicResource keyLabel}" Margin="0,10,0,0">New Password</Label>
+        <Label Grid.Row="2" Style="{DynamicResource keyLabel}" Margin="0,10,0,0" Content="{DynamicResource i18n_newPwd}"/>
         <PasswordBox Grid.Row="3" x:Name="_newpwd"
                      Foreground="{DynamicResource fontColor}"
                      Background="{DynamicResource barBackground}"
@@ -47,7 +48,7 @@
                 <Binding Path="NewPwd" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" />
             </local:PasswordBoxAssistant.BoundPassword>
         </PasswordBox>
-        <Label Grid.Row="4" Style="{DynamicResource keyLabel}" Margin="0,10,0,0">Confirm Password</Label>
+        <Label Grid.Row="4" Style="{DynamicResource keyLabel}" Margin="0,10,0,0" Content="{DynamicResource i18n_cfmPwd}"/>
         <PasswordBox Grid.Row="5" x:Name="_cfrmpwd"
                      Foreground="{DynamicResource fontColor}"
                      Background="{DynamicResource barBackground}"
@@ -58,10 +59,14 @@
                 <Binding Path="CfrmPwd" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" />
             </local:PasswordBoxAssistant.BoundPassword>
         </PasswordBox>
-        <Border Grid.Row="6" Style="{DynamicResource propsBorder}">
+        <Border Grid.Row="6" Style="{DynamicResource propsBorder}" >
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Click="BtnOk_Click" Style="{DynamicResource smallButton}" Margin="2,0,0,0">OK</Button>
-                <Button Click="BtnCancel_Click" Style="{DynamicResource smallButton}" Margin="20,0,0,0">Cancel</Button>
+                <Button Click="BtnOk_Click" Style="{DynamicResource smallButton}" Margin="2,0,0,0" 
+                        MinWidth="60"
+                        Content="{DynamicResource i18n_okBtn}"/>
+                <Button Click="BtnCancel_Click" Style="{DynamicResource smallButton}" Margin="20,0,0,0" 
+                        MinWidth="60"
+                        Content="{DynamicResource i18n_canBtn}"/>
             </StackPanel>
         </Border>
     </Grid>

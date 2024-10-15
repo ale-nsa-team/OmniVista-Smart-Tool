@@ -301,7 +301,8 @@ A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS 
     <sys:String x:Key="i18n_rcdbg">Configurando o nível de log de CMM de volta a</sys:String>
     <sys:String x:Key="i18n_prst">Reiniciando a porta</sys:String>
     <sys:String x:Key="i18n_caplog">Para capturar os logs</sys:String>
-    <sys:String x:Key="i18n_tarf">Gerando arquivo tar</sys:String>
+    <sys:String x:Key="i18n_tarf">Arquivo Tar</sys:String>
+    <sys:String x:Key="i18n_targ">Gerando arquivo tar</sys:String>
     <sys:String x:Key="i18n_chasoff">Desligando energia em todos os slots do chassis</sys:String>
     <sys:String x:Key="i18n_chason">Ligando energia em todos os slots do chassis</sys:String>
     <sys:String x:Key="i18n_clogl">Obtendo níveis de log atuais</sys:String>
@@ -315,19 +316,19 @@ A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS 
     <sys:String x:Key="i18n_sfile">Salvar logs da switch</sys:String>
     <sys:String x:Key="i18n_ffail">Falha na criação do arquivo</sys:String>
     <sys:String x:Key="i18n_wclogs">Aguardando arquivo tar completo</sys:String>
+    <sys:String x:Key="i18n_tloaded">Arquivo Tar carregado da switch</sys:String>
+    <sys:String x:Key="i18n_tddur">Duração da carga:</sys:String>
     <sys:String x:Key="i18n_fileTout">Tempo esgotado aguardando arquivo tar</sys:String>
     <sys:String x:Key="i18n_fsize">Tamanho do arquivo:</sys:String>
-    <sys:String x:Key="i18n_lclogs" xml:space="preserve">
-Carregando arquivo tar da switch...
-Tempo de criacão do arquivo:
-    </sys:String>
+    <sys:String x:Key="i18n_lclogs">Tempo de criacão do arquivo:</sys:String>
 
     <!--Traffic Analysis-->
     <sys:String x:Key="i18n_taerr">Análise de tráfego na switch</sys:String>
     <sys:String x:Key="i18n_taRun">Executando...</sys:String>
     <sys:String x:Key="i18n_taIdle">Análise de Tráfego</sys:String>
     <sys:String x:Key="i18n_taSave">Deseja salvar o relatório de Análise de tráfego?</sys:String>
-    <sys:String x:Key="i18n_taInt">interrompido pelo usuário antes de</sys:String>
+    <sys:String x:Key="i18n_taInt">interrompido pelo usuário</sys:String>
+    <sys:String x:Key="i18n_taIntb">interrompido pelo usuário antes de</sys:String>
     <sys:String x:Key="i18n_taDisc">Desconectando da switch</sys:String>
     <sys:String x:Key="i18n_tappLog">Log da Aplicação</sys:String>
     <sys:String x:Key="i18n_tactLog">Log de Atividades</sys:String>
@@ -413,7 +414,8 @@ Deseja reiniciar a switch no diretório Working?
     <sys:String x:Key="i18n_dmaxpw">Alterando potência  max. para valor default na porta</sys:String>
     <sys:String x:Key="i18n_tmaxpw">Verificando potência Máxima</sys:String>
     <sys:String x:Key="i18n_nosync">Memória Flash não está sincronizada</sys:String>
-    <sys:String x:Key="i18n_cfgch">Mudanças significativas na configuração.</sys:String>
+    <sys:String x:Key="i18n_cfgch">Mudanças significativas na configuração</sys:String>
+    <sys:String x:Key="i18n_nocfgch">Nenhuma mudança significativa na configuração.</sys:String>
     <sys:String x:Key="i18n_cfsave" xml:space="preserve">
 Deseja salvar agora?
 A operação de escrita pode durar cerca de 30 segundos
@@ -442,6 +444,9 @@ Duração da reinicialização:
     <sys:String x:Key="i18n_nmfound">#MAC encontrados:</sys:String>
     <sys:String x:Key="i18n_npfound">#Portas encontradas:</sys:String>
     <sys:String x:Key="i18n_any">Qualquer</sys:String>
+    <sys:String x:Key="i18n_currPwd">Senha Atual</sys:String>
+    <sys:String x:Key="i18n_newPwd">Senha Nova</sys:String>
+    <sys:String x:Key="i18n_cfmPwd">Confirme Senha Nova</sys:String>
 
     <!--Tool Tips-->
     <sys:String x:Key="i18n_pwr_tt">Potência consumida pelo dispositivo connectado à porta</sys:String>

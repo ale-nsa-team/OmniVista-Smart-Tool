@@ -342,7 +342,7 @@ namespace PoEWizard.Comm
                 SetAppDebugLevel($"{Translate("i18n_rpdbg")} {Utils.IntToSwitchDebugLevel(prevLpNiDebug)}", Command.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
                 SetAppDebugLevel($"{Translate("i18n_rcdbg")} {Utils.IntToSwitchDebugLevel(prevLpCmmDebug)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
                 // Generating tar file
-                string msg = Translate("i18n_tarf");
+                string msg = Translate("i18n_targ");
                 SendProgressReport(msg);
                 WaitSec(msg, 5);
                 SendCommand(new CmdRequest(Command.DEBUG_CREATE_LOG));

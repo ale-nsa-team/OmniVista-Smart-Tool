@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
-        Title="Select Mac Address" Height="180" Width="380" WindowStyle="None" ShowInTaskbar="False">
+        Title="Select Mac Address" Height="180" Width="450" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

@@ -581,7 +581,7 @@
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
             <StatusBarItem Grid.Column="0">
-                <TextBlock x:Name="_status" Text="Idle" Margin="5,0,0,0"/>
+                <TextBlock x:Name="_status" Margin="5,0,0,0"/>
             </StatusBarItem>
             <StatusBarItem Grid.Column="1">
                 <ProgressBar x:Name="_progressBar" Style="{DynamicResource progressBar}" Visibility="Hidden"/>
