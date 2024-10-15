@@ -27,12 +27,24 @@ namespace PoEWizard.Device
         public ConfigType Protocol8023bt { get; set; }
         public bool IsEnabled { get; set; } = false;
         public string Class { get; set; }
-        public string Type { get; set; }
         public List<string> MacList { get; set; }
         public EndPointDeviceModel EndPointDevice { get; set; }
         public List<EndPointDeviceModel> EndPointDevicesList { get; set; }
         public string Alias { get; set; }
         public List<PriorityLevelType> Priorities => Enum.GetValues(typeof(PriorityLevelType)).Cast<PriorityLevelType>().ToList();
+
+        #region Port detail information
+        public string Violation { get; set; }
+        public string Type { get; set; }
+        public string InterfaceType { get; set; }
+        public string Bandwidth { get; set; }
+        public string Duplex { get; set; }
+        public string AutoNegotiation { get; set; }
+        public string Transceiver { get; set; }
+        public string EPP { get; set; }
+        public string LinkQuality { get; set; }
+        public List<string> DetailsInfo => ToTooltip();
+        #endregion
 
         public PortModel(Dictionary<string, string> dict)
         {
@@ -101,10 +113,9 @@ namespace PoEWizard.Device
             {
                 Class = string.Empty;
             }
-            Type = Utils.GetDictValue(dict, TYPE);
         }
 
-        public void LoadPoEConfig(Dictionary<string, string> dict) 
+        public void LoadPoEConfig(Dictionary<string, string> dict)
         {
             Is4Pair = Utils.GetDictValue(dict, POWER_4PAIR) == "enabled";
             IsPowerOverHdmi = Utils.GetDictValue(dict, POWER_OVER_HDMI) == "enabled";
@@ -168,8 +179,12 @@ namespace PoEWizard.Device
                 deviceFound.MacAddress = string.Join(",", macList);
                 return;
             }
-            Dictionary<string, string> dict = new Dictionary<string, string> { [REMOTE_ID] = this.Name, [LOCAL_PORT] = this.Name, [CAPABILITIES_SUPPORTED] = NO_LLDP,
-                                                                               [MED_MAC_ADDRESS] = string.Join(",", macList)
+            Dictionary<string, string> dict = new Dictionary<string, string>
+            {
+                [REMOTE_ID] = this.Name,
+                [LOCAL_PORT] = this.Name,
+                [CAPABILITIES_SUPPORTED] = NO_LLDP,
+                [MED_MAC_ADDRESS] = string.Join(",", macList)
             };
             this.EndPointDevicesList.Add(new EndPointDeviceModel(dict));
             UpdateEndPointDevice(NO_LLDP);
@@ -228,6 +243,79 @@ namespace PoEWizard.Device
             IsUplink = MacList.Count > MIN_NB_MAC_UPLINK;
         }
 
+        public void LoadDetailInfo(Dictionary<string, string> dict)
+        {
+            Violation = GetDictValue(dict, PORT_VIOLATION);
+            Type = GetDictValue(dict, PORT_TYPE);
+            InterfaceType = GetDictValue(dict, PORT_INTERFACE_TYPE);
+            Bandwidth = GetDictValue(dict, PORT_BANDWIDTH);
+            Duplex = GetDictValue(dict, PORT_DUPLEX);
+            AutoNegotiation = GetDictValue(dict, PORT_AUTO_NEGOTIATION);
+            Transceiver = GetDictValue(dict, PORT_TRANSCEIVER);
+            EPP = GetDictValue(dict, PORT_EPP);
+            LinkQuality = GetDictValue(dict, PORT_LINK_QUALITY);
+        }
+
+        private string GetDictValue(Dictionary<string, string> dict, string param)
+        {
+            string sVal = Utils.GetDictValue(dict, param);
+            switch (param)
+            {
+                case PORT_BANDWIDTH:
+                    sVal = GetNetworkSpeed(sVal.Replace("-", string.Empty).Trim());
+                    break;
+                case PORT_AUTO_NEGOTIATION:
+                    if (!string.IsNullOrEmpty(sVal))
+                    {
+                        if (sVal.StartsWith("0")) sVal = "Disabled";
+                        else if (sVal.StartsWith("1"))
+                        {
+                            sVal = sVal.Replace("-", string.Empty).Trim();
+                            string[] split = sVal.Replace("1 ", string.Empty).Replace("[", string.Empty).Replace("]", string.Empty).Trim().Split(' ');
+                            List<string> options = new List<string>();
+                            for (int idx = 0; idx < split.Length; idx++)
+                            {
+                                string strVal = split[idx].Trim();
+                                if (string.IsNullOrEmpty(strVal)) continue;
+                                string speed = GetNetworkSpeed(strVal);
+                                if (strVal.Contains("F")) AddToAutonegotiationOptions(options, speed, FULL_DUPLEX, HALF_DUPLEX);
+                                else if (strVal.Contains("H")) AddToAutonegotiationOptions(options, speed, HALF_DUPLEX, FULL_DUPLEX);
+                            }
+                            sVal = "Enabled";
+                            if (options.Count > 0) sVal += $"{string.Join(",", options)}";
+                        }
+                    }
+                    break;
+                default:
+                    if (string.IsNullOrEmpty(sVal)) sVal = INFO_UNAVAILABLE;
+                    else if (sVal.ToLower() == "notpresent" || sVal == "-" || sVal.ToLower() == "none" || sVal == NOT_AVAILABLE || sVal == QUALITY_NOT_AVAILABLE)
+                    {
+                        sVal = INFO_UNAVAILABLE;
+                    }
+                    break;
+            }
+            return sVal;
+        }
+
+        private void AddToAutonegotiationOptions(List<string> options, string speed, string currDuplex, string prevDuplex)
+        {
+            string item = options.Where(x => x.Contains($"{speed} {prevDuplex}")).FirstOrDefault();
+            if (!string.IsNullOrEmpty(item))
+            {
+                int index = options.IndexOf(item);
+                if (index > 0 && index < options.Count) options[index] = options[index].Replace($"{speed} {prevDuplex}", $"{speed} {HALF_FULL_DUPLEX}");
+            }
+            else options.Add($"\n - {speed} {currDuplex}");
+        }
+
+        private static string GetNetworkSpeed(string sVal)
+        {
+            int speed = Utils.StringToInt(sVal);
+            if (speed >= 1000) return $"{speed / 1000} Gbps";
+            else if (speed > 1 && speed < 1000) return $"{speed} Mbps";
+            else return string.Empty;
+        }
+
         public bool IsSwitchUplink()
         {
             return this.EndPointDevicesList?.Count > 0 && !string.IsNullOrEmpty(this.EndPointDevicesList[0].Type) && this.EndPointDevicesList[0].Type == MED_SWITCH;
@@ -242,7 +330,31 @@ namespace PoEWizard.Device
 
         public double ParseNumber(string val)
         {
-            return double.TryParse(val.Replace("*", ""), out double n) ? n : 0;
+            return double.TryParse(val.Replace("*", string.Empty), out double n) ? n : 0;
+        }
+
+        public List<string> ToTooltip()
+        {
+            List<string> tip = new List<string> {
+                $"Port: {this.Name}"
+            };
+            if (!string.IsNullOrEmpty(this.Type))
+            {
+                string sInterface = this.Type;
+                if (!string.IsNullOrEmpty(this.InterfaceType))
+                {
+                    if (!string.IsNullOrEmpty(this.Type)) sInterface = $"{this.InterfaceType.Replace(PORT_COPPER, "Wired").Replace(PORT_FIBER, "Optical Fiber")} {this.Type}";
+                }
+                tip.Add($"Interface Type: {sInterface}");
+            }
+            if (!string.IsNullOrEmpty(this.Bandwidth)) tip.Add($"Bandwidth: {this.Bandwidth}");
+            if (!string.IsNullOrEmpty(this.Duplex)) tip.Add($"Duplex: {this.Duplex}");
+            if (!string.IsNullOrEmpty(this.AutoNegotiation)) tip.Add($"Auto Negotiation: {this.AutoNegotiation}");
+            if (!string.IsNullOrEmpty(this.Violation)) tip.Add($"Violation: {this.Violation}");
+            if (!string.IsNullOrEmpty(this.Transceiver)) tip.Add($"Transceiver: {this.Transceiver}");
+            if (!string.IsNullOrEmpty(this.EPP)) tip.Add($"EPP: {this.EPP}");
+            if (!string.IsNullOrEmpty(this.LinkQuality)) tip.Add($"Link Quality: {this.LinkQuality}");
+            return tip;
         }
 
     }
