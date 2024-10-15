@@ -151,6 +151,7 @@ namespace PoEWizard
                 sftpService = null;
                 await CloseRestApiService(confirm);
                 this.Closing -= OnWindowClosing;
+                await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
                 this.Close();
             }
             catch (Exception ex)
@@ -214,7 +215,7 @@ namespace PoEWizard
         {
             try
             {
-                string title =Translate("i18n_lvcboot");
+                string title = Translate("i18n_lvcboot");
                 string msg = $"{title} {Translate("i18n_fromsw")} {device.Name}";
                 ShowInfoBox($"{msg}{WAITING}");
                 ShowProgress($"{title}{WAITING}");
@@ -437,7 +438,7 @@ namespace PoEWizard
             if (selectedPort == null) return;
             try
             {
-                if (ShowMessageBox(title, $"{Translate("i18n_cprst")} {selectedPort.Name} {Translate("i18n_onsw")} {device.Name}?", 
+                if (ShowMessageBox(title, $"{Translate("i18n_cprst")} {selectedPort.Name} {Translate("i18n_onsw")} {device.Name}?",
                     MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
                 {
                     return;
@@ -485,14 +486,14 @@ namespace PoEWizard
                 {
                     LaunchRebootSwitch();
                 }
-            } 
+            }
         }
 
         private async void CollectLogs_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                MsgBoxResult restartPoE = ShowMessageBox(Translate("i18n_logcol"), $"{Translate("i18n_pclogs1")} {device.Name} {Translate("i18n_pclogs2")}", 
+                MsgBoxResult restartPoE = ShowMessageBox(Translate("i18n_logcol"), $"{Translate("i18n_pclogs1")} {device.Name} {Translate("i18n_pclogs2")}",
                     MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
                 if (restartPoE == MsgBoxResult.Cancel) return;
                 string txt = $"Collect Logs launched by the user";
@@ -796,7 +797,7 @@ namespace PoEWizard
                     Activity.Log(device, $"PoE on slot {selectedSlot.Name} turned off");
                     return;
                 }
-                else 
+                else
                 {
                     cb.IsChecked = true;
                     return;
@@ -912,7 +913,7 @@ namespace PoEWizard
             foreach (var file in sorted)
             {
                 Match match = Regex.Match(file, pattern);
-                if (match.Success )
+                if (match.Success)
                 {
                     string name = match.Groups[match.Groups.Count - 2].Value;
                     string iheader = name.Substring(0, name.Length - 2) + "-" + name.Substring(name.Length - 2).ToUpper();
@@ -1021,27 +1022,25 @@ namespace PoEWizard
         {
             try
             {
-                if (restApiService != null && !isClosing)
+                if (restApiService == null || isClosing) return;
+                string cfgChanges = await GetSyncStatus(title);
+                isClosing = true;
+                if (device?.RunningDir != CERTIFIED_DIR && device?.SyncStatus == SyncStatusType.NotSynchronized)
                 {
-                    string cfgChanges = await GetSyncStatus(title);
-                    isClosing = true;
-                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized)
+                    if (AuthorizeWriteMemory(Translate("i18n_wmem"), cfgChanges))
                     {
-                        if (AuthorizeWriteMemory(Translate("i18n_wmem"), cfgChanges))
-                        {
-                            DisableButtons();
-                            _comImg.Visibility = Visibility.Collapsed;
-                            await Task.Run(() => restApiService.WriteMemory());
-                            _comImg.Visibility = Visibility.Visible;
-                        }
+                        DisableButtons();
+                        _comImg.Visibility = Visibility.Collapsed;
+                        await Task.Run(() => restApiService?.WriteMemory());
+                        _comImg.Visibility = Visibility.Visible;
                     }
-                    restApiService.Close();
                 }
-                await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
+                restApiService?.Close();
+                restApiService = null;
             }
             catch (Exception ex)
             {
-                Logger.Warn(ex.Message);
+                Logger.Error(ex);
             }
             finally
             {
@@ -1097,7 +1096,7 @@ namespace PoEWizard
                 txt.Append(selectedPort.Name).Append(" with device type ").Append(selectedDeviceType).Append(":").Append(msg).Append("\nPoE status: ").Append(selectedPort.Poe);
                 txt.Append(", Port Status: ").Append(selectedPort.Status).Append(", Power: ").Append(selectedPort.Power).Append(" Watts");
                 if (selectedPort.EndPointDevice != null) txt.Append("\n").Append(selectedPort.EndPointDevice);
-                else if (selectedPort.MacList?.Count > 0 && !string.IsNullOrEmpty(selectedPort.MacList[0])) 
+                else if (selectedPort.MacList?.Count > 0 && !string.IsNullOrEmpty(selectedPort.MacList[0]))
                     txt.Append($", {Translate("i18n_pwDevMac")} ").Append(selectedPort.MacList[0]);
                 Logger.Activity(txt.ToString());
                 Activity.Log(device, $"PoE Wizard execution {(result == WizardResult.Fail ? "failed" : "succeeded")} on port {selectedPort.Name}");
@@ -1223,7 +1222,7 @@ namespace PoEWizard
                 var sfd = new SaveFileDialog()
                 {
                     Filter = $"{Translate("i18n_tarf")}|*.tar",
-                    Title =Translate("i18n_sfile"),
+                    Title = Translate("i18n_sfile"),
                     InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
                     FileName = $"{Path.GetFileName(fname)}-{device.Name}-{DateTime.Now:MM-dd-yyyy_hh_mm_ss}.tar"
                 };
@@ -1375,7 +1374,7 @@ namespace PoEWizard
                         {
                             ReportResult report = reportList[reportList.Count - 1];
                             string alertMsg = $"{report.AlertDescription}\n{Translate("i18n_turnon")}";
-                            if (report?.Result == WizardResult.Warning && 
+                            if (report?.Result == WizardResult.Warning &&
                                 ShowMessageBox($"{Translate("i18n_slot")} {report.ID}", alertMsg, MsgBoxIcons.Question, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
                             {
                                 await PowerSlotUpOrDown(Command.POWER_UP_SLOT, report.ID);
@@ -1706,7 +1705,7 @@ namespace PoEWizard
 
         private void UpdateConnectedState()
         {
-            if (device.IsConnected) SetConnectedState(); 
+            if (device.IsConnected) SetConnectedState();
             else SetDisconnectedState();
         }
 
@@ -1731,7 +1730,7 @@ namespace PoEWizard
                 {
                     _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
                 }
-                else 
+                else
                 {
                     _slotsView.CellStyle = currentDict["gridCell"] as Style;
                 }
