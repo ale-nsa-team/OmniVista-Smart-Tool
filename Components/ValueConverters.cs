@@ -19,7 +19,7 @@ namespace PoEWizard.Components
         internal static SolidColorBrush Warn => Brushes.Orange;
         internal static SolidColorBrush Unknown => Brushes.Gray;
         internal static SolidColorBrush Disable => (SolidColorBrush)new BrushConverter().ConvertFrom("#aaa");
-        internal static SolidColorBrush Problem => MainWindow.Theme == ThemeType.Dark 
+        internal static SolidColorBrush Problem => MainWindow.Theme == ThemeType.Dark
             ? (SolidColorBrush)new BrushConverter().ConvertFrom("#C29494") : Brushes.Orchid;
         internal static SolidColorBrush Default => MainWindow.Theme == ThemeType.Dark ? Brushes.White : Brushes.Black;
     }
@@ -218,7 +218,8 @@ namespace PoEWizard.Components
                 string par = parameter?.ToString() ?? string.Empty;
                 ConfigType ct = Enum.TryParse(val, true, out ConfigType c) ? c : ConfigType.Unavailable;
                 return par == "Available" ? ct != ConfigType.Unavailable : ct == ConfigType.Enable;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Logger.Error(ex);
                 return false;
@@ -421,7 +422,7 @@ namespace PoEWizard.Components
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                return null;    
+                return null;
             }
 
         }
@@ -570,26 +571,34 @@ namespace PoEWizard.Components
 
     public class PoeToTooltipConverter : IValueConverter
     {
-        static readonly Dictionary<PoeStatus, string> toolTip = new Dictionary<PoeStatus, string>
-        {
-            [PoeStatus.On] = Translate("i18n_on_tt"),
-            [PoeStatus.Off] = Translate("i18n_off_tt"),
-            [PoeStatus.Searching] = Translate("i18n_srch_tt"),
-            [PoeStatus.Fault] = Translate("i18n_fault_tt"),
-            [PoeStatus.Deny] = Translate("i18n_deny_tt"),
-            [PoeStatus.Test] = Translate("i18n_test_tt"),
-            [PoeStatus.Delayed] = Translate("i18n_dld_tt"),
-            [PoeStatus.Conflict] = Translate("i18n_conf_tt"),
-            [PoeStatus.NoPoe] = Translate("i18n_nop_tt")
-        };
-
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
                 if (Utils.IsInvalid(value)) return DependencyProperty.UnsetValue;
                 PoeStatus poe = (PoeStatus)value;
-                if (toolTip.ContainsKey(poe)) return toolTip[poe];
+
+                switch (poe)
+                {
+                    case PoeStatus.On:
+                        return Translate("i18n_on_tt");
+                    case PoeStatus.Off:
+                        return Translate("i18n_off_tt");
+                    case PoeStatus.Searching:
+                        return Translate("i18n_srch_tt");
+                    case PoeStatus.Fault:
+                        return Translate("i18n_fault_tt");
+                    case PoeStatus.Deny:
+                        return Translate("i18n_deny_tt");
+                    case PoeStatus.Delayed:
+                        return Translate("i18n_dld_tt");
+                    case PoeStatus.Conflict:
+                        return Translate("i18n_conf_tt");
+                    case PoeStatus.NoPoe:
+                        return Translate("i18n_nop_tt");
+                    default:
+                        return DependencyProperty.UnsetValue;
+                }
             }
             catch (Exception ex)
             {
@@ -603,7 +612,7 @@ namespace PoEWizard.Components
             return DependencyProperty.UnsetValue;
         }
 
-        static string Translate(string key)
+        private string Translate(string key)
         {
             return (string)MainWindow.Strings[key] ?? key;
         }

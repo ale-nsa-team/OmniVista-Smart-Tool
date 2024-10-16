@@ -682,6 +682,9 @@ namespace PoEWizard
             {
                 _switchAttributes.Text = $"{Translate("i18n_connTo")} {device.Name} ({Translate("i18n_upTime")} {device.UpTime})";
             }
+            //force tooltip converter to run
+            _portList.ItemsSource = null;
+            _portList.ItemsSource = selectedSlot.Ports;
         }
 
         private void About_Click(object sender, RoutedEventArgs e)
