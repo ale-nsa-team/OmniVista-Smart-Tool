@@ -27,7 +27,7 @@ namespace PoEWizard.Comm
         private WizardReport _wizardReportResult;
         private SwitchDebugModel _debugSwitchLog;
         private SwitchTrafficModel _switchTraffic;
-        private static AbortType stopTrafficAnalysis;
+        private static TrafficStatus trafficAnalysisStatus = TrafficStatus.Idle;
         private static string stopTrafficAnalysisReason = "completed";
         private double totalProgressBar;
         private double progressBarCnt;
@@ -805,18 +805,23 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void StopTrafficAnalysis(AbortType abortType, string stopReason)
+        public void StopTrafficAnalysis(TrafficStatus abortType, string stopReason)
         {
-            stopTrafficAnalysis = abortType;
+            trafficAnalysisStatus = abortType;
             stopTrafficAnalysisReason = stopReason;
         }
 
-        public TrafficReport RunTrafficAnalysis(int duration)
+        public bool IsTrafficAnalysisRunning()
+        {
+            return trafficAnalysisStatus == TrafficStatus.Running;
+        }
+
+        public TrafficReport RunTrafficAnalysisAsync(int duration)
         {
             TrafficReport report;
             try
             {
-                stopTrafficAnalysis = AbortType.Running;
+                trafficAnalysisStatus = TrafficStatus.Running;
                 stopTrafficAnalysisReason = "completed";
                 _switchTraffic = null;
                 GetPortsTrafficInformation();
@@ -825,10 +830,10 @@ namespace PoEWizard.Comm
                 LogActivity($"Started traffic analysis", $" for {duration} sec");
                 while (Utils.GetTimeDuration(startTime) <= duration)
                 {
-                    if (stopTrafficAnalysis != AbortType.Running) break;
+                    if (trafficAnalysisStatus != TrafficStatus.Running) break;
                     Thread.Sleep(250);
                 }
-                if (stopTrafficAnalysis == AbortType.Close)
+                if (trafficAnalysisStatus == TrafficStatus.Close)
                 {
                     Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was canceled because the switch is disconnected!");
                     Activity.Log(SwitchModel, "Traffic analysis interrupted.");
@@ -837,7 +842,7 @@ namespace PoEWizard.Comm
                 GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
                 GetPortsTrafficInformation();
                 report = new TrafficReport(_switchTraffic, stopTrafficAnalysisReason, duration, GetDdmReport());
-                if (stopTrafficAnalysis == AbortType.CanceledByUser)
+                if (trafficAnalysisStatus == TrafficStatus.CanceledByUser)
                 {
                     Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was {stopTrafficAnalysisReason}, selected duration: {duration / 60} minutes!");
                 }
@@ -847,6 +852,10 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError($"Traffic analysis on switch {SwitchModel.Name}", ex);
                 return null;
+            }
+            finally
+            {
+                trafficAnalysisStatus = TrafficStatus.Idle;
             }
             return report;
         }
@@ -867,9 +876,10 @@ namespace PoEWizard.Comm
         {
             try
             {
-                ShowInterfacesList();
+                _dictList = SendCommand(new CmdRequest(Command.SHOW_INTERFACES, ParseType.TrafficTable)) as List<Dictionary<string, string>>;
                 if (_dictList?.Count > 0)
                 {
+                    SwitchModel.LoadFromList(_dictList, DictionaryType.ShowInterfacesList);
                     if (_switchTraffic == null) _switchTraffic = new SwitchTrafficModel(SwitchModel, _dictList);
                     else _switchTraffic.UpdateTraffic(_dictList);
                 }
