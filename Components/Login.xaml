@@ -25,17 +25,20 @@
         <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="{DynamicResource i18n_cred}" Style="{DynamicResource popupTitle}" />
         <StackPanel Grid.Row="1" Style="{DynamicResource popupPanel}">
             <Label Content="{DynamicResource i18n_ip}" />
-            <TextBox x:Name="_ipAddress" x:FieldModifier="private" 
+            <ComboBox x:Name="_ipAddress" x:FieldModifier="private"
+                     Style="{DynamicResource defaultCombo}"
+                     Width="150"
                      Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                     IsEditable="True"
                      KeyUp="TextBox_KeyUp">
-                <TextBox.Text>
+                <ComboBox.Text>
                     <Binding Path="IpAddress" UpdateSourceTrigger="PropertyChanged">
                         <Binding.ValidationRules>
                             <local:IpAddressRule />
                         </Binding.ValidationRules>
                     </Binding>
-                </TextBox.Text>
-            </TextBox>
+                </ComboBox.Text>
+            </ComboBox>
             <Label Content="{DynamicResource i18n_user}" />
             <TextBox x:Name="_username" x:FieldModifier="private" Text="{Binding User}" KeyUp="TextBox_KeyUp"/>
             <Grid>

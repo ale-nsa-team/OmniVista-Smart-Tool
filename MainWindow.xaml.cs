@@ -59,6 +59,7 @@ namespace PoEWizard
         private DateTime startTrafficAnalysisTime;
         private double maxCollectLogsDur = 0;
         private string lastMacAddress = string.Empty;
+        private readonly Config config;
         #endregion
 
         #region public variables
@@ -89,6 +90,9 @@ namespace PoEWizard
             currentDict = darkDict;
             Instance = this;
             Activity.DataPath = DataPath;
+            config = new Config(Path.Combine(DataPath, "app.cfg"));
+            Theme = Enum.TryParse(config.Get("theme"), out ThemeType t) ? t : ThemeType.Dark;
+            if (Theme == ThemeType.Light) ThemeItem_Click(_lightMenuItem, null);
             BuildOuiTable();
 
             // progress report handling
@@ -144,14 +148,14 @@ namespace PoEWizard
                 e.Cancel = true;
                 string confirm = Translate("i18n_closing");
                 stopTrafficAnalysisReason = $"{Translate("i18n_swrsti")} {confirm}";
-                bool save = StopTrafficAnalysis(AbortType.Close, $"{Translate("i18n_taDisc")} {device.Name}", Translate("i18n_taSave"), confirm);
+                bool close = StopTrafficAnalysis(AbortType.Close, $"{Translate("i18n_taDisc")} {device.Name}", Translate("i18n_taSave"), confirm);
                 await WaitSaveTrafficAnalysis();
-                if (!save) return;
+                if (!close) return;
                 sftpService?.Disconnect();
                 sftpService = null;
-                await CloseRestApiService(confirm);
                 this.Closing -= OnWindowClosing;
-                await Task.Run(() => Thread.Sleep(250)); //needed for the closing event handler
+                await CloseRestApiService(confirm);
+                await Task.Run(() => config.Save());
                 this.Close();
             }
             catch (Exception ex)
@@ -165,7 +169,7 @@ namespace PoEWizard
         #region event handlers
         private void SwitchMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Login login = new Login(device.Login)
+            Login login = new Login(device.Login, config)
             {
                 Password = device.Password,
                 IpAddress = string.IsNullOrEmpty(device.IpAddress) ? lastIpAddr : device.IpAddress,
@@ -357,7 +361,7 @@ namespace PoEWizard
         {
             MsgBoxResult res = ShowMessageBox(Translate("i18n_tfrst"), Translate("i18n_cfrst"), MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
             if (res == MsgBoxResult.Cancel) return;
-            PassCode pc = new PassCode(this);
+            PassCode pc = new PassCode(this, config);
             if (pc.ShowDialog() == false) return;
             if (pc.Password != pc.SavedPassword)
             {
@@ -475,7 +479,7 @@ namespace PoEWizard
 
         private void Reboot_Click(object sender, RoutedEventArgs e)
         {
-            PassCode pc = new PassCode(this);
+            PassCode pc = new PassCode(this, config);
             if (pc.ShowDialog() == true)
             {
                 if (pc.Password != pc.SavedPassword)
@@ -655,6 +659,7 @@ namespace PoEWizard
             {
                 _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
             }
+            config.Set("theme", t);
             Utils.SetTitleColor(this);
             //force color converters to run
             DataContext = null;
@@ -674,6 +679,7 @@ namespace PoEWizard
             };
             Resources.MergedDictionaries.Add(Strings);
             mi.IsChecked = true;
+            config.Set("language", mi.Header.ToString());
             foreach (MenuItem i in _langMenu.Items)
             {
                 if (i != mi) i.IsChecked = false;
@@ -683,8 +689,11 @@ namespace PoEWizard
                 _switchAttributes.Text = $"{Translate("i18n_connTo")} {device.Name} ({Translate("i18n_upTime")} {device.UpTime})";
             }
             //force tooltip converter to run
-            _portList.ItemsSource = null;
-            _portList.ItemsSource = selectedSlot.Ports;
+            if (selectedSlot != null)
+            {
+                _portList.ItemsSource = null;
+                _portList.ItemsSource = selectedSlot.Ports;
+            }
         }
 
         private void About_Click(object sender, RoutedEventArgs e)
@@ -782,7 +791,7 @@ namespace PoEWizard
                 MsgBoxResult poweroff = ShowMessageBox(Translate("i18n_spoeOff"), msg, MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                 if (poweroff == MsgBoxResult.Yes)
                 {
-                    PassCode pc = new PassCode(this);
+                    PassCode pc = new PassCode(this, config);
                     if (pc.ShowDialog() == false)
                     {
                         cb.IsChecked = true;
@@ -912,6 +921,8 @@ namespace PoEWizard
 
             List<string> sorted = resourceDicts.ToList();
             sorted.Sort();
+            MenuItem found = null;
+            string fname = null;
 
             foreach (var file in sorted)
             {
@@ -921,9 +932,23 @@ namespace PoEWizard
                     string name = match.Groups[match.Groups.Count - 2].Value;
                     string iheader = name.Substring(0, name.Length - 2) + "-" + name.Substring(name.Length - 2).ToUpper();
                     MenuItem item = new MenuItem { Header = iheader };
-                    if (Strings.Source.ToString().ToLower().Contains(name)) item.IsChecked = true;
+                    if (iheader == config.Get("language"))
+                    {
+                        found = item;
+                        fname = file;
+                    }
                     item.Click += new RoutedEventHandler(LangItem_Click);
                     _langMenu.Items.Add(item);
+                }
+                if (found != null)
+                {
+                    Resources.MergedDictionaries.Remove(Strings);
+                    Strings = new ResourceDictionary
+                    {
+                        Source = new Uri(fname, UriKind.Relative)
+                    };
+                    Resources.MergedDictionaries.Add(Strings);
+                    found.IsChecked = true;
                 }
             }
         }
