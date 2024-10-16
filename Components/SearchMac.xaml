@@ -46,11 +46,18 @@
                 MouseDoubleClick="Mouse_DoubleClick"
                 IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Width="0.8*" Binding="{Binding Path=Port.Name}">
-                        <DataGridTextColumn.Header>
+                    <DataGridTemplateColumn Width="0.8*">
+                        <DataGridTemplateColumn.Header>
                             <TextBlock Text="{DynamicResource i18n_port}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Port.Name}" Style="{DynamicResource devToolTip}"
+                                  Foreground="{DynamicResource fontColor}"
+                                  ToolTip="{Binding Path=Port.DetailsInfo, Converter={StaticResource PortToTooltipConverter}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="1.2*" IsReadOnly="True">
                         <DataGridTemplateColumn.Header>
                             <TextBlock Text="{DynamicResource i18n_alias}" />
@@ -87,7 +94,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Port.Power}" Style="{DynamicResource toolTip}"
-                                        ToolTip="Actual power consumed by the device connected to the port" />
+                                        ToolTip="{DynamicResource i18n_pwr_tt}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -101,7 +108,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Port.MaxPower}" Style="{DynamicResource toolTip}"
-                                        ToolTip="Maximum power allowed by the hardware" />
+                                        ToolTip="{DynamicResource i18n_maxPwr_tt}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
