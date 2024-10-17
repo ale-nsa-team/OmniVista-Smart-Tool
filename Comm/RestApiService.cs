@@ -816,35 +816,42 @@ namespace PoEWizard.Comm
             return trafficAnalysisStatus == TrafficStatus.Running;
         }
 
-        public TrafficReport RunTrafficAnalysisAsync(int duration)
+        public TrafficReport RunTrafficAnalysisAsync(int selectedDuration)
         {
             TrafficReport report;
             try
             {
                 trafficAnalysisStatus = TrafficStatus.Running;
-                stopTrafficAnalysisReason = "completed";
                 _switchTraffic = null;
                 GetPortsTrafficInformation();
+                report = new TrafficReport(_switchTraffic, selectedDuration);
                 DateTime startTime = DateTime.Now;
-                DateTime sampleTime = DateTime.Now;
-                LogActivity($"Started traffic analysis", $" for {duration} sec");
-                while (Utils.GetTimeDuration(startTime) <= duration)
+                LogActivity($"Started traffic analysis", $" for {selectedDuration} sec");
+                double dur = 0;
+                while (dur < selectedDuration)
                 {
                     if (trafficAnalysisStatus != TrafficStatus.Running) break;
+                    dur = Utils.GetTimeDuration(startTime);
+                    if (dur >= selectedDuration)
+                    {
+                        trafficAnalysisStatus = TrafficStatus.Completed;
+                        stopTrafficAnalysisReason = "completed";
+                        break;
+                    }
                     Thread.Sleep(250);
                 }
-                if (trafficAnalysisStatus == TrafficStatus.Close)
+                if (trafficAnalysisStatus == TrafficStatus.Abort)
                 {
-                    Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was canceled because the switch is disconnected!");
+                    Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was {stopTrafficAnalysisReason}!");
                     Activity.Log(SwitchModel, "Traffic analysis interrupted.");
                     return null;
                 }
                 GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
                 GetPortsTrafficInformation();
-                report = new TrafficReport(_switchTraffic, stopTrafficAnalysisReason, duration, GetDdmReport());
+                report.Complete(stopTrafficAnalysisReason, GetDdmReport());
                 if (trafficAnalysisStatus == TrafficStatus.CanceledByUser)
                 {
-                    Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was {stopTrafficAnalysisReason}, selected duration: {duration / 60} minutes!");
+                    Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was {stopTrafficAnalysisReason}, selected duration: {report.SelectedDuration}!");
                 }
                 LogActivity($"Traffic analysis {stopTrafficAnalysisReason}.", $"\n{report.Summary}");
             }

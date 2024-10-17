@@ -67,7 +67,7 @@ namespace PoEWizard.Data
             SynchronizedUnknownCertified = 4
         }
         public enum SwitchDebugLogLevel { Off = 0, Alarm = 1, Error = 2, Alert = 3, Warn = 4, Event = 5, Info = 6, Debug1 = 7, Debug2 = 8, Debug3 = 9, Unknown = -1, Invalid = -2 }
-        public enum TrafficStatus { Idle, Close, CanceledByUser, Running }
+        public enum TrafficStatus { Idle, Abort, CanceledByUser, Running, Completed }
         #endregion
 
         #region dictionaries

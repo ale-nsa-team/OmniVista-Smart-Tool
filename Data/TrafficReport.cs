@@ -42,16 +42,16 @@ namespace PoEWizard.Data
         private double txLostFrames = 0;
 
         private double txCollisions = 0;
-        private string selectedDuration;
 
         public string Summary { get; set; }
         public StringBuilder Data { get; set; }
         public DateTime TrafficStartTime { get; set; }
         public SwitchTrafficModel SwitchTraffic { get; set; }
+        public string SelectedDuration { get; set; }
 
 
         public double TrafficDuration { get; set; }
-        public TrafficReport(SwitchTrafficModel switchTraffic, string completion, int selectedDur, string ddmReport)
+        public TrafficReport(SwitchTrafficModel switchTraffic, int selectedDur)
         {
             this.Summary = string.Empty;
             this.Data = null;
@@ -69,7 +69,6 @@ namespace PoEWizard.Data
                     }
                 }
             }
-            this.Summary = $"Traffic analysis {completion}:";
             int selDuration;
             string unit;
             if (selectedDur >= 60 && selectedDur < 3600)
@@ -82,11 +81,16 @@ namespace PoEWizard.Data
                 unit = HOUR;
                 selDuration = selectedDur / 3600;
             }
-            this.selectedDuration = $"{selDuration} {unit}";
-            if (selDuration > 1) this.selectedDuration += "s";
+            if (selDuration > 1) this.SelectedDuration += "s";
+            this.SelectedDuration = $"{selDuration} {unit}";
+        }
+
+        public void Complete(string completion, string ddmReport)
+        {
+            this.Summary = $"Traffic analysis {completion}:";
             this.Summary += $"\n  Switch: {this.SwitchTraffic.Name} ({this.SwitchTraffic.IpAddress}), Serial number: {this.SwitchTraffic.SerialNumber}";
             this.Summary += $"\n  Date: {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}";
-            this.Summary += $"\n  Selected duration: {this.selectedDuration}";
+            this.Summary += $"\n  Selected duration: {this.SelectedDuration}";
             this.Summary += $"\n  Actual duration: {Utils.CalcStringDuration(TrafficStartTime, true)}";
             this.Summary += $"\n\nNote: This tool can detect common network issues, but is not a substitute for long term monitoring and human interpretation.";
             this.Summary += $"\n      Your results may vary and will change over time.";
@@ -102,7 +106,7 @@ namespace PoEWizard.Data
             this.Data = new StringBuilder($"\r\nSwitch, ").Append(this.SwitchTraffic.Name).Append(" ").Append(this.SwitchTraffic.IpAddress);
             this.Data.Append("\r\nSerial number, ").Append(this.SwitchTraffic.SerialNumber);
             this.Data.Append("\r\nDate,").Append($" {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}");
-            this.Data.Append($"\r\nSelected duration, ").Append(this.selectedDuration);
+            this.Data.Append($"\r\nSelected duration, ").Append(this.SelectedDuration);
             this.Data.Append($"\r\nActual duration, ").Append(Utils.CalcStringDuration(TrafficStartTime, true));
             this.Data.Append("\r\n\r\n\r\n").Append(HEADER);
             this.alertReport = new Dictionary<string, string>();

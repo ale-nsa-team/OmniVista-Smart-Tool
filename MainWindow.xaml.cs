@@ -141,7 +141,7 @@ namespace PoEWizard
                 e.Cancel = true;
                 string confirm = "closing the application";
                 stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                bool close = StopTrafficAnalysis(TrafficStatus.Close, $"Disconnecting switch {device.Name}", ASK_SAVE_TRAFFIC_REPORT, confirm);
+                bool close = StopTrafficAnalysis(TrafficStatus.Abort, $"Disconnecting switch {device.Name}", ASK_SAVE_TRAFFIC_REPORT, confirm);
                 if (!close) return;
                 this.Closing -= OnWindowClosing;
                 await WaitCloseTrafficAnalysis();
@@ -574,7 +574,7 @@ namespace PoEWizard
                 {
                     restApiService?.StopTrafficAnalysis(TrafficStatus.CanceledByUser, stopTrafficAnalysisReason);
                 }
-                else if (abortType == TrafficStatus.Close)
+                else if (abortType == TrafficStatus.Abort)
                 {
                     if (!string.IsNullOrEmpty(confirm))
                     {
@@ -886,7 +886,7 @@ namespace PoEWizard
                     string textMsg = $"Disconnecting switch {device.Name}";
                     string confirm = $"disconnecting the switch {device.Name}";
                     stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                    bool close = StopTrafficAnalysis(TrafficStatus.Close, textMsg, ASK_SAVE_TRAFFIC_REPORT, confirm);
+                    bool close = StopTrafficAnalysis(TrafficStatus.Abort, textMsg, ASK_SAVE_TRAFFIC_REPORT, confirm);
                     if (!close) return;
                     await WaitCloseTrafficAnalysis();
                     ShowProgress($"{textMsg}{WAITING}");
@@ -1781,7 +1781,7 @@ namespace PoEWizard
                 string confirm = $"rebooting the switch {device.Name}";
                 stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
                 string title = $"Rebooting switch {device.Name}";
-                bool save = StopTrafficAnalysis(TrafficStatus.Close, title, ASK_SAVE_TRAFFIC_REPORT, confirm);
+                bool save = StopTrafficAnalysis(TrafficStatus.Abort, title, ASK_SAVE_TRAFFIC_REPORT, confirm);
                 if (!save) return null;
                 await WaitCloseTrafficAnalysis();
                 DisableButtons();
