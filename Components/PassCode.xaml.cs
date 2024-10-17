@@ -18,7 +18,7 @@ namespace PoEWizard.Components
         public PassCode(Window owner)
         {
             InitializeComponent();
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[0]);
             }

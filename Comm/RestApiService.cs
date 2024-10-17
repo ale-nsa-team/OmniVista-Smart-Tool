@@ -816,7 +816,7 @@ namespace PoEWizard.Comm
             return trafficAnalysisStatus == TrafficStatus.Running;
         }
 
-        public TrafficReport RunTrafficAnalysisAsync(int selectedDuration)
+        public TrafficReport RunTrafficAnalysis(int selectedDuration)
         {
             TrafficReport report;
             try

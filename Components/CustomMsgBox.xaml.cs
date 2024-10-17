@@ -28,7 +28,7 @@ namespace PoEWizard.Components
             InitializeComponent();
             light = Resources.MergedDictionaries[0];
             dark = Resources.MergedDictionaries[1];
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(light);
                 currDict = dark;

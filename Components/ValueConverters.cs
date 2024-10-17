@@ -14,14 +14,14 @@ namespace PoEWizard.Components
     internal static class Colors
     {
         internal static SolidColorBrush Danger => (SolidColorBrush)new BrushConverter().ConvertFrom("#ff6347");
-        internal static SolidColorBrush Clear => MainWindow.theme == ThemeType.Dark ? Brushes.Lime
+        internal static SolidColorBrush Clear => MainWindow.Theme == ThemeType.Dark ? Brushes.Lime
                         : (SolidColorBrush)new BrushConverter().ConvertFrom("#12b826");
         internal static SolidColorBrush Warn => Brushes.Orange;
         internal static SolidColorBrush Unknown => Brushes.Gray;
         internal static SolidColorBrush Disable => (SolidColorBrush)new BrushConverter().ConvertFrom("#aaa");
-        internal static SolidColorBrush Problem => MainWindow.theme == ThemeType.Dark 
+        internal static SolidColorBrush Problem => MainWindow.Theme == ThemeType.Dark 
             ? (SolidColorBrush)new BrushConverter().ConvertFrom("#C29494") : Brushes.Orchid;
-        internal static SolidColorBrush Default => MainWindow.theme == ThemeType.Dark ? Brushes.White : Brushes.Black;
+        internal static SolidColorBrush Default => MainWindow.Theme == ThemeType.Dark ? Brushes.White : Brushes.Black;
     }
 
     public class RectangleValueConverter : IValueConverter

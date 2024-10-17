@@ -17,7 +17,7 @@ namespace PoEWizard.Components
         public ChangePwd(Window owner, string pwd)
         {
             InitializeComponent();
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[0]);
             }

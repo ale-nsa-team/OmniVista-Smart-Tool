@@ -43,7 +43,7 @@ namespace PoEWizard.Components
             this.SearchText = !string.IsNullOrEmpty(macAddress) ? macAddress.ToLower().Trim() : string.Empty;
             InitializeComponent();
             DataContext = this;
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[0]);
             }

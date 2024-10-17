@@ -27,7 +27,7 @@ namespace PoEWizard.Components
         {
             InitializeComponent();
 
-            if (MainWindow.theme == Constants.ThemeType.Dark)
+            if (MainWindow.Theme == Constants.ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[0]);
             }

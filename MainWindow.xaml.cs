@@ -65,7 +65,7 @@ namespace PoEWizard
 
         #region public variables
         public static Window Instance;
-        public static ThemeType theme;
+        public static ThemeType Theme;
         public static string DataPath;
         public static RestApiService restApiService;
         public static Dictionary<string, string> ouiTable = new Dictionary<string, string>();
@@ -606,7 +606,7 @@ namespace PoEWizard
 
         private void Help_Click(object sender, RoutedEventArgs e)
         {
-            string hlpFile = theme == ThemeType.Dark ? "help-dark.html" : "help-light.html";
+            string hlpFile = Theme == ThemeType.Dark ? "help-dark.html" : "help-light.html";
             HelpViewer hv = new HelpViewer(hlpFile)
             {
                 Owner = this,
@@ -639,7 +639,7 @@ namespace PoEWizard
             if (t == "Dark")
             {
                 _lightMenuItem.IsChecked = false;
-                theme = ThemeType.Dark;
+                Theme = ThemeType.Dark;
                 Resources.MergedDictionaries.Remove(lightDict);
                 Resources.MergedDictionaries.Add(darkDict);
                 currentDict = darkDict;
@@ -647,7 +647,7 @@ namespace PoEWizard
             else
             {
                 _darkMenuItem.IsChecked = false;
-                theme = ThemeType.Light;
+                Theme = ThemeType.Light;
                 Resources.MergedDictionaries.Remove(darkDict);
                 Resources.MergedDictionaries.Add(lightDict);
                 currentDict = lightDict;
@@ -890,7 +890,7 @@ namespace PoEWizard
                     if (!close) return;
                     await WaitCloseTrafficAnalysis();
                     ShowProgress($"{textMsg}{WAITING}");
-                    await CloseRestApiService($"{textMsg}");
+                    await CloseRestApiService(textMsg);
                     SetDisconnectedState();
                     return;
                 }
@@ -947,7 +947,7 @@ namespace PoEWizard
             }
             else
             {
-                filePath = Path.Combine(MainWindow.DataPath, OUI_FILE);
+                filePath = Path.Combine(DataPath, OUI_FILE);
                 if (File.Exists(filePath)) ouiEntries = File.ReadAllLines(filePath);
 
             }
@@ -1527,7 +1527,7 @@ namespace PoEWizard
                 startTrafficAnalysisTime = DateTime.Now;
                 _trafficLabel.Content = TRAFFIC_ANALYSIS_RUNNING;
                 string switchName = device.Name;
-                TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysisAsync(selectedTrafficDuration));
+                TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(selectedTrafficDuration));
                 if (report != null)
                 {
                     TextViewer tv = new TextViewer(TRAFFIC_ANALYSIS_IDLE, report.Summary)
@@ -1648,7 +1648,7 @@ namespace PoEWizard
 
         private void UpdateConnectedState()
         {
-            if (device.IsConnected) SetConnectedState(); 
+            if (device.IsConnected) SetConnectedState();
             else SetDisconnectedState();
         }
 
@@ -1673,7 +1673,7 @@ namespace PoEWizard
                 {
                     _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
                 }
-                else 
+                else
                 {
                     _slotsView.CellStyle = currentDict["gridCell"] as Style;
                 }

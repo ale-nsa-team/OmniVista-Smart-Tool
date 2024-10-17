@@ -18,7 +18,7 @@ namespace PoEWizard.Components
         public CfgWizPage1(SystemModel systemData)
         {
             InitializeComponent();
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[0]);
             }

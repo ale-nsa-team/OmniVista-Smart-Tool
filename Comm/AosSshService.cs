@@ -1005,6 +1005,5 @@ namespace PoEWizard.Comm
             return txt.ToString();
         }
 
-
     }
 }

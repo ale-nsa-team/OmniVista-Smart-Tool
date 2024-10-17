@@ -17,7 +17,7 @@ namespace PoEWizard.Components
         {
             string tz = srvData.Timezone; //saving before calling InitializeComponent because it's resetting it
             InitializeComponent();
-            if (MainWindow.theme == ThemeType.Dark)
+            if (MainWindow.Theme == ThemeType.Dark)
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[0]);
             }
