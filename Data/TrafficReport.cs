@@ -24,6 +24,7 @@ namespace PoEWizard.Data
         private PortTrafficModel trafficPort;
         private Dictionary<string, string> alertReport;
         private readonly Dictionary<string, PortModel> switchPorts;
+        private readonly List<string> chassisInfo = new List<string>();
 
         private double rxBroadCast = 0;
         private double rxUniCast = 0;
@@ -61,6 +62,7 @@ namespace PoEWizard.Data
             this.switchPorts = new Dictionary<string, PortModel>();
             foreach (ChassisModel chassis in SwitchTraffic.ChassisList)
             {
+                this.chassisInfo.Add($"Chassis {chassis.Number}: Model {chassis.Model}, Serial Number {chassis.SerialNumber}");
                 foreach (SlotModel slot in chassis.Slots)
                 {
                     foreach (PortModel port in slot.Ports)
@@ -88,13 +90,14 @@ namespace PoEWizard.Data
         public void Complete(string completion, string ddmReport)
         {
             this.Summary = $"Traffic analysis {completion}:";
-            this.Summary += $"\n  Switch: {this.SwitchTraffic.Name} ({this.SwitchTraffic.IpAddress}), Serial number: {this.SwitchTraffic.SerialNumber}";
-            this.Summary += $"\n  Date: {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}";
-            this.Summary += $"\n  Selected duration: {this.SelectedDuration}";
-            this.Summary += $"\n  Actual duration: {Utils.CalcStringDuration(TrafficStartTime, true)}";
-            this.Summary += $"\n\nNote: This tool can detect common network issues, but is not a substitute for long term monitoring and human interpretation.";
-            this.Summary += $"\n      Your results may vary and will change over time.";
-            this.Summary += $"\n\nTraffic Alert:\n";
+            this.Summary += $"\r\n  Switch: {this.SwitchTraffic.Name} ({this.SwitchTraffic.IpAddress})";
+            this.Summary += $"\r\n  {string.Join("\r\n  ", this.chassisInfo)}";
+            this.Summary += $"\r\n  Date: {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}";
+            this.Summary += $"\r\n  Selected duration: {this.SelectedDuration}";
+            this.Summary += $"\r\n  Actual duration: {Utils.CalcStringDuration(TrafficStartTime, true)}";
+            this.Summary += $"\r\n\r\nNote: This tool can detect common network issues, but is not a substitute for long term monitoring and human interpretation.";
+            this.Summary += $"\r\n      Your results may vary and will change over time.";
+            this.Summary += $"\r\n\r\nTraffic Alert:\r\n";
             this.TrafficDuration = DateTime.Now.Subtract(this.SwitchTraffic.StartTime).TotalSeconds;
             BuildReportData();
             BuildLldpDevicesReport();
@@ -103,8 +106,8 @@ namespace PoEWizard.Data
 
         private void BuildReportData()
         {
-            this.Data = new StringBuilder($"\r\nSwitch, ").Append(this.SwitchTraffic.Name).Append(" ").Append(this.SwitchTraffic.IpAddress);
-            this.Data.Append("\r\nSerial number, ").Append(this.SwitchTraffic.SerialNumber);
+            this.Data = new StringBuilder($"Switch, ").Append(this.SwitchTraffic.Name).Append(" ").Append(this.SwitchTraffic.IpAddress);
+            this.Data.Append("\r\n").Append(string.Join("\r\n", this.chassisInfo).Replace(":", ","));
             this.Data.Append("\r\nDate,").Append($" {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}");
             this.Data.Append($"\r\nSelected duration, ").Append(this.SelectedDuration);
             this.Data.Append($"\r\nActual duration, ").Append(Utils.CalcStringDuration(TrafficStartTime, true));
@@ -385,14 +388,16 @@ namespace PoEWizard.Data
                     EndPointDeviceModel device = port.EndPointDevice;
                     if (IsDeviceTypeUnknown(device)) continue;
                     // Port,Alias,Type
-                    this.Data.Append("\n ").Append(port.Name).Append(",\"").Append(port.Alias).Append("\",\"").Append(device.Type).Append("\"");
-                    // ,Name,Description,IP Address
-                    this.Data.Append(",\"").Append(device.Name).Append("\",\"").Append(device.Description).Append("\",\"").Append(device.IpAddress).Append("\"");
-                    // ,Vendor,Model,Software Version";
-                    this.Data.Append(",\"").Append(device.Vendor).Append("\",\"").Append(device.Model).Append("\",\"").Append(device.SoftwareVersion).Append("\"");
+                    this.Data.Append("\n ").Append(port.Name).Append(",\"").Append(GetDeviceInfo(port.Alias)).Append("\",\"").Append(GetDeviceInfo(device.Type)).Append("\"");
+                    // ,Name,Description
+                    this.Data.Append(",\"").Append(GetDeviceInfo(device.Name)).Append("\",\"").Append(GetDeviceInfo(device.Description)).Append("\"");
+                    // ,IP Address,Vendor
+                    this.Data.Append(",\"").Append(GetDeviceInfo(device.IpAddress)).Append("\",\"").Append(GetDeviceInfo(device.Vendor)).Append("\"");
+                    // ,Model,Software Version
+                    this.Data.Append(",\"").Append(GetDeviceInfo(device.Model)).Append("\",\"").Append(GetDeviceInfo(device.SoftwareVersion)).Append("\"");
                     // ,Serial Number";
-                    this.Data.Append(",\"").Append(device.SerialNumber).Append("\"");
-                    // ,MAC Address";
+                    this.Data.Append(",\"").Append(GetDeviceInfo(device.SerialNumber)).Append("\"");
+                    // ,MAC Address
                     this.Data.Append(",\"");
                     if (!string.IsNullOrEmpty(device.MacAddress))
                     {
@@ -419,6 +424,10 @@ namespace PoEWizard.Data
             }
         }
 
+        private string GetDeviceInfo(string info)
+        {
+            return !string.IsNullOrEmpty(info) ? info : "-";
+        }
         private bool IsDeviceTypeUnknown(EndPointDeviceModel device)
         {
             return device == null || string.IsNullOrEmpty(device.Type) || device.Type == NO_LLDP || device.Type == MED_UNKNOWN || device.Type == MED_UNSPECIFIED;
