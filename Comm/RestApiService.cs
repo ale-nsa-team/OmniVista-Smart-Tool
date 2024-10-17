@@ -28,7 +28,7 @@ namespace PoEWizard.Comm
         private WizardReport _wizardReportResult;
         private SwitchDebugModel _debugSwitchLog;
         private SwitchTrafficModel _switchTraffic;
-        private static AbortType stopTrafficAnalysis;
+        private static TrafficStatus trafficAnalysisStatus = TrafficStatus.Idle;
         private static string stopTrafficAnalysisReason = "completed";
         private double totalProgressBar;
         private double progressBarCnt;
@@ -805,41 +805,53 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void StopTrafficAnalysis(AbortType abortType, string stopReason)
+        public void StopTrafficAnalysis(TrafficStatus abortType, string stopReason)
         {
-            stopTrafficAnalysis = abortType;
+            trafficAnalysisStatus = abortType;
             stopTrafficAnalysisReason = stopReason;
         }
 
-        public TrafficReport RunTrafficAnalysis(int duration)
+        public bool IsTrafficAnalysisRunning()
+        {
+            return trafficAnalysisStatus == TrafficStatus.Running;
+        }
+
+        public TrafficReport RunTrafficAnalysis(int selectedDuration)
         {
             TrafficReport report;
             try
             {
-                stopTrafficAnalysis = AbortType.Running;
-                stopTrafficAnalysisReason = Translate("i18n_compl");
+                trafficAnalysisStatus = TrafficStatus.Running;
                 _switchTraffic = null;
                 GetPortsTrafficInformation();
+                report = new TrafficReport(_switchTraffic, selectedDuration);
                 DateTime startTime = DateTime.Now;
-                DateTime sampleTime = DateTime.Now;
-                LogActivity($"Started traffic analysis", $" for {duration} sec");
-                while (Utils.GetTimeDuration(startTime) <= duration)
+                LogActivity($"Started traffic analysis", $" for {selectedDuration} sec");
+                double dur = 0;
+                while (dur < selectedDuration)
                 {
-                    if (stopTrafficAnalysis != AbortType.Running) break;
+                    if (trafficAnalysisStatus != TrafficStatus.Running) break;
+                    dur = Utils.GetTimeDuration(startTime);
+                    if (dur >= selectedDuration)
+                    {
+                        trafficAnalysisStatus = TrafficStatus.Completed;
+                        stopTrafficAnalysisReason = "completed";
+                        break;
+                    }
                     Thread.Sleep(250);
                 }
-                if (stopTrafficAnalysis == AbortType.Close)
+                if (trafficAnalysisStatus == TrafficStatus.Abort)
                 {
-                    Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was canceled because the switch is disconnected!");
+                    Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was {stopTrafficAnalysisReason}!");
                     Activity.Log(SwitchModel, "Traffic analysis interrupted.");
                     return null;
                 }
                 GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
                 GetPortsTrafficInformation();
-                report = new TrafficReport(_switchTraffic, stopTrafficAnalysisReason, duration, GetDdmReport());
-                if (stopTrafficAnalysis == AbortType.CanceledByUser)
+                report.Complete(stopTrafficAnalysisReason, GetDdmReport());
+                if (trafficAnalysisStatus == TrafficStatus.CanceledByUser)
                 {
-                    Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was {stopTrafficAnalysisReason}, selected duration: {duration / 60} minutes!");
+                    Logger.Warn($"Traffic analysis on switch {SwitchModel.IpAddress} was {stopTrafficAnalysisReason}, selected duration: {report.SelectedDuration}!");
                 }
                 LogActivity($"Traffic analysis {stopTrafficAnalysisReason}.", $"\n{report.Summary}");
             }
@@ -847,6 +859,10 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError($"{Translate("i18n_taerr")} {SwitchModel.Name}", ex);
                 return null;
+            }
+            finally
+            {
+                trafficAnalysisStatus = TrafficStatus.Idle;
             }
             return report;
         }
@@ -867,9 +883,10 @@ namespace PoEWizard.Comm
         {
             try
             {
-                ShowInterfacesList();
+                _dictList = SendCommand(new CmdRequest(Command.SHOW_INTERFACES, ParseType.TrafficTable)) as List<Dictionary<string, string>>;
                 if (_dictList?.Count > 0)
                 {
+                    SwitchModel.LoadFromList(_dictList, DictionaryType.ShowInterfacesList);
                     if (_switchTraffic == null) _switchTraffic = new SwitchTrafficModel(SwitchModel, _dictList);
                     else _switchTraffic.UpdateTraffic(_dictList);
                 }
@@ -2015,7 +2032,7 @@ namespace PoEWizard.Comm
         {
             if (_wizardSwitchSlot == null) return string.Empty;
             bool enable = cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_FAST_ENABLE;
-             string i18n = (cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_PERPETUAL_DISABLE) ? "i18n_ppoe" : "i18n_fpoe";
+            string i18n = (cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_PERPETUAL_DISABLE) ? "i18n_ppoe" : "i18n_fpoe";
             string txt = $"{Translate(i18n)} {Translate("i18n_onslot")} {_wizardSwitchSlot.Name}";
             i18n = enable ? "i18n_noen" : "i18n_nodis";
             string error = $"{Translate(i18n)} {txt}";

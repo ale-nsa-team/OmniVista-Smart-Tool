@@ -148,12 +148,12 @@ namespace PoEWizard
                 e.Cancel = true;
                 string confirm = Translate("i18n_closing");
                 stopTrafficAnalysisReason = $"{Translate("i18n_swrsti")} {confirm}";
-                bool close = StopTrafficAnalysis(AbortType.Close, $"{Translate("i18n_taDisc")} {device.Name}", Translate("i18n_taSave"), confirm);
-                await WaitSaveTrafficAnalysis();
+                bool close = StopTrafficAnalysis(TrafficStatus.Abort, $"{Translate("i18n_taDisc")} {device.Name}", Translate("i18n_taSave"), confirm);
                 if (!close) return;
+                this.Closing -= OnWindowClosing;
+                await WaitCloseTrafficAnalysis();
                 sftpService?.Disconnect();
                 sftpService = null;
-                this.Closing -= OnWindowClosing;
                 await CloseRestApiService(confirm);
                 await Task.Run(() => config.Save());
                 this.Close();
@@ -529,8 +529,13 @@ namespace PoEWizard
         {
             try
             {
-                isTrafficRunning = _trafficLabel.Content.ToString() != Translate("i18n_taIdle");
-                if (!isTrafficRunning)
+                if (restApiService == null) return;
+                if (IsTrafficAnalysisRunning())
+                {
+                    stopTrafficAnalysisReason = Translate("i18n_taInt");
+                    StopTrafficAnalysis(TrafficStatus.CanceledByUser, Translate("i18n_taIdle"), Translate("i18n_tastop"));
+                }
+                else
                 {
                     var ds = new TrafficAnalysis() { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
                     if (ds.ShowDialog() == true)
@@ -539,11 +544,6 @@ namespace PoEWizard
                         StartTrafficAnalysis();
                     }
                 }
-                else
-                {
-                    stopTrafficAnalysisReason = Translate("i18n_taInt");
-                    StopTrafficAnalysis(AbortType.CanceledByUser, Translate("i18n_taIdle"), Translate("i18n_tastop"));
-                }
             }
             catch (Exception ex)
             {
@@ -551,7 +551,12 @@ namespace PoEWizard
             }
         }
 
-        private bool StopTrafficAnalysis(AbortType abortType, string title, string question, string confirm = null)
+        private bool IsTrafficAnalysisRunning()
+        {
+            return restApiService != null && restApiService.IsTrafficAnalysisRunning();
+        }
+
+        private bool StopTrafficAnalysis(TrafficStatus abortType, string title, string question, string confirm = null)
         {
             if (!isTrafficRunning) return true;
             try
@@ -575,9 +580,9 @@ namespace PoEWizard
                 MsgBoxResult res = ShowMessageBox(title, txt.ToString(), MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
                 if (res == MsgBoxResult.Yes)
                 {
-                    restApiService?.StopTrafficAnalysis(AbortType.CanceledByUser, stopTrafficAnalysisReason);
+                    restApiService?.StopTrafficAnalysis(TrafficStatus.CanceledByUser, stopTrafficAnalysisReason);
                 }
-                else if (abortType == AbortType.Close)
+                else if (abortType == TrafficStatus.Abort)
                 {
                     if (!string.IsNullOrEmpty(confirm))
                     {
@@ -596,7 +601,7 @@ namespace PoEWizard
             return true;
         }
 
-        private async Task WaitSaveTrafficAnalysis()
+        private async Task WaitCloseTrafficAnalysis()
         {
             await Task.Run(() =>
             {
@@ -972,9 +977,9 @@ namespace PoEWizard
                 {
                     string textMsg = $"{Translate("i18n_taDisc")} {device.Name}";
                     stopTrafficAnalysisReason = $"{Translate("i18n_taIntb")} {textMsg}";
-                    bool save = StopTrafficAnalysis(AbortType.Close, textMsg, Translate("i18n_taSave"), textMsg);
-                    if (!save) return;
-                    await WaitSaveTrafficAnalysis();
+                    bool close = StopTrafficAnalysis(TrafficStatus.Abort, textMsg, Translate("i18n_taSave"), textMsg);
+                    if (!close) return;
+                    await WaitCloseTrafficAnalysis();
                     ShowProgress($"{textMsg}{WAITING}");
                     await CloseRestApiService(textMsg);
                     SetDisconnectedState();
@@ -1324,7 +1329,7 @@ namespace PoEWizard
                 DisableButtons();
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
-                await Task.Run(() => restApiService.ScanSwitch($"{Translate("i18n_refrsw")} {device.Name}", reportResult));
+                await Task.Run(() => restApiService.RefreshSwitch($"{Translate("i18n_refrsw")} {device.Name}", reportResult));
                 await CheckSwitchScanResult($"{Translate("i18n_refrsw")} {device.Name}", startTime);
                 RefreshSlotAndPortsView();
                 if (device.RunningDir == CERTIFIED_DIR)
@@ -1608,8 +1613,8 @@ namespace PoEWizard
         {
             try
             {
-                startTrafficAnalysisTime = DateTime.Now;
                 isTrafficRunning = true;
+                startTrafficAnalysisTime = DateTime.Now;
                 _trafficLabel.Content = Translate("i18n_taRun");
                 string switchName = device.Name;
                 TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(selectedTrafficDuration));
@@ -1631,10 +1636,10 @@ namespace PoEWizard
             finally
             {
                 _trafficLabel.Content = Translate("i18n_taIdle");
-                isTrafficRunning = false;
                 if (device.IsConnected) _traffic.IsEnabled = true; else _traffic.IsEnabled = false;
                 HideProgress();
                 HideInfoBox();
+                isTrafficRunning = false;
             }
         }
 
@@ -1866,9 +1871,9 @@ namespace PoEWizard
                 string confirm = $"{Translate("i18n_swrst")} {device.Name}";
                 stopTrafficAnalysisReason = $"{Translate("i18n_swrsti")} {confirm}";
                 string title = $"{Translate("i18n_swrst")} {device.Name}";
-                bool save = StopTrafficAnalysis(AbortType.Close, title, Translate("i18n_taSave"), confirm);
+                bool save = StopTrafficAnalysis(TrafficStatus.Abort, title, Translate("i18n_taSave"), confirm);
                 if (!save) return null;
-                await WaitSaveTrafficAnalysis();
+                await WaitCloseTrafficAnalysis();
                 DisableButtons();
                 _switchMenuItem.IsEnabled = false;
                 string duration = await Task.Run(() => restApiService.RebootSwitch(waitSec));

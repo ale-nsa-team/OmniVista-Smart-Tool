@@ -674,7 +674,7 @@ namespace PoEWizard.Comm
             {
                 string[] errors = Regex.Split(response.Replace(cmd, string.Empty).Trim().Replace("^", "").Replace(this.SessionPrompt, "").Trim(), @"\r\n\r|\n");
                 string error = string.Empty;
-                foreach (string err in errors)
+                foreach(string err in errors)
                 {
                     if (string.IsNullOrEmpty(err)) continue;
                     if (error.Length > 0) error += "\r\n";
@@ -1004,5 +1004,6 @@ namespace PoEWizard.Comm
             txt.Append(title).Append(", Switch \"").Append(this._switch.Name).Append("\", IP: ").Append(this._switch.IpAddress).Append(")");
             return txt.ToString();
         }
+
     }
 }
