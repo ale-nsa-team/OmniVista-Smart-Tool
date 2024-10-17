@@ -83,7 +83,7 @@ namespace PoEWizard.Comm
             try
             {
                 DateTime startTime = DateTime.Now;
-                string localPath = Path.Combine(MainWindow.dataPath, Path.GetFileName(remotePath));
+                string localPath = Path.Combine(MainWindow.DataPath, Path.GetFileName(remotePath));
                 using (var fs = new FileStream(localPath, FileMode.Create))
                 {
                     _sftpClient.DownloadFile(remotePath, fs);

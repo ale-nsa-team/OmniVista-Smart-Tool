@@ -63,7 +63,7 @@ namespace PoEWizard.Components
 
         private string GetPassword()
         {
-            string filepath = Path.Combine(MainWindow.dataPath, "app.cfg");
+            string filepath = Path.Combine(MainWindow.DataPath, "app.cfg");
             if (File.Exists(filepath))
             {
                 string encPwd = File.ReadAllText(filepath);
@@ -78,7 +78,7 @@ namespace PoEWizard.Components
             {
                 if (newpwd != null)
                 {
-                    string filepath = Path.Combine(MainWindow.dataPath, "app.cfg");
+                    string filepath = Path.Combine(MainWindow.DataPath, "app.cfg");
                     string np = Utils.EncryptString(newpwd);
                     File.WriteAllText(filepath, np);
                     SavedPassword = newpwd;

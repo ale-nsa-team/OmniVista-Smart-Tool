@@ -147,7 +147,7 @@ namespace PoEWizard.Device
         public SwitchDebugModel(WizardReport wizardReport, SwitchDebugLogLevel swDebugLevel)
         {
             this.WizardReport = wizardReport ?? new WizardReport();
-            this.LocalSavedFilePath = Path.Combine(MainWindow.dataPath, Path.GetFileName(SWLOG_PATH));
+            this.LocalSavedFilePath = Path.Combine(MainWindow.DataPath, Path.GetFileName(SWLOG_PATH));
             this.LanPowerStatus = string.Empty;
             this.LpNiApp = new LpNiModel(swDebugLevel);
             this.LpCmmApp = new LpCmmModel(swDebugLevel);

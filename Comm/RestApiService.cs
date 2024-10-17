@@ -142,7 +142,7 @@ namespace PoEWizard.Comm
                 GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
                 progressBarCnt += 3;
                 UpdateProgressBar(progressBarCnt); // 19, 20, 21
-                if (!File.Exists(Path.Combine(Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
+                if (!File.Exists(Path.Combine(Path.Combine(MainWindow.DataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
                 {
                     SaveConfigSnapshot();
                 }
@@ -216,7 +216,7 @@ namespace PoEWizard.Comm
             try
             {
                 SwitchModel.ConfigSnapshot = SendCommand(new CmdRequest(Command.SHOW_CONFIGURATION, ParseType.NoParsing)) as string;
-                string filePath = Path.Combine(Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}");
+                string filePath = Path.Combine(Path.Combine(MainWindow.DataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}");
                 if (File.Exists(filePath))
                 {
                     string prevCfgSnapshot = File.ReadAllText(filePath);
@@ -641,7 +641,7 @@ namespace PoEWizard.Comm
         {
             try
             {
-                string folder = Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER);
+                string folder = Path.Combine(MainWindow.DataPath, SNAPSHOT_FOLDER);
                 if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
                 File.WriteAllText(Path.Combine(folder, $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}"), SwitchModel.ConfigSnapshot);
                 PurgeConfigSnapshotFiles();
@@ -654,7 +654,7 @@ namespace PoEWizard.Comm
 
         private void PurgeConfigSnapshotFiles()
         {
-            string folder = Path.Combine(MainWindow.dataPath, SNAPSHOT_FOLDER);
+            string folder = Path.Combine(MainWindow.DataPath, SNAPSHOT_FOLDER);
             if (Directory.Exists(folder))
             {
                 string txt = Utils.PurgeFiles(folder, MAX_NB_SNAPSHOT_SAVED);

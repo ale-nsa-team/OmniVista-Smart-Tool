@@ -66,7 +66,7 @@ namespace PoEWizard
         #region public variables
         public static Window Instance;
         public static ThemeType theme;
-        public static string dataPath;
+        public static string DataPath;
         public static RestApiService restApiService;
         public static Dictionary<string, string> ouiTable = new Dictionary<string, string>();
 
@@ -80,14 +80,14 @@ namespace PoEWizard
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
             //datapath
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            dataPath = Path.Combine(appData, fileVersionInfo.CompanyName, fileVersionInfo.ProductName);
+            DataPath = Path.Combine(appData, fileVersionInfo.CompanyName, fileVersionInfo.ProductName);
             InitializeComponent();
             this.Title += $" (V {string.Join(".", fileVersionInfo.ProductVersion.Split('.').ToList().Take(2))})";
             lightDict = Resources.MergedDictionaries[0];
             darkDict = Resources.MergedDictionaries[1];
             currentDict = darkDict;
             Instance = this;
-            Activity.DataPath = dataPath;
+            Activity.DataPath = DataPath;
             BuildOuiTable();
 
             // progress report handling
@@ -947,7 +947,7 @@ namespace PoEWizard
             }
             else
             {
-                filePath = Path.Combine(MainWindow.dataPath, OUI_FILE);
+                filePath = Path.Combine(MainWindow.DataPath, OUI_FILE);
                 if (File.Exists(filePath)) ouiEntries = File.ReadAllLines(filePath);
 
             }

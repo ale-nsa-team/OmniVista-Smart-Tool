@@ -39,7 +39,7 @@ namespace PoEWizard.Comm
             {
                 throw new Exception("FTP Service must be run as an administrator.");
             }
-            FtpRoot = Path.Combine(MainWindow.dataPath, "FTP");
+            FtpRoot = Path.Combine(MainWindow.DataPath, "FTP");
             if (!Directory.Exists(FtpRoot))
             {
                 Directory.CreateDirectory(FtpRoot);

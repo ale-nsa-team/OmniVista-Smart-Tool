@@ -32,7 +32,7 @@ namespace PoEWizard.Data
             {
                 LogLevel = LogLevel.Basic;
                 string filename = "PoEWizard.log";
-                LogPath = Path.Combine(MainWindow.dataPath, "Log", filename);
+                LogPath = Path.Combine(MainWindow.DataPath, "Log", filename);
                 if (!Directory.Exists(Path.GetDirectoryName(LogPath)))
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(LogPath));

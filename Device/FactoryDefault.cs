@@ -63,7 +63,7 @@ namespace PoEWizard.Device
             restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
             sftp.DeleteFile("/flash/.bash_history");
             LoadTemplate(TEMPLATE);
-            sftp.UploadFile(Path.Combine(MainWindow.dataPath, TEMPLATE), "/flash/working/vcboot.cfg");
+            sftp.UploadFile(Path.Combine(MainWindow.DataPath, TEMPLATE), "/flash/working/vcboot.cfg");
             sftp.Disconnect();
         }
 
@@ -80,7 +80,7 @@ namespace PoEWizard.Device
                 {
                     res += $"ip static-route 0.0.0.0/0 gateway {swModel.DefaultGwy}";
                 }
-                string path = Path.Combine(MainWindow.dataPath, filename);
+                string path = Path.Combine(MainWindow.DataPath, filename);
                 if (File.Exists(path)) File.Delete(path);
                 using (TextWriter writer = new StreamWriter(path))
                 {
