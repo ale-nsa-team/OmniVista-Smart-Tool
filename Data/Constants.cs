@@ -11,12 +11,13 @@ namespace PoEWizard.Data
         public enum ReportType { Error, Warning, Info, Status, Value }
         public enum MsgBoxButtons { Ok, Cancel, OkCancel, YesNo, YesNoCancel, None };
         public enum MsgBoxIcons { Info, Warning, Error, Question, None };
-        public enum MsgBoxResult { Yes, No, Cancel};
+        public enum MsgBoxResult { Yes, No, Cancel };
         public enum GridBorderions { Dhcp, Edge, Core, Lps, Lldp, Security, MaxConfigs };
         public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
         public enum PortStatus { Unknown, Up, Down }
         public enum PoeStatus { On, Off, Searching, Fault, Deny, Conflict, PoweredOff, Test, Delayed, NoPoe }
-        public enum SlotPoeStatus {
+        public enum SlotPoeStatus
+        {
             [Description("Under Threshold")]
             UnderThreshold,
             [Description("Near Threshold")]
@@ -87,7 +88,7 @@ namespace PoEWizard.Data
             {"OS6860N-P24M", "2"}, {"OS6860N-P24Z", "2"}
         };
 
-        public static readonly Dictionary<string, string> powerClassTable= new Dictionary<string, string>()
+        public static readonly Dictionary<string, string> powerClassTable = new Dictionary<string, string>()
         {
             {"0", "15.4 Watts"}, {"1", "4 Watts"}, {"2", "7 Watts"}, {"3", "15.4 Watts"},
             {"4", "30 Watts"}, {"5", "45 Watts"},{"6", "60 Watts"}, {"7", "75 Watts"},
@@ -150,7 +151,7 @@ namespace PoEWizard.Data
         public const string BAD_VOLTAGE_INJECTION = "Bad!VoltInj";
         public const string TEST = "Test";
         public const string DELAYED = "Delayed";
-        public const string ON_OFF= "On/Off";
+        public const string ON_OFF = "On/Off";
         // Used by "SHOW_CHASSIS"
         public const string ID = "ID";
         public const string MODULE_TYPE = "Module Type";
@@ -360,7 +361,7 @@ namespace PoEWizard.Data
         public const string MATCH_CHASSIS = @"([Local|Remote] Chassis ID )(\d+) \((.+)\)";
         public const string MATCH_CMM = @"(Chassis ID )(\d+)";
         public const string MATCH_AOS_VERSION = @"(\d+)\.(\d+)([\.\d +]+)(\.R)(\d+)";
-        public const string MATCH_POE_RUNNING =@"Lanpower chassis \d slot \d service running ...";
+        public const string MATCH_POE_RUNNING = @"Lanpower chassis \d slot \d service running ...";
         public const string MATCH_USER = @"(User name)\s*=\s*(.+),";
         #endregion
 

@@ -387,5 +387,4 @@ namespace PoEWizard.Comm
 
         #endregion Other Public Methods
     }
-
 }

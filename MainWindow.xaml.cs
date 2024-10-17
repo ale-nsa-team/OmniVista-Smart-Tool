@@ -64,9 +64,9 @@ namespace PoEWizard
         #endregion
 
         #region public variables
-        public static Window Instance;
-        public static ThemeType Theme;
-        public static string DataPath;
+        public static Window Instance { get; private set; }
+        public static ThemeType Theme { get; private set; }
+        public static string DataPath { get; private set; }
         public static RestApiService restApiService;
         public static Dictionary<string, string> ouiTable = new Dictionary<string, string>();
 

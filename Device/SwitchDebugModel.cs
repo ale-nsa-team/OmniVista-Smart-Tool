@@ -162,7 +162,7 @@ namespace PoEWizard.Device
                 foreach (Dictionary<string, string> dict in dictList)
                 {
                     string appName = Utils.GetDictValue(dict, DEBUG_APP_NAME);
-                    if (!string.IsNullOrEmpty(appName) && (appName == LPNI || appName== LPCMM))
+                    if (!string.IsNullOrEmpty(appName) && (appName == LPNI || appName == LPCMM))
                     {
                         found = true;
                         string subAppName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
@@ -274,6 +274,5 @@ namespace PoEWizard.Device
             }
             return (int)SwitchDebugLogLevel.Unknown;
         }
-
     }
 }

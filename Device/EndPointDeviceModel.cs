@@ -9,13 +9,13 @@ namespace PoEWizard.Device
     public class EndPointDeviceModel
     {
         public string ID { get; set; } = string.Empty;
-        public string Vendor {  get; set; } = string.Empty;
+        public string Vendor { get; set; } = string.Empty;
         public string Model { get; set; } = string.Empty;
         public string SoftwareVersion { get; set; } = string.Empty;
         public string HardwareVersion { get; set; } = string.Empty;
         public string SerialNumber { get; set; } = string.Empty;
 
-        public string PowerClass {  get; set; } = string.Empty;
+        public string PowerClass { get; set; } = string.Empty;
         public string LocalPort { get; set; } = string.Empty;
         public PortSubType PortSubType { get; set; } = PortSubType.Unknown;
         public string MacAddress { get; set; } = string.Empty;
@@ -197,7 +197,8 @@ namespace PoEWizard.Device
                     string vendor = Utils.GetVendorName(mac);
                     if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) tip.Add($" {mac} ({vendor})"); else tip.Add($" {mac}");
                 }
-            } else if (!string.IsNullOrEmpty(this.MacAddress)) tip.Add($"MAC: {this.MacAddress}");
+            }
+            else if (!string.IsNullOrEmpty(this.MacAddress)) tip.Add($"MAC: {this.MacAddress}");
             if (this.Capabilities.Count > 0) tip.Add($"Capabilities: {string.Join(",", this.Capabilities)}");
             return tip.Count > 0 ? string.Join("\n", tip) : null;
         }
@@ -243,6 +244,5 @@ namespace PoEWizard.Device
             if (!string.IsNullOrEmpty(this.PortDescription)) tip.Add($"Port Description: {this.PortDescription}");
             return tip;
         }
-
     }
 }

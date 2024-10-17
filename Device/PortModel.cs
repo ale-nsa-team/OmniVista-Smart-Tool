@@ -41,7 +41,7 @@ namespace PoEWizard.Device
         public string Duplex { get; set; }
         public string AutoNegotiation { get; set; }
         public string Transceiver { get; set; }
-        public string EPP {  get; set; }
+        public string EPP { get; set; }
         public string LinkQuality { get; set; }
         public List<string> DetailsInfo => ToTooltip();
         #endregion
@@ -115,7 +115,7 @@ namespace PoEWizard.Device
             }
         }
 
-        public void LoadPoEConfig(Dictionary<string, string> dict) 
+        public void LoadPoEConfig(Dictionary<string, string> dict)
         {
             Is4Pair = Utils.GetDictValue(dict, POWER_4PAIR) == "enabled";
             IsPowerOverHdmi = Utils.GetDictValue(dict, POWER_OVER_HDMI) == "enabled";

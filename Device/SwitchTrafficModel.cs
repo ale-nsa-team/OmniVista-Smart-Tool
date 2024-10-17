@@ -48,7 +48,5 @@ namespace PoEWizard.Device
                 }
             }
         }
-
     }
-
 }
