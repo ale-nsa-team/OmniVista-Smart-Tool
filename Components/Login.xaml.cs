@@ -15,6 +15,7 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class Login : Window
     {
+        private const int MAX_LIST_SIZE = 20;
         private readonly ImageSource eye_open;
         private readonly ImageSource eye_closed;
         private Config cfg;
@@ -59,6 +60,10 @@ namespace PoEWizard.Components
             if (HasErrors()) return;
             if (!IpList.Contains(IpAddress))
             {
+                if (IpList.Count >= MAX_LIST_SIZE)
+                {
+                    IpList.RemoveAt(IpList.Count - 1);
+                }
                 IpList.Add(IpAddress);
                 IpList.Sort();
                 cfg.Set("switches", string.Join(",", IpList));
