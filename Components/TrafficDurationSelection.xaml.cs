@@ -10,7 +10,9 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class TrafficAnalysis : Window
     {
-        private const string DEFAULT_DURATION = "3 minutes";
+
+        private readonly string minute = "minute";
+        private readonly string hour = "hour";
 
         public List<string> TimeDurationList { get; set; }
         public string Duration {  get; set; }
@@ -28,21 +30,22 @@ namespace PoEWizard.Components
             }
             Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             Resources.MergedDictionaries.Add(MainWindow.Strings);
-
-            TimeDurationList = new List<string>() { $"1 {MINUTE}", $"2 {MINUTE}s", $"3 {MINUTE}s", $"5 {MINUTE}s",
-                                                    $"10 {MINUTE}s", $"15 {MINUTE}s", $"30 {MINUTE}s", $"1 {HOUR}" };
+            minute = Translate("i18n_tamin");
+            hour = Translate("i18n_tahour");
+            TimeDurationList = new List<string>() { $"1 {minute}", $"2 {minute}s", $"3 {minute}s", $"5 {minute}s",
+                                                    $"10 {minute}s", $"15 {minute}s", $"30 {minute}s", $"1 {hour}" };
         }
 
         public void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
             DataContext = this;
-            Duration = DEFAULT_DURATION;
+            Duration = $"3 {Translate("i18n_tamin")}s";
         }
 
         public void BtnOk_Click(object sender, RoutedEventArgs e)
         {
-            if (Duration.Contains(MINUTE)) TrafficDurationSec = Utils.StringToInt(Duration) * 60;
-            else if (Duration.Contains(HOUR)) TrafficDurationSec = Utils.StringToInt(Duration) * 3600;
+            if (Duration.Contains(minute)) TrafficDurationSec = Utils.StringToInt(Duration) * 60;
+            else if (Duration.Contains(hour)) TrafficDurationSec = Utils.StringToInt(Duration) * 3600;
             else TrafficDurationSec = Utils.StringToInt(Duration);
             DialogResult = true;
             Close();
@@ -52,6 +55,11 @@ namespace PoEWizard.Components
         {
             DialogResult = false;
             Close();
+        }
+
+        public static string Translate(string key)
+        {
+            return (string)MainWindow.Strings[key] ?? key;
         }
 
     }

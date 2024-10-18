@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Comm
 {
@@ -83,7 +84,7 @@ namespace PoEWizard.Comm
                 var response = this._httpClient.GetAsync(url);
                 while (!response.IsCompleted)
                 {
-                    if (Utils.IsTimeExpired(this._start_connect_time, this._cnx_timeout))
+                    if (IsTimeExpired(this._start_connect_time, this._cnx_timeout))
                     {
                         throw new SwitchConnectionFailure($"Failed to establish a connection to {this._ip_address}!");
                     }
@@ -210,7 +211,7 @@ namespace PoEWizard.Comm
             if (this._httpClient == null) return new Dictionary<string, string> { [REST_URL] = url, [ERROR] = $"Switch {this._ip_address} is disconnected", [DURATION] = string.Empty };
             entry.StartTime = DateTime.Now;
             Dictionary<string, string> response = SendRestApiRequest(entry, url);
-            response[DURATION] = Utils.CalcStringDuration(entry.StartTime);
+            response[DURATION] = CalcStringDuration(entry.StartTime);
             entry.Duration = response[DURATION];
             entry.Response = response;
             return response;
@@ -234,7 +235,7 @@ namespace PoEWizard.Comm
                 while (http_response.IsCanceled || http_response?.Result == null)
                 {
                     error = GetHttpResponseError(url, http_response);
-                    Logger.Warn($"{error ?? "Unknown error"} (Try #{nbRetry}, duration: {Utils.CalcStringDuration(entry.StartTime)})");
+                    Logger.Warn($"{error ?? "Unknown error"} (Try #{nbRetry}, duration: {CalcStringDuration(entry.StartTime)})");
                     nbRetry++;
                     if (nbRetry >= 3) break;
                     ReconnectSwitch();
@@ -272,7 +273,7 @@ namespace PoEWizard.Comm
             if (http_response.IsCanceled) return http_response;
             if (http_response?.Result?.StatusCode == HttpStatusCode.Unauthorized)
             {
-                Logger.Info($"Switch {this._ip_address} token expired after {Utils.CalcStringDuration(this._start_connect_time, true)}, reconnecting to the switch.");
+                Logger.Info($"Switch {this._ip_address} token expired after {CalcStringDuration(this._start_connect_time, true)}, reconnecting to the switch.");
                 ReconnectSwitch();
                 http_response = SendAsyncRequest(entry, url);
             }
@@ -313,11 +314,11 @@ namespace PoEWizard.Comm
                     string error = errorList[API_ERROR].Trim();
                     if (!string.IsNullOrEmpty(error))
                     {
-                        error = Utils.ReplaceFirst(error, ":", "");
+                        error = ReplaceFirst(error, ":", "");
                         string errMsg = error.ToLower();
                         if (errorList.ContainsKey(HTTP_RESPONSE) && !string.IsNullOrEmpty(errorList[HTTP_RESPONSE]))
                         {
-                            HttpStatusCode code = Utils.ConvertToHttpStatusCode(errorList);
+                            HttpStatusCode code = ConvertToHttpStatusCode(errorList);
                             string errorMsg = $"Requested URL: {url}\r\nHTTP Response: {code} ({errorList[HTTP_RESPONSE]})\r\nError: {error}";
                             if (errMsg.Contains("lanpower") && (errMsg.Contains("not supported") || errMsg.Contains("invalid entry"))) return error;
                             else if (errMsg.Contains("not supported") || errMsg.Contains("command in progress") || errMsg.Contains("power range supported"))
@@ -351,7 +352,7 @@ namespace PoEWizard.Comm
 
         private string PrintUnreachableError(DateTime startTime)
         {
-            return $"Couldn't connect to the device within {Utils.CalcStringDuration(startTime, true)}.";
+            return $"Couldn't connect to the device within {CalcStringDuration(startTime, true)}.";
         }
 
         #endregion Send Api Resquest
