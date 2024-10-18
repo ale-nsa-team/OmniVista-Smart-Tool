@@ -456,7 +456,7 @@
     <Resource Include="Resources\Img\collectlogs.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Help\help-dark.html" />
+    <EmbeddedResource Include="Resources\Help\help-enUS.html" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Help\Img\device-info.png" />
@@ -479,9 +479,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Help\Img\poe-device.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Help\help-light.html" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Img\app-icon.ico" />
@@ -524,6 +521,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Help\Img\search-mac.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Help\styles-dark.css" />
+    <EmbeddedResource Include="Resources\Help\styles-light.css" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

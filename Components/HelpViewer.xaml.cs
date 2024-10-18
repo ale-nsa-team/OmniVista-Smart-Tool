@@ -44,6 +44,17 @@ namespace PoEWizard.Components
             // load images from embedded resources
             HtmlDocument doc = new HtmlDocument();
             doc.Load(stream);
+            //set styles
+            string styleFile = MainWindow.Theme == ThemeType.Dark ? "styles-dark.css" : "styles-light.css";
+            using (Stream stStrm = assembly.GetManifestResourceStream($"PoEWizard.Resources.Help.{styleFile}"))
+            {
+                using (StreamReader sr = new StreamReader(stStrm))
+                {
+                    string styleText = sr.ReadToEnd();
+                    var style = doc.DocumentNode.SelectSingleNode("//style");
+                    style.InnerHtml = styleText;
+                }
+            }
             // find img elements
             foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//img"))
             {

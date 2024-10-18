@@ -615,7 +615,7 @@ namespace PoEWizard
 
         private void Help_Click(object sender, RoutedEventArgs e)
         {
-            string hlpFile = Theme == ThemeType.Dark ? "help-dark.html" : "help-light.html";
+            string hlpFile = "help-enUS.html";
             HelpViewer hv = new HelpViewer(hlpFile)
             {
                 Owner = this,
