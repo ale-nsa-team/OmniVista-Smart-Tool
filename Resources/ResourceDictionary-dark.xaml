@@ -791,6 +791,7 @@
 
     <Style TargetType="Button" x:Key="smallButton" BasedOn="{StaticResource defaultButton}">
         <Setter Property="Width" Value="Auto" />
+        <Setter Property="MinWidth" Value="50" />
     </Style>
 
     <Style TargetType="Button" x:Key="largeButton" BasedOn="{StaticResource defaultButton}">
