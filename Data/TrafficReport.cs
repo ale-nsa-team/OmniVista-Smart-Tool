@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Data
 {
@@ -94,7 +95,7 @@ namespace PoEWizard.Data
             this.Summary += $"\r\n  {string.Join("\r\n  ", this.chassisInfo)}";
             this.Summary += $"\r\n  Date: {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}";
             this.Summary += $"\r\n  Selected duration: {this.SelectedDuration}";
-            this.Summary += $"\r\n  Actual duration: {Utils.CalcStringDuration(TrafficStartTime, true)}";
+            this.Summary += $"\r\n  Actual duration: {CalcStringDuration(TrafficStartTime, true)}";
             this.Summary += $"\r\n\r\nNote: This tool can detect common network issues, but is not a substitute for long term monitoring and human interpretation.";
             this.Summary += $"\r\n      Your results may vary and will change over time.";
             this.Summary += $"\r\n\r\nTraffic Alert:\r\n";
@@ -110,7 +111,7 @@ namespace PoEWizard.Data
             this.Data.Append("\r\n").Append(string.Join("\r\n", this.chassisInfo).Replace(":", ","));
             this.Data.Append("\r\nDate,").Append($" {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}");
             this.Data.Append($"\r\nSelected duration, ").Append(this.SelectedDuration);
-            this.Data.Append($"\r\nActual duration, ").Append(Utils.CalcStringDuration(TrafficStartTime, true));
+            this.Data.Append($"\r\nActual duration, ").Append(CalcStringDuration(TrafficStartTime, true));
             this.Data.Append("\r\n\r\n\r\n").Append(HEADER);
             this.alertReport = new Dictionary<string, string>();
             foreach (KeyValuePair<string, PortTrafficModel> keyVal in this.SwitchTraffic.Ports)
@@ -191,7 +192,7 @@ namespace PoEWizard.Data
             this.rxUniCast = GetDiffTrafficSamples(this.trafficPort.RxUnicastFrames);
             this.rxMultiCast = GetDiffTrafficSamples(this.trafficPort.RxMulticastFrames);
             this.rxUnicastMultiCastRate = GetUnicastMulticastRate(this.rxUniCast, this.rxMultiCast);
-            this.rxBroadCastPercent = Utils.CalcPercent(this.rxBroadCast, this.rxUniCast, 2);
+            this.rxBroadCastPercent = CalcPercent(this.rxBroadCast, this.rxUniCast, 2);
             this.rxLostFrames = GetDiffTrafficSamples(this.trafficPort.RxLostFrames);
             this.rxCrcError = GetDiffTrafficSamples(this.trafficPort.RxCrcErrorFrames);
             this.rxAlignments = GetDiffTrafficSamples(this.trafficPort.RxAlignmentsError);
@@ -202,7 +203,7 @@ namespace PoEWizard.Data
             this.txUniCast = GetDiffTrafficSamples(this.trafficPort.TxUnicastFrames);
             this.txMultiCast = GetDiffTrafficSamples(this.trafficPort.TxMulticastFrames);
             this.txUnicastMultiCastRate = GetUnicastMulticastRate(this.txUniCast, this.txMultiCast);
-            this.txBroadCastPercent = Utils.CalcPercent(this.txBroadCast, this.txUniCast, 2);
+            this.txBroadCastPercent = CalcPercent(this.txBroadCast, this.txUniCast, 2);
             this.txLostFrames = GetDiffTrafficSamples(this.trafficPort.TxLostFrames);
             this.txCollisions = GetDiffTrafficSamples(this.trafficPort.TxCollidedFrames) + GetDiffTrafficSamples(this.trafficPort.TxCollisions) +
                                 GetDiffTrafficSamples(this.trafficPort.TxLateCollisions) + GetDiffTrafficSamples(this.trafficPort.TxExcCollisions);
@@ -211,7 +212,7 @@ namespace PoEWizard.Data
 
         private double GetUnicastMulticastRate(double uniCast, double multicast)
         {
-            return Utils.RoundUp((uniCast + multicast) * 8 / this.TrafficDuration, 2);
+            return RoundUp((uniCast + multicast) * 8 / this.TrafficDuration, 2);
         }
 
         private void ParseAlertConditions()
@@ -273,7 +274,7 @@ namespace PoEWizard.Data
 
         private bool AddAlertPercent(string label1, double val1, string label2, double val2, double maxPercent)
         {
-            double percent = Utils.CalcPercent(val1, val2, 2);
+            double percent = CalcPercent(val1, val2, 2);
             if (percent >= maxPercent)
             {
                 AddPortAlert($"{label1} ({val1}) > {maxPercent}% of {label2} ({val2}), Percentage: {percent}%");
@@ -321,8 +322,8 @@ namespace PoEWizard.Data
         {
             text += mac;
             string vendor = string.Empty;
-            if (string.IsNullOrEmpty(this.trafficPort.EndPointDevice.Vendor) || this.trafficPort.MacList?.Count > 1) vendor = Utils.GetVendorName(mac);
-            if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) text += $" ({vendor})";
+            if (string.IsNullOrEmpty(this.trafficPort.EndPointDevice.Vendor) || this.trafficPort.MacList?.Count > 1) vendor = GetVendorName(mac);
+            if (!string.IsNullOrEmpty(vendor) && !IsValidMacAddress(vendor)) text += $" ({vendor})";
             return text;
         }
 
@@ -335,14 +336,14 @@ namespace PoEWizard.Data
                 this.Data.Append(traffRate);
                 double origTraffRate = traffRate;
                 traffRate /= 1024;
-                double percent = Utils.CalcPercent(traffRate, this.trafficPort.BandWidth, 2);
+                double percent = CalcPercent(traffRate, this.trafficPort.BandWidth, 2);
                 if (percent >= MAX_PERCENT_RATE)
                 {
                     string txt1 = $"{origTraffRate} Kbps";
                     string txt2 = $"{this.trafficPort.BandWidth * 1000} Kbps";
                     if (origTraffRate >= 1024)
                     {
-                        txt1 = $"{Utils.RoundUp(origTraffRate / 1024, 2)} Mbps";
+                        txt1 = $"{RoundUp(origTraffRate / 1024, 2)} Mbps";
                         txt2 = $"{this.trafficPort.BandWidth} Mbps";
                     }
                     AddPortAlert($"{title} ({txt1}) > {MAX_PERCENT_RATE}% of Bandwidth ({txt2}), Percentage: {percent}%");
@@ -408,8 +409,8 @@ namespace PoEWizard.Data
                             foreach (string mac in split)
                             {
                                 if (sb.Length > 0) sb.Append(",");
-                                string vendor = Utils.GetVendorName(mac);
-                                if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor))
+                                string vendor = GetVendorName(mac);
+                                if (!string.IsNullOrEmpty(vendor) && !IsValidMacAddress(vendor))
                                 {
                                     sb.Append(mac).Append(" (").Append(vendor).Append(")");
                                 }

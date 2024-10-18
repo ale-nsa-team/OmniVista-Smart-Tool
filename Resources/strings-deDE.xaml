@@ -345,6 +345,8 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_tadur">Current duration:</sys:String>
     <sys:String x:Key="i18n_tacont">Do you still want to continue</sys:String>
     <sys:String x:Key="i18n_selDur">Please, select the traffic analysis duration</sys:String>
+    <sys:String x:Key="i18n_tamin">minute</sys:String>
+    <sys:String x:Key="i18n_tahour">hour</sys:String>
 
     <!--Other Messages-->
     <sys:String x:Key="i18n_rsNocnx">Could not connect to switch</sys:String>

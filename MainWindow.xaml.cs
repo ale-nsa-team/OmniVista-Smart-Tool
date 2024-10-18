@@ -125,7 +125,7 @@ namespace PoEWizard
             });
             //check cli arguments
             string[] args = Environment.GetCommandLineArgs();
-            if (args.Length > 3 && !string.IsNullOrEmpty(args[1]) && Utils.IsValidIP(args[1]) && !string.IsNullOrEmpty(args[2]) && !string.IsNullOrEmpty(args[3]))
+            if (args.Length > 3 && !string.IsNullOrEmpty(args[1]) && IsValidIP(args[1]) && !string.IsNullOrEmpty(args[2]) && !string.IsNullOrEmpty(args[3]))
             {
                 device.IpAddress = args[1];
                 device.Login = args[2];
@@ -138,7 +138,7 @@ namespace PoEWizard
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            Utils.SetTitleColor(this);
+            SetTitleColor(this);
             _btnConnect.IsEnabled = false;
         }
 
@@ -568,15 +568,15 @@ namespace PoEWizard
                 if (selectedTrafficDuration >= 60 && selectedTrafficDuration < 3600)
                 {
                     duration = selectedTrafficDuration / 60;
-                    strSelDuration = $" {duration} {MINUTE}";
+                    strSelDuration = $" {duration} {Translate("i18n_tamin")}";
                 }
                 else
                 {
                     duration = selectedTrafficDuration / 3600;
-                    strSelDuration = $" {duration} {HOUR}";
+                    strSelDuration = $" {duration} {Translate("i18n_tahour")}";
                 }
-                if (duration > 1) strSelDuration += Translate("i18n_sec");
-                txt.Append(strSelDuration).Append($").\n{Translate("i18n_tadur")} ").Append(Utils.CalcStringDuration(startTrafficAnalysisTime, true));
+                if (duration > 1) strSelDuration += "s";
+                txt.Append(strSelDuration).Append($").\n{Translate("i18n_tadur")} ").Append(CalcStringDurationTranslate(startTrafficAnalysisTime, true));
                 txt.Append("\n").Append(question).Append("?");
                 MsgBoxResult res = ShowMessageBox(title, txt.ToString(), MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
                 if (res == MsgBoxResult.Yes)
@@ -666,7 +666,7 @@ namespace PoEWizard
                 _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
             }
             config.Set("theme", t);
-            Utils.SetTitleColor(this);
+            SetTitleColor(this);
             //force color converters to run
             DataContext = null;
             DataContext = device;
@@ -1116,7 +1116,7 @@ namespace PoEWizard
                     await RunLastWizardActions();
                     result = reportResult.GetReportResult(selectedPort.Name);
                 }
-                string msg = $"{reportResult.Message}\n\n{Translate("i18n_pwDur")} {Utils.CalcStringDuration(startTime, true)}";
+                string msg = $"{reportResult.Message}\n\n{Translate("i18n_pwDur")} {CalcStringDurationTranslate(startTime, true)}";
                 await Task.Run(() => restApiService.RefreshSwitchPorts());
                 if (!string.IsNullOrEmpty(reportResult.Message))
                 {
@@ -1200,9 +1200,9 @@ namespace PoEWizard
                 DateTime resetSftpConnectionTime = DateTime.Now;
                 while (waitCnt < 2)
                 {
-                    strDur = Utils.CalcStringDuration(startTime, true);
+                    strDur = CalcStringDurationTranslate(startTime, true);
                     msg = !string.IsNullOrEmpty(strDur) ? $"{Translate("i18n_wclogs")} ({strDur}){WAITING}" : $"{Translate("i18n_wclogs")}{WAITING}";
-                    if (fsize > 0) msg += $"\n{Translate("i18n_fsize")} {Utils.PrintNumberBytes(fsize)}";
+                    if (fsize > 0) msg += $"\n{Translate("i18n_fsize")} {PrintNumberBytes(fsize)}";
                     ShowInfoBox(msg);
                     UpdateSwitchLogBar(initialTime);
                     await Task.Run(() =>
@@ -1212,13 +1212,13 @@ namespace PoEWizard
                     });
                     if (fsize > 0 && fsize == previousSize) waitCnt++; else waitCnt = 0;
                     Thread.Sleep(2000);
-                    double duration = Utils.GetTimeDuration(startTime);
+                    double duration = GetTimeDuration(startTime);
                     if (fsize == 0)
                     {
-                        if (Utils.GetTimeDuration(resetSftpConnectionTime) >= PERIOD_SFTP_RECONNECT_SEC)
+                        if (GetTimeDuration(resetSftpConnectionTime) >= PERIOD_SFTP_RECONNECT_SEC)
                         {
                             sftpService.ResetConnection();
-                            Logger.Warn($"Waited too long ({Utils.CalcStringDuration(startTime, true)}) for the switch {device.Name} to start creating the tar file!");
+                            Logger.Warn($"Waited too long ({CalcStringDuration(startTime, true)}) for the switch {device.Name} to start creating the tar file!");
                             resetSftpConnectionTime = DateTime.Now;
                         }
                         if (duration >= MAX_WAIT_SFTP_RECONNECT_SEC)
@@ -1234,8 +1234,8 @@ namespace PoEWizard
                         return;
                     }
                 }
-                strDur = Utils.CalcStringDuration(startTime, true);
-                string strTotalDuration = Utils.CalcStringDuration(initialTime, true);
+                strDur = CalcStringDurationTranslate(startTime, true);
+                string strTotalDuration = CalcStringDurationTranslate(initialTime, true);
                 ShowInfoBox($"{Translate("i18n_ttar")} {Translate("i18n_fromsw")} {device.Name}{WAITING}");
                 DateTime startDowanloadTime = DateTime.Now;
                 string fname = null;
@@ -1249,9 +1249,9 @@ namespace PoEWizard
                     ShowMessageBox(Translate("i18n_ttar"), $"{Translate("i18n_tfail")} \"{SWLOG_PATH}\" {Translate("i18n_fromsw")} {device.Name}!", MsgBoxIcons.Error);
                     return;
                 }
-                string downloadDur = Utils.CalcStringDuration(startDowanloadTime);
+                string downloadDur = CalcStringDurationTranslate(startDowanloadTime);
                 string text = $"{Translate("i18n_tloaded")} {device.Name}{WAITING}\n{Translate("i18n_tddur")} {downloadDur}";
-                text += $", {Translate("i18n_fsize")} {Utils.PrintNumberBytes(fsize)}\n{Translate("i18n_lclogs")} {strDur}";
+                text += $", {Translate("i18n_fsize")} {PrintNumberBytes(fsize)}\n{Translate("i18n_lclogs")} {strDur}";
                 ShowInfoBox(text);
                 var sfd = new SaveFileDialog()
                 {
@@ -1271,7 +1271,7 @@ namespace PoEWizard
                 UpdateSwitchLogBar(initialTime);
                 debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, port);
                 StringBuilder txt = new StringBuilder("Log tar file \"").Append(SWLOG_PATH).Append("\" downloaded from the switch ").Append(device.IpAddress);
-                txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\"\n\tFile size: ").Append(Utils.PrintNumberBytes(info.Length));
+                txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\"\n\tFile size: ").Append(PrintNumberBytes(info.Length));
                 txt.Append("\n\tDownload duration: ").Append(downloadDur).Append("\n\tTar file creation duration: ").Append(strDur);
                 txt.Append("\n\tTotal duration to generate log file in ").Append(SwitchDebugLogLevel.Debug3).Append(" level: ").Append(strTotalDuration);
                 Logger.Activity(txt.ToString());
@@ -1293,16 +1293,15 @@ namespace PoEWizard
 
         private void UpdateSwitchLogBar(DateTime initialTime)
         {
-            UpdateProgressBar(Utils.GetTimeDuration(initialTime), maxCollectLogsDur);
+            UpdateProgressBar(GetTimeDuration(initialTime), maxCollectLogsDur);
         }
 
         private void ShowWaitTarFileError(long fsize, DateTime startTime)
         {
             StringBuilder msg = new StringBuilder();
-            msg.Append($"{Translate("i18n_ffail")} \"").Append(SWLOG_PATH).Append($"\" {Translate("i18n_onsw")} ")
-                .Append(device.IpAddress).Append("\n").Append($"{Translate("i18n_fileTout")} (")
-                .Append(Utils.CalcStringDuration(startTime, true)).Append($")\n{Translate("i18n_fsize")} ");
-            if (fsize == 0) msg.Append("0 Bytes"); else msg.Append(Utils.PrintNumberBytes(fsize));
+            msg.Append($"{Translate("i18n_ffail")} \"").Append(SWLOG_PATH).Append($"\" {Translate("i18n_onsw")} ").Append(device.IpAddress).Append("\n");
+            msg.Append($"{Translate("i18n_fileTout")} (").Append(CalcStringDurationTranslate(startTime, true)).Append($")\n{Translate("i18n_fsize")} ");
+            if (fsize == 0) msg.Append("0 Bytes"); else msg.Append(PrintNumberBytes(fsize));
             Logger.Error(msg.ToString());
             ShowMessageBox(Translate("i18n_wclogs"), msg.ToString(), MsgBoxIcons.Error);
         }
@@ -1385,7 +1384,7 @@ namespace PoEWizard
         {
             try
             {
-                string duration = Utils.CalcStringDuration(startTime, true);
+                Logger.Debug($"{title} completed (duration: {CalcStringDuration(startTime, true)})");
                 if (reportResult.Result?.Count < 1) return;
                 WizardResult result = reportResult.GetReportResult(SWITCH);
                 if (result == WizardResult.Fail || result == WizardResult.Warning)
@@ -1424,7 +1423,6 @@ namespace PoEWizard
                         RefreshSlotsAndPorts();
                     }
                 }
-                Logger.Debug($"{title} completed (duration: {duration})");
             }
             catch (Exception ex)
             {
@@ -1463,7 +1461,7 @@ namespace PoEWizard
             while (dur < WAIT_PORTS_UP_SEC)
             {
                 Thread.Sleep(1000);
-                dur = (int)Utils.GetTimeDuration(startTime);
+                dur = (int)GetTimeDuration(startTime);
                 progress.Report(new ProgressReport($"{msg} ({dur} sec){WAITING}"));
             }
             restApiService.RefreshSwitchPorts();
@@ -1651,7 +1649,7 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 while (!reportAck)
                 {
-                    if (Utils.GetTimeDuration(startTime) > 120) break;
+                    if (GetTimeDuration(startTime) > 120) break;
                     Thread.Sleep(100);
                 }
             });

@@ -346,6 +346,8 @@ A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS 
     <sys:String x:Key="i18n_tadur">duração atual:</sys:String>
     <sys:String x:Key="i18n_tacont">Ainda deseja continuar</sys:String>
     <sys:String x:Key="i18n_selDur">Selecione a duracao para a análise de tráfego</sys:String>
+    <sys:String x:Key="i18n_tamin">minuto</sys:String>
+    <sys:String x:Key="i18n_tahour">hora</sys:String>
 
     <!--Other Messages-->
     <sys:String x:Key="i18n_rsNocnx">Não foi possível conectar na switch</sys:String>
