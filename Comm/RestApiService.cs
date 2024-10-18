@@ -10,7 +10,6 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
 
@@ -33,6 +32,7 @@ namespace PoEWizard.Comm
         private double totalProgressBar;
         private double progressBarCnt;
         private DateTime progressStartTime;
+
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
         public ResultCallback Callback { get; set; }
