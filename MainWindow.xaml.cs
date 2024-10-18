@@ -1778,9 +1778,10 @@ namespace PoEWizard
         {
             try
             {
-                string confirm = $"rebooting the switch {device.Name}";
+                string deviceName = device.Name;
+                string confirm = $"rebooting the switch {deviceName}";
                 stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                string title = $"Rebooting switch {device.Name}";
+                string title = $"Rebooting switch {deviceName}";
                 bool save = StopTrafficAnalysis(TrafficStatus.Abort, title, ASK_SAVE_TRAFFIC_REPORT, confirm);
                 if (!save) return null;
                 await WaitCloseTrafficAnalysis();
@@ -1789,7 +1790,7 @@ namespace PoEWizard
                 string duration = await Task.Run(() => restApiService.RebootSwitch(waitSec));
                 SetDisconnectedState();
                 if (string.IsNullOrEmpty(duration)) return null;
-                return $"Switch {device.Name} ready to connect\nReboot duration: {duration}";
+                return $"Switch {deviceName} ready to connect\nReboot duration: {duration}";
             }
             catch (Exception ex)
             {
