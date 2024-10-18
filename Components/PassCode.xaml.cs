@@ -63,13 +63,13 @@ namespace PoEWizard.Components
 
         private string GetPassword()
         {
-            string filepath = Path.Combine(MainWindow.DataPath, "app.cfg");
+            string filepath = GetFilePath();
             if (File.Exists(filepath))
             {
                 string encPwd = File.ReadAllText(filepath);
                 if (!string.IsNullOrEmpty(encPwd)) return Utils.DecryptString(encPwd);
             }
-            return Constants.DEFAULT_PASS_CODE;
+            return DEFAULT_PASS_CODE;
         }
 
         private void SavePassword(string newpwd)
@@ -78,7 +78,7 @@ namespace PoEWizard.Components
             {
                 if (newpwd != null)
                 {
-                    string filepath = Path.Combine(MainWindow.DataPath, "app.cfg");
+                    string filepath = GetFilePath();
                     string np = Utils.EncryptString(newpwd);
                     File.WriteAllText(filepath, np);
                     SavedPassword = newpwd;
@@ -96,6 +96,24 @@ namespace PoEWizard.Components
                 };
                 cm.ShowDialog();
             }
+        }
+
+        private string GetFilePath()
+        {
+            string filepath = string.Empty;
+            try
+            {
+                string folder = Path.Combine(MainWindow.DataPath, PASSCODE_FOLDER);
+                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+                folder = Path.Combine(folder, PASSCODE_SUB_FOLDER);
+                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+                filepath = Path.Combine(folder, PASSCODE_FILENAME);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return filepath;
         }
     }
 }

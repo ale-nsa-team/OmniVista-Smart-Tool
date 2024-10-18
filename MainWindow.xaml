@@ -343,7 +343,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridComboBoxColumn Header="Priority" Width="50" IsReadOnly="False">
+                    <DataGridComboBoxColumn Header="Priority" Width="60" IsReadOnly="False">
                         <DataGridComboBoxColumn.SelectedItemBinding>
                             <MultiBinding Converter="{StaticResource PoeToPriorityLevelConverter}">
                                 <Binding Path="Poe" />

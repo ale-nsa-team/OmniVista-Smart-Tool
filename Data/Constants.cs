@@ -99,6 +99,12 @@ namespace PoEWizard.Data
         #endregion
 
         #region strings
+        // Used by Password Code
+        public const string DEFAULT_PASS_CODE = "@AleT00lkit#";
+        public const string PASSCODE_FILENAME = "tmp.cfg";
+        public const string PASSCODE_FOLDER = "snapshot";
+        public const string PASSCODE_SUB_FOLDER = "temp";
+        // General constants
         public static readonly List<string> timezones = new List<string>()
         {
             "EST", "CST", "PST", "MST", "AKST", "AST", "HST", "UTC", "GMT", "CET", "NST"
@@ -311,7 +317,6 @@ namespace PoEWizard.Data
         // Used by BuildOuiTable method of MainWindow.xaml.cs class
         public const string OUI_FILE = "oui.csv";
         // Used by Config Wizard
-        public const string DEFAULT_PASS_CODE = "@AleT00lkit#";
         public const string IP_ADDR = "IP Address";
         public const string SUBNET_MASK = "Subnet Mask";
         public const string DEVICE = "Device";
@@ -350,6 +355,8 @@ namespace PoEWizard.Data
         public const string MASTER = "Master";
         public const string SLAVE = "Slave";
         public const string MAC_MATCH_MARK = " (*)";
+        // Application config file
+        public const string APP_CFG_FILENAME = "app.cfg";
         #endregion
 
         #region regex patterns
