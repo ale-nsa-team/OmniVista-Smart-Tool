@@ -694,7 +694,7 @@ namespace PoEWizard.Comm
                 {
                     if (dur >= waitSec)
                     {
-                        throw new Exception($"{SwitchModel.Name} {Translate("i18n_rsTout")} {Utils.CalcStringDuration(progressStartTime, true)}!");
+                        throw new Exception($"{Translate("i18n_switch")} {SwitchModel.Name} {Translate("i18n_rsTout")} {Utils.CalcStringDuration(progressStartTime, true)}!");
                     }
                     Thread.Sleep(1000);
                     dur = Utils.GetTimeDuration(progressStartTime);
@@ -704,7 +704,7 @@ namespace PoEWizard.Comm
                 {
                     if (dur >= waitSec)
                     {
-                        throw new Exception($"{SwitchModel.Name} {Translate("i18n_rsTout")} {Utils.CalcStringDuration(progressStartTime, true)}!");
+                        throw new Exception($"{Translate("i18n_switch") }{SwitchModel.Name} {Translate("i18n_rsTout")} {Utils.CalcStringDuration(progressStartTime, true)}!");
                     }
                     Thread.Sleep(1000);
                     dur = (int)Utils.GetTimeDuration(progressStartTime);
