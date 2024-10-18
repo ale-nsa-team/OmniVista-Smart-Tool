@@ -11,14 +11,14 @@ li {
     margin-bottom: 0.5em;
 }
 
-    li a {
-        color: white;
-    }
+li a {
+    color: white;
+}
 
-    li ul {
-        margin-top: 0.5em;
-        margin-bottom: 0.5em;
-    }
+li ul {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
 
 img {
     display: block;
