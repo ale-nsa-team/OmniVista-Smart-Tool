@@ -1879,7 +1879,7 @@ namespace PoEWizard
                 string duration = await Task.Run(() => restApiService.RebootSwitch(waitSec));
                 SetDisconnectedState();
                 if (string.IsNullOrEmpty(duration)) return null;
-                return $"{device.Name} {Translate("i18n_swready")} {duration}";
+                return $"{Translate("i18n_switch")} {device.Name} {Translate("i18n_swready")} {duration}";
             }
             catch (Exception ex)
             {
