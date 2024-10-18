@@ -32,6 +32,7 @@ namespace PoEWizard.Comm
         private double totalProgressBar;
         private double progressBarCnt;
         private DateTime progressStartTime;
+
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
         public ResultCallback Callback { get; set; }

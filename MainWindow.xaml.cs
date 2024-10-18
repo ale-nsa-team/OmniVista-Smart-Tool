@@ -1036,7 +1036,7 @@ namespace PoEWizard
             }
             else
             {
-                filePath = Path.Combine(MainWindow.DataPath, OUI_FILE);
+                filePath = Path.Combine(DataPath, OUI_FILE);
                 if (File.Exists(filePath)) ouiEntries = File.ReadAllLines(filePath);
 
             }
