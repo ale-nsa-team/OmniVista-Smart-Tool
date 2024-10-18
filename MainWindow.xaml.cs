@@ -22,6 +22,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard
 {
@@ -925,6 +926,11 @@ namespace PoEWizard
               select fileName.Substring(0, fileName.Length - 5) + ".xaml";
 
             List<string> sorted = resourceDicts.ToList();
+            if (sorted.Count < 2)
+            {
+                _langMenu.Visibility = Visibility.Collapsed;
+                return;
+            }
             sorted.Sort();
             MenuItem found = null;
             string fname = null;
@@ -956,11 +962,6 @@ namespace PoEWizard
                     found.IsChecked = true;
                 }
             }
-        }
-
-        private string Translate(string key)
-        {
-            return (string)Strings[key] ?? key;
         }
 
         private async void Connect()
@@ -1877,9 +1878,10 @@ namespace PoEWizard
                 DisableButtons();
                 _switchMenuItem.IsEnabled = false;
                 string duration = await Task.Run(() => restApiService.RebootSwitch(waitSec));
+                string swName = device.Name;
                 SetDisconnectedState();
                 if (string.IsNullOrEmpty(duration)) return null;
-                return $"{Translate("i18n_switch")} {device.Name} {Translate("i18n_swready")} {duration}";
+                return $"{Translate("i18n_switch")} {swName} {Translate("i18n_swready")} {duration}";
             }
             catch (Exception ex)
             {

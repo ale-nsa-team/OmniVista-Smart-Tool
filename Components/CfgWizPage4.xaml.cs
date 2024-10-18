@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Components
 {
@@ -226,11 +227,6 @@ namespace PoEWizard.Components
                 Application.Current.Dispatcher.Invoke(() => ShowMsgBox(ex.Message, true));
                 return false;
             }
-        }
-
-        private string Translate(string key)
-        {
-            return (string)strings[key] ?? key;
         }
 
         private bool ShowMsgBox(string message, bool isError)

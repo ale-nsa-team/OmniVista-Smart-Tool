@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Components
 {
@@ -611,12 +612,6 @@ namespace PoEWizard.Components
         {
             return DependencyProperty.UnsetValue;
         }
-
-        private string Translate(string key)
-        {
-            return (string)MainWindow.Strings[key] ?? key;
-        }
-
     }
 
     public class ToStringConverter : IValueConverter

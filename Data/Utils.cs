@@ -44,30 +44,13 @@ namespace PoEWizard.Data
             int sec = dur.Seconds;
             int min = dur.Minutes;
             int milliSec = dur.Milliseconds;
-            string duration = string.Empty;
-            if (hour > 0)
-            {
-                duration = hour.ToString() + " hour";
-                if (duration.Length > 1) duration += "s";
-            }
-            if (min > 0)
-            {
-                if (duration.Length > 0) duration += " ";
-                duration += min.ToString() + " min";
-            }
-            if (sec > 0)
-            {
-                if (duration.Length > 0) duration += " ";
-                duration += sec.ToString() + " sec";
-            }
-            if (skipMs) return duration;
-            if (milliSec > 0)
-            {
-                if (duration.Length > 0) duration += " ";
-                duration += milliSec.ToString() + " ms";
-            }
-            if (duration.Length < 1) duration = "< 1 ms";
-            return duration;
+            List<string> duration = new List<string>();
+            if (hour > 0) duration.Add($"{hour} {Translate("i18n_hour")}");
+            if (min > 0) duration.Add($"{min} {Translate("i18n_min")}");
+            if (sec > 0) duration.Add($"{sec} {Translate("i18n_sec")}");
+            if (!skipMs && milliSec > 0) duration.Add($"{milliSec} {Translate("i18n_ms")}");
+            if (duration.Count == 0) return $"< 1 {Translate("i18n_ms")}";
+            return string.Join(", ", duration);
         }
 
         public static bool IsTimeExpired(DateTime startTime, double period)
@@ -267,7 +250,7 @@ namespace PoEWizard.Data
 
         public static string PrintTimeDurationSec(DateTime startTime)
         {
-            return $"{RoundUp(GetTimeDuration(startTime))} sec";
+            return $"{RoundUp(GetTimeDuration(startTime))} {(string)MainWindow.Strings["i18n_sec"]}";
         }
 
         public static double RoundUp(double input, int dec = 0)
@@ -615,6 +598,11 @@ namespace PoEWizard.Data
                 else if (sVal.Contains("disable")) return ConfigType.Disable;
             }
             return ConfigType.Unavailable;
+        }
+
+        public static string Translate(string key)
+        {
+            return (string)MainWindow.Strings[key] ?? key;
         }
     }
 }

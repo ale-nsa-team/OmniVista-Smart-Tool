@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Comm
 {
@@ -479,7 +480,7 @@ namespace PoEWizard.Comm
                 while (!done)
                 {
                     Thread.Sleep(1000);
-                    _progress.Report(new ProgressReport($"{progressMsg} ({loopCnt} sec){WAITING}"));
+                    _progress.Report(new ProgressReport($"{progressMsg} ({loopCnt} {Translate("i18n_sec")}){WAITING}"));
                     UpdateSwitchLogBar();
                     if (loopCnt % 5 == 0) done = GetAppDebugLevel(showDbgCmd) == dbgLevel;
                     if (loopCnt >= 30)
@@ -625,7 +626,7 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                     if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
-                    UpdateProgressBarMessage($"{msg} ({(int)dur} sec){WAITING}", dur);
+                    UpdateProgressBarMessage($"{msg} ({(int)dur} {Translate("i18n_sec")}){WAITING}", dur);
                 }
                 LogActivity("Write memory completed", $", duration: {Utils.CalcStringDuration(progressStartTime)}");
                 SaveConfigSnapshot();
@@ -2179,11 +2180,6 @@ namespace PoEWizard.Comm
             RestApiClient?.Close();
             LogActivity("Switch disconnected");
             RestApiClient = null;
-        }
-
-        private string Translate(string key)
-        {
-            return (string)MainWindow.Strings[key] ?? key;
         }
 
         private void LogActivity(string action, string data = null)

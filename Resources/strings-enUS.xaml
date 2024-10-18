@@ -336,9 +336,11 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_tactLog">Activity Log</sys:String>
     <sys:String x:Key="i18n_tastop">Are you sure you want to stop it</sys:String>
     <sys:String x:Key="i18n_tarun">The traffic analysis is still running (selected duration:</sys:String>
-    <sys:String x:Key="i18n_hour">hour</sys:String>
+    <sys:String x:Key="i18n_day">d</sys:String>
+    <sys:String x:Key="i18n_hour">h</sys:String>
     <sys:String x:Key="i18n_min">min</sys:String>
     <sys:String x:Key="i18n_sec">sec</sys:String>
+    <sys:String x:Key="i18n_ms">ms</sys:String>
     <sys:String x:Key="i18n_tadur">Current duration:</sys:String>
     <sys:String x:Key="i18n_tacont">Do you still want to continue</sys:String>
     <sys:String x:Key="i18n_selDur">Please, select the traffic analysis duration</sys:String>
@@ -426,8 +428,7 @@ It may take up to 30 sec to execute Write Memory
     <sys:String x:Key="i18n_swrsti">interrupted by the user before</sys:String>
     <sys:String x:Key="i18n_swready" xml:space="preserve">
 ready to connect
-Reboot duration:
-    </sys:String>
+Reboot duration: </sys:String>
     <sys:String x:Key="i18n_rst">restarted</sys:String>
     <sys:String x:Key="i18n_pfrst">failed to restart</sys:String>
     <sys:String x:Key="i18n_urst">restarted by the user</sys:String>

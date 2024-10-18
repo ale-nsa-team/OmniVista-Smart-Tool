@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Device
 {
@@ -73,22 +74,28 @@ namespace PoEWizard.Device
             switch (dt)
             {
                 case DictionaryType.SystemRunningDir:
-                    Name = Utils.GetDictValue(dict, SYS_NAME);
-                    Description = Utils.GetDictValue(dict, SYS_DESCR);
-                    Location = Utils.GetDictValue(dict, SYS_LOCATION);
-                    Contact = Utils.GetDictValue(dict, SYS_CONTACT);
-                    TimeSpan dur = TimeSpan.FromSeconds(Utils.StringToLong(Utils.GetDictValue(dict, SYS_UP_TIME)) / 100);
-                    UpTime = $"{(dur.Days > 0 ? $"{dur.Days} d : " : "")}{(dur.Hours > 0 ? $"{dur.Hours} h : " : "")}{dur.Minutes} min : {dur.Seconds} sec";
-                    string sync = Utils.GetDictValue(dict, CONFIG_CHANGE_STATUS);
-                    string cert = Utils.GetDictValue(dict, CHAS_CONTROL_CERTIFY);
+                    Name = GetDictValue(dict, SYS_NAME);
+                    Description = GetDictValue(dict, SYS_DESCR);
+                    Location = GetDictValue(dict, SYS_LOCATION);
+                    Contact = GetDictValue(dict, SYS_CONTACT);
+                    TimeSpan dur = TimeSpan.FromSeconds(StringToLong(GetDictValue(dict, SYS_UP_TIME)) / 100);
+                    List<string> upt = new List<string>();
+                    if (dur.Days > 0) upt.Add($"{dur.Days} {Translate("i18n_day")}");
+                    if (dur.Hours > 0) upt.Add($"{dur.Hours} {Translate("i18n_hour")}");
+                    if (dur.Minutes > 0) upt.Add($"{dur.Minutes} {Translate("i18n_min")}");
+                    if (dur.Seconds > 0) upt.Add($"{dur.Seconds} {Translate("i18n_sec")}");
+                    UpTime = string.Join(" : ", upt);
+                    //UpTime = $"{(dur.Days > 0 ? $"{dur.Days} d : " : "")}{(dur.Hours > 0 ? $"{dur.Hours} h : " : "")}{dur.Minutes} min : {dur.Seconds} sec";
+                    string sync = GetDictValue(dict, CONFIG_CHANGE_STATUS);
+                    string cert = GetDictValue(dict, CHAS_CONTROL_CERTIFY);
                     SyncStatus = sync == "1" ? cert == "3" ? SyncStatusType.Synchronized :
                                  cert == "2" ? SyncStatusType.SynchronizedNeedCertified : SyncStatusType.SynchronizedUnknownCertified :
                                  SyncStatusType.NotSynchronized;
-                    RunningDir = Utils.ToPascalCase(Utils.GetDictValue(dict, SYS_RUNNING_CONFIGURATION));
+                    RunningDir = ToPascalCase(GetDictValue(dict, SYS_RUNNING_CONFIGURATION));
                     break;
 
                 case DictionaryType.MicroCode:
-                    Version = Utils.GetDictValue(dict, RELEASE);
+                    Version = GetDictValue(dict, RELEASE);
                     break;
             }
         }
@@ -113,15 +120,15 @@ namespace PoEWizard.Device
                     {
                         foreach (Dictionary<string, string> dict in dictList)
                         {
-                            int chassisNr = Utils.StringToInt(Utils.GetDictValue(dict, ID)) - 1;
+                            int chassisNr = StringToInt(GetDictValue(dict, ID)) - 1;
                             if (chassisNr >= 0 && chassisNr < ChassisList.Count)
                             {
                                 chassis = this.ChassisList[chassisNr];
-                                chassis.SerialNumber = Utils.GetDictValue(dict, SERIAL_NUMBER);
-                                chassis.Model = Utils.GetDictValue(dict, MODEL_NAME);
-                                chassis.Fpga = Utils.GetDictValue(dict, FPGA);
-                                chassis.Cpld = Utils.GetDictValue(dict, CPLD);
-                                chassis.MacAddress = Utils.GetDictValue(dict, CHASSIS_MAC_ADDRESS);
+                                chassis.SerialNumber = GetDictValue(dict, SERIAL_NUMBER);
+                                chassis.Model = GetDictValue(dict, MODEL_NAME);
+                                chassis.Fpga = GetDictValue(dict, FPGA);
+                                chassis.Cpld = GetDictValue(dict, CPLD);
+                                chassis.MacAddress = GetDictValue(dict, CHASSIS_MAC_ADDRESS);
                             }
                             UpdateChassisSelectedSlot();
                         }
@@ -177,8 +184,8 @@ namespace PoEWizard.Device
                     SwitchTemperature temperature = new SwitchTemperature();
                     foreach (var dic in dictList)
                     {
-                        string[] split = Utils.GetDictValue(dic, CHAS_DEVICE).Trim().Split('/');
-                        chassis = GetChassis(Utils.StringToInt(split[0]));
+                        string[] split = GetDictValue(dic, CHAS_DEVICE).Trim().Split('/');
+                        chassis = GetChassis(StringToInt(split[0]));
                         if (chassis == null) continue;
                         chassis.LoadTemperature(dic);
                     }
@@ -188,10 +195,10 @@ namespace PoEWizard.Device
                 case DictionaryType.CpuTrafficList:
                     foreach (var dic in dictList)
                     {
-                        string slotNr = Utils.GetDictValue(dic, CPU).ToLower().Replace("slot", "").Trim();
+                        string slotNr = GetDictValue(dic, CPU).ToLower().Replace("slot", "").Trim();
                         chassis = GetChassis(slotNr);
                         if (chassis == null) continue;
-                        chassis.Cpu = Utils.StringToInt(Utils.GetDictValue(dic, CURRENT));
+                        chassis.Cpu = StringToInt(GetDictValue(dic, CURRENT));
                     }
                     UpdateCpuSelectedSlot();
                     break;
@@ -199,9 +206,9 @@ namespace PoEWizard.Device
                 case DictionaryType.SwitchDebugAppList:
                     foreach (Dictionary<string, string> dict in dictList)
                     {
-                        string appId = Utils.GetDictValue(dict, DEBUG_APP_ID);
-                        string appName = Utils.GetDictValue(dict, DEBUG_APP_NAME);
-                        string appIndex = Utils.GetDictValue(dict, DEBUG_APP_INDEX);
+                        string appId = GetDictValue(dict, DEBUG_APP_ID);
+                        string appName = GetDictValue(dict, DEBUG_APP_NAME);
+                        string appIndex = GetDictValue(dict, DEBUG_APP_INDEX);
                         if (!string.IsNullOrEmpty(appId) && !string.IsNullOrEmpty(appName) && !string.IsNullOrEmpty(appIndex))
                         {
                             string nbSubApp = string.Empty;
@@ -223,7 +230,7 @@ namespace PoEWizard.Device
                 case DictionaryType.ShowInterfacesList:
                     foreach (Dictionary<string, string> dict in dictList)
                     {
-                        string slotPortNr = Utils.GetDictValue(dict, PORT);
+                        string slotPortNr = GetDictValue(dict, PORT);
                         if (string.IsNullOrEmpty(slotPortNr)) continue;
                         PortModel port = GetPort(slotPortNr);
                         if (port == null) continue;
@@ -240,7 +247,7 @@ namespace PoEWizard.Device
             Dictionary<string, PortModel> ports = new Dictionary<string, PortModel>();
             foreach (Dictionary<string, string> dict in dictList)
             {
-                string currPort = Utils.GetDictValue(dict, INTERFACE);
+                string currPort = GetDictValue(dict, INTERFACE);
                 PortModel port = GetPort(currPort);
                 if (port == null) continue;
                 if (currPort != prevPort)
@@ -327,13 +334,13 @@ namespace PoEWizard.Device
             if (dictList == null || dictList.Count == 0) return;
             foreach (Dictionary<string, string> dict in dictList)
             {
-                string mount = Utils.GetDictValue(dict, MOUNTED);
+                string mount = GetDictValue(dict, MOUNTED);
                 if (!string.IsNullOrEmpty(mount) && mount == "/flash")
                 {
-                    chassis.FlashSize = $"{Utils.GetDictValue(dict, SIZE_TOTAL)}B";
-                    chassis.FlashSizeUsed = $"{Utils.GetDictValue(dict, SIZE_USED)}B";
-                    chassis.FlashSizeFree = $"{Utils.GetDictValue(dict, SIZE_AVAILABLE)}B";
-                    chassis.FlashUsage = Utils.GetDictValue(dict, DISK_USAGE);
+                    chassis.FlashSize = $"{GetDictValue(dict, SIZE_TOTAL)}B";
+                    chassis.FlashSizeUsed = $"{GetDictValue(dict, SIZE_USED)}B";
+                    chassis.FlashSizeFree = $"{GetDictValue(dict, SIZE_AVAILABLE)}B";
+                    chassis.FlashUsage = GetDictValue(dict, DISK_USAGE);
                     chassis.FreeFlash = $"{chassis.FlashUsage}, Total: {chassis.FlashSize}";
                     break;
                 }
@@ -347,12 +354,12 @@ namespace PoEWizard.Device
             if (dictList == null || dictList.Count == 0) return;
             foreach (Dictionary<string, string> dict in dictList)
             {
-                int chassisNr = Utils.StringToInt(Utils.GetDictValue(dict, P_CHASSIS));
+                int chassisNr = StringToInt(GetDictValue(dict, P_CHASSIS));
                 ChassisModel chassis = GetChassis(chassisNr);
                 if (chassis != null)
                 {
-                    long freeSize = Utils.StringToLong(Utils.GetDictValue(dict, FLASH));
-                    chassis.FreeFlash = Utils.PrintNumberBytes(freeSize);
+                    long freeSize = StringToLong(GetDictValue(dict, FLASH));
+                    chassis.FreeFlash = PrintNumberBytes(freeSize);
                 }
             }
             UpdateFlashSelectedSlot();
@@ -368,7 +375,7 @@ namespace PoEWizard.Device
 
         public void UpdateCpuThreshold(Dictionary<string, string> dict)
         {
-            CpuThreshold = Utils.StringToInt(Utils.GetDictValue(dict, CPU_THRESHOLD).Trim());
+            CpuThreshold = StringToInt(GetDictValue(dict, CPU_THRESHOLD).Trim());
         }
 
         public ChassisModel GetChassis(int chassisNumber)
@@ -449,12 +456,12 @@ namespace PoEWizard.Device
 
         private string GetLabelAppLogLevel(string app)
         {
-            return !string.IsNullOrEmpty(app) && DebugApp.ContainsKey(app) ? Utils.IntToSwitchDebugLevel(DebugApp[app].DebugLevel).ToString() : string.Empty;
+            return !string.IsNullOrEmpty(app) && DebugApp.ContainsKey(app) ? IntToSwitchDebugLevel(DebugApp[app].DebugLevel).ToString() : string.Empty;
         }
 
         private string GetLabelSyncStatus()
         {
-            return SyncStatus != SyncStatusType.Unknown ? Utils.GetEnumDescription(SyncStatus) : string.Empty;
+            return SyncStatus != SyncStatusType.Unknown ? GetEnumDescription(SyncStatus) : string.Empty;
         }
     }
 }

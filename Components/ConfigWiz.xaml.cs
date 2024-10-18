@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Components
 {
@@ -310,11 +311,6 @@ namespace PoEWizard.Components
                     snmpData.Stations.Add(station);
                 }
             }
-        }
-
-        private string Translate(string key)
-        {
-            return (string)MainWindow.Strings[key] ?? key;
         }
 
         private void ShowInfoBox(string message)
