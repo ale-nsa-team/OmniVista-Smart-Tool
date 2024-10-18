@@ -121,11 +121,11 @@
 
     <ControlTemplate x:Key="validationTemplate">
         <Grid ToolTip="{Binding Path=/ErrorContent}">
-            <Ellipse Fill="Red" Opacity="0.8" Width="12" Height="12"
+            <Ellipse Fill="Red" Opacity="0.8" Width="12" Height="12" Margin="0,0,15,0"
                  HorizontalAlignment="Right" VerticalAlignment="Center" />
             <TextBlock Text="!" FontSize="10" Foreground="White" 
                 HorizontalAlignment="Right" VerticalAlignment="Center" 
-                Margin="0,-2,4,0"/>
+                Margin="0,-2,20,0"/>
             <AdornedElementPlaceholder />
         </Grid>
     </ControlTemplate>
@@ -356,6 +356,7 @@
         <Setter Property="Margin" Value="10,10,10,5" />
         <Setter Property="Padding" Value="0,0,0,2" />
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <Style TargetType="Button" x:Key="smallButton" BasedOn="{StaticResource defaultButton}">

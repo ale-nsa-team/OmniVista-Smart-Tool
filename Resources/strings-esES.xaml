@@ -216,6 +216,7 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_cdetdis">Disabling capacitor detection on port</sys:String>
     <sys:String x:Key="i18n_nocdet">Cannot enable capacitor detection for device type</sys:String>
     <sys:String x:Key="i18n_cdnoten">Capacitor detection is already disabled on port</sys:String>
+    <sys:String x:Key="i18n_cden">Capacitor detection is already enabled on port</sys:String>
     <sys:String x:Key="i18n_nspb">did not solve the problem</sys:String>
     <sys:String x:Key="i18n_rstcfg">to restore the previous config</sys:String>
     <sys:String x:Key="i18n_ckmxpw">Checking max. power on port</sys:String>

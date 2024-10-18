@@ -216,6 +216,7 @@ Deseja coletar informações para enviar ao Supporte técnico?
     <sys:String x:Key="i18n_cdetdis">Desativando detecção de capacitor na porta</sys:String>
     <sys:String x:Key="i18n_nocdet">Não se pode ativar detecção de capacitor para dispositivo do tipo</sys:String>
     <sys:String x:Key="i18n_cdnoten">Detecção de capacitor já está desativada na porta</sys:String>
+    <sys:String x:Key="i18n_cden">Detecção de capacitor já está habilitada na porta</sys:String>
     <sys:String x:Key="i18n_nspb">não resolveu o problema</sys:String>
     <sys:String x:Key="i18n_rstcfg">para restaurar a configuração anterior</sys:String>
     <sys:String x:Key="i18n_ckmxpw">Verificando potência max. na porta</sys:String>
