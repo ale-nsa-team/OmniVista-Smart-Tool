@@ -179,8 +179,12 @@ namespace PoEWizard.Device
                 deviceFound.MacAddress = string.Join(",", macList);
                 return;
             }
-            Dictionary<string, string> dict = new Dictionary<string, string> { [REMOTE_ID] = this.Name, [LOCAL_PORT] = this.Name, [CAPABILITIES_SUPPORTED] = NO_LLDP,
-                                                                               [MED_MAC_ADDRESS] = string.Join(",", macList)
+            Dictionary<string, string> dict = new Dictionary<string, string>
+            {
+                [REMOTE_ID] = this.Name,
+                [LOCAL_PORT] = this.Name,
+                [CAPABILITIES_SUPPORTED] = NO_LLDP,
+                [MED_MAC_ADDRESS] = string.Join(",", macList)
             };
             this.EndPointDevicesList.Add(new EndPointDeviceModel(dict));
             UpdateEndPointDevice(NO_LLDP);

@@ -401,7 +401,7 @@ namespace PoEWizard.Comm
         private void GetShowDebugSlotPower(string slotNr)
         {
             SendProgressReport($"Getting lan power information of slot {slotNr}");
-            string resp = SendCommand(new CmdRequest(Command.DEBUG_SHOW_LAN_POWER_STATUS, ParseType.NoParsing, new string[1] { slotNr })) as string;
+            string resp = SendCommand(new CmdRequest(Command.DEBUG_SHOW_LAN_POWER_STATUS, ParseType.NoParsing, slotNr)) as string;
             if (!string.IsNullOrEmpty(resp)) _debugSwitchLog.UpdateLanPowerStatus($"debug show lanpower slot {slotNr} status ni", resp);
             UpdateSwitchLogBar();
         }
@@ -419,14 +419,14 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport($"{msg}{WAITING}"));
                 foreach (SlotModel slot in chassis.Slots)
                 {
-                    SendCommand(new CmdRequest(Command.POWER_DOWN_SLOT, new string[1] { slot.Name.ToString() }));
+                    SendCommand(new CmdRequest(Command.POWER_DOWN_SLOT, slot.Name));
                 }
                 UpdateSwitchLogBar();
                 WaitSec(msg, 5);
                 _progress.Report(new ProgressReport($"Turning power ON on all slots of chassis {chassis.Number} to capture logs{WAITING}"));
                 foreach (SlotModel slot in chassis.Slots)
                 {
-                    SendCommand(new CmdRequest(Command.POWER_UP_SLOT, new string[1] { slot.Name.ToString() }));
+                    SendCommand(new CmdRequest(Command.POWER_UP_SLOT, slot.Name));
                 }
                 foreach (var slot in chassis.Slots)
                 {

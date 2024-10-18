@@ -220,7 +220,7 @@ namespace PoEWizard.Device
             {
                 txt.Append("\n\tThe switch name is ").Append(device.Name).Append(" (").Append(device.IpAddress).Append(") running on Release ").Append(device.Version);
                 txt.Append(" with ").Append(device.ChassisList.Count).Append(" chassis:");
-                foreach(ChassisModel chassisModel in device.ChassisList)
+                foreach (ChassisModel chassisModel in device.ChassisList)
                 {
                     txt.Append("\n\t - Chassis ").Append(chassisModel.Number).Append($" {(chassisModel.IsMaster ? "(Master)" : "(Slave)")} model ");
                     txt.Append(chassisModel.Model).Append(" with serial number ").Append(chassisModel.SerialNumber);
