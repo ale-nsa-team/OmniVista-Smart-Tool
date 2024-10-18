@@ -76,7 +76,7 @@ namespace PoEWizard.Components
         {
             if (string.IsNullOrEmpty(IpAddress))
             {
-                IpAddress = IpList[0] ?? string.Empty;
+                IpAddress = IpList.ElementAtOrDefault(0) ?? string.Empty;
                 _ipAddress.Text = IpAddress;
             }
             _ipAddress.Focus();

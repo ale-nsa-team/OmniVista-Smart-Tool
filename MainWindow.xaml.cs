@@ -615,7 +615,7 @@ namespace PoEWizard
 
         private void Help_Click(object sender, RoutedEventArgs e)
         {
-            string hlpFile = "help-enUS.html";
+            string hlpFile = "help-enUS.html"; //must add code to select file if multiple languages are created
             HelpViewer hv = new HelpViewer(hlpFile)
             {
                 Owner = this,
