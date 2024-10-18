@@ -10,7 +10,6 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
 

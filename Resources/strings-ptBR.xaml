@@ -2,6 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <!--Menus-->
+    <sys:String x:Key="i18n_switch">Switch</sys:String>
     <sys:String x:Key="i18n_cnx">Conectar</sys:String>
     <sys:String x:Key="i18n_view">Mostrar</sys:String>
     <sys:String x:Key="i18n_cfg">Configuração</sys:String>
@@ -104,6 +105,7 @@
     <sys:String x:Key="i18n_ip">Endereço IP</sys:String>
     <sys:String x:Key="i18n_user">Usuário</sys:String>
     <sys:String x:Key="i18n_pwd">Senha</sys:String>
+    <sys:String x:Key="i18n_lifail">Log in falhou na switch</sys:String>
 
     <!--Power Supply dialog-->
     <sys:String x:Key="i18n_psCh">Chassis/Fonte</sys:String>
@@ -472,5 +474,4 @@ Duração da reinicialização:
     <sys:String x:Key="i18n_dld_tt">Ativação atrasada está habilitada</sys:String>
     <sys:String x:Key="i18n_conf_tt">Duas portas PoE conectadas e não foi desativado PoE em uma das portas</sys:String>
     <sys:String x:Key="i18n_nop_tt">Porta não suporta PoE</sys:String>
-
 </ResourceDictionary>
