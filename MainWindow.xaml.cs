@@ -366,11 +366,7 @@ namespace PoEWizard
             ShowProgress("Applying factory default...");
             FactoryDefault.Progress = progress;
             await Task.Run(() => FactoryDefault.Reset(device));
-            string tout = await RebootSwitch(420);
-            SetDisconnectedState();
-            if (string.IsNullOrEmpty(tout)) return;
-            res = ShowMessageBox("Reboot Switch", $"{tout}\nDo you want to reconnect to the switch {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo);
-            if (res == MsgBoxResult.Yes) Connect();
+            LaunchRebootSwitch();
         }
 
         private void LaunchConfigWizard(object sender, RoutedEventArgs e)
@@ -917,18 +913,14 @@ namespace PoEWizard
             }
         }
 
-        private async Task AskRebootCertified()
+        private void AskRebootCertified()
         {
             string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be saved.\n" +
                 $"Do you want to reboot the switch on {WORKING_DIR} directory?";
             MsgBoxResult reboot = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
             if (reboot == MsgBoxResult.Yes)
             {
-                string txt = await RebootSwitch(420);
-                if (ShowMessageBox("Reboot Switch", $"{txt}\nDo you want to reconnect to the switch {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
-                {
-                    Connect();
-                }
+                LaunchRebootSwitch();
             }
             else
             {
@@ -1728,9 +1720,10 @@ namespace PoEWizard
                     {
                         await Task.Run(() => restApiService.WriteMemory());
                     }
+                    string deviceName = device.Name;
                     string txt = await RebootSwitch(420);
                     if (string.IsNullOrEmpty(txt)) return;
-                    if (ShowMessageBox("Reboot Switch", $"{txt}\nDo you want to reconnect to the switch {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                    if (ShowMessageBox($"Reboot Switch {deviceName}", $"{txt}\nDo you want to reconnect to the switch {deviceName}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
                     {
                         Connect();
                     }
