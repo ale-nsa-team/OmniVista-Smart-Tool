@@ -899,7 +899,7 @@ namespace PoEWizard
                 await CheckSwitchScanResult($"Connect to switch {device.Name}...", startTime);
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
-                    await AskRebootCertified();
+                    AskRebootCertified();
                 }
             }
             catch (Exception ex)
@@ -1236,7 +1236,7 @@ namespace PoEWizard
                 RefreshSlotAndPortsView();
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
-                    await AskRebootCertified();
+                    AskRebootCertified();
                 }
             }
             catch (Exception ex)
