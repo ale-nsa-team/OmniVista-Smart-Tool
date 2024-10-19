@@ -19,6 +19,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard
 {
@@ -119,7 +120,7 @@ namespace PoEWizard
             });
             //check cli arguments
             string[] args = Environment.GetCommandLineArgs();
-            if (args.Length > 3 && !string.IsNullOrEmpty(args[1]) && Utils.IsValidIP(args[1]) && !string.IsNullOrEmpty(args[2]) && !string.IsNullOrEmpty(args[3]))
+            if (args.Length > 3 && !string.IsNullOrEmpty(args[1]) && IsValidIP(args[1]) && !string.IsNullOrEmpty(args[2]) && !string.IsNullOrEmpty(args[3]))
             {
                 device.IpAddress = args[1];
                 device.Login = args[2];
@@ -130,7 +131,7 @@ namespace PoEWizard
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            Utils.SetTitleColor(this);
+            SetTitleColor(this);
             _btnConnect.IsEnabled = false;
         }
 
@@ -563,7 +564,7 @@ namespace PoEWizard
                     strSelDuration = $"{duration} {HOUR}";
                 }
                 if (duration > 1) strSelDuration += "s";
-                txt.Append(strSelDuration).Append(").\nCurrent duration: ").Append(Utils.CalcStringDuration(startTrafficAnalysisTime, true));
+                txt.Append(strSelDuration).Append(").\nCurrent duration: ").Append(CalcStringDuration(startTrafficAnalysisTime, true));
                 txt.Append("\n").Append(question).Append("?");
                 MsgBoxResult res = ShowMessageBox(title, txt.ToString(), MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
                 if (res == MsgBoxResult.Yes)
@@ -652,7 +653,7 @@ namespace PoEWizard
             {
                 _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
             }
-            Utils.SetTitleColor(this);
+            SetTitleColor(this);
             //force color converters to run
             DataContext = null;
             DataContext = device;
@@ -1018,7 +1019,7 @@ namespace PoEWizard
                     await RunLastWizardActions();
                     result = reportResult.GetReportResult(selectedPort.Name);
                 }
-                string msg = $"{reportResult.Message}\n\nTotal duration: {Utils.CalcStringDuration(startTime, true)}";
+                string msg = $"{reportResult.Message}\n\nTotal duration: {CalcStringDuration(startTime, true)}";
                 await Task.Run(() => restApiService.RefreshSwitchPorts());
                 if (!string.IsNullOrEmpty(reportResult.Message))
                 {
@@ -1102,9 +1103,9 @@ namespace PoEWizard
                 DateTime resetSftpConnectionTime = DateTime.Now;
                 while (waitCnt < 2)
                 {
-                    strDur = Utils.CalcStringDuration(startTime, true);
+                    strDur = CalcStringDuration(startTime, true);
                     msg = !string.IsNullOrEmpty(strDur) ? $"Waiting for tar file ready ({strDur}){WAITING}" : $"Waiting for tar file ready{WAITING}";
-                    if (fsize > 0) msg += $"\nFile size: {Utils.PrintNumberBytes(fsize)}";
+                    if (fsize > 0) msg += $"\nFile size: {PrintNumberBytes(fsize)}";
                     ShowInfoBox(msg);
                     UpdateSwitchLogBar(initialTime);
                     await Task.Run(() =>
@@ -1114,13 +1115,13 @@ namespace PoEWizard
                     });
                     if (fsize > 0 && fsize == previousSize) waitCnt++; else waitCnt = 0;
                     Thread.Sleep(2000);
-                    double duration = Utils.GetTimeDuration(startTime);
+                    double duration = GetTimeDuration(startTime);
                     if (fsize == 0)
                     {
-                        if (Utils.GetTimeDuration(resetSftpConnectionTime) >= PERIOD_SFTP_RECONNECT_SEC)
+                        if (GetTimeDuration(resetSftpConnectionTime) >= PERIOD_SFTP_RECONNECT_SEC)
                         {
                             sftpService.ResetConnection();
-                            Logger.Warn($"Waited too long ({Utils.CalcStringDuration(startTime, true)}) for the switch {device.Name} to start creating the tar file!");
+                            Logger.Warn($"Waited too long ({CalcStringDuration(startTime, true)}) for the switch {device.Name} to start creating the tar file!");
                             resetSftpConnectionTime = DateTime.Now;
                         }
                         if (duration >= MAX_WAIT_SFTP_RECONNECT_SEC)
@@ -1136,8 +1137,8 @@ namespace PoEWizard
                         return;
                     }
                 }
-                strDur = Utils.CalcStringDuration(startTime, true);
-                string strTotalDuration = Utils.CalcStringDuration(initialTime, true);
+                strDur = CalcStringDuration(startTime, true);
+                string strTotalDuration = CalcStringDuration(initialTime, true);
                 ShowInfoBox($"Downloading tar file from switch{device.Name}{WAITING}");
                 DateTime startDowanloadTime = DateTime.Now;
                 string fname = null;
@@ -1151,9 +1152,9 @@ namespace PoEWizard
                     ShowMessageBox("Downloading tar file", $"Failed to download file \"{SWLOG_PATH}\" from the switch {device.Name}!", MsgBoxIcons.Error);
                     return;
                 }
-                string downloadDur = Utils.CalcStringDuration(startDowanloadTime);
+                string downloadDur = CalcStringDuration(startDowanloadTime);
                 string text = $"Tar file downloaded from switch{device.Name}{WAITING}\nDownload duration: {downloadDur}";
-                text += $", File size: {Utils.PrintNumberBytes(fsize)}\nFile creation duration: {strDur}";
+                text += $", File size: {PrintNumberBytes(fsize)}\nFile creation duration: {strDur}";
                 ShowInfoBox(text);
                 var sfd = new SaveFileDialog()
                 {
@@ -1173,7 +1174,7 @@ namespace PoEWizard
                 UpdateSwitchLogBar(initialTime);
                 debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, port);
                 StringBuilder txt = new StringBuilder("Log tar file \"").Append(SWLOG_PATH).Append("\" downloaded from the switch ").Append(device.IpAddress);
-                txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\"\n\tFile size: ").Append(Utils.PrintNumberBytes(info.Length));
+                txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\"\n\tFile size: ").Append(PrintNumberBytes(info.Length));
                 txt.Append("\n\tDownload duration: ").Append(downloadDur).Append("\n\tTar file creation duration: ").Append(strDur);
                 txt.Append("\n\tTotal duration to generate log file in ").Append(SwitchDebugLogLevel.Debug3).Append(" level: ").Append(strTotalDuration);
                 Logger.Activity(txt.ToString());
@@ -1195,15 +1196,15 @@ namespace PoEWizard
 
         private void UpdateSwitchLogBar(DateTime initialTime)
         {
-            UpdateProgressBar(Utils.GetTimeDuration(initialTime), maxCollectLogsDur);
+            UpdateProgressBar(GetTimeDuration(initialTime), maxCollectLogsDur);
         }
 
         private void ShowWaitTarFileError(long fsize, DateTime startTime)
         {
             StringBuilder msg = new StringBuilder();
             msg.Append($"Failed to create \"").Append(SWLOG_PATH).Append("\" file by the switch ").Append(device.IpAddress).Append("!\nWaited too long for tar file (");
-            msg.Append(Utils.CalcStringDuration(startTime, true)).Append(")\nFile size: ");
-            if (fsize == 0) msg.Append("0 Bytes"); else msg.Append(Utils.PrintNumberBytes(fsize));
+            msg.Append(CalcStringDuration(startTime, true)).Append(")\nFile size: ");
+            if (fsize == 0) msg.Append("0 Bytes"); else msg.Append(PrintNumberBytes(fsize));
             Logger.Error(msg.ToString());
             ShowMessageBox("Waiting for tar file ready", msg.ToString(), MsgBoxIcons.Error);
         }
@@ -1286,7 +1287,7 @@ namespace PoEWizard
         {
             try
             {
-                string duration = Utils.CalcStringDuration(startTime, true);
+                string duration = CalcStringDuration(startTime, true);
                 if (reportResult.Result?.Count < 1) return;
                 WizardResult result = reportResult.GetReportResult(SWITCH);
                 if (result == WizardResult.Fail || result == WizardResult.Warning)
@@ -1364,7 +1365,7 @@ namespace PoEWizard
             while (dur < WAIT_PORTS_UP_SEC)
             {
                 Thread.Sleep(1000);
-                dur = (int)Utils.GetTimeDuration(startTime);
+                dur = (int)GetTimeDuration(startTime);
                 progress.Report(new ProgressReport($"{msg} ({dur} sec){WAITING}"));
             }
             restApiService.RefreshSwitchPorts();
@@ -1552,7 +1553,7 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 while (!reportAck)
                 {
-                    if (Utils.GetTimeDuration(startTime) > 120) break;
+                    if (GetTimeDuration(startTime) > 120) break;
                     Thread.Sleep(100);
                 }
             });
@@ -1721,8 +1722,18 @@ namespace PoEWizard
                         await Task.Run(() => restApiService.WriteMemory());
                     }
                     string deviceName = device.Name;
-                    string txt = await RebootSwitch(420);
-                    if (string.IsNullOrEmpty(txt)) return;
+                    string confirm = $"rebooting the switch {deviceName}";
+                    stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
+                    string title = $"Rebooting switch {deviceName}";
+                    bool save = StopTrafficAnalysis(TrafficStatus.Abort, title, ASK_SAVE_TRAFFIC_REPORT, FirstChToUpper(confirm));
+                    if (!save) return;
+                    await WaitCloseTrafficAnalysis();
+                    DisableButtons();
+                    _switchMenuItem.IsEnabled = false;
+                    string duration = await Task.Run(() => restApiService.RebootSwitch(420));
+                    SetDisconnectedState();
+                    if (string.IsNullOrEmpty(duration)) return;
+                    string txt = $"Switch {deviceName} ready to connect\nReboot duration: {duration}";
                     if (ShowMessageBox($"Reboot Switch {deviceName}", $"{txt}\nDo you want to reconnect to the switch {deviceName}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
                     {
                         Connect();
@@ -1765,36 +1776,6 @@ namespace PoEWizard
             }
             text.Append("\nDo you want to save it now?\nIt may take up to 30 sec to execute Write Memory.");
             return ShowMessageBox(title, text.ToString(), MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes;
-        }
-
-        private async Task<string> RebootSwitch(int waitSec)
-        {
-            try
-            {
-                string deviceName = device.Name;
-                string confirm = $"rebooting the switch {deviceName}";
-                stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                string title = $"Rebooting switch {deviceName}";
-                bool save = StopTrafficAnalysis(TrafficStatus.Abort, title, ASK_SAVE_TRAFFIC_REPORT, confirm);
-                if (!save) return null;
-                await WaitCloseTrafficAnalysis();
-                DisableButtons();
-                _switchMenuItem.IsEnabled = false;
-                string duration = await Task.Run(() => restApiService.RebootSwitch(waitSec));
-                SetDisconnectedState();
-                if (string.IsNullOrEmpty(duration)) return null;
-                return $"Switch {deviceName} ready to connect\nReboot duration: {duration}";
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-                return ex.Message;
-            }
-            finally
-            {
-                HideProgress();
-                HideInfoBox();
-            }
         }
 
         private void SetDisconnectedState()
