@@ -341,7 +341,7 @@ A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS 
     <sys:String x:Key="i18n_min">min</sys:String>
     <sys:String x:Key="i18n_sec">s</sys:String>
     <sys:String x:Key="i18n_ms">ms</sys:String>
-    <sys:String x:Key="i18n_tadur">duração atual:</sys:String>
+    <sys:String x:Key="i18n_tadur">Duração atual:</sys:String>
     <sys:String x:Key="i18n_tacont">Ainda deseja continuar</sys:String>
     <sys:String x:Key="i18n_selDur">Selecione a duracao para a análise de tráfego</sys:String>
     <sys:String x:Key="i18n_tamin">minuto</sys:String>
