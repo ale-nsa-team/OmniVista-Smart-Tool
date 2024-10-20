@@ -148,7 +148,7 @@ namespace PoEWizard
             {
                 e.Cancel = true;
                 string confirm = Translate("i18n_closing");
-                stopTrafficAnalysisReason = $"{Translate("i18n_swrsti")} {confirm}";
+                stopTrafficAnalysisReason = "interrupted by the user before closing the application";
                 bool close = StopTrafficAnalysis(TrafficStatus.Abort, $"{Translate("i18n_taDisc")} {device.Name}", Translate("i18n_taSave"), confirm);
                 if (!close) return;
                 this.Closing -= OnWindowClosing;
@@ -507,7 +507,7 @@ namespace PoEWizard
                         await Task.Run(() => restApiService.WriteMemory());
                     }
                     string confirm = $"{Translate("i18n_swrst")} {device.Name}";
-                    stopTrafficAnalysisReason = $"{Translate("i18n_swrsti")} {confirm}";
+                    stopTrafficAnalysisReason = $"interrupted by the user before rebooting the switch {device.Name}";
                     string title = $"{Translate("i18n_swrst")} {device.Name}";
                     bool close = StopTrafficAnalysis(TrafficStatus.Abort, title, Translate("i18n_taSave"), confirm);
                     if (!close) return;
@@ -519,7 +519,7 @@ namespace PoEWizard
                     SetDisconnectedState();
                     if (string.IsNullOrEmpty(duration)) return;
                     string txt = $"{Translate("i18n_switch")} {switchName} {Translate("i18n_swready")} {duration}";
-                    if (ShowMessageBox(Translate("i18n_rebsw"), $"{txt}\n{Translate("i18n_recsw")} {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                    if (ShowMessageBox(Translate("i18n_rebsw"), $"{txt}\n{Translate("i18n_recsw")} {switchName}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
                     {
                         Connect();
                     }
@@ -575,7 +575,7 @@ namespace PoEWizard
                 if (restApiService == null) return;
                 if (IsTrafficAnalysisRunning())
                 {
-                    stopTrafficAnalysisReason = Translate("i18n_taInt");
+                    stopTrafficAnalysisReason = "interrupted by the user";
                     StopTrafficAnalysis(TrafficStatus.CanceledByUser, Translate("i18n_taIdle"), Translate("i18n_tastop"));
                 }
                 else
@@ -1053,7 +1053,7 @@ namespace PoEWizard
                 if (device.IsConnected)
                 {
                     string textMsg = $"{Translate("i18n_taDisc")} {device.Name}";
-                    stopTrafficAnalysisReason = $"{Translate("i18n_taIntb")} {textMsg}";
+                    stopTrafficAnalysisReason = $"interrupted by the user before disconnecting the switch {device.Name}";
                     bool close = StopTrafficAnalysis(TrafficStatus.Abort, textMsg, Translate("i18n_taSave"), textMsg);
                     if (!close) return;
                     await WaitCloseTrafficAnalysis();

@@ -330,8 +330,6 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_taRun">Running...</sys:String>
     <sys:String x:Key="i18n_taIdle">Traffic Analysis</sys:String>
     <sys:String x:Key="i18n_taSave">Do you want to save the traffic analysis report</sys:String>
-    <sys:String x:Key="i18n_taInt">interrupted by the user</sys:String>
-    <sys:String x:Key="i18n_taIntb">interrupted by the user before</sys:String>
     <sys:String x:Key="i18n_taDisc">Disconnecting switch</sys:String>
     <sys:String x:Key="i18n_tappLog">Application Log</sys:String>
     <sys:String x:Key="i18n_tactLog">Activity Log</sys:String>
@@ -428,7 +426,6 @@ Do you want to save it now?
 It may take up to 30 sec to execute Write Memory
     </sys:String>
     <sys:String x:Key="i18n_swrst">Rebooting switch</sys:String>
-    <sys:String x:Key="i18n_swrsti">interrupted by the user before</sys:String>
     <sys:String x:Key="i18n_swready" xml:space="preserve">
 ready to connect
 Reboot duration: </sys:String>
