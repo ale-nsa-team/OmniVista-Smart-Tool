@@ -399,6 +399,7 @@ namespace PoEWizard.Components
                 Logger.Error(ex);
                 return Colors.Unknown;
             }
+
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
@@ -424,6 +425,7 @@ namespace PoEWizard.Components
                 Logger.Error(ex);
                 return null;
             }
+
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
@@ -603,9 +605,7 @@ namespace PoEWizard.Components
         {
             return DependencyProperty.UnsetValue;
         }
-
     }
-
 
     public class ToStringConverter : IValueConverter
     {
@@ -670,6 +670,5 @@ namespace PoEWizard.Components
             return DependencyProperty.UnsetValue;
         }
     }
-
 
 }

@@ -7,6 +7,7 @@ using System.Threading;
 using PoEWizard.Data;
 using Renci.SshNet;
 using Renci.SshNet.Sftp;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Comm
 {
@@ -88,7 +89,7 @@ namespace PoEWizard.Comm
                 {
                     _sftpClient.DownloadFile(remotePath, fs);
                 }
-                Logger.Info($"End download file\n{localPath}\nDuration : {Utils.CalcStringDuration(startTime)}");
+                Logger.Info($"End download file\n{localPath}\nDuration : {CalcStringDuration(startTime)}");
                 return localPath;
             }
             catch (Exception ex)

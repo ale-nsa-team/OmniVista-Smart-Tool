@@ -1,5 +1,4 @@
-﻿using PoEWizard.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.Utils;

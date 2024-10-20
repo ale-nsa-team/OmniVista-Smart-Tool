@@ -15,6 +15,7 @@ namespace PoEWizard.Components
 
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
+            if (IsInvalid(value)) return new ValidationResult(false, "Invalid IP Address");
             return Regex.IsMatch((string)value, pattern)
                 ? ValidationResult.ValidResult
                 : new ValidationResult(false, "Invalid IP Address");
