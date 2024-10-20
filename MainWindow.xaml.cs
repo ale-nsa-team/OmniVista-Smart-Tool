@@ -155,7 +155,7 @@ namespace PoEWizard
                 await WaitCloseTrafficAnalysis();
                 sftpService?.Disconnect();
                 sftpService = null;
-                await CloseRestApiService(confirm);
+                await CloseRestApiService(FirstChToUpper(confirm));
                 await Task.Run(() => config.Save());
                 this.Close();
             }
@@ -374,11 +374,7 @@ namespace PoEWizard
             ShowProgress(Translate("i18n_afrst"));
             FactoryDefault.Progress = progress;
             await Task.Run(() => FactoryDefault.Reset(device));
-            string tout = await RebootSwitch(420);
-            SetDisconnectedState();
-            if (string.IsNullOrEmpty(tout)) return;
-            res = ShowMessageBox(Translate("i18n_rebsw"), $"{tout}\n{Translate("i18n_recsw")} {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo);
-            if (res == MsgBoxResult.Yes) Connect();
+            LaunchRebootSwitch();
         }
 
         private void LaunchConfigWizard(object sender, RoutedEventArgs e)
@@ -995,7 +991,7 @@ namespace PoEWizard
                 await CheckSwitchScanResult($"{Translate("i18n_cnsw")} {device.Name}...", startTime);
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
-                    await AskRebootCertified();
+                    AskRebootCertified();
                 }
             }
             catch (Exception ex)
@@ -1009,16 +1005,12 @@ namespace PoEWizard
             }
         }
 
-        private async Task AskRebootCertified()
+        private void AskRebootCertified()
         {
             MsgBoxResult reboot = ShowMessageBox("Connection", Translate("i18n_cert"), MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
             if (reboot == MsgBoxResult.Yes)
             {
-                string txt = await RebootSwitch(420);
-                if (ShowMessageBox(Translate("i18n_refrsw"), $"{txt}\n{Translate("i18n_recsw")} {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
-                {
-                    Connect();
-                }
+                LaunchRebootSwitch();
             }
             else
             {
@@ -1334,7 +1326,7 @@ namespace PoEWizard
                 RefreshSlotAndPortsView();
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
-                    await AskRebootCertified();
+                    AskRebootCertified();
                 }
             }
             catch (Exception ex)
@@ -1817,8 +1809,19 @@ namespace PoEWizard
                     {
                         await Task.Run(() => restApiService.WriteMemory());
                     }
-                    string txt = await RebootSwitch(420);
-                    if (string.IsNullOrEmpty(txt)) return;
+                    string confirm = $"{Translate("i18n_swrst")} {device.Name}";
+                    stopTrafficAnalysisReason = $"{Translate("i18n_swrsti")} {confirm}";
+                    string title = $"{Translate("i18n_swrst")} {device.Name}";
+                    bool close = StopTrafficAnalysis(TrafficStatus.Abort, title, Translate("i18n_taSave"), confirm);
+                    if (!close) return;
+                    await WaitCloseTrafficAnalysis();
+                    DisableButtons();
+                    _switchMenuItem.IsEnabled = false;
+                    string switchName = device.Name;
+                    string duration = await Task.Run(() => restApiService.RebootSwitch(420));
+                    SetDisconnectedState();
+                    if (string.IsNullOrEmpty(duration)) return;
+                    string txt = $"{Translate("i18n_switch")} {switchName} {Translate("i18n_swready")} {duration}";
                     if (ShowMessageBox(Translate("i18n_rebsw"), $"{txt}\n{Translate("i18n_recsw")} {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
                     {
                         Connect();
@@ -1861,36 +1864,6 @@ namespace PoEWizard
             }
             text.Append($"\n{Translate("i18n_cfsave")}");
             return ShowMessageBox(title, text.ToString(), MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes;
-        }
-
-        private async Task<string> RebootSwitch(int waitSec)
-        {
-            try
-            {
-                string confirm = $"{Translate("i18n_swrst")} {device.Name}";
-                stopTrafficAnalysisReason = $"{Translate("i18n_swrsti")} {confirm}";
-                string title = $"{Translate("i18n_swrst")} {device.Name}";
-                bool save = StopTrafficAnalysis(TrafficStatus.Abort, title, Translate("i18n_taSave"), confirm);
-                if (!save) return null;
-                await WaitCloseTrafficAnalysis();
-                DisableButtons();
-                _switchMenuItem.IsEnabled = false;
-                string duration = await Task.Run(() => restApiService.RebootSwitch(waitSec));
-                string swName = device.Name;
-                SetDisconnectedState();
-                if (string.IsNullOrEmpty(duration)) return null;
-                return $"{Translate("i18n_switch")} {swName} {Translate("i18n_swready")} {duration}";
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-                return ex.Message;
-            }
-            finally
-            {
-                HideProgress();
-                HideInfoBox();
-            }
         }
 
         private void SetDisconnectedState()
