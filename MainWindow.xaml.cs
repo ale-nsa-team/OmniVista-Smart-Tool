@@ -490,6 +490,52 @@ namespace PoEWizard
             }
         }
 
+        private async void LaunchRebootSwitch()
+        {
+            try
+            {
+                string cfgChanges = await GetSyncStatus(Translate("i18n_swrst"));
+                if (ShowMessageBox(Translate("i18n_rebsw"), $"{Translate("i18n_crebsw")} {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                {
+                    if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
+                    {
+                        ShowMessageBox(Translate("i18n_rebsw"), $"{Translate("i18n_frebsw1")} {device.Name} {Translate("i18n_frebsw2")}", MsgBoxIcons.Error);
+                        return;
+                    }
+                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(Translate("i18n_rebsw"), cfgChanges))
+                    {
+                        await Task.Run(() => restApiService.WriteMemory());
+                    }
+                    string confirm = $"{Translate("i18n_swrst")} {device.Name}";
+                    stopTrafficAnalysisReason = $"{Translate("i18n_swrsti")} {confirm}";
+                    string title = $"{Translate("i18n_swrst")} {device.Name}";
+                    bool close = StopTrafficAnalysis(TrafficStatus.Abort, title, Translate("i18n_taSave"), confirm);
+                    if (!close) return;
+                    await WaitCloseTrafficAnalysis();
+                    DisableButtons();
+                    _switchMenuItem.IsEnabled = false;
+                    string switchName = device.Name;
+                    string duration = await Task.Run(() => restApiService.RebootSwitch(420));
+                    SetDisconnectedState();
+                    if (string.IsNullOrEmpty(duration)) return;
+                    string txt = $"{Translate("i18n_switch")} {switchName} {Translate("i18n_swready")} {duration}";
+                    if (ShowMessageBox(Translate("i18n_rebsw"), $"{txt}\n{Translate("i18n_recsw")} {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                    {
+                        Connect();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            finally
+            {
+                HideInfoBox();
+                HideProgress();
+            }
+        }
+
         private async void CollectLogs_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -545,6 +591,40 @@ namespace PoEWizard
             catch (Exception ex)
             {
                 Logger.Error(ex);
+            }
+        }
+
+        private async void StartTrafficAnalysis()
+        {
+            try
+            {
+                isTrafficRunning = true;
+                startTrafficAnalysisTime = DateTime.Now;
+                _trafficLabel.Content = Translate("i18n_taRun");
+                string switchName = device.Name;
+                TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(selectedTrafficDuration));
+                if (report != null)
+                {
+                    TextViewer tv = new TextViewer(Translate("i18n_taIdle"), report.Summary)
+                    {
+                        Owner = this,
+                        SaveFilename = $"{switchName}-{DateTime.Now:MM-dd-yyyy_hh_mm_ss}-traffic-analysis.txt",
+                        CsvData = report.Data.ToString()
+                    };
+                    tv.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            finally
+            {
+                _trafficLabel.Content = Translate("i18n_taIdle");
+                if (device.IsConnected) _traffic.IsEnabled = true; else _traffic.IsEnabled = false;
+                HideProgress();
+                HideInfoBox();
+                isTrafficRunning = false;
             }
         }
 
@@ -1600,40 +1680,6 @@ namespace PoEWizard
             await Task.Run(() => restApiService.RunPoeWizard(selectedPort.Name, reportResult, cmdList, waitSec));
         }
 
-        private async void StartTrafficAnalysis()
-        {
-            try
-            {
-                isTrafficRunning = true;
-                startTrafficAnalysisTime = DateTime.Now;
-                _trafficLabel.Content = Translate("i18n_taRun");
-                string switchName = device.Name;
-                TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(selectedTrafficDuration));
-                if (report != null)
-                {
-                    TextViewer tv = new TextViewer(Translate("i18n_taIdle"), report.Summary)
-                    {
-                        Owner = this,
-                        SaveFilename = $"{switchName}-{DateTime.Now:MM-dd-yyyy_hh_mm_ss}-traffic-analysis.txt",
-                        CsvData = report.Data.ToString()
-                    };
-                    tv.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-            finally
-            {
-                _trafficLabel.Content = Translate("i18n_taIdle");
-                if (device.IsConnected) _traffic.IsEnabled = true; else _traffic.IsEnabled = false;
-                HideProgress();
-                HideInfoBox();
-                isTrafficRunning = false;
-            }
-        }
-
         private async Task WaitAckProgress()
         {
             await Task.Run(() =>
@@ -1790,52 +1836,6 @@ namespace PoEWizard
             {
                 _btnRunWiz.IsEnabled = false;
                 _btnResetPort.IsEnabled = false;
-            }
-        }
-
-        private async void LaunchRebootSwitch()
-        {
-            try
-            {
-                string cfgChanges = await GetSyncStatus(Translate("i18n_swrst"));
-                if (ShowMessageBox(Translate("i18n_rebsw"), $"{Translate("i18n_crebsw")} {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
-                {
-                    if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
-                    {
-                        ShowMessageBox(Translate("i18n_rebsw"), $"{Translate("i18n_frebsw1")} {device.Name} {Translate("i18n_frebsw2")}", MsgBoxIcons.Error);
-                        return;
-                    }
-                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(Translate("i18n_rebsw"), cfgChanges))
-                    {
-                        await Task.Run(() => restApiService.WriteMemory());
-                    }
-                    string confirm = $"{Translate("i18n_swrst")} {device.Name}";
-                    stopTrafficAnalysisReason = $"{Translate("i18n_swrsti")} {confirm}";
-                    string title = $"{Translate("i18n_swrst")} {device.Name}";
-                    bool close = StopTrafficAnalysis(TrafficStatus.Abort, title, Translate("i18n_taSave"), confirm);
-                    if (!close) return;
-                    await WaitCloseTrafficAnalysis();
-                    DisableButtons();
-                    _switchMenuItem.IsEnabled = false;
-                    string switchName = device.Name;
-                    string duration = await Task.Run(() => restApiService.RebootSwitch(420));
-                    SetDisconnectedState();
-                    if (string.IsNullOrEmpty(duration)) return;
-                    string txt = $"{Translate("i18n_switch")} {switchName} {Translate("i18n_swready")} {duration}";
-                    if (ShowMessageBox(Translate("i18n_rebsw"), $"{txt}\n{Translate("i18n_recsw")} {device.Name}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
-                    {
-                        Connect();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-            finally
-            {
-                HideInfoBox();
-                HideProgress();
             }
         }
 
