@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Comm
 {
@@ -78,7 +79,7 @@ namespace PoEWizard.Comm
                 UpdateProgressBar(++progressBarCnt); // 30
                 ShowInterfacesList();
                 UpdateProgressBar(++progressBarCnt); // 31
-                LogActivity($"Switch connected", $", duration: {Utils.CalcStringDuration(startTime)}");
+                LogActivity($"Switch connected", $", duration: {CalcStringDuration(startTime)}");
             }
             catch (Exception ex)
             {
@@ -337,8 +338,8 @@ namespace PoEWizard.Comm
                 int prevLpNiDebug = SwitchModel.LpNiDebugLevel;
                 int prevLpCmmDebug = SwitchModel.LpCmmDebugLevel;
                 // Setting switch debug level
-                SetAppDebugLevel($"Setting PoE debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPNI_LEVEL, debugSelected);
-                SetAppDebugLevel($"Setting CMM debug log level to {Utils.IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
+                SetAppDebugLevel($"Setting PoE debug log level to {IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPNI_LEVEL, debugSelected);
+                SetAppDebugLevel($"Setting CMM debug log level to {IntToSwitchDebugLevel(debugSelected)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, debugSelected);
                 if (restartPoE)
                 {
                     if (_wizardSwitchPort != null) RestartDeviceOnPort($"Resetting port {_wizardSwitchPort.Name} to capture log", 5);
@@ -350,14 +351,14 @@ namespace PoEWizard.Comm
                 }
                 UpdateSwitchLogBar();
                 // Setting switch debug level back to the previous values
-                SetAppDebugLevel($"Resetting PoE debug level back to {Utils.IntToSwitchDebugLevel(prevLpNiDebug)}", Command.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
-                SetAppDebugLevel($"Resetting CMM debug level back to {Utils.IntToSwitchDebugLevel(prevLpCmmDebug)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
+                SetAppDebugLevel($"Resetting PoE debug level back to {IntToSwitchDebugLevel(prevLpNiDebug)}", Command.DEBUG_UPDATE_LPNI_LEVEL, prevLpNiDebug);
+                SetAppDebugLevel($"Resetting CMM debug level back to {IntToSwitchDebugLevel(prevLpCmmDebug)}", Command.DEBUG_UPDATE_LPCMM_LEVEL, prevLpCmmDebug);
                 // Generating tar file
                 string msg = "Generating tar file";
                 SendProgressReport(msg);
                 WaitSec(msg, 5);
                 SendCommand(new CmdRequest(Command.DEBUG_CREATE_LOG));
-                Logger.Info($"Generated log file in {SwitchDebugLogLevel.Debug3} level on switch {SwitchModel.Name}, duration: {Utils.CalcStringDuration(progressStartTime)}");
+                Logger.Info($"Generated log file in {SwitchDebugLogLevel.Debug3} level on switch {SwitchModel.Name}, duration: {CalcStringDuration(progressStartTime)}");
                 UpdateSwitchLogBar();
             }
             catch (Exception ex)
@@ -484,12 +485,12 @@ namespace PoEWizard.Comm
                     if (loopCnt % 5 == 0) done = GetAppDebugLevel(showDbgCmd) == dbgLevel;
                     if (loopCnt >= 30)
                     {
-                        Logger.Error($"Took too long ({Utils.CalcStringDuration(startCmdTime)}) to complete\"{cmd}\" to \"{dbgLevel}\"!");
+                        Logger.Error($"Took too long ({CalcStringDuration(startCmdTime)}) to complete\"{cmd}\" to \"{dbgLevel}\"!");
                         return;
                     }
                     loopCnt++;
                 }
-                Logger.Info($"\"{appName}\" debug level set to \"{dbgLevel}\", Duration: {Utils.CalcStringDuration(startCmdTime)}");
+                Logger.Info($"\"{appName}\" debug level set to \"{dbgLevel}\", Duration: {CalcStringDuration(startCmdTime)}");
                 UpdateSwitchLogBar();
             }
             catch (Exception ex)
@@ -512,7 +513,7 @@ namespace PoEWizard.Comm
 
         private void UpdateSwitchLogBar()
         {
-            UpdateProgressBar(Utils.GetTimeDuration(progressStartTime));
+            UpdateProgressBar(GetTimeDuration(progressStartTime));
         }
 
         private int GetAppDebugLevel(Command cmd)
@@ -595,7 +596,7 @@ namespace PoEWizard.Comm
                     SendWaitProgressReport(msg, startTime);
                     UpdateProgressBar(++progressBarCnt); //  1
                 }
-                cmdEntry.Duration = Utils.CalcStringDuration(cmdEntry.StartTime);
+                cmdEntry.Duration = CalcStringDuration(cmdEntry.StartTime);
                 return cmdEntry;
             }
             catch (Exception ex)
@@ -617,7 +618,7 @@ namespace PoEWizard.Comm
                 while (dur < waitSec)
                 {
                     Thread.Sleep(1000);
-                    dur = Utils.GetTimeDuration(progressStartTime);
+                    dur = GetTimeDuration(progressStartTime);
                     try
                     {
                         int period = (int)dur;
@@ -627,7 +628,7 @@ namespace PoEWizard.Comm
                     if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
                     UpdateProgressBarMessage($"{msg} ({(int)dur} sec){WAITING}", dur);
                 }
-                LogActivity("Write memory completed", $", duration: {Utils.CalcStringDuration(progressStartTime)}");
+                LogActivity("Write memory completed", $", duration: {CalcStringDuration(progressStartTime)}");
                 SaveConfigSnapshot();
             }
             catch (Exception ex)
@@ -657,7 +658,7 @@ namespace PoEWizard.Comm
             string folder = Path.Combine(MainWindow.DataPath, SNAPSHOT_FOLDER);
             if (Directory.Exists(folder))
             {
-                string txt = Utils.PurgeFiles(folder, MAX_NB_SNAPSHOT_SAVED);
+                string txt = PurgeFiles(folder, MAX_NB_SNAPSHOT_SAVED);
                 if (!string.IsNullOrEmpty(txt)) Logger.Warn($"Purging snapshot configuration files{txt}");
                 if (SwitchModel.SyncStatus == SyncStatusType.Synchronized)
                 {
@@ -695,22 +696,22 @@ namespace PoEWizard.Comm
                 {
                     if (dur >= waitSec)
                     {
-                        throw new Exception($"Switch {SwitchModel.Name} didn't come back within {Utils.CalcStringDuration(progressStartTime, true)}!");
+                        throw new Exception($"Switch {SwitchModel.Name} didn't come back within {CalcStringDuration(progressStartTime, true)}!");
                     }
                     Thread.Sleep(1000);
-                    dur = Utils.GetTimeDuration(progressStartTime);
-                    UpdateProgressBarMessage($"{msg}({Utils.CalcStringDuration(progressStartTime, true)}){WAITING}", dur);
+                    dur = GetTimeDuration(progressStartTime);
+                    UpdateProgressBarMessage($"{msg}({CalcStringDuration(progressStartTime, true)}){WAITING}", dur);
                 }
                 while (dur < waitSec + 1)
                 {
                     if (dur >= waitSec)
                     {
-                        throw new Exception($"Switch {SwitchModel.Name} didn't come back within {Utils.CalcStringDuration(progressStartTime, true)}!");
+                        throw new Exception($"Switch {SwitchModel.Name} didn't come back within {CalcStringDuration(progressStartTime, true)}!");
                     }
                     Thread.Sleep(1000);
-                    dur = (int)Utils.GetTimeDuration(progressStartTime);
-                    UpdateProgressBarMessage($"{msg}({Utils.CalcStringDuration(progressStartTime, true)}){WAITING}", dur);
-                    if (!Utils.IsReachable(SwitchModel.IpAddress)) continue;
+                    dur = (int)GetTimeDuration(progressStartTime);
+                    UpdateProgressBarMessage($"{msg}({CalcStringDuration(progressStartTime, true)}){WAITING}", dur);
+                    if (!IsReachable(SwitchModel.IpAddress)) continue;
                     try
                     {
                         if (dur % 5 == 0)
@@ -721,7 +722,7 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                 }
-                LogActivity("Switch rebooted", $", duration: {Utils.CalcStringDuration(progressStartTime, true)}");
+                LogActivity("Switch rebooted", $", duration: {CalcStringDuration(progressStartTime, true)}");
             }
             catch (Exception ex)
             {
@@ -729,7 +730,7 @@ namespace PoEWizard.Comm
                 return null;
             }
             CloseProgressBar();
-            return Utils.CalcStringDuration(progressStartTime, true);
+            return CalcStringDuration(progressStartTime, true);
         }
 
         private void SendRebootSwitchRequest()
@@ -746,7 +747,7 @@ namespace PoEWizard.Comm
                 }
                 catch (Exception ex)
                 {
-                    dur = Utils.GetTimeDuration(startTime);
+                    dur = GetTimeDuration(startTime);
                     if (dur >= MAX_WAIT_RETRY) throw ex;
                 }
             }
@@ -831,7 +832,7 @@ namespace PoEWizard.Comm
                 while (dur < selectedDuration)
                 {
                     if (trafficAnalysisStatus != TrafficStatus.Running) break;
-                    dur = Utils.GetTimeDuration(startTime);
+                    dur = GetTimeDuration(startTime);
                     if (dur >= selectedDuration)
                     {
                         trafficAnalysisStatus = TrafficStatus.Completed;
@@ -963,7 +964,7 @@ namespace PoEWizard.Comm
                 string result = ChangePerpetualOrFastPoe(cmd);
                 RefreshPortsInformation();
                 progressReport.Message += result;
-                progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
+                progressReport.Message += $"\n - Duration: {PrintTimeDurationSec(startTime)}";
                 _progress.Report(progressReport);
                 LogActivity($"{action} PoE on slot {_wizardSwitchSlot.Name} completed", $"\n{progressReport.Message}");
                 return true;
@@ -993,7 +994,7 @@ namespace PoEWizard.Comm
                 SendCommand(new CmdRequest(Command.POWER_PRIORITY_PORT, new string[2] { port, _wizardSwitchPort.PriorityLevel.ToString() }));
                 RefreshPortsInformation();
                 progressReport.Message += $"\n - Priority on port {port} set to {priority}";
-                progressReport.Message += $"\n - Duration: {Utils.PrintTimeDurationSec(startTime)}";
+                progressReport.Message += $"\n - Duration: {PrintTimeDurationSec(startTime)}";
                 _progress.Report(progressReport);
                 LogActivity($"Changed power priority to {priority} on port {port}", $"\n{progressReport.Message}");
                 return true;
@@ -1036,7 +1037,7 @@ namespace PoEWizard.Comm
                     progressReport.Message = $"Port {port} failed to restart!";
                     progressReport.Type = ReportType.Warning;
                 }
-                progressReport.Message += $"\nStatus: {_wizardSwitchPort.Status}, PoE Status: {_wizardSwitchPort.Poe}, Duration: {Utils.CalcStringDuration(startTime, true)}";
+                progressReport.Message += $"\nStatus: {_wizardSwitchPort.Status}, PoE Status: {_wizardSwitchPort.Poe}, Duration: {CalcStringDuration(startTime, true)}";
                 _progress.Report(progressReport);
                 LogActivity($"Port {port} restarted by the user", $"\n{progressReport.Message}");
             }
@@ -1072,8 +1073,8 @@ namespace PoEWizard.Comm
             while (dur < waitSec)
             {
                 Thread.Sleep(1000);
-                dur = (int)Utils.GetTimeDuration(startTime);
-                _progress.Report(new ProgressReport($"{msg} ({Utils.CalcStringDuration(startTime, true)}){WAITING}{PrintPortStatus()}"));
+                dur = (int)GetTimeDuration(startTime);
+                _progress.Report(new ProgressReport($"{msg} ({CalcStringDuration(startTime, true)}){WAITING}{PrintPortStatus()}"));
                 if (ethStatus == waitStatus) break;
                 if (dur % 5 == 0) ethStatus = UpdateEthStatus();
             }
@@ -1087,12 +1088,12 @@ namespace PoEWizard.Comm
             {
                 foreach (Dictionary<string, string> dict in _dictList)
                 {
-                    string port = Utils.GetDictValue(dict, PORT);
+                    string port = GetDictValue(dict, PORT);
                     if (!string.IsNullOrEmpty(port))
                     {
                         if (port == _wizardSwitchPort.Name)
                         {
-                            string sValStatus = Utils.FirstChToUpper(Utils.GetDictValue(dict, OPERATIONAL_STATUS));
+                            string sValStatus = FirstChToUpper(GetDictValue(dict, OPERATIONAL_STATUS));
                             if (!string.IsNullOrEmpty(sValStatus) && Enum.TryParse(sValStatus, out PortStatus portStatus))return portStatus; else return PortStatus.Unknown;
                         }
                     }
@@ -1363,7 +1364,7 @@ namespace PoEWizard.Comm
                 {
                     DisableCapacitorDetection();
                     CheckPortUp(waitSec, wizardAction);
-                    _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
+                    _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, PrintTimeDurationSec(startTime));
                     if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok) return;
                     Logger.Info($"{wizardAction} didn't solve the problem");
                 }
@@ -1436,7 +1437,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                return Utils.StringToDouble(Utils.ExtractSubString(ex.Message, "power not exceed ", " when").Trim()) / 1000;
+                return StringToDouble(ExtractSubString(ex.Message, "power not exceed ", " when").Trim()) / 1000;
             }
         }
 
@@ -1451,7 +1452,7 @@ namespace PoEWizard.Comm
             {
                 error = ex.Message;
             }
-            return !string.IsNullOrEmpty(error) ? Utils.StringToDouble(Utils.ExtractSubString(error, "to ", "mW").Trim()) / 1000 : _wizardSwitchPort.MaxPower;
+            return !string.IsNullOrEmpty(error) ? StringToDouble(ExtractSubString(error, "to ", "mW").Trim()) / 1000 : _wizardSwitchPort.MaxPower;
         }
 
         private void RefreshPoEData()
@@ -1489,7 +1490,7 @@ namespace PoEWizard.Comm
                 catch (Exception ex)
                 {
                     _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
-                    _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
+                    _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, PrintTimeDurationSec(startTime));
                     string resultDescription = $"{wizardAction} didn't solve the problem\n    Command not supported on slot {_wizardSwitchSlot.Name}";
                     _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Fail, resultDescription);
                     Logger.Info($"{ex.Message}\n{resultDescription}");
@@ -1503,7 +1504,7 @@ namespace PoEWizard.Comm
             }
             if (prevMaxPower != _wizardSwitchPort.MaxPower) SetMaxPowerToDefault(prevMaxPower);
             if (fastPoe) SendCommand(new CmdRequest(Command.POE_FAST_ENABLE, _wizardSwitchSlot.Name));
-            _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
+            _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, PrintTimeDurationSec(startTime));
         }
 
         private void SendSwitchError(string title, Exception ex)
@@ -1543,7 +1544,7 @@ namespace PoEWizard.Comm
                 SendCommand(new CmdRequest(_wizardCommand, _wizardSwitchPort.Name));
                 WaitSec(wizardAction, 3);
                 CheckPortUp(waitSec, wizardAction);
-                _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
+                _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, PrintTimeDurationSec(startTime));
                 if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok) return;
                 if (restoreCmd != _wizardCommand) SendCommand(new CmdRequest(restoreCmd, _wizardSwitchPort.Name));
                 Logger.Info($"{wizardAction} didn't solve the problem\nExecuting command {restoreCmd} on port {_wizardSwitchPort.Name} to restore the previous config");
@@ -1575,7 +1576,7 @@ namespace PoEWizard.Comm
                     _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Skip, txt.ToString());
                     break;
             }
-            _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
+            _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, PrintTimeDurationSec(startTime));
             Logger.Info($"{wizardAction}{txt}");
         }
 
@@ -1595,7 +1596,7 @@ namespace PoEWizard.Comm
                 CheckFPOEand823BT(Command.POWER_823BT_ENABLE);
                 Change823BT(Command.POWER_823BT_ENABLE);
                 CheckPortUp(waitSec, wizardAction);
-                _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
+                _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, PrintTimeDurationSec(startTime));
                 if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok) return;
                 Change823BT(Command.POWER_823BT_DISABLE);
                 Logger.Info($"{wizardAction} didn't solve the problem\nDisabling 802.3.bt on port {_wizardSwitchPort.Name} to restore the previous config");
@@ -1640,7 +1641,7 @@ namespace PoEWizard.Comm
                 text += ")";
             }
             _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, changePriority, text);
-            _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
+            _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, PrintTimeDurationSec(startTime));
             Logger.Info(txt.ToString());
         }
 
@@ -1657,7 +1658,7 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport(txt.ToString()));
                 SendCommand(new CmdRequest(Command.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, priority.ToString() }));
                 CheckPortUp(waitSec, txt.ToString());
-                _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.CalcStringDuration(startTime, true));
+                _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, CalcStringDuration(startTime, true));
                 if (_wizardReportResult.GetReportResult(_wizardSwitchPort.Name) == WizardResult.Ok) return;
                 SendCommand(new CmdRequest(Command.POWER_PRIORITY_PORT, new string[2] { _wizardSwitchPort.Name, prevPriority.ToString() }));
                 Logger.Info($"{wizardAction} didn't solve the problem\nChanging priority back to {prevPriority} on port {_wizardSwitchPort.Name} to restore the previous config");
@@ -1678,7 +1679,7 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport(wizardAction));
                 RestartDeviceOnPort(wizardAction);
                 CheckPortUp(waitSec, wizardAction);
-                _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, Utils.PrintTimeDurationSec(startTime));
+                _wizardReportResult.UpdateDuration(_wizardSwitchPort.Name, PrintTimeDurationSec(startTime));
             }
             catch (Exception ex)
             {
@@ -1704,7 +1705,7 @@ namespace PoEWizard.Comm
             DateTime startTime = WaitPortUp(waitSec, !string.IsNullOrEmpty(progressMessage) ? progressMessage : string.Empty);
             UpdateProgressReport();
             StringBuilder text = new StringBuilder("Port ").Append(_wizardSwitchPort.Name).Append(" Status: ").Append(_wizardSwitchPort.Status).Append(", PoE Status: ");
-            text.Append(_wizardSwitchPort.Poe).Append(", Power: ").Append(_wizardSwitchPort.Power).Append(" (Duration: ").Append(Utils.CalcStringDuration(startTime));
+            text.Append(_wizardSwitchPort.Poe).Append(", Power: ").Append(_wizardSwitchPort.Power).Append(" (Duration: ").Append(CalcStringDuration(startTime));
             text.Append(", MAC List: ").Append(String.Join(",", _wizardSwitchPort.MacList)).Append(")");
             Logger.Info(text.ToString());
         }
@@ -1721,8 +1722,8 @@ namespace PoEWizard.Comm
             while (dur < waitSec)
             {
                 Thread.Sleep(1000);
-                dur = (int)Utils.GetTimeDuration(startTime);
-                _progress.Report(new ProgressReport($"{msg} ({Utils.CalcStringDuration(startTime, true)}){WAITING}{PrintPortStatus()}"));
+                dur = (int)GetTimeDuration(startTime);
+                _progress.Report(new ProgressReport($"{msg} ({CalcStringDuration(startTime, true)}){WAITING}{PrintPortStatus()}"));
                 if (dur % 5 == 0)
                 {
                     UpdatePortData();
@@ -1754,13 +1755,13 @@ namespace PoEWizard.Comm
                 if (dur >= waitSec) return;
                 SendWaitProgressReport(msg, startTime);
                 Thread.Sleep(1000);
-                dur = Utils.GetTimeDuration(startTime);
+                dur = GetTimeDuration(startTime);
             }
         }
 
         private void SendWaitProgressReport(string msg, DateTime startTime)
         {
-            string strDur = Utils.CalcStringDuration(startTime, true);
+            string strDur = CalcStringDuration(startTime, true);
             string txt = $"{msg}";
             if (!string.IsNullOrEmpty(strDur)) txt += $" ({strDur})";
             txt += $"{WAITING}{PrintPortStatus()}";
@@ -1924,11 +1925,11 @@ namespace PoEWizard.Comm
                 Logger.Error(ex);
             }
             slot.Is8023btSupport = false;
-            slot.PowerClassDetection = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "capacitor-detection", "capacitor-detection"));
-            slot.IsHiResDetection = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "high-resistance-detection", "high-resistance-detection")) == ConfigType.Enable;
-            slot.PPoE = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "fpoe", "Fast-PoE"));
-            slot.FPoE = Utils.StringToConfigType(GetLanPowerFeature(slot.Name, "ppoe", "Perpetual-PoE"));
-            slot.Threshold = Utils.StringToDouble(GetLanPowerFeature(slot.Name, "usage-threshold", "usage-threshold"));
+            slot.PowerClassDetection = StringToConfigType(GetLanPowerFeature(slot.Name, "capacitor-detection", "capacitor-detection"));
+            slot.IsHiResDetection = StringToConfigType(GetLanPowerFeature(slot.Name, "high-resistance-detection", "high-resistance-detection")) == ConfigType.Enable;
+            slot.PPoE = StringToConfigType(GetLanPowerFeature(slot.Name, "fpoe", "Fast-PoE"));
+            slot.FPoE = StringToConfigType(GetLanPowerFeature(slot.Name, "ppoe", "Perpetual-PoE"));
+            slot.Threshold = StringToDouble(GetLanPowerFeature(slot.Name, "usage-threshold", "usage-threshold"));
             string capacitorDetection = GetLanPowerFeature(slot.Name, "capacitor-detection", "capacitor-detection");
             _dict = new Dictionary<string, string> { [POWER_4PAIR] = "NA", [POWER_OVER_HDMI] = "NA", [POWER_CAPACITOR_DETECTION] = capacitorDetection, [POWER_823BT] = "NA" };
             foreach (PortModel port in slot.Ports)
@@ -1980,7 +1981,7 @@ namespace PoEWizard.Comm
                         {
                             string[] split = lines[idx].Split(new string[] { "Watts" }, StringSplitOptions.None);
                             if (string.IsNullOrEmpty(split[0])) continue;
-                            slot.Budget = Utils.StringToDouble(split[0].Trim());
+                            slot.Budget = StringToDouble(split[0].Trim());
                             break;
                         }
                     }
@@ -2107,7 +2108,7 @@ namespace PoEWizard.Comm
             while (dur < 50)
             {
                 Thread.Sleep(1000);
-                dur = (int)Utils.GetTimeDuration(startTime);
+                dur = (int)GetTimeDuration(startTime);
                 _progress.Report(new ProgressReport($"{txt} ({dur} sec){WAITING}"));
                 if (dur % 5 == 0)
                 {
@@ -2217,7 +2218,7 @@ namespace PoEWizard.Comm
 
         private void LogSendRequest(RestUrlEntry entry, Dictionary<string, string> response)
         {
-            StringBuilder txt = new StringBuilder("API Request sent by ").Append(Utils.PrintMethodClass(3)).Append(":\n").Append(entry.ToString());
+            StringBuilder txt = new StringBuilder("API Request sent by ").Append(PrintMethodClass(3)).Append(":\n").Append(entry.ToString());
             txt.Append("\nRequest API URL: ").Append(response[REST_URL]);
             if (Logger.LogLevel == LogLevel.Info) Logger.Info(txt.ToString()); txt.Append(entry.Response[ERROR]);
             if (entry.Content != null && entry.Content?.Count > 0)
@@ -2234,7 +2235,7 @@ namespace PoEWizard.Comm
             }
             if (entry.Response.ContainsKey(RESULT))
             {
-                txt.Append("\nSwitch Response:\n").Append(new string('=', 132)).Append("\n").Append(Utils.PrintXMLDoc(response[RESULT]));
+                txt.Append("\nSwitch Response:\n").Append(new string('=', 132)).Append("\n").Append(PrintXMLDoc(response[RESULT]));
                 txt.Append("\n").Append(new string('=', 132));
             }
             Logger.Debug(txt.ToString());

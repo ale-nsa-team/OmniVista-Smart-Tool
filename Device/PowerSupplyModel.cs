@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Device
 {
@@ -30,13 +31,13 @@ namespace PoEWizard.Device
 
         public void LoadFromDictionary(Dictionary<string, string> dict)
         {
-            this.Model = Utils.GetDictValue(dict, MODEL_NAME);
-            this.Type = Utils.GetDictValue(dict, MODULE_TYPE);
-            this.Description = Utils.GetDictValue(dict, DESCRIPTION);
-            this.PowerProvision = Utils.GetDictValue(dict, POWER);
-            this.PartNumber = Utils.GetDictValue(dict, PART_NUMBER);
-            this.SerialNumber = Utils.GetDictValue(dict, SERIAL_NUMBER);
-            this.HardwareRevision = Utils.GetDictValue(dict, HARDWARE_REVISION) ;
+            this.Model = GetDictValue(dict, MODEL_NAME);
+            this.Type = GetDictValue(dict, MODULE_TYPE);
+            this.Description = GetDictValue(dict, DESCRIPTION);
+            this.PowerProvision = GetDictValue(dict, POWER);
+            this.PartNumber = GetDictValue(dict, PART_NUMBER);
+            this.SerialNumber = GetDictValue(dict, SERIAL_NUMBER);
+            this.HardwareRevision = GetDictValue(dict, HARDWARE_REVISION) ;
         }
     }
 }

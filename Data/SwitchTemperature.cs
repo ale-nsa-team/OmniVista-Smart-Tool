@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Data
 {
@@ -23,12 +24,12 @@ namespace PoEWizard.Data
 
         public SwitchTemperature(Dictionary<string, string> dict)
         {
-            string[] split = Utils.GetDictValue(dict, CHAS_DEVICE).Split('/');
+            string[] split = GetDictValue(dict, CHAS_DEVICE).Split('/');
             if (split.Length > 1) Device = split[1].Trim();
-            Current = Utils.StringToInt(Utils.GetDictValue(dict, CURRENT));
-            Range = Utils.GetDictValue(dict, RANGE);
-            Threshold = Utils.StringToInt(Utils.GetDictValue(dict, THRESHOLD));
-            Danger = Utils.StringToInt(Utils.GetDictValue(dict, DANGER));
+            Current = StringToInt(GetDictValue(dict, CURRENT));
+            Range = GetDictValue(dict, RANGE);
+            Threshold = StringToInt(GetDictValue(dict, THRESHOLD));
+            Danger = StringToInt(GetDictValue(dict, DANGER));
             if (Current < Threshold) Status = ThresholdType.UnderThreshold;
             else if (Current >= Threshold && Current < Danger) Status = ThresholdType.OverThreshold;
             else Status = ThresholdType.Danger;

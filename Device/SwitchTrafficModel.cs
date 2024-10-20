@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Device
 {
@@ -33,12 +34,12 @@ namespace PoEWizard.Device
         {
             foreach (Dictionary<string, string> dict in dictList)
             {
-                string port = Utils.GetDictValue(dict, PORT);
+                string port = GetDictValue(dict, PORT);
                 if (!string.IsNullOrEmpty(port))
                 {
                     if (!this.Ports.ContainsKey(port))
                     {
-                        string status = Utils.GetDictValue(dict, OPERATIONAL_STATUS);
+                        string status = GetDictValue(dict, OPERATIONAL_STATUS);
                         if (!string.IsNullOrEmpty(status) && status == "up") this.Ports[port] = new PortTrafficModel(dict);
                     }
                     else

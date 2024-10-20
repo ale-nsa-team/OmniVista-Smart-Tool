@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Device
 {
@@ -28,12 +29,12 @@ namespace PoEWizard.Device
         }
         public void LoadFromDictionary(Dictionary<string, string> dict)
         {
-            this.ApplicationId = Utils.GetDictValue(dict, DEBUG_APP_ID);
-            this.ApplicationName = Utils.GetDictValue(dict, DEBUG_APP_NAME);
-            this.SubApplicationId = Utils.GetDictValue(dict, DEBUG_SUB_APP_ID);
-            this.SubApplicationName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
-            this.SwitchLogLevel = Utils.StringToInt(Utils.GetDictValue(dict, DEBUG_SUB_APP_LEVEL));
-            this.DebugLevel = Utils.StringToSwitchDebugLevel(this.SwitchLogLevel.ToString());
+            this.ApplicationId = GetDictValue(dict, DEBUG_APP_ID);
+            this.ApplicationName = GetDictValue(dict, DEBUG_APP_NAME);
+            this.SubApplicationId = GetDictValue(dict, DEBUG_SUB_APP_ID);
+            this.SubApplicationName = GetDictValue(dict, DEBUG_SUB_APP_NAME);
+            this.SwitchLogLevel = StringToInt(GetDictValue(dict, DEBUG_SUB_APP_LEVEL));
+            this.DebugLevel = StringToSwitchDebugLevel(this.SwitchLogLevel.ToString());
         }
         public void SetDebugLevel(SwitchDebugLogLevel swDebugLevel)
         {
@@ -161,11 +162,11 @@ namespace PoEWizard.Device
                 bool found = false;
                 foreach (Dictionary<string, string> dict in dictList)
                 {
-                    string appName = Utils.GetDictValue(dict, DEBUG_APP_NAME);
+                    string appName = GetDictValue(dict, DEBUG_APP_NAME);
                     if (!string.IsNullOrEmpty(appName) && (appName == LPNI || appName == LPCMM))
                     {
                         found = true;
-                        string subAppName = Utils.GetDictValue(dict, DEBUG_SUB_APP_NAME);
+                        string subAppName = GetDictValue(dict, DEBUG_SUB_APP_NAME);
                         switch (subAppName)
                         {
                             case DEBUG_SUB_APP_LANNI:
@@ -251,7 +252,7 @@ namespace PoEWizard.Device
             }
             if (!string.IsNullOrEmpty(this.LanPowerStatus)) txt.Append("\n\nLanpower current status:").Append(this.LanPowerStatus);
             txt.Append("\n\n\tThe switch log tech support .tar file is attached.\n\n\t\tThanks.\n");
-            Utils.CreateTextFile(filePath, txt);
+            CreateTextFile(filePath, txt);
         }
 
         private int GetDebugLevelSelected()

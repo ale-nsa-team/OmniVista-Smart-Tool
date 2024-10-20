@@ -1,6 +1,7 @@
 ﻿using PoEWizard.Data;
 using System.Collections.Generic;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Device
 {
@@ -48,42 +49,42 @@ namespace PoEWizard.Device
 
         public void UpdateTraffic(Dictionary<string, string> dict)
         {
-            Port = Utils.GetDictValue(dict, PORT);
-            MacAddress = Utils.GetDictValue(dict, TRAF_MAC_ADDRESS);
-            RxBytes.Add(Utils.StringToDouble(Utils.GetDictValue(dict, TRAF_RX_BYTES)));
-            TxBytes.Add(Utils.StringToDouble(Utils.GetDictValue(dict, TRAF_TX_BYTES)));
-            BandWidth = Utils.StringToDouble(Utils.GetDictValue(dict, TRAF_BANDWIDTH));
+            Port = GetDictValue(dict, PORT);
+            MacAddress = GetDictValue(dict, TRAF_MAC_ADDRESS);
+            RxBytes.Add(StringToDouble(GetDictValue(dict, TRAF_RX_BYTES)));
+            TxBytes.Add(StringToDouble(GetDictValue(dict, TRAF_TX_BYTES)));
+            BandWidth = StringToDouble(GetDictValue(dict, TRAF_BANDWIDTH));
 
             #region RX Traffic data
-            RxCrcErrorFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, TRAF_CRC_ERROR_FRAMES)));
-            RxAlignmentsError.Add(Utils.StringToDouble(Utils.GetDictValue(dict, TRAF_ALIGNEMENTS_ERROR)));
-            RxUnicastFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, $"{TRAF_RX}{TRAF_UNICAST_FRAMES}")));
-            RxBroadcastFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, $"{TRAF_RX}{TRAF_BROADCAST_FRAMES}")));
-            RxMulticastFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, $"{TRAF_RX}{TRAF_MULTICAST_FRAMES}")));
-            RxErrorFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, $"{TRAF_RX}{TRAF_ERROR_FRAMES}")));
-            RxUnderSizeFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, $"{TRAF_RX}{TRAF_UNDERSIZE_FRAMES}")));
-            RxOverSizeFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, $"{TRAF_RX}{TRAF_OVERSIZE_FRAMES}")));
-            RxLostFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, $"{TRAF_RX}{TRAF_LOST_FRAMES}")));
+            RxCrcErrorFrames.Add(StringToDouble(GetDictValue(dict, TRAF_CRC_ERROR_FRAMES)));
+            RxAlignmentsError.Add(StringToDouble(GetDictValue(dict, TRAF_ALIGNEMENTS_ERROR)));
+            RxUnicastFrames.Add(StringToDouble(GetDictValue(dict, $"{TRAF_RX}{TRAF_UNICAST_FRAMES}")));
+            RxBroadcastFrames.Add(StringToDouble(GetDictValue(dict, $"{TRAF_RX}{TRAF_BROADCAST_FRAMES}")));
+            RxMulticastFrames.Add(StringToDouble(GetDictValue(dict, $"{TRAF_RX}{TRAF_MULTICAST_FRAMES}")));
+            RxErrorFrames.Add(StringToDouble(GetDictValue(dict, $"{TRAF_RX}{TRAF_ERROR_FRAMES}")));
+            RxUnderSizeFrames.Add(StringToDouble(GetDictValue(dict, $"{TRAF_RX}{TRAF_UNDERSIZE_FRAMES}")));
+            RxOverSizeFrames.Add(StringToDouble(GetDictValue(dict, $"{TRAF_RX}{TRAF_OVERSIZE_FRAMES}")));
+            RxLostFrames.Add(StringToDouble(GetDictValue(dict, $"{TRAF_RX}{TRAF_LOST_FRAMES}")));
             #endregion
 
             #region TX Traffic data
-            TxUnicastFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, $"{TRAF_TX}{TRAF_UNICAST_FRAMES}")));
-            TxBroadcastFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, $"{TRAF_TX}{TRAF_BROADCAST_FRAMES}")));
-            TxMulticastFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, $"{TRAF_TX}{TRAF_MULTICAST_FRAMES}")));
-            TxErrorFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, $"{TRAF_TX}{TRAF_ERROR_FRAMES}")));
-            TxUnderSizeFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, $"{TRAF_TX}{TRAF_UNDERSIZE_FRAMES}")));
-            TxOverSizeFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, $"{TRAF_TX}{TRAF_OVERSIZE_FRAMES}")));
-            TxLostFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, $"{TRAF_TX}{TRAF_LOST_FRAMES}")));
-            TxCollidedFrames.Add(Utils.StringToDouble(Utils.GetDictValue(dict, TRAF_COLLIDED_FRAMES)));
-            TxCollisions.Add(Utils.StringToDouble(Utils.GetDictValue(dict, TRAF_COLLISIONS)));
-            TxLateCollisions.Add(Utils.StringToDouble(Utils.GetDictValue(dict, TRAF_LATE_COLLISIONS)));
-            TxExcCollisions.Add(Utils.StringToDouble(Utils.GetDictValue(dict, TRAF_EXC_COLLISIONS)));
+            TxUnicastFrames.Add(StringToDouble(GetDictValue(dict, $"{TRAF_TX}{TRAF_UNICAST_FRAMES}")));
+            TxBroadcastFrames.Add(StringToDouble(GetDictValue(dict, $"{TRAF_TX}{TRAF_BROADCAST_FRAMES}")));
+            TxMulticastFrames.Add(StringToDouble(GetDictValue(dict, $"{TRAF_TX}{TRAF_MULTICAST_FRAMES}")));
+            TxErrorFrames.Add(StringToDouble(GetDictValue(dict, $"{TRAF_TX}{TRAF_ERROR_FRAMES}")));
+            TxUnderSizeFrames.Add(StringToDouble(GetDictValue(dict, $"{TRAF_TX}{TRAF_UNDERSIZE_FRAMES}")));
+            TxOverSizeFrames.Add(StringToDouble(GetDictValue(dict, $"{TRAF_TX}{TRAF_OVERSIZE_FRAMES}")));
+            TxLostFrames.Add(StringToDouble(GetDictValue(dict, $"{TRAF_TX}{TRAF_LOST_FRAMES}")));
+            TxCollidedFrames.Add(StringToDouble(GetDictValue(dict, TRAF_COLLIDED_FRAMES)));
+            TxCollisions.Add(StringToDouble(GetDictValue(dict, TRAF_COLLISIONS)));
+            TxLateCollisions.Add(StringToDouble(GetDictValue(dict, TRAF_LATE_COLLISIONS)));
+            TxExcCollisions.Add(StringToDouble(GetDictValue(dict, TRAF_EXC_COLLISIONS)));
             #endregion
 
             #region Unused properties
-            LinkQuality = Utils.GetDictValue(dict, TRAF_LINK_QUALITY);
-            LongFrameSize = Utils.StringToDouble(Utils.GetDictValue(dict, TRAF_LONG_FRAME_SIZE));
-            InterFrameGap = Utils.StringToDouble(Utils.GetDictValue(dict, TRAF_INTER_FRAME_GAP));
+            LinkQuality = GetDictValue(dict, TRAF_LINK_QUALITY);
+            LongFrameSize = StringToDouble(GetDictValue(dict, TRAF_LONG_FRAME_SIZE));
+            InterFrameGap = StringToDouble(GetDictValue(dict, TRAF_INTER_FRAME_GAP));
             #endregion
         }
 

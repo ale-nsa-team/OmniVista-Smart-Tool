@@ -1,7 +1,6 @@
 ﻿using PoEWizard.Device;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Components

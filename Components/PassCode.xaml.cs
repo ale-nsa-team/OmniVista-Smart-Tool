@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Components
 {
@@ -67,7 +68,7 @@ namespace PoEWizard.Components
             if (File.Exists(filepath))
             {
                 string encPwd = File.ReadAllText(filepath);
-                if (!string.IsNullOrEmpty(encPwd)) return Utils.DecryptString(encPwd);
+                if (!string.IsNullOrEmpty(encPwd)) return DecryptString(encPwd);
             }
             return DEFAULT_PASS_CODE;
         }
@@ -79,7 +80,7 @@ namespace PoEWizard.Components
                 if (newpwd != null)
                 {
                     string filepath = GetFilePath();
-                    string np = Utils.EncryptString(newpwd);
+                    string np = EncryptString(newpwd);
                     File.WriteAllText(filepath, np);
                     SavedPassword = newpwd;
                     this.DataContext = null;

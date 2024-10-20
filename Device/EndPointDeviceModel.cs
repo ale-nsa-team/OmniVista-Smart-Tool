@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Device
 {
@@ -46,39 +47,39 @@ namespace PoEWizard.Device
 
         public void LoadLldpRemoteTable(Dictionary<string, string> dict)
         {
-            ID = Utils.GetDictValue(dict, REMOTE_ID);
-            LocalPort = GetDictValue(dict, LOCAL_PORT, LocalPort);
-            MacAddress = Utils.GetDictValue(dict, MED_MAC_ADDRESS);
-            Vendor = Utils.GetVendorName(MacAddress);
+            ID = GetDictValue(dict, REMOTE_ID);
+            LocalPort = ParseDictValue(dict, LOCAL_PORT, LocalPort);
+            MacAddress = GetDictValue(dict, MED_MAC_ADDRESS);
+            Vendor = GetVendorName(MacAddress);
             if (Vendor == MacAddress) Vendor = string.Empty;
             string macId = MacAddress.Replace(":", string.Empty);
-            string remoteId = Utils.GetDictValue(dict, REMOTE_PORT).Replace(":", string.Empty);
+            string remoteId = GetDictValue(dict, REMOTE_PORT).Replace(":", string.Empty);
             if (remoteId != macId) RemotePort = remoteId;
-            string[] portSplit = Utils.GetDictValue(dict, PORT_SUBTYPE).Split(' ');
-            if (portSplit.Length > 1) PortSubType = (PortSubType)Enum.ToObject(typeof(PortSubType), Utils.StringToInt(portSplit[0]));
-            PortDescription = GetDictValue(dict, PORT_DESCRIPTION, PortDescription);
-            Type = GetDictValue(dict, CAPABILITIES_SUPPORTED, Type);
+            string[] portSplit = GetDictValue(dict, PORT_SUBTYPE).Split(' ');
+            if (portSplit.Length > 1) PortSubType = (PortSubType)Enum.ToObject(typeof(PortSubType), StringToInt(portSplit[0]));
+            PortDescription = ParseDictValue(dict, PORT_DESCRIPTION, PortDescription);
+            Type = ParseDictValue(dict, CAPABILITIES_SUPPORTED, Type);
             if (Type.Contains("none")) Type = MED_UNKNOWN;
             else if (string.IsNullOrEmpty(Type)) Type = MED_UNSPECIFIED;
-            IpAddress = GetDictValue(dict, MED_IP_ADDRESS, IpAddress);
-            EthernetType = GetDictValue(dict, MAU_TYPE, EthernetType);
-            Label = Name = GetDictValue(dict, SYSTEM_NAME, Name);
-            Description = GetDictValue(dict, SYSTEM_DESCRIPTION, Description).Replace("-", string.Empty);
+            IpAddress = ParseDictValue(dict, MED_IP_ADDRESS, IpAddress);
+            EthernetType = ParseDictValue(dict, MAU_TYPE, EthernetType);
+            Label = Name = ParseDictValue(dict, SYSTEM_NAME, Name);
+            Description = ParseDictValue(dict, SYSTEM_DESCRIPTION, Description).Replace("-", string.Empty);
             if (string.IsNullOrEmpty(Label)) Label = Description;
-            int ifIndex = Utils.StringToInt(RemotePort);
+            int ifIndex = StringToInt(RemotePort);
             if (PortSubType == PortSubType.LocallyAssigned && (ifIndex >= 1000))
             {
-                RemotePort = Utils.ParseIfIndex(ifIndex.ToString());
+                RemotePort = ParseIfIndex(ifIndex.ToString());
                 if (string.IsNullOrEmpty(Label)) Label = $"Remote port {RemotePort}";
                 Type = MED_SWITCH;
             }
-            else if (!Utils.IsNumber(RemotePort))
+            else if (!IsNumber(RemotePort))
             {
                 RemotePort = string.Empty;
             }
             IsMacName = (string.IsNullOrEmpty(Label) || Type == MED_UNKNOWN || Type == NO_LLDP) && dict.ContainsKey(MED_MAC_ADDRESS);
             if (IsMacName) Label = MacAddress;
-            string[] capList = Utils.GetDictValue(dict, MED_CAPABILITIES).Split('|');
+            string[] capList = GetDictValue(dict, MED_CAPABILITIES).Split('|');
             if (capList.Length > 0 && !string.IsNullOrEmpty(capList[0]))
             {
                 foreach (string val in capList)
@@ -92,10 +93,10 @@ namespace PoEWizard.Device
                     }
                 }
             }
-            MEDPowerType = GetDictValue(dict, MED_POWER_TYPE, MEDPowerType);
-            MEDPowerSource = GetDictValue(dict, MED_POWER_SOURCE, MEDPowerSource);
-            MEDPowerPriority = GetDictValue(dict, MED_POWER_PRIORITY, MEDPowerPriority);
-            MEDPowerValue = GetDictValue(dict, MED_POWER_VALUE, MEDPowerValue);
+            MEDPowerType = ParseDictValue(dict, MED_POWER_TYPE, MEDPowerType);
+            MEDPowerSource = ParseDictValue(dict, MED_POWER_SOURCE, MEDPowerSource);
+            MEDPowerPriority = ParseDictValue(dict, MED_POWER_PRIORITY, MEDPowerPriority);
+            MEDPowerValue = ParseDictValue(dict, MED_POWER_VALUE, MEDPowerValue);
             if (dict.ContainsKey(MED_MODEL) || dict.ContainsKey(MED_MANUFACTURER) || dict.ContainsKey(MED_FIRMWARE_REVISION))
             {
                 LoadLldpInventoryTable(dict);
@@ -104,19 +105,19 @@ namespace PoEWizard.Device
 
         public void LoadLldpInventoryTable(Dictionary<string, string> dict)
         {
-            if (Utils.GetDictValue(dict, LOCAL_PORT) != LocalPort || Utils.GetDictValue(dict, MED_MAC_ADDRESS) != MacAddress) return;
-            string vendorRetrieved = Utils.GetDictValue(dict, MED_MANUFACTURER);
+            if (GetDictValue(dict, LOCAL_PORT) != LocalPort || GetDictValue(dict, MED_MAC_ADDRESS) != MacAddress) return;
+            string vendorRetrieved = GetDictValue(dict, MED_MANUFACTURER);
             if (!string.IsNullOrEmpty(vendorRetrieved)) Vendor = vendorRetrieved;
-            Model = GetDictValue(dict, MED_MODEL, Model);
-            HardwareVersion = GetDictValue(dict, MED_HARDWARE_REVISION, HardwareVersion);
-            SoftwareVersion = GetDictValue(dict, MED_SOFTWARE_REVISION, SoftwareVersion);
-            if (string.IsNullOrEmpty(SoftwareVersion)) SoftwareVersion = Utils.GetDictValue(dict, MED_FIRMWARE_REVISION);
-            SerialNumber = GetDictValue(dict, MED_SERIAL_NUMBER, SerialNumber);
+            Model = ParseDictValue(dict, MED_MODEL, Model);
+            HardwareVersion = ParseDictValue(dict, MED_HARDWARE_REVISION, HardwareVersion);
+            SoftwareVersion = ParseDictValue(dict, MED_SOFTWARE_REVISION, SoftwareVersion);
+            if (string.IsNullOrEmpty(SoftwareVersion)) SoftwareVersion = GetDictValue(dict, MED_FIRMWARE_REVISION);
+            SerialNumber = ParseDictValue(dict, MED_SERIAL_NUMBER, SerialNumber);
         }
 
-        private string GetDictValue(Dictionary<string, string> dict, string parameter, string valueDict)
+        private string ParseDictValue(Dictionary<string, string> dict, string parameter, string valueDict)
         {
-            string sVal = Utils.GetDictValue(dict, parameter).Replace("(null)", string.Empty).Replace("\"", string.Empty);
+            string sVal = GetDictValue(dict, parameter).Replace("(null)", string.Empty).Replace("\"", string.Empty);
             if (string.IsNullOrEmpty(valueDict) || !string.IsNullOrEmpty(sVal)) return sVal;
             return valueDict;
         }
@@ -131,8 +132,8 @@ namespace PoEWizard.Device
                 int cntMac = 0;
                 foreach (string macAddr in split)
                 {
-                    string vendor = Utils.GetVendorName(macAddr);
-                    if (Utils.IsValidMacAddress(vendor)) vendor = string.Empty;
+                    string vendor = GetVendorName(macAddr);
+                    if (IsValidMacAddress(vendor)) vendor = string.Empty;
                     string mac = macAddr;
                     bool found = (isMacAddress && mac.ToLower().StartsWith(searchText)) || (!string.IsNullOrEmpty(vendor) && vendor.ToLower().Contains(searchText));
                     cntMac++;
@@ -152,7 +153,7 @@ namespace PoEWizard.Device
             else if (!string.IsNullOrEmpty(this.MacAddress))
             {
                 string mac = this.MacAddress;
-                string vendor = Utils.GetVendorName(this.MacAddress);
+                string vendor = GetVendorName(this.MacAddress);
                 if (!string.IsNullOrEmpty(this.Vendor))
                 {
                     mac += $" ({vendor})";
@@ -194,8 +195,8 @@ namespace PoEWizard.Device
                         tip.Add("          . . .");
                         break;
                     }
-                    string vendor = Utils.GetVendorName(mac);
-                    if (!string.IsNullOrEmpty(vendor) && !Utils.IsValidMacAddress(vendor)) tip.Add($" {mac} ({vendor})"); else tip.Add($" {mac}");
+                    string vendor = GetVendorName(mac);
+                    if (!string.IsNullOrEmpty(vendor) && !IsValidMacAddress(vendor)) tip.Add($" {mac} ({vendor})"); else tip.Add($" {mac}");
                 }
             }
             else if (!string.IsNullOrEmpty(this.MacAddress)) tip.Add($"MAC: {this.MacAddress}");
@@ -223,7 +224,7 @@ namespace PoEWizard.Device
                 }
                 else if (string.IsNullOrEmpty(this.Vendor) && !this.Label.Contains(","))
                 {
-                    this.Vendor = Utils.GetVendorName(this.Label);
+                    this.Vendor = GetVendorName(this.Label);
                 }
             }
             if (!string.IsNullOrEmpty(this.Vendor))

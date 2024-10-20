@@ -8,6 +8,7 @@ using System.Windows.Documents;
 using System.Windows.Threading;
 using PoEWizard.Data;
 using System.Windows.Media;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Components
 {
@@ -46,7 +47,7 @@ namespace PoEWizard.Components
 
         private void OnWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            Utils.SetTitleColor(this);
+            SetTitleColor(this);
 
             double h = Owner.ActualHeight;
             double w = Owner.ActualWidth;

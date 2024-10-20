@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Components
 {
@@ -39,9 +40,9 @@ namespace PoEWizard.Components
 
         public void BtnOk_Click(object sender, RoutedEventArgs e)
         {
-            if (Duration.Contains(MINUTE)) TrafficDurationSec = Utils.StringToInt(Duration) * 60;
-            else if (Duration.Contains(HOUR)) TrafficDurationSec = Utils.StringToInt(Duration) * 3600;
-            else TrafficDurationSec = Utils.StringToInt(Duration);
+            if (Duration.Contains(MINUTE)) TrafficDurationSec = StringToInt(Duration) * 60;
+            else if (Duration.Contains(HOUR)) TrafficDurationSec = StringToInt(Duration) * 3600;
+            else TrafficDurationSec = StringToInt(Duration);
             DialogResult = true;
             Close();
         }

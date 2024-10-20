@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Components
 {
@@ -19,7 +20,7 @@ namespace PoEWizard.Components
         internal static SolidColorBrush Warn => Brushes.Orange;
         internal static SolidColorBrush Unknown => Brushes.Gray;
         internal static SolidColorBrush Disable => (SolidColorBrush)new BrushConverter().ConvertFrom("#aaa");
-        internal static SolidColorBrush Problem => MainWindow.Theme == ThemeType.Dark 
+        internal static SolidColorBrush Problem => MainWindow.Theme == ThemeType.Dark
             ? (SolidColorBrush)new BrushConverter().ConvertFrom("#C29494") : Brushes.Orchid;
         internal static SolidColorBrush Default => MainWindow.Theme == ThemeType.Dark ? Brushes.White : Brushes.Black;
     }
@@ -30,7 +31,7 @@ namespace PoEWizard.Components
         {
             try
             {
-                float val = Utils.ParseFloat(value);
+                float val = ParseFloat(value);
                 return val > 45 ? val - 45 : val;
             }
             catch (Exception ex)
@@ -50,7 +51,7 @@ namespace PoEWizard.Components
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(value)) return false;
+            if (IsInvalid(value)) return false;
             return !(bool)value;
         }
 
@@ -82,7 +83,7 @@ namespace PoEWizard.Components
 
             try
             {
-                if (Utils.IsInvalid(value)) return Colors.Default;
+                if (IsInvalid(value)) return Colors.Default;
                 string val = value?.ToString() ?? string.Empty;
                 string param = parameter?.ToString() ?? string.Empty;
                 switch (param)
@@ -92,7 +93,7 @@ namespace PoEWizard.Components
                     case "Temperature":
                         return val == "UnderThreshold" ? Colors.Clear : val == "OverThreshold" ? Colors.Warn : Colors.Danger;
                     case "Power":
-                        float percent = Utils.ParseFloat(value);
+                        float percent = ParseFloat(value);
                         return percent > 10 ? Colors.Clear : (percent > 0 ? Colors.Warn : Colors.Danger);
                     case "Poe":
                         switch (val)
@@ -121,14 +122,14 @@ namespace PoEWizard.Components
                     case "Boolean":
                         return val.ToLower() == "true" ? Colors.Clear : Colors.Danger;
                     case "AosVersion":
-                        return Utils.IsOldAosVersion(val) ? Colors.Warn : Colors.Default;
+                        return IsOldAosVersion(val) ? Colors.Warn : Colors.Default;
                     case "SyncStatus":
                         return val == SyncStatusType.Synchronized.ToString() ? Colors.Clear :
                                val == SyncStatusType.NotSynchronized.ToString() ? Colors.Warn :
                                val == SyncStatusType.Unknown.ToString() ? Colors.Unknown : Colors.Danger;
                     case "LpCmmDebugLevel":
                     case "LpNiDebugLevel":
-                        SwitchDebugLogLevel level = Utils.StringToSwitchDebugLevel(val);
+                        SwitchDebugLogLevel level = StringToSwitchDebugLevel(val);
                         return level == SwitchDebugLogLevel.Info ? Colors.Clear :
                                level == SwitchDebugLogLevel.Invalid ? Colors.Danger :
                                level == SwitchDebugLogLevel.Off ? Colors.Danger :
@@ -158,14 +159,14 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(values)) return Colors.Default;
+                if (IsInvalid(values)) return Colors.Default;
                 string versionType = parameter?.ToString() ?? FPGA;
                 string model = values[0].ToString();
                 if (model.Contains("(")) model = RemoveMasterSlave(model);
                 string versions = values[1].ToString();
                 if (versions.Contains("(")) versions = RemoveMasterSlave(versions);
                 if (string.IsNullOrEmpty(versions)) return Colors.Unknown;
-                int[] minversion = Utils.GetMinimunVersion(model, versionType);
+                int[] minversion = GetMinimunVersion(model, versionType);
                 if (minversion == null) return Colors.Default;
                 string[] s = versions.Split('.');
                 int[] fpgas = Array.ConvertAll(s, int.Parse);
@@ -213,12 +214,13 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(value)) return false;
+                if (IsInvalid(value)) return false;
                 string val = value?.ToString() ?? string.Empty;
                 string par = parameter?.ToString() ?? string.Empty;
                 ConfigType ct = Enum.TryParse(val, true, out ConfigType c) ? c : ConfigType.Unavailable;
                 return par == "Available" ? ct != ConfigType.Unavailable : ct == ConfigType.Enable;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Logger.Error(ex);
                 return false;
@@ -237,7 +239,7 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(value)) return string.Empty;
+                if (IsInvalid(value)) return string.Empty;
                 string val = value?.ToString() ?? string.Empty;
                 ConfigType ct = Enum.TryParse(val, true, out ConfigType c) ? c : ConfigType.Unavailable;
                 switch (ct)
@@ -266,8 +268,8 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(value)) return Visibility.Collapsed;
-                return Utils.IsOldAosVersion(value) ? Visibility.Visible : Visibility.Collapsed;
+                if (IsInvalid(value)) return Visibility.Collapsed;
+                return IsOldAosVersion(value) ? Visibility.Visible : Visibility.Collapsed;
             }
             catch (Exception ex)
             {
@@ -289,7 +291,7 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(value)) return Visibility.Collapsed;
+                if (IsInvalid(value)) return Visibility.Collapsed;
                 return value.ToString() == "OverThreshold" || value.ToString() == "Danger" ? Visibility.Visible : Visibility.Collapsed;
             }
             catch (Exception ex)
@@ -311,7 +313,7 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(value)) return string.Empty;
+                if (IsInvalid(value)) return string.Empty;
                 bool val = bool.TryParse(value.ToString(), out bool b) && b;
                 return val ? "✓" : "✗";
             }
@@ -334,7 +336,7 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(values)) return string.Empty;
+                if (IsInvalid(values)) return string.Empty;
                 string val = values[0].ToString();
                 PoeStatus poeType = string.IsNullOrEmpty(val) || val.Contains("UnsetValue") ? PoeStatus.NoPoe : (PoeStatus)Enum.Parse(typeof(PoeStatus), val);
                 bool is4pair = !bool.TryParse(values[1].ToString(), out bool b) || b;
@@ -361,7 +363,7 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(values)) return PriorityLevelType.Low;
+                if (IsInvalid(values)) return PriorityLevelType.Low;
                 string val = values[0].ToString();
                 PoeStatus poeType = string.IsNullOrEmpty(val) || val.Contains("UnsetValue") ? PoeStatus.NoPoe : (PoeStatus)Enum.Parse(typeof(PoeStatus), val);
                 string priorityLevel = values[1].ToString();
@@ -388,8 +390,8 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(values)) return Colors.Default;
-                double pct = Utils.GetThresholdPercentage(values);
+                if (IsInvalid(values)) return Colors.Default;
+                double pct = GetThresholdPercentage(values);
                 return pct > 0.1 ? Colors.Clear : pct < 0 ? Colors.Danger : Colors.Warn;
             }
             catch (Exception ex)
@@ -397,7 +399,6 @@ namespace PoEWizard.Components
                 Logger.Error(ex);
                 return Colors.Unknown;
             }
-
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
@@ -413,17 +414,16 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(values)) return null;
+                if (IsInvalid(values)) return null;
                 int thrshld = int.TryParse(values[1].ToString(), out int i) ? i : 0;
-                double pct = Utils.GetThresholdPercentage(values);
+                double pct = GetThresholdPercentage(values);
                 return pct > 0.1 ? string.Empty : pct < 0 ? $"CPU usage over threshold ({thrshld}%)" : $"CPU usage near threshold ({thrshld}%)";
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                return null;    
+                return null;
             }
-
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
@@ -439,8 +439,8 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(values)) return Visibility.Collapsed;
-                double pct = Utils.GetThresholdPercentage(values);
+                if (IsInvalid(values)) return Visibility.Collapsed;
+                double pct = GetThresholdPercentage(values);
                 return pct > 0.1 ? Visibility.Collapsed : Visibility.Visible;
             }
             catch (Exception ex)
@@ -461,7 +461,7 @@ namespace PoEWizard.Components
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Utils.IsInvalid(value) || Utils.IsInvalid(parameter)) return Visibility.Collapsed;
+            if (IsInvalid(value) || IsInvalid(parameter)) return Visibility.Collapsed;
             string item = value as string;
             string par = parameter as string;
             return item.Contains(par) ? Visibility.Visible : Visibility.Collapsed;
@@ -479,7 +479,7 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(value)) return null;
+                if (IsInvalid(value)) return null;
                 if (value is List<EndPointDeviceModel> edmList)
                 {
                     if (edmList.Count < 1) return null;
@@ -522,11 +522,11 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(values[0])) return null;
+                if (IsInvalid(values[0])) return null;
                 List<EndPointDeviceModel> edmList = values[0] as List<EndPointDeviceModel>;
                 if (edmList.Count < 1) return DependencyProperty.UnsetValue;
-                searchText = Utils.IsInvalid(values[1]) ? string.Empty : values[1].ToString();
-                isMacAddress = Utils.IsValidMacSequence(searchText);
+                searchText = IsInvalid(values[1]) ? string.Empty : values[1].ToString();
+                isMacAddress = IsValidMacSequence(searchText);
                 bool hasmore = edmList.Count > MAX_NB_DEVICES_TOOL_TIP;
                 List<EndPointDeviceModel> displayList = hasmore ? edmList.GetRange(0, MAX_NB_DEVICES_TOOL_TIP) : edmList;
                 List<string> tooltip = new List<string> { "\nAll matches are tagged with (*)" };
@@ -588,7 +588,7 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(value)) return DependencyProperty.UnsetValue;
+                if (IsInvalid(value)) return DependencyProperty.UnsetValue;
                 PoeStatus poe = (PoeStatus)value;
                 if (toolTip.ContainsKey(poe)) return toolTip[poe];
             }
@@ -613,7 +613,7 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(value)) return DependencyProperty.UnsetValue;
+                if (IsInvalid(value)) return DependencyProperty.UnsetValue;
                 if (value is List<string> strList)
                 {
                     if (strList.Count < 1) return DependencyProperty.UnsetValue;
@@ -652,7 +652,7 @@ namespace PoEWizard.Components
         {
             try
             {
-                if (Utils.IsInvalid(value)) return DependencyProperty.UnsetValue;
+                if (IsInvalid(value)) return DependencyProperty.UnsetValue;
                 if (!(value is List<string>)) return DependencyProperty.UnsetValue;
                 List<string> tooltip = value as List<string>;
                 return string.Join("\n", tooltip);

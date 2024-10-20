@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Components
 {
@@ -66,7 +67,7 @@ namespace PoEWizard.Components
 
         private void SearchMacAddress(SwitchModel switchModel, string macAddr)
         {
-            this.IsMacAddress = Utils.IsValidMacSequence(this.SearchText);
+            this.IsMacAddress = IsValidMacSequence(this.SearchText);
             this.PortsFound = new ObservableCollection<PortViewModel>();
             this.NbTotalMacAddressesFound = 0;
             deviceMacList = new List<string>();
@@ -146,32 +147,8 @@ namespace PoEWizard.Components
                     nameVendor = device.Vendor.ToLower();
                     if (nameVendor.Contains(this.SearchText)) return true;
                 }
-                return Utils.GetVendorName(macAddr).ToLower().Contains(this.SearchText);
+                return GetVendorName(macAddr).ToLower().Contains(this.SearchText);
             }
-        }
-
-        private string GetDeviceNameOrVendor(PortModel port)
-        {
-            foreach(EndPointDeviceModel device in port.EndPointDevicesList)
-            {
-                string nameVendor = device.Name.ToLower();
-                if (string.IsNullOrEmpty(nameVendor) || !nameVendor.Contains(this.SearchText)) nameVendor = device.Vendor.ToLower();
-                if (string.IsNullOrEmpty(nameVendor) || !nameVendor.Contains(this.SearchText)) nameVendor = SearchVendorInMacList(new List<string>(device.MacAddress.Split(',')));
-                if (string.IsNullOrEmpty(nameVendor) || !nameVendor.Contains(this.SearchText)) continue;
-                return nameVendor;
-            }
-            return string.Empty;
-        }
-
-        private string SearchVendorInMacList(List<string> macList)
-        {
-            foreach (string mac in macList)
-            {
-                string vendor = Utils.GetVendorName(mac).ToLower();
-                if (!string.IsNullOrEmpty(vendor) && !vendor.Contains(":") && vendor.Contains(this.SearchText)) return vendor;
-                else if (mac.StartsWith(this.SearchText)) return mac;
-            }
-            return string.Empty;
         }
 
         private void PortSelection_Changed(Object sender, RoutedEventArgs e)

@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Components
 {
@@ -62,7 +63,7 @@ namespace PoEWizard.Components
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            Utils.SetTitleColor(this);
+            SetTitleColor(this);
         }
 
         private void OnNavigating(object sender, NavigatingCancelEventArgs e)
