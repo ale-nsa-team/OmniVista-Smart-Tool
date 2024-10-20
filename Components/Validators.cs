@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Components
 {
@@ -14,7 +15,7 @@ namespace PoEWizard.Components
 
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            if (Utils.IsInvalid(value)) return new ValidationResult(false, "Invalid IP Address");
+            if (IsInvalid(value)) return new ValidationResult(false, "Invalid IP Address");
             return Regex.IsMatch((string)value, pattern)
                 ? ValidationResult.ValidResult
                 : new ValidationResult(false, "Invalid IP Address");
@@ -145,7 +146,7 @@ namespace PoEWizard.Components
             string macName = (string)value;
             if (string.IsNullOrEmpty(macName)) return ValidationResult.ValidResult;
             bool isValid = true;
-           if (macName.Contains(":")) isValid = Utils.IsValidMacSequence(macName);
+           if (macName.Contains(":")) isValid = IsValidMacSequence(macName);
             return (isValid) ? ValidationResult.ValidResult : new ValidationResult(false, "Invalid MAC Address sequence");
         }
     }

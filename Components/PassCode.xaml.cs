@@ -3,6 +3,7 @@ using System;
 using System.Windows;
 using System.Windows.Input;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Components
 {
@@ -34,7 +35,7 @@ namespace PoEWizard.Components
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             cfg = config;
             string pwd = cfg.Get("hash");
-            SavedPassword = pwd != null ? Utils.DecryptString(pwd) : Constants.DEFAULT_PASS_CODE;
+            SavedPassword = pwd != null ? DecryptString(pwd) : Constants.DEFAULT_PASS_CODE;
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
@@ -72,7 +73,7 @@ namespace PoEWizard.Components
             {
                 if (newpwd != null)
                 {                 
-                    string np = Utils.EncryptString(newpwd);
+                    string np = EncryptString(newpwd);
                     cfg.Set("hash", np);
                     SavedPassword = newpwd;
                     this.DataContext = null;

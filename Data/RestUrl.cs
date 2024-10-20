@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Data
 {
@@ -221,7 +222,7 @@ namespace PoEWizard.Data
                 if (!url.Contains(DAT)) return url;
                 string[] lines = Regex.Split(url, @"" + DAT);
                 if (lines.Length == 1) return url;
-                if (data.Length < lines.Length - 1) throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
+                if (data.Length < lines.Length - 1) throw new SwitchCommandError($"Invalid url {PrintEnum(cmd)}!");
                 string cmd_url = lines[0];
                 int idx = 1;
                 foreach(string val in data)
@@ -233,7 +234,7 @@ namespace PoEWizard.Data
             }
             else
             {
-                throw new SwitchCommandError($"Invalid url {Utils.PrintEnum(cmd)}!");
+                throw new SwitchCommandError($"Invalid url {PrintEnum(cmd)}!");
             }
         }
 
@@ -259,7 +260,7 @@ namespace PoEWizard.Data
                         return dict;
 
                     default:
-                        throw new SwitchCommandError($"Invalid command {Utils.PrintEnum(cmd)}!");
+                        throw new SwitchCommandError($"Invalid command {PrintEnum(cmd)}!");
                 }
             }
             else

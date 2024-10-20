@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Data
 {
@@ -27,7 +28,7 @@ namespace PoEWizard.Data
         {
             try
             {
-                StringBuilder txt = new StringBuilder("Command ").Append(Utils.PrintEnum(this.RestUrl)).Append(", Duration: ").Append(this.Duration);
+                StringBuilder txt = new StringBuilder("Command ").Append(PrintEnum(this.RestUrl)).Append(", Duration: ").Append(this.Duration);
                 return txt.ToString();
             }
             catch { }

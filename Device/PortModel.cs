@@ -1,8 +1,8 @@
-﻿using PoEWizard.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Device
 {
@@ -50,7 +50,7 @@ namespace PoEWizard.Device
         {
             EndPointDevice = new EndPointDeviceModel();
             EndPointDevicesList = new List<EndPointDeviceModel>();
-            Name = Utils.GetDictValue(dict, CHAS_SLOT_PORT);
+            Name = GetDictValue(dict, CHAS_SLOT_PORT);
             Number = GetPortId(Name);
             UpdatePortStatus(dict);
             Power = 0;
@@ -71,11 +71,11 @@ namespace PoEWizard.Device
 
         public void LoadPoEData(Dictionary<string, string> dict)
         {
-            MaxPower = ParseNumber(Utils.GetDictValue(dict, MAXIMUM)) / 1000;
-            Power = ParseNumber(Utils.GetDictValue(dict, USED)) / 1000;
-            string onOff = Utils.GetDictValue(dict, ON_OFF);
+            MaxPower = ParseNumber(GetDictValue(dict, MAXIMUM)) / 1000;
+            Power = ParseNumber(GetDictValue(dict, USED)) / 1000;
+            string onOff = GetDictValue(dict, ON_OFF);
             IsPoeON = onOff == "ON";
-            switch (Utils.GetDictValue(dict, STATUS))
+            switch (GetDictValue(dict, STATUS))
             {
                 case POWERED_ON:
                     Poe = PoeStatus.On;
@@ -102,8 +102,8 @@ namespace PoEWizard.Device
                     Poe = PoeStatus.Deny;
                     break;
             }
-            PriorityLevel = Enum.TryParse(Utils.GetDictValue(dict, PRIORITY), true, out PriorityLevelType res) ? res : PriorityLevelType.Low;
-            string powerClass = Utils.ExtractNumber(Utils.GetDictValue(dict, CLASS));
+            PriorityLevel = Enum.TryParse(GetDictValue(dict, PRIORITY), true, out PriorityLevelType res) ? res : PriorityLevelType.Low;
+            string powerClass = ExtractNumber(GetDictValue(dict, CLASS));
             if (Poe != PoeStatus.NoPoe && !string.IsNullOrEmpty(powerClass))
             {
                 Class = $"{powerClass}";
@@ -117,10 +117,10 @@ namespace PoEWizard.Device
 
         public void LoadPoEConfig(Dictionary<string, string> dict)
         {
-            Is4Pair = Utils.GetDictValue(dict, POWER_4PAIR) == "enabled";
-            IsPowerOverHdmi = Utils.GetDictValue(dict, POWER_OVER_HDMI) == "enabled";
-            IsCapacitorDetection = Utils.GetDictValue(dict, POWER_CAPACITOR_DETECTION) == "enabled";
-            Protocol8023bt = Utils.ConvertToConfigType(dict, POWER_823BT);
+            Is4Pair = GetDictValue(dict, POWER_4PAIR) == "enabled";
+            IsPowerOverHdmi = GetDictValue(dict, POWER_OVER_HDMI) == "enabled";
+            IsCapacitorDetection = GetDictValue(dict, POWER_CAPACITOR_DETECTION) == "enabled";
+            Protocol8023bt = ConvertToConfigType(dict, POWER_823BT);
         }
 
         public void LoadLldpRemoteTable(List<Dictionary<string, string>> dictList)
@@ -212,10 +212,10 @@ namespace PoEWizard.Device
 
         public void UpdatePortStatus(Dictionary<string, string> dict)
         {
-            IsEnabled = (Utils.GetDictValue(dict, ADMIN_STATUS)) == "enable";
-            string sValStatus = Utils.FirstChToUpper(Utils.GetDictValue(dict, LINK_STATUS));
+            IsEnabled = (GetDictValue(dict, ADMIN_STATUS)) == "enable";
+            string sValStatus = FirstChToUpper(GetDictValue(dict, LINK_STATUS));
             if (!string.IsNullOrEmpty(sValStatus) && Enum.TryParse(sValStatus, out PortStatus portStatus)) Status = portStatus; else Status = PortStatus.Unknown;
-            Alias = Utils.GetDictValue(dict, ALIAS).Replace("\"", string.Empty);
+            Alias = GetDictValue(dict, ALIAS).Replace("\"", string.Empty);
         }
 
         public void UpdateMacList(List<Dictionary<string, string>> dictList, int maxNbMacPerPort)
@@ -237,28 +237,28 @@ namespace PoEWizard.Device
 
         public void AddMacToList(Dictionary<string, string> dict)
         {
-            string mac = Utils.GetDictValue(dict, PORT_MAC_LIST);
-            if (Utils.IsValidMacAddress(mac) && MacList.Contains(mac)) return;
+            string mac = GetDictValue(dict, PORT_MAC_LIST);
+            if (IsValidMacAddress(mac) && MacList.Contains(mac)) return;
             MacList.Add(mac);
             IsUplink = MacList.Count > MIN_NB_MAC_UPLINK;
         }
 
         public void LoadDetailInfo(Dictionary<string, string> dict)
         {
-            Violation = GetDictValue(dict, PORT_VIOLATION);
-            Type = GetDictValue(dict, PORT_TYPE);
-            InterfaceType = GetDictValue(dict, PORT_INTERFACE_TYPE);
-            Bandwidth = GetDictValue(dict, PORT_BANDWIDTH);
-            Duplex = GetDictValue(dict, PORT_DUPLEX);
-            AutoNegotiation = GetDictValue(dict, PORT_AUTO_NEGOTIATION);
-            Transceiver = GetDictValue(dict, PORT_TRANSCEIVER);
-            EPP = GetDictValue(dict, PORT_EPP);
-            LinkQuality = GetDictValue(dict, PORT_LINK_QUALITY);
+            Violation = ParseDictValue(dict, PORT_VIOLATION);
+            Type = ParseDictValue(dict, PORT_TYPE);
+            InterfaceType = ParseDictValue(dict, PORT_INTERFACE_TYPE);
+            Bandwidth = ParseDictValue(dict, PORT_BANDWIDTH);
+            Duplex = ParseDictValue(dict, PORT_DUPLEX);
+            AutoNegotiation = ParseDictValue(dict, PORT_AUTO_NEGOTIATION);
+            Transceiver = ParseDictValue(dict, PORT_TRANSCEIVER);
+            EPP = ParseDictValue(dict, PORT_EPP);
+            LinkQuality = ParseDictValue(dict, PORT_LINK_QUALITY);
         }
 
-        private string GetDictValue(Dictionary<string, string> dict, string param)
+        private string ParseDictValue(Dictionary<string, string> dict, string param)
         {
-            string sVal = Utils.GetDictValue(dict, param);
+            string sVal = GetDictValue(dict, param);
             switch (param)
             {
                 case PORT_BANDWIDTH:
@@ -310,7 +310,7 @@ namespace PoEWizard.Device
 
         private static string GetNetworkSpeed(string sVal)
         {
-            int speed = Utils.StringToInt(sVal);
+            int speed = StringToInt(sVal);
             if (speed >= 1000) return $"{speed / 1000} Gbps";
             else if (speed > 1 && speed < 1000) return $"{speed} Mbps";
             else return string.Empty;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Data
 {
@@ -28,7 +29,7 @@ namespace PoEWizard.Data
                 if (!string.IsNullOrEmpty(match) && !key.Contains(match)) continue;
                 if (key.Contains($"_"))
                 {
-                    string id = Utils.ExtractNumber(key);
+                    string id = ExtractNumber(key);
                     if (lastIdx != $"_{id}")
                     {
                         dictList.Add(new Dictionary<string, string>());
@@ -181,7 +182,7 @@ namespace PoEWizard.Data
                     if (line.Trim().Length == 0) continue;
                     if (line.Contains("Local Port "))
                     {
-                        currPort = Utils.ExtractSubString(line.Trim(), "Local Port ", ":");
+                        currPort = ExtractSubString(line.Trim(), "Local Port ", ":");
                         dictList[currPort] = new List<Dictionary<string, string>>();
                     }
                     else if (line.Contains("Chassis ") && !line.Contains("Subtype") && line.Contains(","))
@@ -193,8 +194,8 @@ namespace PoEWizard.Data
                             dictList[currPort][dictList[currPort].Count - 1] = new Dictionary<string, string>
                             {
                                 ["Local Port"] = currPort,
-                                [CHASSIS_MAC_ADDRESS] = Utils.ExtractSubString(split[0].Trim(), "Chassis "),
-                                [REMOTE_PORT] = Utils.ExtractSubString(split[1].Trim(), "Port ")
+                                [CHASSIS_MAC_ADDRESS] = ExtractSubString(split[0].Trim(), "Chassis "),
+                                [REMOTE_PORT] = ExtractSubString(split[1].Trim(), "Port ")
                             };
                         }
                     }
@@ -231,9 +232,9 @@ namespace PoEWizard.Data
                     foreach (KeyValuePair<string, string> keyVal in dict)
                     {
                         if (keyVal.Key != DEBUG_APP_ID && keyVal.Key != DEBUG_APP_NAME && !keyVal.Key.Contains("node_")) continue;
-                        string val = Utils.GetDictValue(dict, DEBUG_APP_ID);
+                        string val = GetDictValue(dict, DEBUG_APP_ID);
                         if (string.IsNullOrEmpty(appId) && !string.IsNullOrEmpty(val)) appId = val;
-                        val = Utils.GetDictValue(dict, DEBUG_APP_NAME);
+                        val = GetDictValue(dict, DEBUG_APP_NAME);
                         if (string.IsNullOrEmpty(appName) && !string.IsNullOrEmpty(val)) appName = val;
                         if (string.IsNullOrEmpty(appIndex) && keyVal.Key.Contains("node_")) appIndex = keyVal.Value;
                         if (!string.IsNullOrEmpty(appId) && !string.IsNullOrEmpty(appName) && !string.IsNullOrEmpty(appIndex))
@@ -306,7 +307,7 @@ namespace PoEWizard.Data
                         if (dict.ContainsKey(DEBUG_CLI_SUB_APP_ID)) dbgDict[DEBUG_SUB_APP_ID] = dict[DEBUG_CLI_SUB_APP_ID];
                         if (dict.ContainsKey(DEBUG_CLI_SUB_APP_LEVEL))
                         {
-                            int iLogLevel = (int)Utils.StringToSwitchDebugLevel(Utils.ToPascalCase(dict[DEBUG_CLI_SUB_APP_LEVEL]));
+                            int iLogLevel = (int)StringToSwitchDebugLevel(ToPascalCase(dict[DEBUG_CLI_SUB_APP_LEVEL]));
                             dbgDict[DEBUG_SUB_APP_LEVEL] = iLogLevel.ToString();
                         }
                         table.Add(dbgDict);
@@ -424,7 +425,7 @@ namespace PoEWizard.Data
                     split = subStr.Trim().Split('/');
                     if (split.Length >= 2)
                     {
-                        Dictionary<string, string> dict = new Dictionary<string, string> { [P_CHASSIS] = Utils.StringToInt(split[0]).ToString() };
+                        Dictionary<string, string> dict = new Dictionary<string, string> { [P_CHASSIS] = StringToInt(split[0]).ToString() };
                         split = split[1].Split(' ');
                         if (split.Length >= 2) dict[FLASH] = split[1];
                         table.Add(dict);
@@ -449,7 +450,7 @@ namespace PoEWizard.Data
                     string sLine = line.Trim();
                     if (sLine.Length == 0) continue;
                     if (!string.IsNullOrEmpty(filter) && !sLine.Contains(filter)) continue;
-                    string subStr = Utils.RemoveSpaces(sLine);
+                    string subStr = RemoveSpaces(sLine);
                     split = subStr.Trim().Split(' ');
                     dict = new Dictionary<string, string>();
                     foreach (string sVal in split)
