@@ -8,7 +8,7 @@
     <sys:String x:Key="i18n_cfg">Konfiguration</sys:String>
     <sys:String x:Key="i18n_msw">Switch...</sys:String>
     <sys:String x:Key="i18n_disc">Trennen</sys:String>
-    <sys:String x:Key="i18n_exit">Schließen</sys:String>
+    <sys:String x:Key="i18n_exit">Abschließen</sys:String>
     <sys:String x:Key="i18n_log">Log</sys:String>
     <sys:String x:Key="i18n_appLog">Log anzeigen</sys:String>
     <sys:String x:Key="i18n_activ">Aktivitäten anzeigen</sys:String>
@@ -28,25 +28,25 @@
     <sys:String x:Key="i18n_options">Auswahl</sys:String>
 
     <!--Buttons-->
-    <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>
-    <sys:String x:Key="i18n_poeWiz">Run PoE Wizard</sys:String>
-    <sys:String x:Key="i18n_rfrsh">Refresh</sys:String>
-    <sys:String x:Key="i18n_save">Write Memory</sys:String>
-    <sys:String x:Key="i18n_reboot">Reboot</sys:String>
-    <sys:String x:Key="i18n_trfAna">Traffic Analysis</sys:String>
-    <sys:String x:Key="i18n_logcol">Collect Logs</sys:String>
-    <sys:String x:Key="i18n_cnxBtn">Connect</sys:String>
-    <sys:String x:Key="i18n_canBtn">Cancel</sys:String>
+    <sys:String x:Key="i18n_ptRst">Port Zurücksetzen</sys:String>
+    <sys:String x:Key="i18n_poeWiz">Starten PoE-Assistenten</sys:String>
+    <sys:String x:Key="i18n_rfrsh">Aktualisieren</sys:String>
+    <sys:String x:Key="i18n_save">Speicher Sparen</sys:String>
+    <sys:String x:Key="i18n_reboot">Neustart</sys:String>
+    <sys:String x:Key="i18n_trfAna">Netzwerkverkehrs</sys:String>
+    <sys:String x:Key="i18n_logcol">Logs Abrufen</sys:String>
+    <sys:String x:Key="i18n_cnxBtn">Anschließen</sys:String>
+    <sys:String x:Key="i18n_canBtn">Aufheben</sys:String>
     <sys:String x:Key="i18n_okBtn">OK</sys:String>
-    <sys:String x:Key="i18n_yBtn">Yes</sys:String>
-    <sys:String x:Key="i18n_nBtn">No</sys:String>
-    <sys:String x:Key="i18n_subBtn">Submit</sys:String>
-    <sys:String x:Key="i18n_nextBtn">Next</sys:String>
-    <sys:String x:Key="i18n_prevBtn">Previous</sys:String>
-    <sys:String x:Key="i18n_closeBtn">Close</sys:String>
-    <sys:String x:Key="i18n_creBtn">Create</sys:String>
-    <sys:String x:Key="i18n_clrBtn">Clear Log</sys:String>
-    <sys:String x:Key="i18n_svBtn">Save</sys:String>
+    <sys:String x:Key="i18n_yBtn">Ja</sys:String>
+    <sys:String x:Key="i18n_nBtn">Nein</sys:String>
+    <sys:String x:Key="i18n_subBtn">Bestätigen</sys:String>
+    <sys:String x:Key="i18n_nextBtn">Nächste</sys:String>
+    <sys:String x:Key="i18n_prevBtn">Vorherige</sys:String>
+    <sys:String x:Key="i18n_closeBtn">Abschließen</sys:String>
+    <sys:String x:Key="i18n_creBtn">Erschaffen</sys:String>
+    <sys:String x:Key="i18n_clrBtn">Log Löschen</sys:String>
+    <sys:String x:Key="i18n_svBtn">Speichern</sys:String>
 
     <!--System Information-->
     <sys:String x:Key="i18n_swName">Name:</sys:String>

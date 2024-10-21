@@ -28,25 +28,25 @@
     <sys:String x:Key="i18n_options">Opciones</sys:String>
 
     <!--Buttons-->
-    <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>
+    <sys:String x:Key="i18n_ptRst">Reiniciar Puerta</sys:String>
     <sys:String x:Key="i18n_poeWiz">Run PoE Wizard</sys:String>
-    <sys:String x:Key="i18n_rfrsh">Refresh</sys:String>
-    <sys:String x:Key="i18n_save">Write Memory</sys:String>
-    <sys:String x:Key="i18n_reboot">Reboot</sys:String>
-    <sys:String x:Key="i18n_trfAna">Traffic Analysis</sys:String>
-    <sys:String x:Key="i18n_logcol">Collect Logs</sys:String>
-    <sys:String x:Key="i18n_cnxBtn">Connect</sys:String>
-    <sys:String x:Key="i18n_canBtn">Cancel</sys:String>
+    <sys:String x:Key="i18n_rfrsh">Actualizar</sys:String>
+    <sys:String x:Key="i18n_save">Salvar Memoria</sys:String>
+    <sys:String x:Key="i18n_reboot">Reiniciar</sys:String>
+    <sys:String x:Key="i18n_trfAna">Tráfico de Red</sys:String>
+    <sys:String x:Key="i18n_logcol">Obtener Logs</sys:String>
+    <sys:String x:Key="i18n_cnxBtn">Conectar</sys:String>
+    <sys:String x:Key="i18n_canBtn">Cancelar</sys:String>
     <sys:String x:Key="i18n_okBtn">OK</sys:String>
     <sys:String x:Key="i18n_yBtn">Yes</sys:String>
     <sys:String x:Key="i18n_nBtn">No</sys:String>
-    <sys:String x:Key="i18n_subBtn">Submit</sys:String>
-    <sys:String x:Key="i18n_nextBtn">Next</sys:String>
-    <sys:String x:Key="i18n_prevBtn">Previous</sys:String>
-    <sys:String x:Key="i18n_closeBtn">Close</sys:String>
-    <sys:String x:Key="i18n_creBtn">Create</sys:String>
-    <sys:String x:Key="i18n_clrBtn">Clear Log</sys:String>
-    <sys:String x:Key="i18n_svBtn">Save</sys:String>
+    <sys:String x:Key="i18n_subBtn">Validar</sys:String>
+    <sys:String x:Key="i18n_nextBtn">Próximo</sys:String>
+    <sys:String x:Key="i18n_prevBtn">Anterior</sys:String>
+    <sys:String x:Key="i18n_closeBtn">Cerrar</sys:String>
+    <sys:String x:Key="i18n_creBtn">Crear</sys:String>
+    <sys:String x:Key="i18n_clrBtn">Borrar Log</sys:String>
+    <sys:String x:Key="i18n_svBtn">Salvar</sys:String>
 
     <!--System Information-->
     <sys:String x:Key="i18n_swName">Name:</sys:String>
