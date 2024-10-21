@@ -77,23 +77,23 @@
     <sys:String x:Key="i18n_slPw">Potencia</sys:String>
     <sys:String x:Key="i18n_fpoe">PoE Rápido</sys:String>
     <sys:String x:Key="i18n_ppoe">PoE Perpetuo</sys:String>
-    <sys:String x:Key="i18n_poeSt">PoE Status</sys:String>
+    <sys:String x:Key="i18n_poeSt">Estado del PoE</sys:String>
     <sys:String x:Key="i18n_vcRole">Función del VC</sys:String>
 
     <!--Port Table-->
-    <sys:String x:Key="i18n_port">Port</sys:String>
+    <sys:String x:Key="i18n_port">Puerta</sys:String>
     <sys:String x:Key="i18n_alias">Alias</sys:String>
-    <sys:String x:Key="i18n_ptSt">Status</sys:String>
-    <sys:String x:Key="i18n_prio">Priority</sys:String>
-    <sys:String x:Key="i18n_ptPwr">Power (Watts)</sys:String>
-    <sys:String x:Key="i18n_maxPwr">Max Power (Watts)</sys:String>
-    <sys:String x:Key="i18n_class">PoE Class</sys:String>
-    <sys:String x:Key="i18n_mode">PoE Mode</sys:String>
+    <sys:String x:Key="i18n_ptSt">Estado</sys:String>
+    <sys:String x:Key="i18n_prio">Prioridad</sys:String>
+    <sys:String x:Key="i18n_ptPwr">Potencia (Watts)</sys:String>
+    <sys:String x:Key="i18n_maxPwr">Potencia Max (Watts)</sys:String>
+    <sys:String x:Key="i18n_class">Clase PoE</sys:String>
+    <sys:String x:Key="i18n_mode">Modo PoE</sys:String>
     <sys:String x:Key="i18n_bt">802.3BT</sys:String>
-    <sys:String x:Key="i18n_dev">Device</sys:String>
-    <sys:String x:Key="i18n_devModel">Device Model</sys:String>
-    <sys:String x:Key="i18n_devType">Device Type</sys:String>
-    <sys:String x:Key="i18n_devName">Device Name</sys:String>
+    <sys:String x:Key="i18n_dev">Dispositivo</sys:String>
+    <sys:String x:Key="i18n_devModel">Modelo del Dispositivo</sys:String>
+    <sys:String x:Key="i18n_devType">Tipo del Dispositivo</sys:String>
+    <sys:String x:Key="i18n_devName">Nombre del Dispositivo</sys:String>
 
     <!--Status Bar messages-->
     <sys:String x:Key="i18n_idle">Idle</sys:String>
@@ -195,7 +195,7 @@ Please confirm your action.
     <sys:String x:Key="i18n_pwDur">Total duration:</sys:String>
     <sys:String x:Key="i18n_pwEnd">PoE Wizard completed on port</sys:String>
     <sys:String x:Key="i18n_pwDev">with device type</sys:String>
-    <sys:String x:Key="i18n_pwPst">Port Status:</sys:String>
+    <sys:String x:Key="i18n_pwPst">Puerta Status:</sys:String>
     <sys:String x:Key="i18n_power">Power:</sys:String>
     <sys:String x:Key="i18n_pwDevMac">Device MAC:</sys:String>
     <sys:String x:Key="i18n_pwExec">PoE Wizard Execution</sys:String>
@@ -363,7 +363,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_noSftp">Cannot connect secure FTP on switch</sys:String>
     <sys:String x:Key="i18n_lsnap">Reading configuration snapshot...</sys:String>
     <sys:String x:Key="i18n_tsnap">Configuración Shapshot</sys:String>
-    <sys:String x:Key="i18n_sport">Search Port</sys:String>
+    <sys:String x:Key="i18n_sport">Search Puerta</sys:String>
     <sys:String x:Key="i18n_fmac">Could not find MAC Address</sys:String>
     <sys:String x:Key="i18n_fdev">Could not find device or vendor</sys:String>
     <sys:String x:Key="i18n_onsw">on switch</sys:String>

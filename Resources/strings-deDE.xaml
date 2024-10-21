@@ -76,24 +76,24 @@
     <sys:String x:Key="i18n_btSupp">Unterstützt 802.3BT</sys:String>
     <sys:String x:Key="i18n_slPw">Verbringen</sys:String>
     <sys:String x:Key="i18n_fpoe">Schnelles PoE</sys:String>
-    <sys:String x:Key="i18n_ppoe">Perpetual PoE</sys:String>
-    <sys:String x:Key="i18n_poeSt">Ständig PoE</sys:String>
+    <sys:String x:Key="i18n_ppoe">Ständig PoE</sys:String>
+    <sys:String x:Key="i18n_poeSt">PoE-Status</sys:String>
     <sys:String x:Key="i18n_vcRole">VC-Rolle</sys:String>
 
     <!--Port Table-->
     <sys:String x:Key="i18n_port">Port</sys:String>
     <sys:String x:Key="i18n_alias">Alias</sys:String>
     <sys:String x:Key="i18n_ptSt">Status</sys:String>
-    <sys:String x:Key="i18n_prio">Priority</sys:String>
-    <sys:String x:Key="i18n_ptPwr">Power (Watts)</sys:String>
-    <sys:String x:Key="i18n_maxPwr">Max Power (Watts)</sys:String>
-    <sys:String x:Key="i18n_class">PoE Class</sys:String>
-    <sys:String x:Key="i18n_mode">PoE Mode</sys:String>
+    <sys:String x:Key="i18n_prio">Priorität</sys:String>
+    <sys:String x:Key="i18n_ptPwr">Leistung (Watts)</sys:String>
+    <sys:String x:Key="i18n_maxPwr">Max Leistung (Watts)</sys:String>
+    <sys:String x:Key="i18n_class">Klasse PoE</sys:String>
+    <sys:String x:Key="i18n_mode">PoE-Modus</sys:String>
     <sys:String x:Key="i18n_bt">802.3BT</sys:String>
-    <sys:String x:Key="i18n_dev">Device</sys:String>
-    <sys:String x:Key="i18n_devModel">Device Model</sys:String>
-    <sys:String x:Key="i18n_devType">Device Type</sys:String>
-    <sys:String x:Key="i18n_devName">Device Name</sys:String>
+    <sys:String x:Key="i18n_dev">Gerät</sys:String>
+    <sys:String x:Key="i18n_devModel">Gerätemodell</sys:String>
+    <sys:String x:Key="i18n_devType">Gerätetyp</sys:String>
+    <sys:String x:Key="i18n_devName">Gerätename</sys:String>
 
     <!--Status Bar messages-->
     <sys:String x:Key="i18n_idle">Idle</sys:String>
