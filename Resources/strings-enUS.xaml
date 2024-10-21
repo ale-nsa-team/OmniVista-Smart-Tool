@@ -312,7 +312,6 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_tclogs">Collect Logs</sys:String>
     <sys:String x:Key="i18n_pclogs1">Do you want to power cycle PoE on all ports of switch</sys:String>
     <sys:String x:Key="i18n_pclogs2">to collect the logs?</sys:String>
-    <sys:String x:Key="i18n_rclogs">Collecting logs on switch</sys:String>
     <sys:String x:Key="i18n_cclogs">Cleaning up current log...</sys:String>
     <sys:String x:Key="i18n_ttar">Downloading tar file</sys:String>
     <sys:String x:Key="i18n_tfail">Failed to downlad file</sys:String>

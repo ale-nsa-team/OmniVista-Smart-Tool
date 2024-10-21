@@ -313,7 +313,6 @@ A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS 
     <sys:String x:Key="i18n_tclogs">Coletar Logs</sys:String>
     <sys:String x:Key="i18n_pclogs1">Deseja reiniciar o PoE em todas as portas da switch</sys:String>
     <sys:String x:Key="i18n_pclogs2">para coletar os logs?</sys:String>
-    <sys:String x:Key="i18n_rclogs">Coletando logs da switch</sys:String>
     <sys:String x:Key="i18n_cclogs">Limpando os logs atuais...</sys:String>
     <sys:String x:Key="i18n_ttar">Carregando arquivo tar</sys:String>
     <sys:String x:Key="i18n_tfail">Falha na carga do arquivo</sys:String>

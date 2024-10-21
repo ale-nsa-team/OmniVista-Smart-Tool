@@ -557,7 +557,7 @@ namespace PoEWizard
                 Activity.Log(device, $"{txt}.");
                 DisableButtons();
                 string sftpError = await RunCollectLogs(restartPoE == MsgBoxResult.Yes, null);
-                if (!string.IsNullOrEmpty(sftpError)) ShowMessageBox($"{Translate("i18n_rclogs")} {device.Name}", $"{Translate("i18n_noSftp")} {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
+                if (!string.IsNullOrEmpty(sftpError)) ShowMessageBox($"{Translate("i18n_clog")} {device.Name}", $"{Translate("i18n_noSftp")} {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
             }
             catch (Exception ex)
             {
@@ -1264,7 +1264,7 @@ namespace PoEWizard
             const double PERIOD_SFTP_RECONNECT_SEC = 30;
             try
             {
-                StartProgressBar($"{Translate("i18n_rclogs")} {device.Name}{WAITING}");
+                StartProgressBar($"{Translate("i18n_clog")} {device.Name}{WAITING}");
                 DateTime initialTime = DateTime.Now;
                 debugSwitchLog = new SwitchDebugModel(reportResult, SwitchDebugLogLevel.Debug3);
                 await Task.Run(() => restApiService.RunGetSwitchLog(debugSwitchLog, restartPoE, maxCollectLogsDur, port?.Name));
