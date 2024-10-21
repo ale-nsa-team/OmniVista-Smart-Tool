@@ -109,11 +109,11 @@
 
     <!--Power Supply dialog-->
     <sys:String x:Key="i18n_psCh">Chassis/PS</sys:String>
-    <sys:String x:Key="i18n_psMod">MOdel</sys:String>
+    <sys:String x:Key="i18n_psMod">Model</sys:String>
     <sys:String x:Key="i18n_psType">Type</sys:String>
     <sys:String x:Key="i18n_psLoc">Location</sys:String>
     <sys:String x:Key="i18n_psDesc">Description</sys:String>
-    <sys:String x:Key="i18n_psProv">Power Privision</sys:String>
+    <sys:String x:Key="i18n_psProv">Power Provision</sys:String>
     <sys:String x:Key="i18n_psPN">Part Number</sys:String>
     <sys:String x:Key="i18n_psRev">Hardware Revision</sys:String>
     <sys:String x:Key="i18n_psSN">Serial Number</sys:String>

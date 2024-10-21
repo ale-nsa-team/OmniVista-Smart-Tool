@@ -96,27 +96,27 @@
     <sys:String x:Key="i18n_devName">Nom de l'équipement</sys:String>
 
     <!--Status Bar messages-->
-    <sys:String x:Key="i18n_idle">Idle</sys:String>
-    <sys:String x:Key="i18n_connTo">Connected to:</sys:String>
-    <sys:String x:Key="i18n_upTime">Up time:</sys:String>
+    <sys:String x:Key="i18n_idle">Libre</sys:String>
+    <sys:String x:Key="i18n_connTo">Connecté à:</sys:String>
+    <sys:String x:Key="i18n_upTime">Temps depuis Demarrage:</sys:String>
 
     <!--Login Dialog-->
-    <sys:String x:Key="i18n_cred">Enter Switch Credentials</sys:String>
-    <sys:String x:Key="i18n_ip">IP Address</sys:String>
-    <sys:String x:Key="i18n_user">Username</sys:String>
-    <sys:String x:Key="i18n_pwd">Password</sys:String>
-    <sys:String x:Key="i18n_lifail">Log in failed on switch</sys:String>
+    <sys:String x:Key="i18n_cred">Saisissez l'info de connexion sur le Switch</sys:String>
+    <sys:String x:Key="i18n_ip">Adresse IP</sys:String>
+    <sys:String x:Key="i18n_user">Nom d'Usager</sys:String>
+    <sys:String x:Key="i18n_pwd">Mot de passe</sys:String>
+    <sys:String x:Key="i18n_lifail">Échec de la connexion sur la switch</sys:String>
 
     <!--Power Supply dialog-->
-    <sys:String x:Key="i18n_psCh">Chassis/PS</sys:String>
-    <sys:String x:Key="i18n_psMod">MOdel</sys:String>
+    <sys:String x:Key="i18n_psCh">Alvéole/PS</sys:String>
+    <sys:String x:Key="i18n_psMod">Modèle</sys:String>
     <sys:String x:Key="i18n_psType">Type</sys:String>
-    <sys:String x:Key="i18n_psLoc">Location</sys:String>
+    <sys:String x:Key="i18n_psLoc">Site</sys:String>
     <sys:String x:Key="i18n_psDesc">Description</sys:String>
-    <sys:String x:Key="i18n_psProv">Power Privision</sys:String>
-    <sys:String x:Key="i18n_psPN">Part Number</sys:String>
-    <sys:String x:Key="i18n_psRev">Hardware Revision</sys:String>
-    <sys:String x:Key="i18n_psSN">Serial Number</sys:String>
+    <sys:String x:Key="i18n_psProv">Puissance</sys:String>
+    <sys:String x:Key="i18n_psPN">Numéro de Pièce</sys:String>
+    <sys:String x:Key="i18n_psRev">Révision du Matériel</sys:String>
+    <sys:String x:Key="i18n_psSN">Numéro de Série</sys:String>
 
     <!--Config Wizard Dialog-->
     <sys:String x:Key="i18n_sysPar">System Parameters</sys:String>
