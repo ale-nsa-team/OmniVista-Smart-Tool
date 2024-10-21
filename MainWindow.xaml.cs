@@ -1067,6 +1067,12 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.Connect(reportResult));
+                if (!device.IsConnected)
+                {
+                    List<string> ips = config.Get("switches").Split(',').ToList();
+                    ips.RemoveAll(ip => ip == device.IpAddress);
+                    config.Set("switches", string.Join(",", ips));
+                }
                 UpdateConnectedState();
                 await CheckSwitchScanResult($"{Translate("i18n_cnsw")} {device.Name}...", startTime);
                 if (device.RunningDir == CERTIFIED_DIR)
