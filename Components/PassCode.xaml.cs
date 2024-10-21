@@ -1,6 +1,5 @@
 ﻿using PoEWizard.Data;
 using System;
-using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using static PoEWizard.Data.Constants;
@@ -15,8 +14,9 @@ namespace PoEWizard.Components
     {
         public string SavedPassword;
         public string Password { get; set; }
+        private Config cfg;
         
-        public PassCode(Window owner)
+        public PassCode(Window owner, Config config)
         {
             InitializeComponent();
             if (MainWindow.Theme == ThemeType.Dark)
@@ -27,10 +27,15 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
+
             DataContext = this;
             this.Owner = owner;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            SavedPassword = GetPassword();
+            cfg = config;
+            string pwd = cfg.Get("hash");
+            SavedPassword = pwd != null ? DecryptString(pwd) : Constants.DEFAULT_PASS_CODE;
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
@@ -62,26 +67,14 @@ namespace PoEWizard.Components
             if (cp.ShowDialog() == true && cp.NewPwd != SavedPassword) SavePassword(cp.NewPwd);
         }
 
-        private string GetPassword()
-        {
-            string filepath = GetFilePath();
-            if (File.Exists(filepath))
-            {
-                string encPwd = File.ReadAllText(filepath);
-                if (!string.IsNullOrEmpty(encPwd)) return DecryptString(encPwd);
-            }
-            return DEFAULT_PASS_CODE;
-        }
-
         private void SavePassword(string newpwd)
         {
             try
             {
                 if (newpwd != null)
-                {
-                    string filepath = GetFilePath();
+                {                 
                     string np = EncryptString(newpwd);
-                    File.WriteAllText(filepath, np);
+                    cfg.Set("hash", np);
                     SavedPassword = newpwd;
                     this.DataContext = null;
                     Password = newpwd;
@@ -92,8 +85,8 @@ namespace PoEWizard.Components
             {
                 CustomMsgBox cm = new CustomMsgBox(this.Owner)
                 {
-                    Title = "Change Password",
-                    Message = $"Could not change password: {ex.Message}"
+                    Title = (string)MainWindow.Strings["i18n_chcode"],
+                    Message = $"{(string)MainWindow.Strings["i18n_codeErr"]}: {ex.Message}"
                 };
                 cm.ShowDialog();
             }

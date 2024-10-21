@@ -1,0 +1,476 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <!--Menus-->
+    <sys:String x:Key="i18n_switch">Switch</sys:String>
+    <sys:String x:Key="i18n_cnx">Connection</sys:String>
+    <sys:String x:Key="i18n_view">View</sys:String>
+    <sys:String x:Key="i18n_cfg">Configuration</sys:String>
+    <sys:String x:Key="i18n_msw">Switch...</sys:String>
+    <sys:String x:Key="i18n_disc">Disconnect</sys:String>
+    <sys:String x:Key="i18n_exit">Exit</sys:String>
+    <sys:String x:Key="i18n_log">Log</sys:String>
+    <sys:String x:Key="i18n_appLog">View App Log</sys:String>
+    <sys:String x:Key="i18n_activ">View Activities</sys:String>
+    <sys:String x:Key="i18n_level">Log Level</sys:String>
+    <sys:String x:Key="i18n_vcboot">vcboot.cfg</sys:String>
+    <sys:String x:Key="i18n_sshot">Snapshot</sys:String>
+    <sys:String x:Key="i18n_ps">Power Supplies</sys:String>
+    <sys:String x:Key="i18n_src">Search MAC</sys:String>
+    <sys:String x:Key="i18n_theme">Theme</sys:String>
+    <sys:String x:Key="i18n_dark">Dark</sys:String>
+    <sys:String x:Key="i18n_light">Light</sys:String>
+    <sys:String x:Key="i18n_help">Help</sys:String>
+    <sys:String x:Key="i18n_about">About</sys:String>
+    <sys:String x:Key="i18n_frst">Factory Reset...</sys:String>
+    <sys:String x:Key="i18n_cfgWiz">Basic Configuration Wizard...</sys:String>
+    <sys:String x:Key="i18n_lang">Language</sys:String>
+    <sys:String x:Key="i18n_options">Options</sys:String>
+
+    <!--Buttons-->
+    <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>
+    <sys:String x:Key="i18n_poeWiz">Run PoE Wizard</sys:String>
+    <sys:String x:Key="i18n_rfrsh">Refresh</sys:String>
+    <sys:String x:Key="i18n_save">Write Memory</sys:String>
+    <sys:String x:Key="i18n_reboot">Reboot</sys:String>
+    <sys:String x:Key="i18n_trfAna">Traffic Analysis</sys:String>
+    <sys:String x:Key="i18n_logcol">Collect Logs</sys:String>
+    <sys:String x:Key="i18n_cnxBtn">Connect</sys:String>
+    <sys:String x:Key="i18n_canBtn">Cancel</sys:String>
+    <sys:String x:Key="i18n_okBtn">OK</sys:String>
+    <sys:String x:Key="i18n_yBtn">Yes</sys:String>
+    <sys:String x:Key="i18n_nBtn">No</sys:String>
+    <sys:String x:Key="i18n_subBtn">Submit</sys:String>
+    <sys:String x:Key="i18n_nextBtn">Next</sys:String>
+    <sys:String x:Key="i18n_prevBtn">Previous</sys:String>
+    <sys:String x:Key="i18n_closeBtn">Close</sys:String>
+    <sys:String x:Key="i18n_creBtn">Create</sys:String>
+    <sys:String x:Key="i18n_clrBtn">Clear Log</sys:String>
+    <sys:String x:Key="i18n_svBtn">Save</sys:String>
+
+    <!--System Information-->
+    <sys:String x:Key="i18n_swName">Name:</sys:String>
+    <sys:String x:Key="i18n_ipAddr">IP Address:</sys:String>
+    <sys:String x:Key="i18n_release">Release:</sys:String>
+    <sys:String x:Key="i18n_runningDir">Running Directory:</sys:String>
+    <sys:String x:Key="i18n_sync">Synchronization:</sys:String>
+    <sys:String x:Key="i18n_loc">Location:</sys:String>
+    <sys:String x:Key="i18n_contact">Contact:</sys:String>
+    <sys:String x:Key="i18n_poeDbgLvl">PoE Debug Level:</sys:String>
+    <sys:String x:Key="i18n_cmmDbgLvl">CMM Debug Level:</sys:String>
+    <sys:String x:Key="i18n_swModel">Model:</sys:String>
+    <sys:String x:Key="i18n_sn">Serial Number:</sys:String>
+    <sys:String x:Key="i18n_mac">MAC Address:</sys:String>
+    <sys:String x:Key="i18n_temp">Temperature:</sys:String>
+    <sys:String x:Key="i18n_cpu">CPU Usage:</sys:String>
+    <sys:String x:Key="i18n_fpga">FPGA Version:</sys:String>
+    <sys:String x:Key="i18n_cpld">CPLD Version:</sys:String>
+    <sys:String x:Key="i18n_flash">Free Flash Memory:</sys:String>
+
+    <!--Slot Table-->
+    <sys:String x:Key="i18n_slot">Slot</sys:String>
+    <sys:String x:Key="i18n_nports">#Ports</sys:String>
+    <sys:String x:Key="i18n_npoe">#Poe Ports</sys:String>
+    <sys:String x:Key="i18n_buget">Budget (Watts)</sys:String>
+    <sys:String x:Key="i18n_cons">Consumption (Watts)</sys:String>
+    <sys:String x:Key="i18n_btSupp">802.3BT Support</sys:String>
+    <sys:String x:Key="i18n_slPw">Power</sys:String>
+    <sys:String x:Key="i18n_fpoe">Fast PoE</sys:String>
+    <sys:String x:Key="i18n_ppoe">Perpetual PoE</sys:String>
+    <sys:String x:Key="i18n_poeSt">PoE Status</sys:String>
+    <sys:String x:Key="i18n_vcRole">VC Master/Slave</sys:String>
+
+    <!--Port Table-->
+    <sys:String x:Key="i18n_port">Port</sys:String>
+    <sys:String x:Key="i18n_alias">Alias</sys:String>
+    <sys:String x:Key="i18n_ptSt">Status</sys:String>
+    <sys:String x:Key="i18n_prio">Priority</sys:String>
+    <sys:String x:Key="i18n_ptPwr">Power (Watts)</sys:String>
+    <sys:String x:Key="i18n_maxPwr">Max Power (Watts)</sys:String>
+    <sys:String x:Key="i18n_class">PoE Class</sys:String>
+    <sys:String x:Key="i18n_mode">PoE Mode</sys:String>
+    <sys:String x:Key="i18n_bt">802.3BT</sys:String>
+    <sys:String x:Key="i18n_dev">Device</sys:String>
+    <sys:String x:Key="i18n_devModel">Device Model</sys:String>
+    <sys:String x:Key="i18n_devType">Device Type</sys:String>
+    <sys:String x:Key="i18n_devName">Device Name</sys:String>
+
+    <!--Status Bar messages-->
+    <sys:String x:Key="i18n_idle">Idle</sys:String>
+    <sys:String x:Key="i18n_connTo">Connected to:</sys:String>
+    <sys:String x:Key="i18n_upTime">Up time:</sys:String>
+
+    <!--Login Dialog-->
+    <sys:String x:Key="i18n_cred">Enter Switch Credentials</sys:String>
+    <sys:String x:Key="i18n_ip">IP Address</sys:String>
+    <sys:String x:Key="i18n_user">Username</sys:String>
+    <sys:String x:Key="i18n_pwd">Password</sys:String>
+    <sys:String x:Key="i18n_lifail">Log in failed on switch</sys:String>
+
+    <!--Power Supply dialog-->
+    <sys:String x:Key="i18n_psCh">Chassis/PS</sys:String>
+    <sys:String x:Key="i18n_psMod">Model</sys:String>
+    <sys:String x:Key="i18n_psType">Type</sys:String>
+    <sys:String x:Key="i18n_psLoc">Location</sys:String>
+    <sys:String x:Key="i18n_psDesc">Description</sys:String>
+    <sys:String x:Key="i18n_psProv">Power Provision</sys:String>
+    <sys:String x:Key="i18n_psPN">Part Number</sys:String>
+    <sys:String x:Key="i18n_psRev">Hardware Revision</sys:String>
+    <sys:String x:Key="i18n_psSN">Serial Number</sys:String>
+
+    <!--Config Wizard Dialog-->
+    <sys:String x:Key="i18n_sysPar">System Parameters</sys:String>
+    <sys:String x:Key="i18n_netCfg">Network Configuration</sys:String>
+    <sys:String x:Key="i18n_mngtIp">Management IP Address</sys:String>
+    <sys:String x:Key="i18n_mask">Netmask</sys:String>
+    <sys:String x:Key="i18n_admPwd">Admin Password</sys:String>
+    <sys:String x:Key="i18n_sysName">System Name</sys:String>
+    <sys:String x:Key="i18n_sysCont">Contact</sys:String>
+    <sys:String x:Key="i18n_sysLoc">Location</sys:String>
+    <sys:String x:Key="i18n_gwy">Default Gateway</sys:String>
+    <sys:String x:Key="i18n_dns">DNS Servers</sys:String>
+    <sys:String x:Key="i18n_ntp">NTP Servers</sys:String>
+    <sys:String x:Key="i18n_srvs">Servers</sys:String>
+    <sys:String x:Key="i18n_srv1">Server 1</sys:String>
+    <sys:String x:Key="i18n_srv2">Server 2</sys:String>
+    <sys:String x:Key="i18n_srv3">Server 3</sys:String>
+    <sys:String x:Key="i18n_domain">Domain Name</sys:String>
+    <sys:String x:Key="i18n_tz">Timezone</sys:String>
+    <sys:String x:Key="i18n_feat">Features</sys:String>
+    <sys:String x:Key="i18n_insProto">Disable Insecure Protocols</sys:String>
+    <sys:String x:Key="i18n_ssh">Enable SSH</sys:String>
+    <sys:String x:Key="i18n_relay">Enable DHCP Relay</sys:String>
+    <sys:String x:Key="i18n_dhcp">DHCP Server</sys:String>
+    <sys:String x:Key="i18n_multicast">Enable Multicast</sys:String>
+    <sys:String x:Key="i18n_vlan">VLAN</sys:String>
+    <sys:String x:Key="i18n_pRep">Report:</sys:String>
+    <sys:String x:Key="i18n_en">Enable</sys:String>
+    <sys:String x:Key="i18n_dis">Disable</sys:String>
+    <sys:String x:Key="i18n_snmp">SNMP Settings</sys:String>
+    <sys:String x:Key="i18n_usrs">Users</sys:String>
+    <sys:String x:Key="i18n_usr">User</sys:String>
+    <sys:String x:Key="i18n_comms">Communitites</sys:String>
+    <sys:String x:Key="i18n_comm">Community</sys:String>
+    <sys:String x:Key="i18n_recv">Trap Receivers</sys:String>
+    <sys:String x:Key="i18n_usrName">Name</sys:String>
+    <sys:String x:Key="i18n_auth">Authentication Protocol</sys:String>
+    <sys:String x:Key="i18n_enc">Encryption Protocol</sys:String>
+    <sys:String x:Key="i18n_commName">Name</sys:String>
+    <sys:String x:Key="i18n_trapIp">IP Address</sys:String>
+    <sys:String x:Key="i18n_trapSt">Status</sys:String>
+    <sys:String x:Key="i18n_ver">Version</sys:String>
+    <sys:String x:Key="i18n_runCW">Running config wizard...</sys:String>
+    <sys:String x:Key="i18n_cwErr">The following error was reported:</sys:String>
+    <sys:String x:Key="i18n_cwErrs">The following $1 errors where reported:</sys:String>
+    <sys:String x:Key="i18n_twiz">Config Wizard</sys:String>
+    <sys:String x:Key="i18n_discWiz" xml:space="preserve">
+Application will disconnect from switch because IP address wad changed.
+Please reconnect using the new address.
+    </sys:String>
+    <sys:String x:Key="i18n_loading">Loading current parameters, please wait...</sys:String>
+    <sys:String x:Key="i18n_appDns">Applying DNS and NTP parameters...</sys:String>
+    <sys:String x:Key="i18n_appFeat">Applying Features...</sys:String>
+    <sys:String x:Key="i18n_appSys">Applying System parameters...</sys:String>
+    <sys:String x:Key="i18n_reloading">Reloading switch data, please wait...</sys:String>
+    <sys:String x:Key="i18n_and">and</sys:String>
+    <sys:String x:Key="i18n_dupObj">already created</sys:String>
+    <sys:String x:Key="i18n_delUser">
+        related to this user will be deleted.
+Please confirm your action.
+    </sys:String>
+    <sys:String x:Key="i18n_delComm"  xml:space="preserve">
+Related stations will also be deleted.
+Please confirm your action.
+    </sys:String>
+    <sys:String x:Key="i18n_withIp">Station with IP address</sys:String>
+    <sys:String x:Key="i18n_newUsr">New User</sys:String>
+    <sys:String x:Key="i18n_newComm">New Community</sys:String>
+    <sys:String x:Key="i18n_commUsr">Associated User</sys:String>
+    <sys:String x:Key="i18n_newRec">New Trap Receiver</sys:String>
+
+    <!--PoE Wizard Messages-->
+    <sys:String x:Key="i18n_pwiz">PoE Wizard</sys:String>
+    <sys:String x:Key="i18n_pwRep">PoE Wizard Report:</sys:String>
+    <sys:String x:Key="i18n_pwRun">Running PoE Wizard</sys:String>
+    <sys:String x:Key="i18n_pwDur">Total duration:</sys:String>
+    <sys:String x:Key="i18n_pwEnd">PoE Wizard completed on port</sys:String>
+    <sys:String x:Key="i18n_pwDev">with device type</sys:String>
+    <sys:String x:Key="i18n_pwPst">Port Status:</sys:String>
+    <sys:String x:Key="i18n_power">Power:</sys:String>
+    <sys:String x:Key="i18n_pwDevMac">Device MAC:</sys:String>
+    <sys:String x:Key="i18n_pwExec">PoE Wizard Execution</sys:String>
+    <sys:String x:Key="i18n_fail">failed</sys:String>
+    <sys:String x:Key="i18n_succes">succeeded</sys:String>
+    <sys:String x:Key="i18n_pwNoRes" xml:space="preserve">
+It looks like the wizard was unable to fix the problem.
+Do you want to collect information to send the Technical Support?
+    </sys:String>
+    <sys:String x:Key="i18n_wizOk">solved the problem</sys:String>
+    <sys:String x:Key="i18n_noact">Nothing to do</sys:String>
+    <sys:String x:Key="i18n_nopoe">does not support PoE</sys:String>
+    <sys:String x:Key="i18n_hdmi">Enabling power over HDMI on port</sys:String>
+    <sys:String x:Key="i18n_pmdi">Enabling LLDP power via MDI on port</sys:String>
+    <sys:String x:Key="i18n_extmdi">Enabling LLDP extended power via MDI on port</sys:String>
+    <sys:String x:Key="i18n_capdet">Checking capacitor detection on port</sys:String>
+    <sys:String x:Key="i18n_cdeten">Enabling capacitor detection on port</sys:String>
+    <sys:String x:Key="i18n_cdetdis">Disabling capacitor detection on port</sys:String>
+    <sys:String x:Key="i18n_nocdet">Cannot enable capacitor detection for device type</sys:String>
+    <sys:String x:Key="i18n_cdnoten">Capacitor detection is already disabled on port</sys:String>
+    <sys:String x:Key="i18n_cden">Capacitor detection is already enabled on port</sys:String>
+    <sys:String x:Key="i18n_nspb">did not solve the problem</sys:String>
+    <sys:String x:Key="i18n_rstcfg">to restore the previous config</sys:String>
+    <sys:String x:Key="i18n_ckmxpw">Checking max. power on port</sys:String>
+    <sys:String x:Key="i18n_bmxpw">Max. power on port $1 is $2 Watts, it should be $3 Watts</sys:String>
+    <sys:String x:Key="i18n_gmxpw">Max. power on port $1 is already the maximum allowed ($2 Watts)</sys:String>
+    <sys:String x:Key="i18n_rstmxpw">Restoring max. power on port $1 from $2 Watts to maximum allowed $3 Watts</sys:String>
+    <sys:String x:Key="i18n_rfsw">Refreshing PoE information on switch</sys:String>
+    <sys:String x:Key="i18n_r2pair">Re-enabling 2-pair power on port</sys:String>
+    <sys:String x:Key="i18n_nosup">Command not supported on slot</sys:String>
+    <sys:String x:Key="i18n_e2pair">Enabling 2-pair power on port</sys:String>
+    <sys:String x:Key="i18n_e4pair">Enabling 4-pair power on port</sys:String>
+    <sys:String x:Key="i18n_unrch">is unreachable</sys:String>
+    <sys:String x:Key="i18n_chkbt">Checking 802.3bt on port</sys:String>
+    <sys:String x:Key="i18n_nobt">does not support 802.3bt</sys:String>
+    <sys:String x:Key="i18n_bten">802.3bt already enabled on port</sys:String>
+    <sys:String x:Key="i18n_sbten">Enabling 802.3bt on slot</sys:String>
+    <sys:String x:Key="i18n_sbtdis">Disabling 802.3bt on slot</sys:String>
+    <sys:String x:Key="i18n_sprio">Priority on port</sys:String>
+    <sys:String x:Key="i18n_set">Set to</sys:String>
+    <sys:String x:Key="i18n_ckprio">Checking power priority on port</sys:String>
+    <sys:String x:Key="i18n_rempw">Remaining power =</sys:String>
+    <sys:String x:Key="i18n_maxpw">max. power =</sys:String>
+    <sys:String x:Key="i18n_chgprio">Changing power priority on port</sys:String>
+    <sys:String x:Key="i18n_pmaysolve">may solve the problem</sys:String>
+    <sys:String x:Key="i18n_pnoneed">No need to change power prioriry on port</sys:String>
+    <sys:String x:Key="i18n_palready">priority is already</sys:String>
+    <sys:String x:Key="i18n_pback">Chaging priority back to</sys:String>
+    <sys:String x:Key="i18n_cpRep">Priority Change Report:</sys:String>
+    <sys:String x:Key="i18n_rcpoe">Power cycling PoE on port</sys:String>
+    <sys:String x:Key="i18n_pwoff">Turning power off</sys:String>
+    <sys:String x:Key="i18n_pwon">Turning power on</sys:String>
+    <sys:String x:Key="i18n_waitp">Waiting for port</sys:String>
+    <sys:String x:Key="i18n_spoeoff">PoE is turned off on slot</sys:String>
+    <sys:String x:Key="i18n_cmdnosup">Command not supported by switch</sys:String>
+    <sys:String x:Key="i18n_devSel">Please, select the type of device connected to port</sys:String>
+    <sys:String x:Key="i18n_isupl">is a switch uplink</sys:String>
+    <sys:String x:Key="i18n_noen">Cannot enable</sys:String>
+    <sys:String x:Key="i18n_nodis">Connot disable</sys:String>
+    <sys:String x:Key="i18n_pwdown">because it is powered down</sys:String>
+    <sys:String x:Key="i18n_isbt">because 802.3bt is supported</sys:String>
+    <sys:String x:Key="18n_isen">is already enabled</sys:String>
+    <sys:String x:Key="i18n_isdis">is already disabled</sys:String>
+    <sys:String x:Key="i18n_exec">executed</sys:String>
+    <sys:String x:Key="i18n_notex">failed to execute</sys:String>
+
+    <!--About box-->
+    <sys:String x:Key="i18n_aboutTitle">About ALE Installer Toolkit</sys:String>
+    <sys:String x:Key="i18n_cpright">Copyright</sys:String>
+    <sys:String x:Key="i18n_reserved">All Rights Reserved</sys:String>
+    <sys:String x:Key="i18n_authors">Authors:</sys:String>
+    <sys:String x:Key="i18n_descr" xml:space="preserve">
+This application allows you to apply basic configuration and troubleshoot PoE issues on an Alcatel-Lucent Enterprise OmniSwitch®, equipped with AOS 8 version.
+The application communicates with the switch via REST API, to gather information on the power supplies and PoE ports, and allows the user to perform some configuration changes to mitigate common PoE issues. In case the wizard is unable to fix the problem, it allows the user to collect relevant information to be sent to TAC.
+
+Permission to use, copy, modify, and distribute this source code, product, and its documentation without a fee and without a signed license agreement is hereby granted, provided that the copyright notice, this paragraph, and the following two paragraphs appear in all copies, modifications, and distributions.
+
+IN NO EVENT SHALL ALE USA INC. BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOURCE CODE, PRODUCT, AND ITS DOCUMENTATION, EVEN IF ALE USA INC. HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+
+ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOURCE CODE, PRODUCT, AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED “AS IS.” ALE USA INC. HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+    </sys:String>
+
+    <!--Switch scan-->
+    <sys:String x:Key="i18n_rsCnx">Connecting to switch</sys:String>
+    <sys:String x:Key="i18n_rest">Connecting REST API</sys:String>
+    <sys:String x:Key="i18n_scan">Scanning switch</sys:String>
+    <sys:String x:Key="i18n_sys">Reading system information</sys:String>
+    <sys:String x:Key="i18n_vinfo">Reading version information</sys:String>
+    <sys:String x:Key="i18n_chas">Reading chassis and port information</sys:String>
+    <sys:String x:Key="i18n_psi">Reading power supply information</sys:String>
+    <sys:String x:Key="i18n_rpoe">Reading PoE information</sys:String>
+    <sys:String x:Key="i18n_flashd">Reading flash data of chassis</sys:String>
+    <sys:String x:Key="i18n_lanpw">Getting LAN power information on slot</sys:String>
+    <sys:String x:Key="i18n_rlldp">Reading LLDP remote information</sys:String>
+    <sys:String x:Key="i18n_rmac">Reading MAC address information</sys:String>
+    <sys:String x:Key="i18n_rpdet">Reading ports detailed information</sys:String>
+
+    <!--Collect Logs-->
+    <sys:String x:Key="i18n_getLog">Get Switch Log</sys:String>
+    <sys:String x:Key="i18n_nodp">Could not get data for port</sys:String>
+    <sys:String x:Key="i18n_clog">Collecting logs on switch</sys:String>
+    <sys:String x:Key="i18n_noslt">Could not get data for slot</sys:String>
+    <sys:String x:Key="i18n_pdbg">Setting PoE log debug level to</sys:String>
+    <sys:String x:Key="i18n_cdbg">Setting CMM log debug level to</sys:String>
+    <sys:String x:Key="i18n_rpdbg">Resetting PoE debug level back to</sys:String>
+    <sys:String x:Key="i18n_rcdbg">Resetting CMM debug level back to</sys:String>
+    <sys:String x:Key="i18n_prst">Resetting port</sys:String>
+    <sys:String x:Key="i18n_caplog">to capture logs</sys:String>
+    <sys:String x:Key="i18n_tarf">Tar File</sys:String>
+    <sys:String x:Key="i18n_targ">Generating tar file</sys:String>
+    <sys:String x:Key="i18n_chasoff">Turning power off on all slots of chassis</sys:String>
+    <sys:String x:Key="i18n_chason">Turning power on on all slots of chassis</sys:String>
+    <sys:String x:Key="i18n_clogl">Getting current log levels</sys:String>
+    <sys:String x:Key="i18n_tclogs">Collect Logs</sys:String>
+    <sys:String x:Key="i18n_pclogs1">Do you want to power cycle PoE on all ports of switch</sys:String>
+    <sys:String x:Key="i18n_pclogs2">to collect the logs?</sys:String>
+    <sys:String x:Key="i18n_cclogs">Cleaning up current log...</sys:String>
+    <sys:String x:Key="i18n_ttar">Downloading tar file</sys:String>
+    <sys:String x:Key="i18n_tfail">Failed to downlad file</sys:String>
+    <sys:String x:Key="i18n_sfile">Save switch logs</sys:String>
+    <sys:String x:Key="i18n_ffail">Failed to create file</sys:String>
+    <sys:String x:Key="i18n_wclogs">Waiting from tar file ready</sys:String>
+    <sys:String x:Key="i18n_tloaded">Tar file downloaded from switch</sys:String>
+    <sys:String x:Key="i18n_tddur">Download duration:</sys:String>
+    <sys:String x:Key="i18n_fileTout">Timeout waiting for tar file</sys:String>
+    <sys:String x:Key="i18n_fsize">File size:</sys:String>
+    <sys:String x:Key="i18n_lclogs">File creation duration:</sys:String>
+
+    <!--Traffic Analysis-->
+    <sys:String x:Key="i18n_taerr">Traffic analysis on switch</sys:String>
+    <sys:String x:Key="i18n_taRun">Running...</sys:String>
+    <sys:String x:Key="i18n_taIdle">Traffic Analysis</sys:String>
+    <sys:String x:Key="i18n_taSave">Do you want to save the traffic analysis report</sys:String>
+    <sys:String x:Key="i18n_taDisc">Disconnecting switch</sys:String>
+    <sys:String x:Key="i18n_tappLog">Application Log</sys:String>
+    <sys:String x:Key="i18n_tactLog">Activity Log</sys:String>
+    <sys:String x:Key="i18n_tastop">Are you sure you want to stop it</sys:String>
+    <sys:String x:Key="i18n_tarun">The traffic analysis is still running (selected duration:</sys:String>
+    <sys:String x:Key="i18n_day">d</sys:String>
+    <sys:String x:Key="i18n_hour">h</sys:String>
+    <sys:String x:Key="i18n_min">min</sys:String>
+    <sys:String x:Key="i18n_sec">sec</sys:String>
+    <sys:String x:Key="i18n_ms">ms</sys:String>
+    <sys:String x:Key="i18n_tadur">Current duration:</sys:String>
+    <sys:String x:Key="i18n_tacont">Do you still want to continue</sys:String>
+    <sys:String x:Key="i18n_selDur">Please, select the traffic analysis duration</sys:String>
+    <sys:String x:Key="i18n_tamin">minute</sys:String>
+    <sys:String x:Key="i18n_tahour">hour</sys:String>
+
+    <!--Other Messages-->
+    <sys:String x:Key="i18n_rsNocnx">Could not connect to switch</sys:String>
+    <sys:String x:Key="i18n_rsConn">Connection</sys:String>
+    <sys:String x:Key="i18n_rsMem">Writing memory on switch</sys:String>
+    <sys:String x:Key="i18n_rsMemc">Write memory completed</sys:String>
+    <sys:String x:Key="i18n_rsReboot">Waiting for switch</sys:String>
+    <sys:String x:Key="i18n_rsTout">did not come back within</sys:String>
+    <sys:String x:Key="i18n_rsLldp">Enable LLDP description</sys:String>
+    <sys:String x:Key="i18n_rsGs">Get Snapshot</sys:String>
+    <sys:String x:Key="i18n_rsPrfsh">Refreshing ports information on switch</sys:String>
+    <sys:String x:Key="i18n_closing">closing the application</sys:String>
+    <sys:String x:Key="i18n_tvcboot">VCBoot config file</sys:String>
+    <sys:String x:Key="i18n_lvcboot">Loading vcboot.cfg file...</sys:String>
+    <sys:String x:Key="i18n_fromsw">from switch</sys:String>
+    <sys:String x:Key="i18n_noSftp">Cannot connect secure FTP on switch</sys:String>
+    <sys:String x:Key="i18n_lsnap">Reading configuration snapshot...</sys:String>
+    <sys:String x:Key="i18n_tsnap">Configuration Shapshot</sys:String>
+    <sys:String x:Key="i18n_sport">Search Port</sys:String>
+    <sys:String x:Key="i18n_fmac">Could not find MAC Address</sys:String>
+    <sys:String x:Key="i18n_fdev">Could not find device or vendor</sys:String>
+    <sys:String x:Key="i18n_onsw">on switch</sys:String>
+    <sys:String x:Key="i18n_tfrst">Factory Reset</sys:String>
+    <sys:String x:Key="i18n_cfrst">The switch configuration will be restored to factory default. Please confirm your action.</sys:String>
+    <sys:String x:Key="i18n_badPwd">Invalid password</sys:String>
+    <sys:String x:Key="i18n_afrst">Applying factory default...</sys:String>
+    <sys:String x:Key="i18n_rebsw">Reboot Switch</sys:String>
+    <sys:String x:Key="i18n_crebsw">Are you sure you want to reboot switch</sys:String>
+    <sys:String x:Key="i18n_frebsw1">Cannot rebot switch</sys:String>
+    <sys:String x:Key="i18n_frebsw2">because it is not certified</sys:String>
+    <sys:String x:Key="i18n_recsw">Do you want to reconnect to switch</sys:String>
+    <sys:String x:Key="i18n_rstg">Restarting</sys:String>
+    <sys:String x:Key="i18n_rstp">Restarting port</sys:String>
+    <sys:String x:Key="i18n_rstpp">Restarting power on port</sys:String>
+    <sys:String x:Key="i18n_cprst">Are you sure you want to reset port</sys:String>
+    <sys:String x:Key="i18n_selprio">Selected priority</sys:String>
+    <sys:String x:Key="i18n_cprio">Changing Priority to</sys:String>
+    <sys:String x:Key="i18n_onport">on port</sys:String>
+    <sys:String x:Key="i18n_stprio">set to</sys:String>
+    <sys:String x:Key="i18n_chprio">Power Priority Change</sys:String>
+    <sys:String x:Key="i18n_alprio">Some other devices with lower priority may stop.</sys:String>
+    <sys:String x:Key="i18n_rprio">Priority Change report:</sys:String>
+    <sys:String x:Key="i18n_spoeOff">Slot PoE Off</sys:String>
+    <sys:String x:Key="i18n_cpoeoff">Are you sure you want to turn PoE Off on all ports in slot</sys:String>
+    <sys:String x:Key="i18n_spoeon">Slot PoE On</sys:String>
+    <sys:String x:Key="i18n_poeon">Turning PoE On</sys:String>
+    <sys:String x:Key="i18n_poeoff">Truning PoE Off</sys:String>
+    <sys:String x:Key="i18n_wpoeon">Please wait for slot</sys:String>
+    <sys:String x:Key="i18n_waitup">to come up</sys:String>
+    <sys:String x:Key="i18n_enable">Enabling</sys:String>
+    <sys:String x:Key="i18n_disable">Disabling</sys:String>
+    <sys:String x:Key="i18n_onsl">on slot</sys:String>
+    <sys:String x:Key="i18n_cnsw">Connect to switch</sys:String>
+    <sys:String x:Key="i18n_dcnsw">Disconnect switch</sys:String>
+    <sys:String x:Key="i18n_cert" xml:space="preserve">
+The switch booted on Certified directory, no changes can be saved.
+Do you want to reboot the switch on Working directory?"
+    </sys:String>
+    <sys:String x:Key="i18n_wmem">Write memory required</sys:String>
+    <sys:String x:Key="i18n_refrsw">Refresh switch</sys:String>
+    <sys:String x:Key="i18n_cfgCh">Checking configuration changes on switch</sys:String>
+    <sys:String x:Key="i18n_nochg">No configuration changes on switch</sys:String>
+    <sys:String x:Key="i18n_turnon">Do you want to turn it on?</sys:String>
+    <sys:String x:Key="i18n_warn">warning</sys:String>
+    <sys:String x:Key="i18n_wpUp">Waiting for ports to come up on switch</sys:String>
+    <sys:String x:Key="i18n_compl">completed</sys:String>
+    <sys:String x:Key="i18n_dur">Duration:</sys:String>
+    <sys:String x:Key="i18n_pbtEn">Enable 802.3bt</sys:String>
+    <sys:String x:Key="i18n_cbtEn">To enable 802.3bt all devices on the same slot will restart</sys:String>
+    <sys:String x:Key="i18n_fpen">Fast PoE is enabled on slot</sys:String>
+    <sys:String x:Key="i18n_proceed">Do you want to proceed?</sys:String>
+    <sys:String x:Key="i18n_dmaxpw">Changing max. power to default on port</sys:String>
+    <sys:String x:Key="i18n_tmaxpw">Check default Max. Power</sys:String>
+    <sys:String x:Key="i18n_nosync">Flash memory is not synchronized</sys:String>
+    <sys:String x:Key="i18n_cfgch">Significant configuration changes</sys:String>
+    <sys:String x:Key="i18n_nocfgch">No significant configuration changes.</sys:String>
+    <sys:String x:Key="i18n_cfsave" xml:space="preserve">
+Do you want to save it now?
+It may take up to 30 sec to execute Write Memory
+    </sys:String>
+    <sys:String x:Key="i18n_swrst">Rebooting switch</sys:String>
+    <sys:String x:Key="i18n_swready" xml:space="preserve">
+ready to connect
+Reboot duration: </sys:String>
+    <sys:String x:Key="i18n_rst">restarted</sys:String>
+    <sys:String x:Key="i18n_pfrst">failed to restart</sys:String>
+    <sys:String x:Key="i18n_urst">restarted by the user</sys:String>
+    <sys:String x:Key="i18n_pstup">Starting up port</sys:String>
+    <sys:String x:Key="i18n_pstdonw">Shutting down port</sys:String>
+    <sys:String x:Key="i18n_ppoff">Turning off power on port</sys:String>
+    <sys:String x:Key="i18n_pcode">Please enter the password for this operation</sys:String>
+    <sys:String x:Key="i18n_chcode">Change Password</sys:String>
+    <sys:String x:Key="i18n_codeErr">Could not change password</sys:String>
+    <sys:String x:Key="i18n_srcNote">Note: You may double click on the port to close and select it on the main window.</sys:String>
+    <sys:String x:Key="i18n_macNote">All matches are tagged with (*)</sys:String>
+    <sys:String x:Key="i18n_srcText">Please enter the MAC address, Device or Vendor Name</sys:String>
+    <sys:String x:Key="i18n_fload">Loading file, please wait...</sys:String>
+    <sys:String x:Key="i18n_ftxt">Text File</sys:String>
+    <sys:String x:Key="i18n_crit">Search:</sys:String>
+    <sys:String x:Key="i18n_nmfound">#MAC addresses found:</sys:String>
+    <sys:String x:Key="i18n_npfound">#Ports found:</sys:String>
+    <sys:String x:Key="i18n_any">Any</sys:String>
+    <sys:String x:Key="i18n_currPwd">Current Password</sys:String>
+    <sys:String x:Key="i18n_newPwd">New Password</sys:String>
+    <sys:String x:Key="i18n_cfmPwd">Confirm Password</sys:String>
+
+    <!--Tool Tips-->
+    <sys:String x:Key="i18n_pwr_tt">Actual power consumed by the device connected to the port</sys:String>
+    <sys:String x:Key="i18n_maxPwr_tt">Maximum power allowed by the hardware</sys:String>
+    <sys:String x:Key="i18n_release_tt">Switch AOS version is too old. Please buy a support contract and upgrade your switch</sys:String>
+    <sys:String x:Key="i18n_temp_tt">Switch may reduce PoE output because temperature is too high</sys:String>
+    <sys:String x:Key="i18n_fpga_tt">Switch FPGA version is too old.Please buy a support contract and upgrade your switch</sys:String>
+    <sys:String x:Key="i18n_cpld_tt">Switch CPLD version is too old.Please buy a support contract and upgrade your switch</sys:String>
+    <sys:String x:Key="i18n_poe_tt">Turn PoE on/off on this port</sys:String>
+    <sys:String x:Key="i18n_fpoe_tt">Fast PoE is disabled when PoE is turned off or 802.3bt is enabled</sys:String>
+    <sys:String x:Key="i18n_ppoe_tt">Perpetual PoE is disabled when PoE is turned off or 802.3bt is enabled</sys:String>
+    <sys:String x:Key="i18n_disc_tt">Click to disconnect</sys:String>
+    <sys:String x:Key="i18n_recon_tt">Click to reconnect</sys:String>
+    <sys:String x:Key="i18n_cpun_tt">CPU usage near threshold</sys:String>
+    <sys:String x:Key="i18n_cpuo_tt">CPU usage over threshold</sys:String>
+    <sys:String x:Key="i18n_on_tt">PoE power activation is complete, and the attached device is receiving power</sys:String>
+    <sys:String x:Key="i18n_off_tt">PoE has been disabled for this port</sys:String>
+    <sys:String x:Key="i18n_srch_tt">PoE is enabled, and the switch is sending PoE probes looking for a device, but activation or class detection is incomplete</sys:String>
+    <sys:String x:Key="i18n_fault_tt">PoE activation or class detection has failed</sys:String>
+    <sys:String x:Key="i18n_deny_tt">PoE power management has denied power to the port due to priority disconnect or over subscription</sys:String>
+    <sys:String x:Key="i18n_test_tt">Port has been forced on and will remain on until it is forced off by RTP functions</sys:String>
+    <sys:String x:Key="i18n_dld_tt">Delayed start is enabled</sys:String>
+    <sys:String x:Key="i18n_conf_tt">Two PoE ports have been connected and failed to disable PoE on one port</sys:String>
+    <sys:String x:Key="i18n_nop_tt">Port does not support PoE</sys:String>
+</ResourceDictionary>

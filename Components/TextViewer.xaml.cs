@@ -36,6 +36,9 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
+
             this.title = title;
             this.content = content;
             this.CsvData = null;
@@ -58,7 +61,7 @@ namespace PoEWizard.Components
 
             if (Filename != null && File.Exists(Filename))
             {
-                _content.Document.Blocks.Add(new Paragraph(new Run("Loading file, please wait...")));
+                _content.Document.Blocks.Add(new Paragraph(new Run((string)MainWindow.Strings["i18n_fload"])));
                 Task.Run(() => {
                     Thread.Sleep(200);
                     Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() =>
@@ -81,8 +84,8 @@ namespace PoEWizard.Components
             string file = SaveFilename ?? (Filename != null ? Path.GetFileName(Filename) : "");
             SaveFileDialog sfd = new SaveFileDialog()
             {
-                Filter = "Text File|*.txt",
-                Title = "Save " + title,
+                Filter = $"{(string)MainWindow.Strings["i18n_ftxt"]}|*.txt",
+                Title = $"{(string)MainWindow.Strings["i18n_svBtn"]} {title}",
                 InitialDirectory = Filename != null ? Path.GetDirectoryName(Filename) : Environment.SpecialFolder.MyDocuments.ToString(),
                 FileName = file
             };

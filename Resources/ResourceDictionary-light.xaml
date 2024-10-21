@@ -234,6 +234,17 @@
         </Style.Resources>
     </Style>
 
+    <Style x:Key="cfgPage" TargetType="StackPanel" BasedOn="{StaticResource cfgWindow}">
+        <Style.Resources>
+            <Style TargetType="{x:Type Label}">
+                <Setter Property="HorizontalAlignment" Value="Right" />
+                <Setter Property="Padding" Value="10,10,10,0" />
+                <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+        </Style.Resources>
+    </Style>
+
     <Style x:Key="gridBorder" TargetType="Border">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Margin" Value="5,5,5,5" />
@@ -349,11 +360,13 @@
     </Style>
 
     <Style TargetType="Button" x:Key="smallButton" BasedOn="{StaticResource defaultButton}">
-        <Setter Property="Width" Value="50" />
+        <Setter Property="Width" Value="Auto" />
+        <Setter Property="MinWidth" Value="50" />
     </Style>
 
     <Style TargetType="Button" x:Key="largeButton" BasedOn="{StaticResource defaultButton}">
-        <Setter Property="Width" Value="112" />
+        <Setter Property="Width" Value="Auto" />
+        <Setter Property="MinWidth" Value="110" />
         <Setter Property="Height" Value="28" />
     </Style>
 

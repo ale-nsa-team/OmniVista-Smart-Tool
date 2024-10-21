@@ -1,4 +1,7 @@
-﻿using System;
+﻿using PoEWizard.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,14 +15,17 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class Login : Window
     {
+        private const int MAX_LIST_SIZE = 20;
         private readonly ImageSource eye_open;
         private readonly ImageSource eye_closed;
+        private Config cfg;
 
         public string IpAddress { get; set; }
+        public List<string> IpList { get; set; }
         public string User { get; set; }
         public string Password { get; set; }
 
-        public Login(String user)
+        public Login(String user, Config config)
         {
             InitializeComponent();
             if (MainWindow.Theme == ThemeType.Dark)
@@ -30,23 +36,49 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
 
             eye_open = (ImageSource)Resources.MergedDictionaries[0]["eye_open"];
             eye_closed = (ImageSource)Resources.MergedDictionaries[0]["eye_closed"];
 
+            IpList = new List<string>();
+            cfg = config;
+            string swList = cfg.Get("switches");
+            if ( swList != null)
+            {
+                IpList = swList.Split(',').ToList();
+            }
+ 
             this.DataContext = this;
+            _ipAddress.ItemsSource = IpList;
             User = user;
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
             if (HasErrors()) return;
+            if (!IpList.Contains(IpAddress))
+            {
+                if (IpList.Count >= MAX_LIST_SIZE)
+                {
+                    IpList.RemoveAt(IpList.Count - 1);
+                }
+                IpList.Add(IpAddress);
+                IpList.Sort();
+                cfg.Set("switches", string.Join(",", IpList));
+            }
             this.DialogResult = true;
             this.Close();
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(IpAddress))
+            {
+                IpAddress = IpList.ElementAtOrDefault(0) ?? string.Empty;
+                _ipAddress.Text = IpAddress;
+            }
             _ipAddress.Focus();
         }
 
@@ -96,7 +128,7 @@ namespace PoEWizard.Components
 
         private bool HasErrors()
         {
-            bool ipErr = string.IsNullOrEmpty(_ipAddress.Text) || _ipAddress.GetBindingExpression(TextBox.TextProperty).HasError;
+            bool ipErr = string.IsNullOrEmpty(_ipAddress.Text) || _ipAddress.GetBindingExpression(ComboBox.TextProperty).HasError;
             bool nameErr = string.IsNullOrEmpty(_username.Text.Trim());
             bool pwdErr = string.IsNullOrEmpty(_clearPwd.Text.Trim());
 

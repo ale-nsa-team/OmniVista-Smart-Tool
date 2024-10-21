@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Components
 {
@@ -29,6 +30,7 @@ namespace PoEWizard.Components
         private readonly RestApiService restSrv;
         private readonly ImageSource eye_open;
         private readonly ImageSource eye_closed;
+        private readonly ResourceDictionary strings;
 
         public CfgWizPage4(SnmpModel snmpData)
         {
@@ -42,10 +44,13 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
 
             eye_open = (ImageSource)Resources.MergedDictionaries[0]["eye_open"];
             eye_closed = (ImageSource)Resources.MergedDictionaries[0]["eye_closed"];
 
+            strings = Resources.MergedDictionaries[1];
             data = snmpData;
             DataContext = data;
             restSrv = MainWindow.restApiService;
@@ -62,7 +67,7 @@ namespace PoEWizard.Components
             {
                 if (data.UserExists(usr.Username))
                 {
-                    ShowMsgBox($"User {usr.Username} already created.", true);
+                    ShowMsgBox($"{Translate("i18n_user")} {usr.Username} {Translate("i18n_dupObj")}.", true);
                     return;
                 }
                 bool noErrors = true;
@@ -82,11 +87,11 @@ namespace PoEWizard.Components
                 var coms = data.GetUserCommunities(user.Name);
                 var sts = data.GetUserStations(user.Name);
                 List<string> msg = new List<string>();
-                if (coms.Count > 0) msg.Add("Communities");
-                if (sts.Count > 0) msg.Add($"{(coms.Count > 0 ? "and " : "")}Trap Receivers");
+                if (coms.Count > 0) msg.Add(Translate("i18n_comms"));
+                if (sts.Count > 0) msg.Add($"{(coms.Count > 0 ? Translate("i18n_and") : "")} {Translate("i18n_recv")}");
                 if (msg.Count > 0)
                 {
-                    msg.Add("related to this user will also be deleted\nPlease confirm your action.");
+                    msg.Add(Translate("i18n_delUser"));
                     if (ShowMsgBox(string.Join(" ", msg), false))
                     {
                         await Task.Run(() =>
@@ -125,7 +130,7 @@ namespace PoEWizard.Components
             {
                 if (data.CommunityExists(cmy.CommunityName))
                 {
-                    ShowMsgBox($"Community {cmy.CommunityName} already created.", true);
+                    ShowMsgBox($"{Translate("i18n_comm")} {cmy.CommunityName} {Translate("i18n_dupObj")}.", true);
                     return;
                 }
                 await Task.Run(() =>
@@ -148,7 +153,7 @@ namespace PoEWizard.Components
                 var sts = data.GetCommunityStations(cmy.Name);
                 if (sts.Count > 0)
                 {
-                    if (ShowMsgBox("Related stations will also be deleted.\nPlease confirm your action.", false))
+                    if (ShowMsgBox(Translate("i18n_delComm"), false))
                     {
                         await Task.Run(() =>
                         {
@@ -179,7 +184,7 @@ namespace PoEWizard.Components
             {
                 if (data.StationExists(recv.IpAddress))
                 {
-                    ShowMsgBox($"Station with IP address {recv.IpAddress} already created", true);
+                    ShowMsgBox($"{Translate("i18n_withIp")} {recv.IpAddress} {Translate("i18n_dupObj")}", true);
                     return;
                 }
                 string user;
@@ -228,7 +233,7 @@ namespace PoEWizard.Components
         {
             CustomMsgBox box = new CustomMsgBox(MainWindow.Instance)
             {
-                Header = "SNMP management",
+                Header = Translate("i18n_snmp"),
                 Message = message,
                 Img = isError ? MsgBoxIcons.Error : MsgBoxIcons.Question,
                 Buttons = isError ? MsgBoxButtons.Ok : MsgBoxButtons.OkCancel

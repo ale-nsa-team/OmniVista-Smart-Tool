@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
                 <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-enUS.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -23,9 +24,9 @@
         <RichTextBox Grid.Row="0" x:Name="_content" Style="{DynamicResource fileBox}" />
         <Border Grid.Row="1" Background="Transparent">
             <StackPanel Grid.Row="1" Style="{DynamicResource buttonBar}">
-                <Button x:Name="_btnClear" Click="ClearLog_Click">Clear Log</Button>
-                <Button x:Name="_btnSave" Click="Save_Click">Save</Button>
-                <Button x:Name="_btnClose" Click="Close_Click">Close</Button>
+                <Button x:Name="_btnClear" Click="ClearLog_Click" Content="{DynamicResource i18n_clrBtn}"/>
+                <Button x:Name="_btnSave" Click="Save_Click" Content="{DynamicResource i18n_svBtn}"/>
+                <Button x:Name="_btnClose" Click="Close_Click" Content="{DynamicResource i18n_closeBtn}"/>
             </StackPanel>
         </Border>
     </Grid>

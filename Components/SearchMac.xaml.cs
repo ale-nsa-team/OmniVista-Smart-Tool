@@ -24,17 +24,18 @@ namespace PoEWizard.Components
             {
                 this.Port = port;
                 this.SearchText = searchText;
-            } 
+            }
         }
 
         private List<string> deviceMacList = new List<string>();
         private PortModel currPort = null;
+        private readonly string any;
 
         public string SearchText { get; set; }
-        public string DeviceMac => $"{(!string.IsNullOrEmpty(this.SearchText) ? $"\"{this.SearchText}\"" : "Any")}";
+        public string DeviceMac => $"{(!string.IsNullOrEmpty(this.SearchText) ? $"\"{this.SearchText}\"" : any)}";
         public ObservableCollection<PortViewModel> PortsFound { get; set; }
         public PortModel SelectedPort { get; set; }
-        public bool IsMacAddress {  get; set; }
+        public bool IsMacAddress { get; set; }
         public int NbMacAddressesFound => !string.IsNullOrEmpty(this.SearchText) ? deviceMacList.Count : this.NbTotalMacAddressesFound;
         public int NbPortsFound { get; set; }
         public int NbTotalMacAddressesFound { get; set; }
@@ -52,6 +53,10 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
+
+            any = (string)MainWindow.Strings["i18n_any"];
             this.SelectedPort = null;
             SearchMacAddress(device, macAddress);
             if (this.PortsFound.Count == 1) this.SelectedPort = this.PortsFound[0].Port;
@@ -62,7 +67,7 @@ namespace PoEWizard.Components
             this.MouseDown += delegate { this.DragMove(); };
 
             this.Height = this._portsListView.ActualHeight + 115;
-            this.Top = this.Owner.Height> this.Height ? this.Owner.Top + (this.Owner.Height - this.Height)/2 : this.Top;
+            this.Top = this.Owner.Height > this.Height ? this.Owner.Top + (this.Owner.Height - this.Height) / 2 : this.Top;
         }
 
         private void SearchMacAddress(SwitchModel switchModel, string macAddr)
@@ -172,6 +177,5 @@ namespace PoEWizard.Components
         {
             this.Close();
         }
-
     }
 }

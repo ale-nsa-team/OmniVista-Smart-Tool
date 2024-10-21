@@ -531,7 +531,7 @@ namespace PoEWizard.Components
                 isMacAddress = IsValidMacSequence(searchText);
                 bool hasmore = edmList.Count > MAX_NB_DEVICES_TOOL_TIP;
                 List<EndPointDeviceModel> displayList = hasmore ? edmList.GetRange(0, MAX_NB_DEVICES_TOOL_TIP) : edmList;
-                List<string> tooltip = new List<string> { "\nAll matches are tagged with (*)" };
+                List<string> tooltip = new List<string>() { $"\n{MainWindow.Strings["i18n_macNote"]}" };
                 if (!string.IsNullOrEmpty(searchText))
                 {
                     foreach (EndPointDeviceModel dev in displayList)
@@ -572,27 +572,34 @@ namespace PoEWizard.Components
 
     public class PoeToTooltipConverter : IValueConverter
     {
-
-        static readonly Dictionary<PoeStatus, string> toolTip = new Dictionary<PoeStatus, string>
-        {
-            [PoeStatus.On] = "PoE power activation is complete, and the attached device is receiving power.",
-            [PoeStatus.Off] = "PoE has been disabled for this port.",
-            [PoeStatus.Searching] = "PoE is enabled, and the switch is sending PoE probes looking for a device, but activation or class detection is incomplete.",
-            [PoeStatus.Fault] = "PoE activation or class detection has failed.",
-            [PoeStatus.Deny] = "PoE power management has denied power to the port due to priority disconnect or over subscription.",
-            [PoeStatus.Test] = "Port has been forced on and will remain on until it is forced off by RTP functions.",
-            [PoeStatus.Delayed] = "Delayed start is enabled.",
-            [PoeStatus.Conflict] = "Two PoE ports have been connected and failed to disable PoE on one port.",
-            [PoeStatus.NoPoe] = "Port doesn't support PoE."
-        };
-
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
                 if (IsInvalid(value)) return DependencyProperty.UnsetValue;
                 PoeStatus poe = (PoeStatus)value;
-                if (toolTip.ContainsKey(poe)) return toolTip[poe];
+
+                switch (poe)
+                {
+                    case PoeStatus.On:
+                        return Translate("i18n_on_tt");
+                    case PoeStatus.Off:
+                        return Translate("i18n_off_tt");
+                    case PoeStatus.Searching:
+                        return Translate("i18n_srch_tt");
+                    case PoeStatus.Fault:
+                        return Translate("i18n_fault_tt");
+                    case PoeStatus.Deny:
+                        return Translate("i18n_deny_tt");
+                    case PoeStatus.Delayed:
+                        return Translate("i18n_dld_tt");
+                    case PoeStatus.Conflict:
+                        return Translate("i18n_conf_tt");
+                    case PoeStatus.NoPoe:
+                        return Translate("i18n_nop_tt");
+                    default:
+                        return DependencyProperty.UnsetValue;
+                }
             }
             catch (Exception ex)
             {

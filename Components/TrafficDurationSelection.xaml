@@ -6,12 +6,13 @@
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
-        Title="Login" Height="210" Width="220" WindowStyle="None" ShowInTaskbar="False">
+        Title="Login" Height="210" Width="300" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
                 <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-enUS.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -21,11 +22,12 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
-        <TextBlock x:Name ="_header" Grid.Row="0" 
+        <TextBlock Grid.Row="0" 
                 HorizontalAlignment="Center"
                 TextWrapping="Wrap"
                 Margin="0,50,0,0"
-                Style="{DynamicResource popupTitle}" />
+                Style="{DynamicResource popupTitle}"
+                Text="{DynamicResource i18n_selDur}"/>
         <ComboBox x:Name="_devType" Grid.Row="1" 
                 Width="120" Height="25"
                 Style="{DynamicResource defaultCombo}"
@@ -33,9 +35,11 @@
                 SelectedItem="{Binding Duration}"
                 IsSynchronizedWithCurrentItem="True" />
         <Border Grid.Row="2" Style="{DynamicResource propsBorder}">
-            <StackPanel Orientation="Horizontal">
-                <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="2,0,0,0">OK</Button>
-                <Button Click="BtnCancel_Click" Style="{DynamicResource defaultButton}" Margin="20,0,0,0">Cancel</Button>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" 
+                        Margin="2,0,0,0" Content="{DynamicResource i18n_okBtn}"/>
+                <Button Click="BtnCancel_Click" Style="{DynamicResource defaultButton}" 
+                        Margin="20,0,0,0" Content="{DynamicResource i18n_canBtn}"/>
             </StackPanel>
         </Border>
     </Grid>

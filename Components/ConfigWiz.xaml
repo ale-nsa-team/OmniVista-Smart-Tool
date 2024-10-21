@@ -13,6 +13,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
                 <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-enUS.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -23,18 +24,34 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Style="{DynamicResource cfgTitle}">
-            <TextBlock x:Name="_cfgTitle" Text="Network Configuration" Style="{DynamicResource cfgHeader}" />
+            <TextBlock x:Name="_cfgTitle" Text="{DynamicResource i18n_netCfg}" Style="{DynamicResource cfgHeader}" />
         </Border>
         <Frame Grid.Row="1" x:Name="_cfgFrame" NavigationUIVisibility="Hidden"/>
         <Border Grid.Row="1" x:Name="_infoBox" Style="{DynamicResource infoBorder}" Visibility="Hidden">
             <TextBlock x:Name="_infoBlock" />
         </Border>
         <DockPanel Grid.Row="2" Margin="5,20,10,0" LastChildFill="False" >
-            <Button Click="CfgCancel_Click" Style="{DynamicResource smallButton}" Margin="5,0,0,0">Cancel</Button>
-            <Button x:Name="_btnSubmit" Click="CfgSubmit_Click" Style="{DynamicResource smallButton}" Margin="10,0,0,0">Submit</Button>
+            <Button Click="CfgCancel_Click" Style="{DynamicResource smallButton}" Margin="5,0,0,0">
+                <Button.Content>
+                    <TextBlock Text="{DynamicResource i18n_canBtn}" Padding="5,0"/>
+                </Button.Content>
+            </Button>
+            <Button x:Name="_btnSubmit" Click="CfgSubmit_Click" Style="{DynamicResource smallButton}" Margin="10,0,0,0">
+                <Button.Content>
+                    <TextBlock Text="{DynamicResource i18n_subBtn}" Padding="5,0" />
+                </Button.Content>
+            </Button>
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                <Button Style="{DynamicResource smallButton}" x:Name="_btnCfgBack" Click="CfgBack_Click">&lt; Back</Button>
-                <Button Style="{DynamicResource smallButton}" x:Name="_btnCfgNext" Click="CfgNext_Click" Margin="2,5,0,0">Next &gt;</Button>
+                <Button Style="{DynamicResource smallButton}" x:Name="_btnCfgBack" Click="CfgBack_Click">
+                    <Button.Content>
+                        <TextBlock Text="{DynamicResource i18n_prevBtn}" Padding="5,0" />
+                    </Button.Content>
+                </Button>
+                <Button Style="{DynamicResource smallButton}" x:Name="_btnCfgNext" Click="CfgNext_Click" Margin="2,5,0,0">
+                    <Button.Content>
+                        <TextBlock Text="{DynamicResource i18n_nextBtn}" Padding="5,0"/>
+                    </Button.Content>
+                </Button>
             </StackPanel>
         </DockPanel>
     </Grid>

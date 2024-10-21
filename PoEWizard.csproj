@@ -198,6 +198,7 @@
     <Compile Include="Data\ChassisSlotPort.cs" />
     <Compile Include="Data\CliParseUtils.cs" />
     <Compile Include="Data\CmdRequest.cs" />
+    <Compile Include="Data\Config.cs" />
     <Compile Include="Data\ConfigChanges.cs" />
     <Compile Include="Data\LinuxCommandSeq.cs" />
     <Compile Include="Data\SwitchDebugApp.cs" />
@@ -348,6 +349,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\strings-deDE.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\strings-esES.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\strings-frFr.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\ResourceDictionary-dark.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -355,6 +368,14 @@
     <Page Include="Resources\ResourceDictionary-light.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\strings-enUS.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\strings-ptBR.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -435,7 +456,7 @@
     <Resource Include="Resources\Img\collectlogs.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Help\help-dark.html" />
+    <EmbeddedResource Include="Resources\Help\help-enUS.html" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Help\Img\device-info.png" />
@@ -458,9 +479,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Help\Img\poe-device.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Help\help-light.html" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Img\app-icon.ico" />
@@ -503,6 +521,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Help\Img\search-mac.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Help\styles-dark.css" />
+    <EmbeddedResource Include="Resources\Help\styles-light.css" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

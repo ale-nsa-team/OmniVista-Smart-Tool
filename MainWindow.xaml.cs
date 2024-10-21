@@ -4,13 +4,16 @@ using PoEWizard.Components;
 using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -33,6 +36,7 @@ namespace PoEWizard
         private readonly ResourceDictionary darkDict;
         private readonly ResourceDictionary lightDict;
         private ResourceDictionary currentDict;
+        private IEnumerable<string> resourceDicts = null;
         private readonly IProgress<ProgressReport> progress;
         private bool reportAck;
         private SftpService sftpService;
@@ -56,18 +60,15 @@ namespace PoEWizard
         private DateTime startTrafficAnalysisTime;
         private double maxCollectLogsDur = 0;
         private string lastMacAddress = string.Empty;
-        #endregion
-
-        #region Local constants
-        const string TRAFFIC_ANALYSIS_RUNNING = "Running";
-        const string TRAFFIC_ANALYSIS_IDLE = "Traffic Analysis";
-        const string ASK_SAVE_TRAFFIC_REPORT = "Do you want to save the traffic analysis report";
+        private readonly Config config;
         #endregion
 
         #region public variables
         public static Window Instance { get; private set; }
         public static ThemeType Theme { get; private set; }
         public static string DataPath { get; private set; }
+        public static ResourceDictionary Strings { get; private set; }
+
         public static RestApiService restApiService;
         public static Dictionary<string, string> ouiTable = new Dictionary<string, string>();
 
@@ -86,9 +87,13 @@ namespace PoEWizard
             this.Title += $" (V {string.Join(".", fileVersionInfo.ProductVersion.Split('.').ToList().Take(2))})";
             lightDict = Resources.MergedDictionaries[0];
             darkDict = Resources.MergedDictionaries[1];
+            Strings = Resources.MergedDictionaries[2];
             currentDict = darkDict;
             Instance = this;
             Activity.DataPath = DataPath;
+            config = new Config(Path.Combine(DataPath, "app.cfg"));
+            Theme = Enum.TryParse(config.Get("theme"), out ThemeType t) ? t : ThemeType.Dark;
+            if (Theme == ThemeType.Light) ThemeItem_Click(_lightMenuItem, null);
             BuildOuiTable();
 
             // progress report handling
@@ -127,6 +132,8 @@ namespace PoEWizard
                 device.Password = args[3].Replace("\r\n", string.Empty);
                 Connect();
             }
+
+            SetLanguageMenuOptions();
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
@@ -140,15 +147,16 @@ namespace PoEWizard
             try
             {
                 e.Cancel = true;
-                string confirm = "closing the application";
-                stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                bool close = StopTrafficAnalysis(TrafficStatus.Abort, $"Disconnecting switch {device.Name}", ASK_SAVE_TRAFFIC_REPORT, confirm);
+                string confirm = Translate("i18n_closing");
+                stopTrafficAnalysisReason = "interrupted by the user before closing the application";
+                bool close = StopTrafficAnalysis(TrafficStatus.Abort, $"{Translate("i18n_taDisc")} {device.Name}", Translate("i18n_taSave"), confirm);
                 if (!close) return;
                 this.Closing -= OnWindowClosing;
                 await WaitCloseTrafficAnalysis();
                 sftpService?.Disconnect();
                 sftpService = null;
-                await CloseRestApiService("Closing the application");
+                await CloseRestApiService(FirstChToUpper(confirm));
+                await Task.Run(() => config.Save());
                 this.Close();
             }
             catch (Exception ex)
@@ -162,7 +170,7 @@ namespace PoEWizard
         #region event handlers
         private void SwitchMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Login login = new Login(device.Login)
+            Login login = new Login(device.Login, config)
             {
                 Password = device.Password,
                 IpAddress = string.IsNullOrEmpty(device.IpAddress) ? lastIpAddr : device.IpAddress,
@@ -190,7 +198,7 @@ namespace PoEWizard
 
         private void ViewLog_Click(object sender, RoutedEventArgs e)
         {
-            TextViewer tv = new TextViewer("Application Log", canClear: true)
+            TextViewer tv = new TextViewer(Translate("i18n_tappLog"), canClear: true)
             {
                 Owner = this,
                 Filename = Logger.LogPath,
@@ -200,7 +208,7 @@ namespace PoEWizard
 
         private void ViewActivities_Click(object sender, RoutedEventArgs e)
         {
-            TextViewer tv = new TextViewer("Activity Log", canClear: true)
+            TextViewer tv = new TextViewer(Translate("i18n_tactLog"), canClear: true)
             {
                 Owner = this,
                 Filename = Activity.FilePath
@@ -212,8 +220,8 @@ namespace PoEWizard
         {
             try
             {
-                string title = "Loading vcboot.cfg file...";
-                string msg = $"{title} from switch {device.Name}";
+                string title = Translate("i18n_lvcboot");
+                string msg = $"{title} {Translate("i18n_fromsw")} {device.Name}";
                 ShowInfoBox($"{msg}{WAITING}");
                 ShowProgress($"{title}{WAITING}");
                 Logger.Debug(msg);
@@ -228,10 +236,10 @@ namespace PoEWizard
                 HideProgress();
                 if (!string.IsNullOrEmpty(sftpError))
                 {
-                    ShowMessageBox(msg, $"Cannot connect secure FTP on switch {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
+                    ShowMessageBox(msg, $"{Translate("i18n_noSftp")} {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
                     return;
                 }
-                TextViewer tv = new TextViewer("VCBoot config file", res)
+                TextViewer tv = new TextViewer(Translate("i18n_tvcboot"), res)
                 {
                     Owner = this,
                     SaveFilename = device.Name + "-vcboot.cfg"
@@ -250,11 +258,11 @@ namespace PoEWizard
         {
             try
             {
-                ShowProgress("Reading configuration snapshot...");
+                ShowProgress(Translate("i18n_lsnap"));
                 await Task.Run(() => restApiService.GetSnapshot());
                 HideInfoBox();
                 HideProgress();
-                TextViewer tv = new TextViewer("Configuration Snapshot", device.ConfigSnapshot)
+                TextViewer tv = new TextViewer(Translate("i18n_tsnap"), device.ConfigSnapshot)
                 {
                     Owner = this,
                     SaveFilename = $"{device.Name}{SNAPSHOT_SUFFIX}"
@@ -302,7 +310,8 @@ namespace PoEWizard
                     JumpToSelectedPort(portSelected);
                     return;
                 }
-                ShowMessageBox("Search Port", $"Couldn't find {(sp.IsMacAddress ? $"MAC address {lastMacAddress}" : $"device or vendor \"{lastMacAddress}\"")} on switch {device.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
+                string msg = sp.IsMacAddress ? $"{Translate("i18n_fmac")} {lastMacAddress} " : $"{Translate("i18n_fdev")} \"{lastMacAddress}\")}}";
+                ShowMessageBox(Translate("i18n_sport"), $"{msg} {Translate("i18n_onsw")} {device.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
             }
             catch (Exception ex)
             {
@@ -351,20 +360,18 @@ namespace PoEWizard
 
         private async void FactoryReset(object sender, RoutedEventArgs e)
         {
-            MsgBoxResult res = ShowMessageBox("Factory reset", 
-                "The switch configuration will be restored to factory default. Please confirm your action.", 
-                MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
+            MsgBoxResult res = ShowMessageBox(Translate("i18n_tfrst"), Translate("i18n_cfrst"), MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
             if (res == MsgBoxResult.Cancel) return;
-            PassCode pc = new PassCode(this);
+            PassCode pc = new PassCode(this, config);
             if (pc.ShowDialog() == false) return;
             if (pc.Password != pc.SavedPassword)
             {
-                ShowMessageBox("Factory Reset", "Invalid password", MsgBoxIcons.Error);
+                ShowMessageBox(Translate("i18n_tfrst"), Translate("i18n_badPwd"), MsgBoxIcons.Error);
                 return;
             }
             Logger.Warn($"Switch S/N {device.SerialNumber} Model {device.Model}: Factory reset applied!");
             Activity.Log(device, "Factory reset applied");
-            ShowProgress("Applying factory default...");
+            ShowProgress(Translate("i18n_afrst"));
             FactoryDefault.Progress = progress;
             await Task.Run(() => FactoryDefault.Reset(device));
             LaunchRebootSwitch();
@@ -372,7 +379,7 @@ namespace PoEWizard
 
         private void LaunchConfigWizard(object sender, RoutedEventArgs e)
         {
-            _status.Text = "Running config wizard...";
+            _status.Text = Translate("i18n_runCW");
 
             ConfigWiz wiz = new ConfigWiz(device)
             {
@@ -387,7 +394,7 @@ namespace PoEWizard
             }
             if (wiz.Errors.Count > 0)
             {
-                string errMsg = $"The following {(wiz.Errors.Count > 1 ? "errors where" : "error was")} reported:";
+                string errMsg = wiz.Errors.Count > 1 ? Translate("i18n_cwErrs").Replace("$1", $"{wiz.Errors.Count}") : Translate("i18n_cwErr");
                 ShowMessageBox("Wizard", $"{errMsg}\n\n\u2022 {string.Join("\n\u2022 ", wiz.Errors)}", MsgBoxIcons.Error);
                 Logger.Warn($"Configuration from Wizard applyed with errors:\n\t{string.Join("\n\t", wiz.Errors)}");
                 Activity.Log(device, "Wizard applied with errors");
@@ -399,9 +406,8 @@ namespace PoEWizard
             HideInfoBox();
             if (wiz.MustDisconnect)
             {
-                string msg = "Application will disconnect from switch because IP address was changed.\nPlease reconnect with the new address.";
-                ShowMessageBox("Config Wiz", msg);
-                isClosing = true; // to avoid write memory message
+                ShowMessageBox("Config Wiz", Translate("i18n_discWiz"));
+                isClosing = true; // to avoid write memory prompt
                 Connect();
                 return;
             }
@@ -429,11 +435,12 @@ namespace PoEWizard
 
         private async void ResetPort_Click(object sender, RoutedEventArgs e)
         {
-            string title = $"Restarting power on port {selectedPort.Name}";
+            string title = $"{Translate("i18n_rstpp")} {selectedPort.Name}";
             if (selectedPort == null) return;
             try
             {
-                if (ShowMessageBox(title, $"Are you sure you want to reset the port {selectedPort.Name} of switch {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
+                if (ShowMessageBox(title, $"{Translate("i18n_cprst")} {selectedPort.Name} {Translate("i18n_onsw")} {device.Name}?",
+                    MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
                 {
                     return;
                 }
@@ -469,25 +476,72 @@ namespace PoEWizard
 
         private void Reboot_Click(object sender, RoutedEventArgs e)
         {
-            PassCode pc = new PassCode(this);
+            PassCode pc = new PassCode(this, config);
             if (pc.ShowDialog() == true)
             {
                 if (pc.Password != pc.SavedPassword)
                 {
-                    ShowMessageBox("Reboot", "Invalid password", MsgBoxIcons.Error);
+                    ShowMessageBox(Translate("i18n_reboot"), Translate("i18n_badPwd"), MsgBoxIcons.Error);
                 }
                 else
                 {
                     LaunchRebootSwitch();
                 }
-            } 
+            }
+        }
+
+        private async void LaunchRebootSwitch()
+        {
+            try
+            {
+                string cfgChanges = await GetSyncStatus(Translate("i18n_swrst"));
+                if (ShowMessageBox(Translate("i18n_rebsw"), $"{Translate("i18n_crebsw")} {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                {
+                    if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
+                    {
+                        ShowMessageBox(Translate("i18n_rebsw"), $"{Translate("i18n_frebsw1")} {device.Name} {Translate("i18n_frebsw2")}", MsgBoxIcons.Error);
+                        return;
+                    }
+                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(Translate("i18n_rebsw"), cfgChanges))
+                    {
+                        await Task.Run(() => restApiService.WriteMemory());
+                    }
+                    string confirm = $"{Translate("i18n_swrst")} {device.Name}";
+                    stopTrafficAnalysisReason = $"interrupted by the user before rebooting the switch {device.Name}";
+                    string title = $"{Translate("i18n_swrst")} {device.Name}";
+                    bool close = StopTrafficAnalysis(TrafficStatus.Abort, title, Translate("i18n_taSave"), confirm);
+                    if (!close) return;
+                    await WaitCloseTrafficAnalysis();
+                    DisableButtons();
+                    _switchMenuItem.IsEnabled = false;
+                    string switchName = device.Name;
+                    string duration = await Task.Run(() => restApiService.RebootSwitch(420));
+                    SetDisconnectedState();
+                    if (string.IsNullOrEmpty(duration)) return;
+                    string txt = $"{Translate("i18n_switch")} {switchName} {Translate("i18n_swready")} {duration}";
+                    if (ShowMessageBox(Translate("i18n_rebsw"), $"{txt}\n{Translate("i18n_recsw")} {switchName}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                    {
+                        Connect();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            finally
+            {
+                HideInfoBox();
+                HideProgress();
+            }
         }
 
         private async void CollectLogs_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                MsgBoxResult restartPoE = ShowMessageBox("Collect Logs", $"Do you want to power cycle PoE on all ports of switch {device.Name} to collect the logs?", MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
+                MsgBoxResult restartPoE = ShowMessageBox(Translate("i18n_logcol"), $"{Translate("i18n_pclogs1")} {device.Name} {Translate("i18n_pclogs2")}",
+                    MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
                 if (restartPoE == MsgBoxResult.Cancel) return;
                 string txt = $"Collect Logs launched by the user";
                 if (restartPoE == MsgBoxResult.Yes)
@@ -503,7 +557,7 @@ namespace PoEWizard
                 Activity.Log(device, $"{txt}.");
                 DisableButtons();
                 string sftpError = await RunCollectLogs(restartPoE == MsgBoxResult.Yes, null);
-                if (!string.IsNullOrEmpty(sftpError)) ShowMessageBox($"Collecting logs on switch {device.Name}", $"Cannot connect secure FTP on switch {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
+                if (!string.IsNullOrEmpty(sftpError)) ShowMessageBox($"{Translate("i18n_clog")} {device.Name}", $"{Translate("i18n_noSftp")} {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
             }
             catch (Exception ex)
             {
@@ -522,7 +576,7 @@ namespace PoEWizard
                 if (IsTrafficAnalysisRunning())
                 {
                     stopTrafficAnalysisReason = "interrupted by the user";
-                    StopTrafficAnalysis(TrafficStatus.CanceledByUser, "Traffic Analysis", "Are you sure you want to stop it");
+                    StopTrafficAnalysis(TrafficStatus.CanceledByUser, Translate("i18n_taIdle"), Translate("i18n_tastop"));
                 }
                 else
                 {
@@ -540,6 +594,40 @@ namespace PoEWizard
             }
         }
 
+        private async void StartTrafficAnalysis()
+        {
+            try
+            {
+                isTrafficRunning = true;
+                startTrafficAnalysisTime = DateTime.Now;
+                _trafficLabel.Content = Translate("i18n_taRun");
+                string switchName = device.Name;
+                TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(selectedTrafficDuration));
+                if (report != null)
+                {
+                    TextViewer tv = new TextViewer(Translate("i18n_taIdle"), report.Summary)
+                    {
+                        Owner = this,
+                        SaveFilename = $"{switchName}-{DateTime.Now:MM-dd-yyyy_hh_mm_ss}-traffic-analysis.txt",
+                        CsvData = report.Data.ToString()
+                    };
+                    tv.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            finally
+            {
+                _trafficLabel.Content = Translate("i18n_taIdle");
+                if (device.IsConnected) _traffic.IsEnabled = true; else _traffic.IsEnabled = false;
+                HideProgress();
+                HideInfoBox();
+                isTrafficRunning = false;
+            }
+        }
+
         private bool IsTrafficAnalysisRunning()
         {
             return restApiService != null && restApiService.IsTrafficAnalysisRunning();
@@ -550,21 +638,21 @@ namespace PoEWizard
             if (!isTrafficRunning) return true;
             try
             {
-                StringBuilder txt = new StringBuilder("The traffic analysis is still running (selected duration: ");
+                StringBuilder txt = new StringBuilder(Translate("i18n_tarun"));
                 string strSelDuration = string.Empty;
                 int duration = 0;
                 if (selectedTrafficDuration >= 60 && selectedTrafficDuration < 3600)
                 {
                     duration = selectedTrafficDuration / 60;
-                    strSelDuration = $"{duration} {MINUTE}";
+                    strSelDuration = $" {duration} {Translate("i18n_tamin")}";
                 }
                 else
                 {
                     duration = selectedTrafficDuration / 3600;
-                    strSelDuration = $"{duration} {HOUR}";
+                    strSelDuration = $" {duration} {Translate("i18n_tahour")}";
                 }
                 if (duration > 1) strSelDuration += "s";
-                txt.Append(strSelDuration).Append(").\nCurrent duration: ").Append(CalcStringDuration(startTrafficAnalysisTime, true));
+                txt.Append(strSelDuration).Append($").\n{Translate("i18n_tadur")} ").Append(CalcStringDurationTranslate(startTrafficAnalysisTime, true));
                 txt.Append("\n").Append(question).Append("?");
                 MsgBoxResult res = ShowMessageBox(title, txt.ToString(), MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
                 if (res == MsgBoxResult.Yes)
@@ -575,7 +663,7 @@ namespace PoEWizard
                 {
                     if (!string.IsNullOrEmpty(confirm))
                     {
-                        res = ShowMessageBox(title, $"Do you still want to continue {confirm}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
+                        res = ShowMessageBox(title, $"{Translate("i18n_tacont")} {confirm}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
                         if (res == MsgBoxResult.No) return false;
                     }
                     restApiService?.StopTrafficAnalysis(abortType, stopTrafficAnalysisReason);
@@ -603,7 +691,7 @@ namespace PoEWizard
 
         private void Help_Click(object sender, RoutedEventArgs e)
         {
-            string hlpFile = Theme == ThemeType.Dark ? "help-dark.html" : "help-light.html";
+            string hlpFile = "help-enUS.html"; //must add code to select file if multiple languages are created
             HelpViewer hv = new HelpViewer(hlpFile)
             {
                 Owner = this,
@@ -633,7 +721,7 @@ namespace PoEWizard
             string t = mi.Header.ToString();
             if (mi.IsChecked) return;
             mi.IsChecked = true;
-            if (t == "Dark")
+            if (t == Translate("i18n_dark"))
             {
                 _lightMenuItem.IsChecked = false;
                 Theme = ThemeType.Dark;
@@ -653,10 +741,41 @@ namespace PoEWizard
             {
                 _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
             }
+            config.Set("theme", t);
             SetTitleColor(this);
             //force color converters to run
             DataContext = null;
             DataContext = device;
+        }
+
+        private void LangItem_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem mi = sender as MenuItem;
+            if (mi.IsChecked) return;
+            string l = mi.Header.ToString().Replace("-", "").ToLower();
+            var dict = resourceDicts.FirstOrDefault(d => d.Contains(l));
+            Resources.MergedDictionaries.Remove(Strings);
+            Strings = new ResourceDictionary
+            {
+                Source = new Uri(dict, UriKind.Relative)
+            };
+            Resources.MergedDictionaries.Add(Strings);
+            mi.IsChecked = true;
+            config.Set("language", mi.Header.ToString());
+            foreach (MenuItem i in _langMenu.Items)
+            {
+                if (i != mi) i.IsChecked = false;
+            }
+            if (device.IsConnected)
+            {
+                _switchAttributes.Text = $"{Translate("i18n_connTo")} {device.Name} ({Translate("i18n_upTime")} {device.UpTime})";
+            }
+            //force tooltip converter to run
+            if (selectedSlot != null)
+            {
+                _portList.ItemsSource = null;
+                _portList.ItemsSource = selectedSlot.Ports;
+            }
         }
 
         private void About_Click(object sender, RoutedEventArgs e)
@@ -684,7 +803,6 @@ namespace PoEWizard
                 _btnResetPort.IsEnabled = false;
                 _btnRunWiz.IsEnabled = false;
             }
-
         }
 
         private void PortSelection_Changed(Object sender, RoutedEventArgs e)
@@ -706,11 +824,11 @@ namespace PoEWizard
                 PortModel port = _portList.CurrentItem as PortModel;
                 if (cb.SelectedValue.ToString() != port.PriorityLevel.ToString())
                 {
-                    ShowMessageBox("Priority", $"Selected priority: {cb.SelectedValue}");
+                    ShowMessageBox(Translate("i18n_prio"), $"{Translate("i18n_selprio")} {cb.SelectedValue}");
                     PriorityLevelType prevPriority = port.PriorityLevel;
                     port.PriorityLevel = (PriorityLevelType)Enum.Parse(typeof(PriorityLevelType), cb.SelectedValue.ToString());
                     if (port == null) return;
-                    string txt = $"Changing Priority to {port.PriorityLevel} on port {port.Name}";
+                    string txt = $"{Translate("i18n_cprio")} {port.PriorityLevel} on port {port.Name}";
                     ShowProgress($"{txt}...");
                     bool ok = false;
                     await Task.Run(() => ok = restApiService.ChangePowerPriority(port.Name, port.PriorityLevel));
@@ -745,17 +863,17 @@ namespace PoEWizard
             Keyboard.ClearFocus();
             if (!selectedSlot.SupportsPoE)
             {
-                ShowMessageBox("PoE OFF", $"Slot {selectedSlot.Name} doesn't support PoE!", MsgBoxIcons.Error);
+                ShowMessageBox(Translate("i18n_spoeOff"), $"{Translate("i18n_slot")} {selectedSlot.Name} {Translate("i18n_nopoe")}", MsgBoxIcons.Error);
                 cb.IsChecked = false;
                 return;
             }
             if (cb.IsChecked == false)
             {
-                string msg = $"Are you sure you want to turn PoE Off on all ports in slot {selectedSlot.Name}?";
-                MsgBoxResult poweroff = ShowMessageBox("PoE OFF", msg, MsgBoxIcons.Question, MsgBoxButtons.YesNo);
+                string msg = $"{Translate("i18n_cpoeoff")} {selectedSlot.Name}?";
+                MsgBoxResult poweroff = ShowMessageBox(Translate("i18n_spoeOff"), msg, MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                 if (poweroff == MsgBoxResult.Yes)
                 {
-                    PassCode pc = new PassCode(this);
+                    PassCode pc = new PassCode(this, config);
                     if (pc.ShowDialog() == false)
                     {
                         cb.IsChecked = true;
@@ -763,7 +881,7 @@ namespace PoEWizard
                     }
                     if (pc.Password != pc.SavedPassword)
                     {
-                        ShowMessageBox("Slot PoE Off", "Invalid password", MsgBoxIcons.Error);
+                        ShowMessageBox(Translate("i18n_spoeOff"), Translate("i18n_badPwd"), MsgBoxIcons.Error);
                         cb.IsChecked = true;
                         return;
                     }
@@ -773,7 +891,7 @@ namespace PoEWizard
                     Activity.Log(device, $"PoE on slot {selectedSlot.Name} turned off");
                     return;
                 }
-                else 
+                else
                 {
                     cb.IsChecked = true;
                     return;
@@ -783,7 +901,7 @@ namespace PoEWizard
             {
                 selectedSlot = slotView.Slots[prevSlot];
                 _slotsView.SelectedIndex = prevSlot;
-                ShowMessageBox("PoE On", $"Please wait for slot {selectedSlot.Name} to come up");
+                ShowMessageBox(Translate("i18n_spoeon"), $"{Translate("i18n_wpoeon")} {selectedSlot.Name} {Translate("i18n_waitup")}");
                 cb.IsChecked = false;
                 return;
             }
@@ -791,7 +909,7 @@ namespace PoEWizard
             {
                 isWaitingSlotOn = true;
                 DisableButtons();
-                ShowProgress($"Turning slot {selectedSlot.Name} PoE ON");
+                ShowProgress($"{Translate("i18n_poeon")} {Translate("i18n_onsl")} {selectedSlot.Name}");
                 await Task.Run(() =>
                 {
                     restApiService.PowerSlotUpOrDown(Command.POWER_UP_SLOT, selectedSlot.Name);
@@ -832,9 +950,9 @@ namespace PoEWizard
         {
             try
             {
-                string action = cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_FAST_ENABLE ? "Enabling" : "Disabling";
-                string poeType = (cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_PERPETUAL_DISABLE) ? "Perpetual" : "Fast";
-                ShowProgress($"{action} {poeType} PoE on slot {selectedSlot.Name}...");
+                string action = cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_FAST_ENABLE ? Translate("i18n_enable") : Translate("i18n_disable");
+                string poeType = (cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_PERPETUAL_DISABLE) ? Translate("i18n_ppoe") : Translate("i18n_fpoe");
+                ShowProgress($"{action} {poeType} {Translate("i18n_onsl")} {selectedSlot.Name}...");
                 bool ok = false;
                 await Task.Run(() => ok = restApiService.SetPerpetualOrFastPoe(selectedSlot, cmd));
                 await WaitAckProgress();
@@ -868,6 +986,60 @@ namespace PoEWizard
 
         #region private methods
 
+        private void SetLanguageMenuOptions()
+        {
+            string pattern = @"(.*)(strings-)(.+)(.xaml)";
+            List<string> langs = new List<string>();
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourcesName = assembly.GetName().Name + ".g";
+            var manager = new System.Resources.ResourceManager(resourcesName, assembly);
+            var resourceSet = manager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
+            var resDict = resourceSet.OfType<DictionaryEntry>();
+            resourceDicts =
+              from entry in resourceSet.OfType<DictionaryEntry>()
+              let fileName = (string)entry.Key
+              where fileName.StartsWith("resources") && fileName.EndsWith(".baml")
+              select fileName.Substring(0, fileName.Length - 5) + ".xaml";
+
+            List<string> sorted = resourceDicts.ToList();
+            if (sorted.Count < 2)
+            {
+                _langMenu.Visibility = Visibility.Collapsed;
+                return;
+            }
+            sorted.Sort();
+            MenuItem found = null;
+            string fname = null;
+
+            foreach (var file in sorted)
+            {
+                Match match = Regex.Match(file, pattern);
+                if (match.Success)
+                {
+                    string name = match.Groups[match.Groups.Count - 2].Value;
+                    string iheader = name.Substring(0, name.Length - 2) + "-" + name.Substring(name.Length - 2).ToUpper();
+                    MenuItem item = new MenuItem { Header = iheader };
+                    if (iheader == config.Get("language"))
+                    {
+                        found = item;
+                        fname = file;
+                    }
+                    item.Click += new RoutedEventHandler(LangItem_Click);
+                    _langMenu.Items.Add(item);
+                }
+                if (found != null)
+                {
+                    Resources.MergedDictionaries.Remove(Strings);
+                    Strings = new ResourceDictionary
+                    {
+                        Source = new Uri(fname, UriKind.Relative)
+                    };
+                    Resources.MergedDictionaries.Add(Strings);
+                    found.IsChecked = true;
+                }
+            }
+        }
+
         private async void Connect()
         {
             try
@@ -880,10 +1052,9 @@ namespace PoEWizard
                 }
                 if (device.IsConnected)
                 {
-                    string textMsg = $"Disconnecting switch {device.Name}";
-                    string confirm = $"disconnecting the switch {device.Name}";
-                    stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                    bool close = StopTrafficAnalysis(TrafficStatus.Abort, textMsg, ASK_SAVE_TRAFFIC_REPORT, confirm);
+                    string textMsg = $"{Translate("i18n_taDisc")} {device.Name}";
+                    stopTrafficAnalysisReason = $"interrupted by the user before disconnecting the switch {device.Name}";
+                    bool close = StopTrafficAnalysis(TrafficStatus.Abort, textMsg, Translate("i18n_taSave"), textMsg);
                     if (!close) return;
                     await WaitCloseTrafficAnalysis();
                     ShowProgress($"{textMsg}{WAITING}");
@@ -896,8 +1067,14 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
                 await Task.Run(() => restApiService.Connect(reportResult));
+                if (!device.IsConnected)
+                {
+                    List<string> ips = config.Get("switches").Split(',').ToList();
+                    ips.RemoveAll(ip => ip == device.IpAddress);
+                    config.Set("switches", string.Join(",", ips));
+                }
                 UpdateConnectedState();
-                await CheckSwitchScanResult($"Connect to switch {device.Name}...", startTime);
+                await CheckSwitchScanResult($"{Translate("i18n_cnsw")} {device.Name}...", startTime);
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
                     AskRebootCertified();
@@ -916,9 +1093,7 @@ namespace PoEWizard
 
         private void AskRebootCertified()
         {
-            string msg = $"The switch booted on {CERTIFIED_DIR} directory, no changes can be saved.\n" +
-                $"Do you want to reboot the switch on {WORKING_DIR} directory?";
-            MsgBoxResult reboot = ShowMessageBox("Connection", msg, MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
+            MsgBoxResult reboot = ShowMessageBox("Connection", Translate("i18n_cert"), MsgBoxIcons.Warning, MsgBoxButtons.YesNo);
             if (reboot == MsgBoxResult.Yes)
             {
                 LaunchRebootSwitch();
@@ -964,7 +1139,7 @@ namespace PoEWizard
                 isClosing = true;
                 if (device?.RunningDir != CERTIFIED_DIR && device?.SyncStatus == SyncStatusType.NotSynchronized)
                 {
-                    if (AuthorizeWriteMemory("Write Memory required", cfgChanges))
+                    if (AuthorizeWriteMemory(Translate("i18n_wmem"), cfgChanges))
                     {
                         DisableButtons();
                         _comImg.Visibility = Visibility.Collapsed;
@@ -991,12 +1166,12 @@ namespace PoEWizard
             try
             {
                 DisableButtons();
-                ProgressReport wizardProgressReport = new ProgressReport("PoE Wizard Report:");
+                ProgressReport wizardProgressReport = new ProgressReport(Translate("i18n_pwRep"));
                 reportResult = new WizardReport();
-                string barText = $"Running PoE Wizard on port {selectedPort.Name}{WAITING}";
+                string barText = $"{Translate("i18n_pwRun")} {Translate("i18n_onport")} {selectedPort.Name}{WAITING}";
                 ShowProgress(barText);
                 DateTime startTime = DateTime.Now;
-                await Task.Run(() => restApiService.ScanSwitch($"Running PoE Wizard on port {selectedPort.Name}...", reportResult));
+                await Task.Run(() => restApiService.ScanSwitch($"{Translate("i18n_pwRun")} {Translate("i18n_onport")} {selectedPort.Name}...", reportResult));
                 ShowProgress(barText);
                 switch (selectedDeviceType)
                 {
@@ -1019,11 +1194,11 @@ namespace PoEWizard
                     await RunLastWizardActions();
                     result = reportResult.GetReportResult(selectedPort.Name);
                 }
-                string msg = $"{reportResult.Message}\n\nTotal duration: {CalcStringDuration(startTime, true)}";
+                string msg = $"{reportResult.Message}\n\n{Translate("i18n_pwDur")} {CalcStringDurationTranslate(startTime, true)}";
                 await Task.Run(() => restApiService.RefreshSwitchPorts());
                 if (!string.IsNullOrEmpty(reportResult.Message))
                 {
-                    wizardProgressReport.Title = "PoE Wizard Report:";
+                    wizardProgressReport.Title = Translate("i18n_pwRep");
                     wizardProgressReport.Type = result == WizardResult.Fail ? ReportType.Error : ReportType.Info;
                     wizardProgressReport.Message = msg;
                     progress.Report(wizardProgressReport);
@@ -1033,18 +1208,18 @@ namespace PoEWizard
                 txt.Append(selectedPort.Name).Append(" with device type ").Append(selectedDeviceType).Append(":").Append(msg).Append("\nPoE status: ").Append(selectedPort.Poe);
                 txt.Append(", Port Status: ").Append(selectedPort.Status).Append(", Power: ").Append(selectedPort.Power).Append(" Watts");
                 if (selectedPort.EndPointDevice != null) txt.Append("\n").Append(selectedPort.EndPointDevice);
-                else if (selectedPort.MacList?.Count > 0 && !string.IsNullOrEmpty(selectedPort.MacList[0])) txt.Append(", Device MAC: ").Append(selectedPort.MacList[0]);
+                else if (selectedPort.MacList?.Count > 0 && !string.IsNullOrEmpty(selectedPort.MacList[0]))
+                    txt.Append($", {Translate("i18n_pwDevMac")} ").Append(selectedPort.MacList[0]);
                 Logger.Activity(txt.ToString());
                 Activity.Log(device, $"PoE Wizard execution {(result == WizardResult.Fail ? "failed" : "succeeded")} on port {selectedPort.Name}");
                 RefreshSlotAndPortsView();
                 if (result == WizardResult.Fail)
                 {
-                    MsgBoxResult res = ShowMessageBox("Wizard", "It looks like the wizard was unable to fix the problem.\nDo you want to collect information to send to technical support?",
-                                              MsgBoxIcons.Question, MsgBoxButtons.YesNo);
+                    MsgBoxResult res = ShowMessageBox(Translate("i18n_pwiz"), Translate("i18n_pwNoRes"), MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                     if (res == MsgBoxResult.No) return;
                     maxCollectLogsDur = MAX_COLLECT_LOGS_WIZARD_DURATION;
                     string sftpError = await RunCollectLogs(true, selectedPort);
-                    if (!string.IsNullOrEmpty(sftpError)) ShowMessageBox(barText, $"Cannot connect secure FTP on switch {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
+                    if (!string.IsNullOrEmpty(sftpError)) ShowMessageBox(barText, $"{Translate("i18n_noSftp")} {device.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
                 }
                 await GetSyncStatus(null);
             }
@@ -1065,7 +1240,7 @@ namespace PoEWizard
 
         private async Task<string> RunCollectLogs(bool restartPoE, PortModel port)
         {
-            ShowInfoBox($"Collecting logs on switch {device.Name}{WAITING}");
+            ShowInfoBox($"{Translate("i18n_clog")} {device.Name}{WAITING}");
             string sftpError = null;
             await Task.Run(() =>
             {
@@ -1074,7 +1249,7 @@ namespace PoEWizard
                 if (string.IsNullOrEmpty(sftpError)) sftpService.DeleteFile(SWLOG_PATH);
             });
             if (!string.IsNullOrEmpty(sftpError)) return sftpError;
-            string barText = "Cleaning up current log{WAITING}";
+            string barText = Translate("i18n_cclogs");
             ShowInfoBox(barText);
             StartProgressBar(barText);
             await Task.Run(() => sftpService.DeleteFile(SWLOG_PATH));
@@ -1089,11 +1264,11 @@ namespace PoEWizard
             const double PERIOD_SFTP_RECONNECT_SEC = 30;
             try
             {
-                StartProgressBar($"Collecting logs on switch {device.Name}{WAITING}");
+                StartProgressBar($"{Translate("i18n_clog")} {device.Name}{WAITING}");
                 DateTime initialTime = DateTime.Now;
                 debugSwitchLog = new SwitchDebugModel(reportResult, SwitchDebugLogLevel.Debug3);
                 await Task.Run(() => restApiService.RunGetSwitchLog(debugSwitchLog, restartPoE, maxCollectLogsDur, port?.Name));
-                StartProgressBar($"Downloading tar file{WAITING}");
+                StartProgressBar($"{Translate("i18n_ttar")}{WAITING}");
                 long fsize = 0;
                 long previousSize = -1;
                 DateTime startTime = DateTime.Now;
@@ -1103,9 +1278,9 @@ namespace PoEWizard
                 DateTime resetSftpConnectionTime = DateTime.Now;
                 while (waitCnt < 2)
                 {
-                    strDur = CalcStringDuration(startTime, true);
-                    msg = !string.IsNullOrEmpty(strDur) ? $"Waiting for tar file ready ({strDur}){WAITING}" : $"Waiting for tar file ready{WAITING}";
-                    if (fsize > 0) msg += $"\nFile size: {PrintNumberBytes(fsize)}";
+                    strDur = CalcStringDurationTranslate(startTime, true);
+                    msg = !string.IsNullOrEmpty(strDur) ? $"{Translate("i18n_wclogs")} ({strDur}){WAITING}" : $"{Translate("i18n_wclogs")}{WAITING}";
+                    if (fsize > 0) msg += $"\n{Translate("i18n_fsize")} {PrintNumberBytes(fsize)}";
                     ShowInfoBox(msg);
                     UpdateSwitchLogBar(initialTime);
                     await Task.Run(() =>
@@ -1137,9 +1312,9 @@ namespace PoEWizard
                         return;
                     }
                 }
-                strDur = CalcStringDuration(startTime, true);
-                string strTotalDuration = CalcStringDuration(initialTime, true);
-                ShowInfoBox($"Downloading tar file from switch{device.Name}{WAITING}");
+                strDur = CalcStringDurationTranslate(startTime, true);
+                string strTotalDuration = CalcStringDurationTranslate(initialTime, true);
+                ShowInfoBox($"{Translate("i18n_ttar")} {Translate("i18n_fromsw")} {device.Name}{WAITING}");
                 DateTime startDowanloadTime = DateTime.Now;
                 string fname = null;
                 await Task.Run(() =>
@@ -1149,17 +1324,17 @@ namespace PoEWizard
                 UpdateSwitchLogBar(initialTime);
                 if (fname == null)
                 {
-                    ShowMessageBox("Downloading tar file", $"Failed to download file \"{SWLOG_PATH}\" from the switch {device.Name}!", MsgBoxIcons.Error);
+                    ShowMessageBox(Translate("i18n_ttar"), $"{Translate("i18n_tfail")} \"{SWLOG_PATH}\" {Translate("i18n_fromsw")} {device.Name}!", MsgBoxIcons.Error);
                     return;
                 }
-                string downloadDur = CalcStringDuration(startDowanloadTime);
-                string text = $"Tar file downloaded from switch{device.Name}{WAITING}\nDownload duration: {downloadDur}";
-                text += $", File size: {PrintNumberBytes(fsize)}\nFile creation duration: {strDur}";
+                string downloadDur = CalcStringDurationTranslate(startDowanloadTime);
+                string text = $"{Translate("i18n_tloaded")} {device.Name}{WAITING}\n{Translate("i18n_tddur")} {downloadDur}";
+                text += $", {Translate("i18n_fsize")} {PrintNumberBytes(fsize)}\n{Translate("i18n_lclogs")} {strDur}";
                 ShowInfoBox(text);
                 var sfd = new SaveFileDialog()
                 {
-                    Filter = "Tar File|*.tar",
-                    Title = "Save switch logs",
+                    Filter = $"{Translate("i18n_tarf")}|*.tar",
+                    Title = Translate("i18n_sfile"),
                     InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
                     FileName = $"{Path.GetFileName(fname)}-{device.Name}-{DateTime.Now:MM-dd-yyyy_hh_mm_ss}.tar"
                 };
@@ -1202,11 +1377,11 @@ namespace PoEWizard
         private void ShowWaitTarFileError(long fsize, DateTime startTime)
         {
             StringBuilder msg = new StringBuilder();
-            msg.Append($"Failed to create \"").Append(SWLOG_PATH).Append("\" file by the switch ").Append(device.IpAddress).Append("!\nWaited too long for tar file (");
-            msg.Append(CalcStringDuration(startTime, true)).Append(")\nFile size: ");
+            msg.Append($"{Translate("i18n_ffail")} \"").Append(SWLOG_PATH).Append($"\" {Translate("i18n_onsw")} ").Append(device.IpAddress).Append("\n");
+            msg.Append($"{Translate("i18n_fileTout")} (").Append(CalcStringDurationTranslate(startTime, true)).Append($")\n{Translate("i18n_fsize")} ");
             if (fsize == 0) msg.Append("0 Bytes"); else msg.Append(PrintNumberBytes(fsize));
             Logger.Error(msg.ToString());
-            ShowMessageBox("Waiting for tar file ready", msg.ToString(), MsgBoxIcons.Error);
+            ShowMessageBox(Translate("i18n_wclogs"), msg.ToString(), MsgBoxIcons.Error);
         }
 
         private void RefreshSlotAndPortsView()
@@ -1215,7 +1390,7 @@ namespace PoEWizard
             _slotsView.ItemsSource = null;
             _portList.ItemsSource = null;
             DataContext = device;
-            _switchAttributes.Text = $"Connected to: {device.Name} (Up time: {device.UpTime})";
+            _switchAttributes.Text = $"{Translate("i18n_connTo")} {device.Name} ({Translate("i18n_upTime")} {device.UpTime})";
             slotView = new SlotView(device);
             _slotsView.ItemsSource = slotView.Slots;
             if (selectedSlot != null)
@@ -1232,8 +1407,8 @@ namespace PoEWizard
                 DisableButtons();
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
-                await Task.Run(() => restApiService.RefreshSwitch($"Refresh switch {device.Name}", reportResult));
-                await CheckSwitchScanResult($"Refresh switch {device.Name}", startTime);
+                await Task.Run(() => restApiService.RefreshSwitch($"{Translate("i18n_refrsw")} {device.Name}", reportResult));
+                await CheckSwitchScanResult($"{Translate("i18n_refrsw")} {device.Name}", startTime);
                 RefreshSlotAndPortsView();
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
@@ -1256,13 +1431,13 @@ namespace PoEWizard
         {
             try
             {
-                string cfgChanges = await GetSyncStatus($"Checking configuration changes on switch {device.Name}");
+                string cfgChanges = await GetSyncStatus($"{Translate("i18n_cfgCh")} {device.Name}");
                 if (device.SyncStatus == SyncStatusType.Synchronized)
                 {
-                    ShowMessageBox("Write Memory", $"No configuration changes on switch {device.Name}", MsgBoxIcons.Info, MsgBoxButtons.Ok);
+                    ShowMessageBox(Translate("i18n_save"), $"{Translate("i18n_nochg")} {device.Name}", MsgBoxIcons.Info, MsgBoxButtons.Ok);
                     return;
                 }
-                if (AuthorizeWriteMemory("Write Memory required", cfgChanges))
+                if (AuthorizeWriteMemory(Translate("i18n_wmem"), cfgChanges))
                 {
                     DisableButtons();
                     await Task.Run(() => restApiService.WriteMemory());
@@ -1287,7 +1462,7 @@ namespace PoEWizard
         {
             try
             {
-                string duration = CalcStringDuration(startTime, true);
+                Logger.Debug($"{title} completed (duration: {CalcStringDuration(startTime, true)})");
                 if (reportResult.Result?.Count < 1) return;
                 WizardResult result = reportResult.GetReportResult(SWITCH);
                 if (result == WizardResult.Fail || result == WizardResult.Warning)
@@ -1309,9 +1484,9 @@ namespace PoEWizard
                         if (reportList?.Count > 0)
                         {
                             ReportResult report = reportList[reportList.Count - 1];
-                            string alertMsg = $"{report.AlertDescription}\nDo you want to turn it on?";
-                            if (report?.Result == WizardResult.Warning && 
-                                ShowMessageBox($"Slot {report.ID} warning", alertMsg, MsgBoxIcons.Question, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                            string alertMsg = $"{report.AlertDescription}\n{Translate("i18n_turnon")}";
+                            if (report?.Result == WizardResult.Warning &&
+                                ShowMessageBox($"{Translate("i18n_slot")} {report.ID}", alertMsg, MsgBoxIcons.Question, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
                             {
                                 await PowerSlotUpOrDown(Command.POWER_UP_SLOT, report.ID);
                                 resetSlotCnt++;
@@ -1321,12 +1496,11 @@ namespace PoEWizard
                     }
                     if (resetSlotCnt > 0)
                     {
-                        ShowProgress($"Waiting Ports to come UP on Switch {device.Name}");
+                        ShowProgress($"{Translate("i18n_wpUp")} {device.Name}");
                         await Task.Run(() => WaitSlotPortsUp());
                         RefreshSlotsAndPorts();
                     }
                 }
-                Logger.Debug($"{title} completed (duration: {duration})");
             }
             catch (Exception ex)
             {
@@ -1336,7 +1510,7 @@ namespace PoEWizard
 
         private async Task PowerSlotUpOrDown(Command cmd, string slotNr)
         {
-            string msg = $"Turning slot {slotNr} PoE {(cmd == Command.POWER_UP_SLOT ? "ON" : "OFF")}";
+            string msg = cmd == Command.POWER_UP_SLOT ? Translate("i18n_poeon") : Translate("i18n_poeoff");
             ShowProgress(msg);
             progress.Report(new ProgressReport($"{msg}{WAITING}"));
             await Task.Run(() =>
@@ -1358,7 +1532,7 @@ namespace PoEWizard
 
         private void WaitSlotPortsUp()
         {
-            string msg = $"Waiting Ports to come UP on Switch {device.Name}";
+            string msg = $"{Translate("i18n_wpUp")} {device.Name}";
             DateTime startTime = DateTime.Now;
             int dur = 0;
             progress.Report(new ProgressReport($"{msg}{WAITING}"));
@@ -1439,8 +1613,8 @@ namespace PoEWizard
             if (result == WizardResult.Warning)
             {
                 string alertDescription = reportResult.GetAlertDescription(selectedPort.Name);
-                string msg = !string.IsNullOrEmpty(alertDescription) ? alertDescription : "To enable 802.3.bt all devices on the same slot will restart";
-                if (ShowMessageBox("Enable 802.3.bt", $"{msg}\nDo you want to proceed?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
+                string msg = !string.IsNullOrEmpty(alertDescription) ? alertDescription : Translate("i18n_cbtEn");
+                if (ShowMessageBox(Translate("i18n_pbtEn"), $"{msg}\n{Translate("i18n_proceed")}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
                     return;
             }
             await RunPoeWizard(new List<Command>() { Command.POWER_823BT_ENABLE });
@@ -1473,8 +1647,8 @@ namespace PoEWizard
             if (result == WizardResult.Warning)
             {
                 string alert = reportResult.GetAlertDescription(selectedPort.Name);
-                if (ShowMessageBox("Power Priority Change",
-                                    $"{(!string.IsNullOrEmpty(alert) ? $"{alert}" : "")}\nSome other devices with lower priority may stop\nDo you want to proceed?",
+                if (ShowMessageBox(Translate("i18n_chprio"),
+                                    $"{(!string.IsNullOrEmpty(alert) ? $"{alert}" : "")}\n{Translate("i18n_alprio")}\n{Translate("i18n_proceed")}",
                                     MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No) return;
             }
             await RunPoeWizard(new List<Command>() { Command.POWER_PRIORITY_PORT });
@@ -1499,8 +1673,8 @@ namespace PoEWizard
             if (reportResult.GetCurrentReportResult(selectedPort.Name) == WizardResult.Warning)
             {
                 string alert = reportResult.GetAlertDescription(selectedPort.Name);
-                string msg = !string.IsNullOrEmpty(alert) ? alert : $"Changing Max. Power on port {selectedPort.Name} to default";
-                if (ShowMessageBox("Check default Max. Power", $"{msg}\nDo you want to change?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                string msg = !string.IsNullOrEmpty(alert) ? alert : $"{Translate("i18n_dmaxpw")} {selectedPort.Name}";
+                if (ShowMessageBox(Translate("i18n_tmaxpw"), $"{msg}\n{Translate("i18n_proceed")}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
                 {
                     await RunPoeWizard(new List<Command>() { Command.CHANGE_MAX_POWER });
                 }
@@ -1510,40 +1684,6 @@ namespace PoEWizard
         private async Task RunPoeWizard(List<Command> cmdList, int waitSec = 15)
         {
             await Task.Run(() => restApiService.RunPoeWizard(selectedPort.Name, reportResult, cmdList, waitSec));
-        }
-
-        private async void StartTrafficAnalysis()
-        {
-            try
-            {
-                isTrafficRunning = true;
-                startTrafficAnalysisTime = DateTime.Now;
-                _trafficLabel.Content = TRAFFIC_ANALYSIS_RUNNING;
-                string switchName = device.Name;
-                TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(selectedTrafficDuration));
-                if (report != null)
-                {
-                    TextViewer tv = new TextViewer(TRAFFIC_ANALYSIS_IDLE, report.Summary)
-                    {
-                        Owner = this,
-                        SaveFilename = $"{switchName}-{DateTime.Now:MM-dd-yyyy_hh_mm_ss}-traffic-analysis.txt",
-                        CsvData = report.Data.ToString()
-                    };
-                    tv.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-            finally
-            {
-                _trafficLabel.Content = TRAFFIC_ANALYSIS_IDLE;
-                if (device.IsConnected) _traffic.IsEnabled = true; else _traffic.IsEnabled = false;
-                HideProgress();
-                HideInfoBox();
-                isTrafficRunning = false;
-            }
         }
 
         private async Task WaitAckProgress()
@@ -1653,7 +1793,7 @@ namespace PoEWizard
                 DataContext = device;
                 Logger.Debug($"Data context set to {device.Name}");
                 _comImg.Source = (ImageSource)currentDict["connected"];
-                _switchAttributes.Text = $"Connected to: {device.Name} (Up time: {device.UpTime})";
+                _switchAttributes.Text = $"{Translate("i18n_connTo")} {device.Name} ({Translate("i18n_upTime")} {device.UpTime})";
                 _btnConnect.Cursor = Cursors.Hand;
                 _switchMenuItem.IsEnabled = false;
                 _disconnectMenuItem.Visibility = Visibility.Visible;
@@ -1676,7 +1816,7 @@ namespace PoEWizard
                 _fpgaLbl.Visibility = string.IsNullOrEmpty(device.Fpga) ? Visibility.Collapsed : Visibility.Visible;
                 _cpldLbl.Visibility = string.IsNullOrEmpty(device.Cpld) ? Visibility.Collapsed : Visibility.Visible;
                 _btnConnect.IsEnabled = true;
-                _comImg.ToolTip = "Click to disconnect";
+                _comImg.ToolTip = Translate("i18n_disc_tt");
                 if (device.TemperatureStatus == ThresholdType.Danger)
                 {
                     _tempWarn.Source = new BitmapImage(new Uri(@"Resources\danger.png", UriKind.Relative));
@@ -1705,52 +1845,6 @@ namespace PoEWizard
             }
         }
 
-        private async void LaunchRebootSwitch()
-        {
-            try
-            {
-                string cfgChanges = await GetSyncStatus("Rebooting Switch");
-                if (ShowMessageBox("Reboot Switch", $"Are you sure you want to reboot the switch {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
-                {
-                    if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
-                    {
-                        ShowMessageBox("Reboot Switch", $"Cannot reboot the switch {device.Name} because it's not certified!", MsgBoxIcons.Error);
-                        return;
-                    }
-                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory("Reboot Switch", cfgChanges))
-                    {
-                        await Task.Run(() => restApiService.WriteMemory());
-                    }
-                    string deviceName = device.Name;
-                    string confirm = $"rebooting the switch {deviceName}";
-                    stopTrafficAnalysisReason = $"interrupted by the user before {confirm}";
-                    string title = $"Rebooting switch {deviceName}";
-                    bool save = StopTrafficAnalysis(TrafficStatus.Abort, title, ASK_SAVE_TRAFFIC_REPORT, FirstChToUpper(confirm));
-                    if (!save) return;
-                    await WaitCloseTrafficAnalysis();
-                    DisableButtons();
-                    _switchMenuItem.IsEnabled = false;
-                    string duration = await Task.Run(() => restApiService.RebootSwitch(420));
-                    SetDisconnectedState();
-                    if (string.IsNullOrEmpty(duration)) return;
-                    string txt = $"Switch {deviceName} ready to connect\nReboot duration: {duration}";
-                    if (ShowMessageBox($"Reboot Switch {deviceName}", $"{txt}\nDo you want to reconnect to the switch {deviceName}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
-                    {
-                        Connect();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-            finally
-            {
-                HideInfoBox();
-                HideProgress();
-            }
-        }
-
         private async Task<string> GetSyncStatus(string title)
         {
             string cfgChanges = null;
@@ -1764,17 +1858,17 @@ namespace PoEWizard
 
         private bool AuthorizeWriteMemory(string title, string cfgChanges)
         {
-            StringBuilder text = new StringBuilder("Flash memory is not synchronized");
+            StringBuilder text = new StringBuilder(Translate("i18n_nosync"));
             if (!string.IsNullOrEmpty(cfgChanges))
             {
-                text.Append("\nSignificant configuration changes:");
+                text.Append($"\n{Translate("i18n_cfgch")}:");
                 text.Append(cfgChanges);
             }
             else
             {
-                text.Append("\nNo significant configuration changes.");
+                text.Append($"\n{Translate("i18n_nocfgch")}");
             }
-            text.Append("\nDo you want to save it now?\nIt may take up to 30 sec to execute Write Memory.");
+            text.Append($"\n{Translate("i18n_cfsave")}");
             return ShowMessageBox(title, text.ToString(), MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes;
         }
 
@@ -1788,7 +1882,7 @@ namespace PoEWizard
             _switchAttributes.Text = "";
             _switchMenuItem.IsEnabled = true;
             DisableButtons();
-            _comImg.ToolTip = "Click to reconnect";
+            _comImg.ToolTip = Translate("i18n_recon_tt");
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
             _tempStatus.Visibility = Visibility.Hidden;
             _cpu.Visibility = Visibility.Hidden;

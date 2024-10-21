@@ -22,6 +22,9 @@ namespace PoEWizard.Components
             {
                 Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             }
+            Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
+            Resources.MergedDictionaries.Add(MainWindow.Strings);
+
             DataContext = this;
             this.Owner = owner;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;

@@ -79,7 +79,13 @@ namespace PoEWizard.Device
                     Location = GetDictValue(dict, SYS_LOCATION);
                     Contact = GetDictValue(dict, SYS_CONTACT);
                     TimeSpan dur = TimeSpan.FromSeconds(StringToLong(GetDictValue(dict, SYS_UP_TIME)) / 100);
-                    UpTime = $"{(dur.Days > 0 ? $"{dur.Days} d : " : "")}{(dur.Hours > 0 ? $"{dur.Hours} h : " : "")}{dur.Minutes} min : {dur.Seconds} sec";
+                    List<string> upt = new List<string>();
+                    if (dur.Days > 0) upt.Add($"{dur.Days} {Translate("i18n_day")}");
+                    if (dur.Hours > 0) upt.Add($"{dur.Hours} {Translate("i18n_hour")}");
+                    if (dur.Minutes > 0) upt.Add($"{dur.Minutes} {Translate("i18n_min")}");
+                    if (dur.Seconds > 0) upt.Add($"{dur.Seconds} {Translate("i18n_sec")}");
+                    UpTime = string.Join(" : ", upt);
+                    //UpTime = $"{(dur.Days > 0 ? $"{dur.Days} d : " : "")}{(dur.Hours > 0 ? $"{dur.Hours} h : " : "")}{dur.Minutes} min : {dur.Seconds} sec";
                     string sync = GetDictValue(dict, CONFIG_CHANGE_STATUS);
                     string cert = GetDictValue(dict, CHAS_CONTROL_CERTIFY);
                     SyncStatus = sync == "1" ? cert == "3" ? SyncStatusType.Synchronized :

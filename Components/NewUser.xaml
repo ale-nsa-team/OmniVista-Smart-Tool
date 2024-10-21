@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
                 <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-enUS.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -21,9 +22,10 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="New User" Style="{DynamicResource popupTitle}" />
+        <TextBlock Grid.Row="0" HorizontalAlignment="Center" Style="{DynamicResource popupTitle}" 
+                   Text="{DynamicResource i18n_newUsr}" />
         <StackPanel Grid.Row="1" Style="{DynamicResource popupPanel}">
-            <Label>Username</Label>
+            <Label Content="{DynamicResource i18n_usrName}"/>
             <TextBox x:Name="_username" x:FieldModifier="private" Text="{Binding Username}" KeyUp="TextBox_KeyUp"/>
             <Grid>
                 <Grid.RowDefinitions>
@@ -34,7 +36,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0">Password</Label>
+                <Label Grid.Row="0" Grid.Column="0" Content="{DynamicResource i18n_pwd}"/>
                 <PasswordBox Grid.Row="1" Grid.Column="0" x:Name="_maskedPwd"
                          local:PasswordBoxAssistant.BindPassword="True"
                          PreviewMouseDown="MaskedPwdEnter"
@@ -56,8 +58,10 @@
         </StackPanel>
         <Border Grid.Row="2" Style="{DynamicResource propsBorder}">
             <StackPanel Orientation="Horizontal">
-                <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="2,0,0,0">Create</Button>
-                <Button Click="BtnCancel_Click" Style="{DynamicResource defaultButton}" Margin="20,0,0,0">Cancel</Button>
+                <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" 
+                        Margin="2,0,0,0" Content="{DynamicResource i18n_creBtn}"/>
+                <Button Click="BtnCancel_Click" Style="{DynamicResource defaultButton}" 
+                        Margin="20,0,0,0" Content="{DynamicResource i18n_canBtn}"/>
             </StackPanel>
         </Border>
     </Grid>

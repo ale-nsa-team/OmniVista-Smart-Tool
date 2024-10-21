@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
                 <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-enUS.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -21,9 +22,10 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="New Trap Receiver" Style="{DynamicResource popupTitle}" />
+        <TextBlock Grid.Row="0" HorizontalAlignment="Center" Style="{DynamicResource popupTitle}" 
+                   Text="{DynamicResource i18n_newRec}" />
         <StackPanel Grid.Row="1" Style="{DynamicResource cfgWindow}">
-            <Label>Version</Label>
+            <Label Content="{DynamicResource i18n_ver}"/>
             <ComboBox x:Name="_version" Style="{DynamicResource defaultCombo}" Margin="20,10,20,10"
                       SelectionChanged="OnVersionChanged"
                       SelectedItem="{Binding Version}"
@@ -31,7 +33,7 @@
                 <ComboBoxItem Content="v2" />
                 <ComboBoxItem Content="v3" />
             </ComboBox>
-            <Label>IP Address</Label>
+            <Label Content="{DynamicResource i18n_ip}"/>
             <TextBox x:Name="_ipAddress" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
                 <TextBox.Text>
                     <Binding Path="IpAddress" UpdateSourceTrigger="PropertyChanged">
@@ -41,16 +43,12 @@
                     </Binding>
                 </TextBox.Text>
             </TextBox>
-            <Label x:Name="_commLabel">
-                Community
-            </Label>
+            <Label x:Name="_commLabel" Content="{DynamicResource i18n_comm}" />
             <ComboBox x:Name="_communities" Style="{DynamicResource defaultCombo}" Margin="20,10,20,10"
                       ItemsSource="{Binding Communities}"
                       SelectedItem="{Binding SelectedCommunity}"
                       IsSynchronizedWithCurrentItem="True" />
-            <Label x:Name="_usrLabel" Visibility="Collapsed">
-                User
-            </Label>
+            <Label x:Name="_usrLabel" Visibility="Collapsed" Content="{DynamicResource i18n_user}" />
             <ComboBox x:Name="_users" Style="{DynamicResource defaultCombo}" Margin="20,10,20,10"
                       Visibility="Collapsed"
                       ItemsSource="{Binding Users}"
@@ -59,8 +57,10 @@
         </StackPanel>
         <Border Grid.Row="2" Style="{DynamicResource propsBorder}">
             <StackPanel Orientation="Horizontal">
-                <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="2,0,0,0">Create</Button>
-                <Button Click="BtnCancel_Click" Style="{DynamicResource defaultButton}" Margin="20,0,0,0">Cancel</Button>
+                <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" 
+                        Margin="2,0,0,0" Content="{DynamicResource i18n_creBtn}"/>
+                <Button Click="BtnCancel_Click" Style="{DynamicResource defaultButton}" 
+                        Margin="20,0,0,0" Content="{DynamicResource i18n_canBtn}"/>
             </StackPanel>
         </Border>
     </Grid>
