@@ -119,74 +119,74 @@
     <sys:String x:Key="i18n_psSN">Numéro de Série</sys:String>
 
     <!--Config Wizard Dialog-->
-    <sys:String x:Key="i18n_sysPar">System Parameters</sys:String>
-    <sys:String x:Key="i18n_netCfg">Network Gestion</sys:String>
-    <sys:String x:Key="i18n_mngtIp">Management IP Address</sys:String>
-    <sys:String x:Key="i18n_mask">Netmask</sys:String>
-    <sys:String x:Key="i18n_admPwd">Admin Password</sys:String>
-    <sys:String x:Key="i18n_sysName">System Name</sys:String>
+    <sys:String x:Key="i18n_sysPar">Paramètres Système</sys:String>
+    <sys:String x:Key="i18n_netCfg">Gestion de Réseau</sys:String>
+    <sys:String x:Key="i18n_mngtIp">Gestion de l'Adresse IP</sys:String>
+    <sys:String x:Key="i18n_mask">Masque de Réseau</sys:String>
+    <sys:String x:Key="i18n_admPwd">Mot de passe Admin</sys:String>
+    <sys:String x:Key="i18n_sysName">Nom du Système</sys:String>
     <sys:String x:Key="i18n_sysCont">Contact</sys:String>
-    <sys:String x:Key="i18n_sysLoc">Location</sys:String>
-    <sys:String x:Key="i18n_gwy">Default Gateway</sys:String>
-    <sys:String x:Key="i18n_dns">DNS Servers</sys:String>
-    <sys:String x:Key="i18n_ntp">NTP Servers</sys:String>
-    <sys:String x:Key="i18n_srvs">Servers</sys:String>
-    <sys:String x:Key="i18n_srv1">Server 1</sys:String>
-    <sys:String x:Key="i18n_srv2">Server 2</sys:String>
-    <sys:String x:Key="i18n_srv3">Server 3</sys:String>
-    <sys:String x:Key="i18n_domain">Domain Name</sys:String>
-    <sys:String x:Key="i18n_tz">Timezone</sys:String>
-    <sys:String x:Key="i18n_feat">Features</sys:String>
-    <sys:String x:Key="i18n_insProto">Disable Insecure Protocols</sys:String>
-    <sys:String x:Key="i18n_ssh">Enable SSH</sys:String>
-    <sys:String x:Key="i18n_relay">Enable DHCP Relay</sys:String>
-    <sys:String x:Key="i18n_dhcp">DHCP Server</sys:String>
-    <sys:String x:Key="i18n_multicast">Enable Multicast</sys:String>
+    <sys:String x:Key="i18n_sysLoc">Site</sys:String>
+    <sys:String x:Key="i18n_gwy">Passerelle par Défaut</sys:String>
+    <sys:String x:Key="i18n_dns">Serveurs DNS</sys:String>
+    <sys:String x:Key="i18n_ntp">Serveurs NTP</sys:String>
+    <sys:String x:Key="i18n_srvs">Serveurs</sys:String>
+    <sys:String x:Key="i18n_srv1">Serveur 1</sys:String>
+    <sys:String x:Key="i18n_srv2">Serveur 2</sys:String>
+    <sys:String x:Key="i18n_srv3">Serveur 3</sys:String>
+    <sys:String x:Key="i18n_domain">Nom de Domaine</sys:String>
+    <sys:String x:Key="i18n_tz">Fuseau Horaire</sys:String>
+    <sys:String x:Key="i18n_feat">Fonctionnalités</sys:String>
+    <sys:String x:Key="i18n_insProto">Désactiver les Protocoles non Sécurisés</sys:String>
+    <sys:String x:Key="i18n_ssh">Activer SSH</sys:String>
+    <sys:String x:Key="i18n_relay">Activer Relais DHCP</sys:String>
+    <sys:String x:Key="i18n_dhcp">Serveur DHCP</sys:String>
+    <sys:String x:Key="i18n_multicast">Activer Multidiffusion</sys:String>
     <sys:String x:Key="i18n_vlan">VLAN</sys:String>
-    <sys:String x:Key="i18n_pRep">Report:</sys:String>
-    <sys:String x:Key="i18n_en">Enable</sys:String>
-    <sys:String x:Key="i18n_dis">Disable</sys:String>
-    <sys:String x:Key="i18n_snmp">SNMP Settings</sys:String>
-    <sys:String x:Key="i18n_usrs">Users</sys:String>
-    <sys:String x:Key="i18n_usr">User</sys:String>
-    <sys:String x:Key="i18n_comms">Communitites</sys:String>
-    <sys:String x:Key="i18n_comm">Community</sys:String>
-    <sys:String x:Key="i18n_recv">Trap Receivers</sys:String>
+    <sys:String x:Key="i18n_pRep">Rapport:</sys:String>
+    <sys:String x:Key="i18n_en">Activer</sys:String>
+    <sys:String x:Key="i18n_dis">Inhiber</sys:String>
+    <sys:String x:Key="i18n_snmp">Paramètres SNMP</sys:String>
+    <sys:String x:Key="i18n_usrs">Usagers</sys:String>
+    <sys:String x:Key="i18n_usr">Usager</sys:String>
+    <sys:String x:Key="i18n_comms">Communautés</sys:String>
+    <sys:String x:Key="i18n_comm">Communauté</sys:String>
+    <sys:String x:Key="i18n_recv">Récepteurs Traps</sys:String>
     <sys:String x:Key="i18n_usrName">Name</sys:String>
-    <sys:String x:Key="i18n_auth">Authentication Protocol</sys:String>
-    <sys:String x:Key="i18n_enc">Encryption Protocol</sys:String>
-    <sys:String x:Key="i18n_commName">Name</sys:String>
-    <sys:String x:Key="i18n_trapIp">IP Address</sys:String>
-    <sys:String x:Key="i18n_trapSt">Status</sys:String>
+    <sys:String x:Key="i18n_auth">Protocole d'authentification</sys:String>
+    <sys:String x:Key="i18n_enc">Protocole de Cryptage</sys:String>
+    <sys:String x:Key="i18n_commName">Nom</sys:String>
+    <sys:String x:Key="i18n_trapIp">Adresse IP</sys:String>
+    <sys:String x:Key="i18n_trapSt">Statut</sys:String>
     <sys:String x:Key="i18n_ver">Version</sys:String>
-    <sys:String x:Key="i18n_runCW">Running config wizard...</sys:String>
-    <sys:String x:Key="i18n_cwErr">The following error was reported:</sys:String>
-    <sys:String x:Key="i18n_cwErrs">The following $1 errors where reported:</sys:String>
-    <sys:String x:Key="i18n_twiz">Config Wizard</sys:String>
+    <sys:String x:Key="i18n_runCW">Assistant de Gestion en cours...</sys:String>
+    <sys:String x:Key="i18n_cwErr">L'erreur suivante a été signalée:</sys:String>
+    <sys:String x:Key="i18n_cwErrs">Les $1 erreurs suivantes ont été signalées:</sys:String>
+    <sys:String x:Key="i18n_twiz">Assistant de Gestion</sys:String>
     <sys:String x:Key="i18n_discWiz" xml:space="preserve">
-Application will disconnect from switch because IP address wad changed.
-Please reconnect using the new address.
+L'application va se déconnecter de la switch car l'adresse IP a changé.
+Veuillez vous reconnecter en utilisant la nouvelle adresse IP.
     </sys:String>
-    <sys:String x:Key="i18n_loading">Loading current parameters, please wait...</sys:String>
-    <sys:String x:Key="i18n_appDns">Applying DNS and NPT parameters...</sys:String>
-    <sys:String x:Key="i18n_appFeat">Applying Features...</sys:String>
-    <sys:String x:Key="i18n_appSys">Applying System parameters...</sys:String>
-    <sys:String x:Key="i18n_reloading">Reloading switch data, please wait...</sys:String>
-    <sys:String x:Key="i18n_and">and</sys:String>
-    <sys:String x:Key="i18n_dupObj">already created</sys:String>
+    <sys:String x:Key="i18n_loading">Chargement des paramètres modifiés, veuillez patienter...</sys:String>
+    <sys:String x:Key="i18n_appDns">Validation des paramètres DNS et NTP...</sys:String>
+    <sys:String x:Key="i18n_appFeat">Validation des Fonctionnalités...</sys:String>
+    <sys:String x:Key="i18n_appSys">Validation des Paramètres Système...</sys:String>
+    <sys:String x:Key="i18n_reloading">Rechargement des données de la switch, veuillez patienter...</sys:String>
+    <sys:String x:Key="i18n_and">et</sys:String>
+    <sys:String x:Key="i18n_dupObj">déjà créé</sys:String>
     <sys:String x:Key="i18n_delUser">
-        related to this user will be deleted.
-Please confirm your action.
+        associée à cet usager sera supprimé.
+Veuillez confirmer votre action.
     </sys:String>
     <sys:String x:Key="i18n_delComm"  xml:space="preserve">
-Related stations will also be deleted.
-Please confirm your action.
+Les stations associées seront également supprimées.
+Veuillez confirmer votre action.
     </sys:String>
-    <sys:String x:Key="i18n_withIp">Station with IP address</sys:String>
-    <sys:String x:Key="i18n_newUsr">New User</sys:String>
-    <sys:String x:Key="i18n_newComm">New Community</sys:String>
-    <sys:String x:Key="i18n_commUsr">Associated User</sys:String>
-    <sys:String x:Key="i18n_newRec">New Trap Receiver</sys:String>
+    <sys:String x:Key="i18n_withIp">Station avec adresse IP</sys:String>
+    <sys:String x:Key="i18n_newUsr">Nouveau Usager</sys:String>
+    <sys:String x:Key="i18n_newComm">Nouvelle Communauté</sys:String>
+    <sys:String x:Key="i18n_commUsr">Usager Associé</sys:String>
+    <sys:String x:Key="i18n_newRec">Nouveau Récepteur Trap</sys:String>
 
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwiz">PoE Wizard</sys:String>

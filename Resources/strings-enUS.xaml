@@ -168,7 +168,7 @@ Application will disconnect from switch because IP address wad changed.
 Please reconnect using the new address.
     </sys:String>
     <sys:String x:Key="i18n_loading">Loading current parameters, please wait...</sys:String>
-    <sys:String x:Key="i18n_appDns">Applying DNS and NPT parameters...</sys:String>
+    <sys:String x:Key="i18n_appDns">Applying DNS and NTP parameters...</sys:String>
     <sys:String x:Key="i18n_appFeat">Applying Features...</sys:String>
     <sys:String x:Key="i18n_appSys">Applying System parameters...</sys:String>
     <sys:String x:Key="i18n_reloading">Reloading switch data, please wait...</sys:String>
