@@ -69,16 +69,16 @@
 
     <!--Slot Table-->
     <sys:String x:Key="i18n_slot">Slot</sys:String>
-    <sys:String x:Key="i18n_nports">#Ports</sys:String>
-    <sys:String x:Key="i18n_npoe">#Poe Ports</sys:String>
-    <sys:String x:Key="i18n_buget">Budget (Watts)</sys:String>
-    <sys:String x:Key="i18n_cons">Consumption (Watts)</sys:String>
-    <sys:String x:Key="i18n_btSupp">802.3BT Support</sys:String>
-    <sys:String x:Key="i18n_slPw">Power</sys:String>
-    <sys:String x:Key="i18n_fpoe">Fast PoE</sys:String>
-    <sys:String x:Key="i18n_ppoe">Perpetual PoE</sys:String>
+    <sys:String x:Key="i18n_nports">#Puertas</sys:String>
+    <sys:String x:Key="i18n_npoe">#Puertas Poe</sys:String>
+    <sys:String x:Key="i18n_buget">Potencia Max (Watts)</sys:String>
+    <sys:String x:Key="i18n_cons">Consumo (Watts)</sys:String>
+    <sys:String x:Key="i18n_btSupp">Soporta 802.3BT</sys:String>
+    <sys:String x:Key="i18n_slPw">Potencia</sys:String>
+    <sys:String x:Key="i18n_fpoe">PoE Rápido</sys:String>
+    <sys:String x:Key="i18n_ppoe">PoE Perpetuo</sys:String>
     <sys:String x:Key="i18n_poeSt">PoE Status</sys:String>
-    <sys:String x:Key="i18n_vcRole">VC Master/Slave</sys:String>
+    <sys:String x:Key="i18n_vcRole">Función del VC</sys:String>
 
     <!--Port Table-->
     <sys:String x:Key="i18n_port">Port</sys:String>
