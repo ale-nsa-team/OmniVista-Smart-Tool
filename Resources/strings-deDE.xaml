@@ -96,97 +96,97 @@
     <sys:String x:Key="i18n_devName">Gerätename</sys:String>
 
     <!--Status Bar messages-->
-    <sys:String x:Key="i18n_idle">Idle</sys:String>
-    <sys:String x:Key="i18n_connTo">Connected to:</sys:String>
-    <sys:String x:Key="i18n_upTime">Up time:</sys:String>
+    <sys:String x:Key="i18n_idle">Frei</sys:String>
+    <sys:String x:Key="i18n_connTo">Angeschlossen mit:</sys:String>
+    <sys:String x:Key="i18n_upTime">Startzeit:</sys:String>
 
     <!--Login Dialog-->
-    <sys:String x:Key="i18n_cred">Enter Switch Credentials</sys:String>
-    <sys:String x:Key="i18n_ip">IP Address</sys:String>
-    <sys:String x:Key="i18n_user">Username</sys:String>
-    <sys:String x:Key="i18n_pwd">Password</sys:String>
-    <sys:String x:Key="i18n_lifail">Log in failed on switch</sys:String>
+    <sys:String x:Key="i18n_cred">Geben Sie die Anmeldung beim Switch</sys:String>
+    <sys:String x:Key="i18n_ip">Adresse IP</sys:String>
+    <sys:String x:Key="i18n_user">Benutzername</sys:String>
+    <sys:String x:Key="i18n_pwd">Passwort</sys:String>
+    <sys:String x:Key="i18n_lifail">Die Anmeldung beim Switch ist fehlgeschlagen</sys:String>
 
     <!--Power Supply dialog-->
-    <sys:String x:Key="i18n_psCh">Chassis/PS</sys:String>
-    <sys:String x:Key="i18n_psMod">MOdel</sys:String>
-    <sys:String x:Key="i18n_psType">Type</sys:String>
-    <sys:String x:Key="i18n_psLoc">Location</sys:String>
-    <sys:String x:Key="i18n_psDesc">Description</sys:String>
-    <sys:String x:Key="i18n_psProv">Power Privision</sys:String>
-    <sys:String x:Key="i18n_psPN">Part Number</sys:String>
-    <sys:String x:Key="i18n_psRev">Hardware Revision</sys:String>
-    <sys:String x:Key="i18n_psSN">Serial Number</sys:String>
+    <sys:String x:Key="i18n_psCh">Schaltergehäuse/PS</sys:String>
+    <sys:String x:Key="i18n_psMod">Modell</sys:String>
+    <sys:String x:Key="i18n_psType">Gerätetyp</sys:String>
+    <sys:String x:Key="i18n_psLoc">Stelle</sys:String>
+    <sys:String x:Key="i18n_psDesc">Beschreibung</sys:String>
+    <sys:String x:Key="i18n_psProv">Stromversorgung</sys:String>
+    <sys:String x:Key="i18n_psPN">Teilenummer</sys:String>
+    <sys:String x:Key="i18n_psRev">Hardware-Revision</sys:String>
+    <sys:String x:Key="i18n_psSN">Seriennummer</sys:String>
 
     <!--Config Wizard Dialog-->
-    <sys:String x:Key="i18n_sysPar">System Parameters</sys:String>
-    <sys:String x:Key="i18n_netCfg">Network Configuration</sys:String>
-    <sys:String x:Key="i18n_mngtIp">Management IP Address</sys:String>
-    <sys:String x:Key="i18n_mask">Netmask</sys:String>
-    <sys:String x:Key="i18n_admPwd">Admin Password</sys:String>
-    <sys:String x:Key="i18n_sysName">System Name</sys:String>
-    <sys:String x:Key="i18n_sysCont">Contact</sys:String>
-    <sys:String x:Key="i18n_sysLoc">Location</sys:String>
-    <sys:String x:Key="i18n_gwy">Default Gateway</sys:String>
+    <sys:String x:Key="i18n_sysPar">Systemparameter</sys:String>
+    <sys:String x:Key="i18n_netCfg">Netzwerkkonfiguration</sys:String>
+    <sys:String x:Key="i18n_mngtIp">Verwaltungs-IP-Adresse</sys:String>
+    <sys:String x:Key="i18n_mask">Netzmaske</sys:String>
+    <sys:String x:Key="i18n_admPwd">Admin-Passwort</sys:String>
+    <sys:String x:Key="i18n_sysName">Systemname</sys:String>
+    <sys:String x:Key="i18n_sysCont">Kontakt</sys:String>
+    <sys:String x:Key="i18n_sysLoc">Stelle</sys:String>
+    <sys:String x:Key="i18n_gwy">Standard-Gateway</sys:String>
     <sys:String x:Key="i18n_dns">DNS Servers</sys:String>
     <sys:String x:Key="i18n_ntp">NTP Servers</sys:String>
     <sys:String x:Key="i18n_srvs">Servers</sys:String>
     <sys:String x:Key="i18n_srv1">Server 1</sys:String>
     <sys:String x:Key="i18n_srv2">Server 2</sys:String>
     <sys:String x:Key="i18n_srv3">Server 3</sys:String>
-    <sys:String x:Key="i18n_domain">Domain Name</sys:String>
-    <sys:String x:Key="i18n_tz">Timezone</sys:String>
-    <sys:String x:Key="i18n_feat">Features</sys:String>
-    <sys:String x:Key="i18n_insProto">Disable Insecure Protocols</sys:String>
-    <sys:String x:Key="i18n_ssh">Enable SSH</sys:String>
-    <sys:String x:Key="i18n_relay">Enable DHCP Relay</sys:String>
-    <sys:String x:Key="i18n_dhcp">DHCP Server</sys:String>
-    <sys:String x:Key="i18n_multicast">Enable Multicast</sys:String>
+    <sys:String x:Key="i18n_domain">Domainname</sys:String>
+    <sys:String x:Key="i18n_tz">Zeitzone</sys:String>
+    <sys:String x:Key="i18n_feat">Funktionalitäten</sys:String>
+    <sys:String x:Key="i18n_insProto">Deaktivieren Unsichere Protokolle</sys:String>
+    <sys:String x:Key="i18n_ssh">Aktivieren SSH</sys:String>
+    <sys:String x:Key="i18n_relay">Aktivieren DHCP-Relay</sys:String>
+    <sys:String x:Key="i18n_dhcp">DHCP-Server</sys:String>
+    <sys:String x:Key="i18n_multicast">Aktivieren Multicast</sys:String>
     <sys:String x:Key="i18n_vlan">VLAN</sys:String>
-    <sys:String x:Key="i18n_pRep">Report:</sys:String>
-    <sys:String x:Key="i18n_en">Enable</sys:String>
-    <sys:String x:Key="i18n_dis">Disable</sys:String>
-    <sys:String x:Key="i18n_snmp">SNMP Settings</sys:String>
-    <sys:String x:Key="i18n_usrs">Users</sys:String>
-    <sys:String x:Key="i18n_usr">User</sys:String>
-    <sys:String x:Key="i18n_comms">Communitites</sys:String>
-    <sys:String x:Key="i18n_comm">Community</sys:String>
-    <sys:String x:Key="i18n_recv">Trap Receivers</sys:String>
+    <sys:String x:Key="i18n_pRep">Bericht:</sys:String>
+    <sys:String x:Key="i18n_en">Aktivieren</sys:String>
+    <sys:String x:Key="i18n_dis">Deaktivieren</sys:String>
+    <sys:String x:Key="i18n_snmp">SNMP-Einstellungen</sys:String>
+    <sys:String x:Key="i18n_usrs">Nutzernamen</sys:String>
+    <sys:String x:Key="i18n_usr">Nutzername</sys:String>
+    <sys:String x:Key="i18n_comms">Gemeinschaften</sys:String>
+    <sys:String x:Key="i18n_comm">Gemeinschaft</sys:String>
+    <sys:String x:Key="i18n_recv">Trap-Empfänger</sys:String>
     <sys:String x:Key="i18n_usrName">Name</sys:String>
-    <sys:String x:Key="i18n_auth">Authentication Protocol</sys:String>
-    <sys:String x:Key="i18n_enc">Encryption Protocol</sys:String>
+    <sys:String x:Key="i18n_auth">Authentifizierungsprotokoll</sys:String>
+    <sys:String x:Key="i18n_enc">Verschlüsselungsprotokoll</sys:String>
     <sys:String x:Key="i18n_commName">Name</sys:String>
-    <sys:String x:Key="i18n_trapIp">IP Address</sys:String>
+    <sys:String x:Key="i18n_trapIp">IP-Adresse</sys:String>
     <sys:String x:Key="i18n_trapSt">Status</sys:String>
     <sys:String x:Key="i18n_ver">Version</sys:String>
-    <sys:String x:Key="i18n_runCW">Running config wizard...</sys:String>
-    <sys:String x:Key="i18n_cwErr">The following error was reported:</sys:String>
-    <sys:String x:Key="i18n_cwErrs">The following $1 errors where reported:</sys:String>
-    <sys:String x:Key="i18n_twiz">Config Wizard</sys:String>
+    <sys:String x:Key="i18n_runCW">Konfigurationsassistent läuft...</sys:String>
+    <sys:String x:Key="i18n_cwErr">Der folgende Fehler wurde gemeldet:</sys:String>
+    <sys:String x:Key="i18n_cwErrs">Die folgenden $1 Fehler wurden gemeldet:</sys:String>
+    <sys:String x:Key="i18n_twiz">Konfigurationsassistent</sys:String>
     <sys:String x:Key="i18n_discWiz" xml:space="preserve">
-Application will disconnect from switch because IP address wad changed.
-Please reconnect using the new address.
+Die Anwendung wird vom Switch getrennt, da die IP-Adresse geändert wurde.
+Bitte stellen Sie die Verbindung mit der neuen IP-Adresse erneut her.
     </sys:String>
-    <sys:String x:Key="i18n_loading">Loading current parameters, please wait...</sys:String>
-    <sys:String x:Key="i18n_appDns">Applying DNS and NPT parameters...</sys:String>
-    <sys:String x:Key="i18n_appFeat">Applying Features...</sys:String>
-    <sys:String x:Key="i18n_appSys">Applying System parameters...</sys:String>
-    <sys:String x:Key="i18n_reloading">Reloading switch data, please wait...</sys:String>
-    <sys:String x:Key="i18n_and">and</sys:String>
-    <sys:String x:Key="i18n_dupObj">already created</sys:String>
+    <sys:String x:Key="i18n_loading">Die geänderten Parameter werden geladen. Bitte warten...</sys:String>
+    <sys:String x:Key="i18n_appDns">Anwenden von DNS und NTP Parametern...</sys:String>
+    <sys:String x:Key="i18n_appFeat">Anwenden von Funktionen...</sys:String>
+    <sys:String x:Key="i18n_appSys">Anwenden von Systemparametern...</sys:String>
+    <sys:String x:Key="i18n_reloading">Schalterdaten werden neu geladen, bitte warten...</sys:String>
+    <sys:String x:Key="i18n_and">und</sys:String>
+    <sys:String x:Key="i18n_dupObj">bereits erstellt</sys:String>
     <sys:String x:Key="i18n_delUser">
-        related to this user will be deleted.
-Please confirm your action.
+        die sich auf diesen Benutzer beziehen, werden gelöscht.
+Bitte bestätigen Sie Ihre Aktion.
     </sys:String>
     <sys:String x:Key="i18n_delComm"  xml:space="preserve">
-Related stations will also be deleted.
-Please confirm your action.
+Zugehörige Sender werden ebenfalls gelöscht.
+Bitte bestätigen Sie Ihre Aktion.
     </sys:String>
-    <sys:String x:Key="i18n_withIp">Station with IP address</sys:String>
-    <sys:String x:Key="i18n_newUsr">New User</sys:String>
-    <sys:String x:Key="i18n_newComm">New Community</sys:String>
-    <sys:String x:Key="i18n_commUsr">Associated User</sys:String>
-    <sys:String x:Key="i18n_newRec">New Trap Receiver</sys:String>
+    <sys:String x:Key="i18n_withIp">Station mit IP-Adresse</sys:String>
+    <sys:String x:Key="i18n_newUsr">Neuer Benutzername</sys:String>
+    <sys:String x:Key="i18n_newComm">Neue Gemeinschaft</sys:String>
+    <sys:String x:Key="i18n_commUsr">Zugeordneter Benutzerame</sys:String>
+    <sys:String x:Key="i18n_newRec">Neuer Trap-Empfänger</sys:String>
 
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwiz">PoE Wizard</sys:String>
@@ -263,67 +263,66 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_notex">failed to execute</sys:String>
 
     <!--About box-->
-    <sys:String x:Key="i18n_aboutTitle">About ALE Installer Toolkit</sys:String>
+    <sys:String x:Key="i18n_aboutTitle">Über die ALE Installer Toolkit</sys:String>
     <sys:String x:Key="i18n_cpright">Copyright</sys:String>
-    <sys:String x:Key="i18n_reserved">All Rights Reserved</sys:String>
-    <sys:String x:Key="i18n_authors">Authors:</sys:String>
+    <sys:String x:Key="i18n_reserved">Alle Rechte Vorbehalten</sys:String>
+    <sys:String x:Key="i18n_authors">Autoren:</sys:String>
     <sys:String x:Key="i18n_descr" xml:space="preserve">
-This application allows you to apply basic configuration and troubleshoot PoE issues on an Alcatel-Lucent Enterprise OmniSwitch®, equipped with AOS 8 version.
-The application communicates with the switch via REST API, to gather information on the power supplies and PoE ports, and allows the user to perform some configuration changes to mitigate common PoE issues. In case the wizard is unable to fix the problem, it allows the user to collect relevant information to be sent to TAC.
+Mit dieser Anwendung können Sie die Grundkonfiguration anwenden und PoE-Probleme auf einem Alcatel-Lucent Enterprise OmniSwitch® beheben, der mit der AOS 8-Version ausgestattet ist.
+Die Anwendung kommuniziert über die REST-API mit dem Switch, um Informationen zu den Netzteilen und PoE-Ports zu sammeln und ermöglicht dem Benutzer, einige Konfigurationsänderungen vorzunehmen, um häufige PoE-Probleme zu entschärfen. Falls der Assistent das Problem nicht beheben kann, ermöglicht er dem Benutzer, relevante Informationen zu sammeln, die an TAC gesendet werden.
 
-Permission to use, copy, modify, and distribute this source code, product, and its documentation without a fee and without a signed license agreement is hereby granted, provided that the copyright notice, this paragraph, and the following two paragraphs appear in all copies, modifications, and distributions.
+Hiermit wird die Erlaubnis erteilt, diesen Quellcode, dieses Produkt und seine Dokumentation ohne Gebühr und ohne unterzeichnete Lizenzvereinbarung zu verwenden, zu kopieren, zu ändern und zu verbreiten, vorausgesetzt, dass der Urheberrechtshinweis, dieser Absatz und die folgenden beiden Absätze in allen Kopien enthalten sind , Modifikationen und Distributionen.
 
-IN NO EVENT SHALL ALE USA INC. BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOURCE CODE, PRODUCT, AND ITS DOCUMENTATION, EVEN IF ALE USA INC. HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ALE USA INC. HAFTET IN KEINEM FALL GEGENÜBER JEMAND FÜR DIREKTE, INDIREKTE, BESONDERE, ZUFÄLLIGE ODER FOLGESCHÄDEN, EINSCHLIESSLICH ENTGANGENE GEWINNE, DIE SICH AUS DER VERWENDUNG DIESES QUELLENCODES, DES PRODUKTS UND SEINER DOKUMENTATION ERGEBEN, SELBST WENN ALE USA INC. WURDE ÜBER DIE MÖGLICHKEIT SOLCHER SCHÄDEN INFORMIERT. 
 
-ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOURCE CODE, PRODUCT, AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED “AS IS.” ALE USA INC. HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+ALE USA INC. SCHLIESST AUSDRÜCKLICH JEGLICHE GEWÄHRLEISTUNGEN AUS, EINSCHLIESSLICH, ABER NICHT BESCHRÄNKT AUF DIE STILLSCHWEIGENDEN GEWÄHRLEISTUNGEN DER MARKTGÄNGIGKEIT UND EIGNUNG FÜR EINEN BESTIMMTEN ZWECK. DER QUELLENCODE, DAS PRODUKT UND DIE BEGLEITENDE DOKUMENTATION WERDEN «WIE BESEHEN» ZUR VERFÜGUNG GESTELLT. ALE USA INC. IST NICHT VERPFLICHTET, WARTUNG, SUPPORT, UPDATES, VERBESSERUNGEN ODER ÄNDERUNGEN ZU BEREITSTELLEN. ALE USA INC. IST NICHT VERPFLICHTET, WARTUNG, SUPPORT, UPDATES, VERBESSERUNGEN ODER ÄNDERUNGEN ZU BEREITSTELLEN.
     </sys:String>
 
     <!--Switch scan-->
-    <sys:String x:Key="i18n_rsCnx">Connecting to switch</sys:String>
-    <sys:String x:Key="i18n_rest">Connecting REST API</sys:String>
-    <sys:String x:Key="i18n_scan">Scanning switch</sys:String>
-    <sys:String x:Key="i18n_sys">Reading system information</sys:String>
-    <sys:String x:Key="i18n_vinfo">Reading version information</sys:String>
-    <sys:String x:Key="i18n_chas">Reading chassis and port information</sys:String>
-    <sys:String x:Key="i18n_psi">Reading power supply information</sys:String>
-    <sys:String x:Key="i18n_rpoe">Reading PoE information</sys:String>
-    <sys:String x:Key="i18n_flashd">Reading flash data of chassis</sys:String>
-    <sys:String x:Key="i18n_lanpw">Getting LAN power information on slot</sys:String>
-    <sys:String x:Key="i18n_rlldp">Reading LLDP remote information</sys:String>
-    <sys:String x:Key="i18n_rmac">Reading MAC address information</sys:String>
-    <sys:String x:Key="i18n_rpdet">Reading ports detailed information</sys:String>
+    <sys:String x:Key="i18n_rsCnx">Anschließen an den Schalter</sys:String>
+    <sys:String x:Key="i18n_rest">REST-API verbinden</sys:String>
+    <sys:String x:Key="i18n_scan">Erfrischender Schalter</sys:String>
+    <sys:String x:Key="i18n_sys">Systeminformationen lesen</sys:String>
+    <sys:String x:Key="i18n_vinfo">Leseversion</sys:String>
+    <sys:String x:Key="i18n_chas">Auslesen von Gehäuse und Portinformationen</sys:String>
+    <sys:String x:Key="i18n_psi">Informationen zur Stromversorgung auslesen</sys:String>
+    <sys:String x:Key="i18n_rpoe">PoE-Informationen lesen</sys:String>
+    <sys:String x:Key="i18n_flashd">Flash-Daten des Chassis lesen</sys:String>
+    <sys:String x:Key="i18n_lanpw">Sammlung von Informationen über den Stromverbrauch des slot</sys:String>
+    <sys:String x:Key="i18n_rlldp">Lesen von LLDP-Remote-Informationen</sys:String>
+    <sys:String x:Key="i18n_rmac">MAC-Adressinformationen lesen</sys:String>
+    <sys:String x:Key="i18n_rpdet">Detaillierte Informationen zu Ports lesen</sys:String>
 
     <!--Collect Logs-->
-    <sys:String x:Key="i18n_getLog">Get Switch Log</sys:String>
-    <sys:String x:Key="i18n_nodp">Could not get data for port</sys:String>
-    <sys:String x:Key="i18n_clog">Collecting logs on switch</sys:String>
-    <sys:String x:Key="i18n_noslt">Could not get data for slot</sys:String>
-    <sys:String x:Key="i18n_pdbg">Setting PoE log debug level to</sys:String>
-    <sys:String x:Key="i18n_cdbg">Setting CMM log debug level to</sys:String>
-    <sys:String x:Key="i18n_rpdbg">Resetting PoE debug level back to</sys:String>
-    <sys:String x:Key="i18n_rcdbg">Resetting CMM debug level back to</sys:String>
-    <sys:String x:Key="i18n_prst">Resetting port</sys:String>
-    <sys:String x:Key="i18n_caplog">to capture logs</sys:String>
-    <sys:String x:Key="i18n_tarf">Tar File</sys:String>
-    <sys:String x:Key="i18n_targ">Generating tar file</sys:String>
-    <sys:String x:Key="i18n_chasoff">Turning power off on all slots of chassis</sys:String>
-    <sys:String x:Key="i18n_chason">Turning power on on all slots of chassis</sys:String>
-    <sys:String x:Key="i18n_clogl">Getting current log levels</sys:String>
-    <sys:String x:Key="i18n_tclogs">Collect Logs</sys:String>
-    <sys:String x:Key="i18n_pclogs1">Do you want to power cycle PoE on all ports of switch</sys:String>
-    <sys:String x:Key="i18n_pclogs2">to collect the logs?</sys:String>
-    <sys:String x:Key="i18n_rclogs">Collecting logs on switch</sys:String>
-    <sys:String x:Key="i18n_cclogs">Cleaning up current log...</sys:String>
-    <sys:String x:Key="i18n_ttar">Downloading tar file</sys:String>
-    <sys:String x:Key="i18n_tfail">Failed to downlad file</sys:String>
-    <sys:String x:Key="i18n_sfile">Save switch logs</sys:String>
-    <sys:String x:Key="i18n_ffail">Failed to create file</sys:String>
-    <sys:String x:Key="i18n_wclogs">Waiting from tar file ready</sys:String>
-    <sys:String x:Key="i18n_tloaded">Tar file downloaded from switch</sys:String>
-    <sys:String x:Key="i18n_tddur">Download duration:</sys:String>
-    <sys:String x:Key="i18n_fileTout">Timeout waiting for tar file</sys:String>
-    <sys:String x:Key="i18n_fsize">File size:</sys:String>
-    <sys:String x:Key="i18n_lclogs">File creation duration:</sys:String>
+    <sys:String x:Key="i18n_getLog">Sammeln des Logs des Switch</sys:String>
+    <sys:String x:Key="i18n_nodp">Daten für den Port konnten nicht abgerufen werden</sys:String>
+    <sys:String x:Key="i18n_clog">Logs beim Switch sammeln</sys:String>
+    <sys:String x:Key="i18n_noslt">Daten für Slot konnten nicht abgerufen werden</sys:String>
+    <sys:String x:Key="i18n_pdbg">Aktualisierung der PoE-Log-Debugstufe auf</sys:String>
+    <sys:String x:Key="i18n_cdbg">>Aktualisierung der CMM-Log-Debugstufe auf</sys:String>
+    <sys:String x:Key="i18n_rpdbg">Zurücksetzen des PoE-Debug-Levels auf</sys:String>
+    <sys:String x:Key="i18n_rcdbg">Zurücksetzen des CMM-Debug-Levels auf</sys:String>
+    <sys:String x:Key="i18n_prst">Port zurücksetzen</sys:String>
+    <sys:String x:Key="i18n_caplog">um Logs zu erfassen</sys:String>
+    <sys:String x:Key="i18n_tarf">TAR-Datei</sys:String>
+    <sys:String x:Key="i18n_targ">TAR-Datei erstellen</sys:String>
+    <sys:String x:Key="i18n_chasoff">Alle Slots des Schaltergehäuse werden ausgeschaltet</sys:String>
+    <sys:String x:Key="i18n_chason">Alle Slots des Schaltergehäuse werden aktiviert</sys:String>
+    <sys:String x:Key="i18n_clogl">Aktuelle Logs abrufen</sys:String>
+    <sys:String x:Key="i18n_tclogs">Sammeln Logs</sys:String>
+    <sys:String x:Key="i18n_pclogs1">Möchten Sie PoE an allen Ports des Switches aus und wieder einschalten</sys:String>
+    <sys:String x:Key="i18n_pclogs2">um die Log zu sammeln?</sys:String>
+    <sys:String x:Key="i18n_cclogs">Bereinigen des aktuellen Logs...</sys:String>
+    <sys:String x:Key="i18n_ttar">TAR-Datei wird heruntergeladen</sys:String>
+    <sys:String x:Key="i18n_tfail">Datei konnte nicht heruntergeladen werden</sys:String>
+    <sys:String x:Key="i18n_sfile">Switch-Log speichern</sys:String>
+    <sys:String x:Key="i18n_ffail">Datei konnte nicht erstellt werden</sys:String>
+    <sys:String x:Key="i18n_wclogs">Warten auf die fertige TAR-Datei</sys:String>
+    <sys:String x:Key="i18n_tloaded">TAR-Datei vom switch heruntergeladenh</sys:String>
+    <sys:String x:Key="i18n_tddur">Downloaddauer:</sys:String>
+    <sys:String x:Key="i18n_fileTout">Zeitüberschreitung beim Warten auf die TAR-Datei</sys:String>
+    <sys:String x:Key="i18n_fsize">Dateigröße:</sys:String>
+    <sys:String x:Key="i18n_lclogs">Dauer der dateierstellung:</sys:String>
 
     <!--Traffic Analysis-->
     <sys:String x:Key="i18n_taerr">Traffic analysis on switch</sys:String>
