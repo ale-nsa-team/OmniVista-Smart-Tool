@@ -915,23 +915,6 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void ShowInterfacesList()
-        {
-            try
-            {
-                SendProgressReport("Reading ports detail information");
-                _dictList = SendCommand(new CmdRequest(Command.SHOW_INTERFACES, ParseType.TrafficTable)) as List<Dictionary<string, string>>;
-                if (_dictList?.Count > 0)
-                {
-                    SwitchModel.LoadFromList(_dictList, DictionaryType.ShowInterfacesList);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
-
         private string GetDdmReport()
         {
             try
