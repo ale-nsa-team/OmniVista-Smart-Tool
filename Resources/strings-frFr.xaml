@@ -108,7 +108,7 @@
     <sys:String x:Key="i18n_lifail">Échec de la connexion sur la switch</sys:String>
 
     <!--Power Supply dialog-->
-    <sys:String x:Key="i18n_psCh">Alvéole/PS</sys:String>
+    <sys:String x:Key="i18n_psCh">Châssis/PS</sys:String>
     <sys:String x:Key="i18n_psMod">Modèle</sys:String>
     <sys:String x:Key="i18n_psType">Type</sys:String>
     <sys:String x:Key="i18n_psLoc">Site</sys:String>
@@ -279,19 +279,19 @@ ALE USA INC. DÉCLINE SPÉCIFIQUEMENT TOUTE GARANTIE, Y COMPRIS, MAIS SANS LIMIT
     </sys:String>
 
     <!--Switch scan-->
-    <sys:String x:Key="i18n_rsCnx">Connecting to switch</sys:String>
-    <sys:String x:Key="i18n_rest">Connecting REST API</sys:String>
-    <sys:String x:Key="i18n_scan">Scanning switch</sys:String>
-    <sys:String x:Key="i18n_sys">Reading system information</sys:String>
-    <sys:String x:Key="i18n_vinfo">Reading version information</sys:String>
-    <sys:String x:Key="i18n_chas">Reading chassis and port information</sys:String>
-    <sys:String x:Key="i18n_psi">Reading power supply information</sys:String>
-    <sys:String x:Key="i18n_rpoe">Reading PoE information</sys:String>
-    <sys:String x:Key="i18n_flashd">Reading flash data of chassis</sys:String>
-    <sys:String x:Key="i18n_lanpw">Getting LAN power information on slot</sys:String>
-    <sys:String x:Key="i18n_rlldp">Reading LLDP remote information</sys:String>
-    <sys:String x:Key="i18n_rmac">Reading MAC address information</sys:String>
-    <sys:String x:Key="i18n_rpdet">Reading ports detailed information</sys:String>
+    <sys:String x:Key="i18n_rsCnx">Connexion vers la switch</sys:String>
+    <sys:String x:Key="i18n_rest">Connexion de l'API REST</sys:String>
+    <sys:String x:Key="i18n_scan">Rafraîchissant switch</sys:String>
+    <sys:String x:Key="i18n_sys">Collecte d'info sur le système</sys:String>
+    <sys:String x:Key="i18n_vinfo">Collecte de la version</sys:String>
+    <sys:String x:Key="i18n_chas">Collecte d'info sur le châssis et les ports</sys:String>
+    <sys:String x:Key="i18n_psi">Collecte d'info sur la puissance</sys:String>
+    <sys:String x:Key="i18n_rpoe">Collecte d'info PoE</sys:String>
+    <sys:String x:Key="i18n_flashd">Collecte des données flash du châssis</sys:String>
+    <sys:String x:Key="i18n_lanpw">Collecte d'info sur la puissance consommée par le slot</sys:String>
+    <sys:String x:Key="i18n_rlldp">Collecte d'info des LLDP à distance</sys:String>
+    <sys:String x:Key="i18n_rmac">Collecte des info sur l'adresse MAC</sys:String>
+    <sys:String x:Key="i18n_rpdet">Collecte d'info détaillées sur les ports</sys:String>
 
     <!--Collect Logs-->
     <sys:String x:Key="i18n_getLog">Get Switch Log</sys:String>

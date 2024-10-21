@@ -279,19 +279,19 @@ ALE USA INC. SCHLIESST AUSDRÜCKLICH JEGLICHE GEWÄHRLEISTUNGEN AUS, EINSCHLIESS
     </sys:String>
 
     <!--Switch scan-->
-    <sys:String x:Key="i18n_rsCnx">Connecting to switch</sys:String>
-    <sys:String x:Key="i18n_rest">Connecting REST API</sys:String>
-    <sys:String x:Key="i18n_scan">Scanning switch</sys:String>
-    <sys:String x:Key="i18n_sys">Reading system information</sys:String>
-    <sys:String x:Key="i18n_vinfo">Reading version information</sys:String>
-    <sys:String x:Key="i18n_chas">Reading chassis and port information</sys:String>
-    <sys:String x:Key="i18n_psi">Reading power supply information</sys:String>
-    <sys:String x:Key="i18n_rpoe">Reading PoE information</sys:String>
-    <sys:String x:Key="i18n_flashd">Reading flash data of chassis</sys:String>
-    <sys:String x:Key="i18n_lanpw">Getting LAN power information on slot</sys:String>
-    <sys:String x:Key="i18n_rlldp">Reading LLDP remote information</sys:String>
-    <sys:String x:Key="i18n_rmac">Reading MAC address information</sys:String>
-    <sys:String x:Key="i18n_rpdet">Reading ports detailed information</sys:String>
+    <sys:String x:Key="i18n_rsCnx">Anschließen an den Schalter</sys:String>
+    <sys:String x:Key="i18n_rest">REST-API verbinden</sys:String>
+    <sys:String x:Key="i18n_scan">Erfrischender Schalter</sys:String>
+    <sys:String x:Key="i18n_sys">Systeminformationen lesen</sys:String>
+    <sys:String x:Key="i18n_vinfo">Leseversion</sys:String>
+    <sys:String x:Key="i18n_chas">Auslesen von Gehäuse und Portinformationen</sys:String>
+    <sys:String x:Key="i18n_psi">Informationen zur Stromversorgung auslesen</sys:String>
+    <sys:String x:Key="i18n_rpoe">PoE-Informationen lesen</sys:String>
+    <sys:String x:Key="i18n_flashd">Flash-Daten des Chassis lesen</sys:String>
+    <sys:String x:Key="i18n_lanpw">Sammlung von Informationen über den Stromverbrauch des slot</sys:String>
+    <sys:String x:Key="i18n_rlldp">Lesen von LLDP-Remote-Informationen</sys:String>
+    <sys:String x:Key="i18n_rmac">MAC-Adressinformationen lesen</sys:String>
+    <sys:String x:Key="i18n_rpdet">Detaillierte Informationen zu Ports lesen</sys:String>
 
     <!--Collect Logs-->
     <sys:String x:Key="i18n_getLog">Get Switch Log</sys:String>
