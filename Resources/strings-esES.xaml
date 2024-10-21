@@ -3,29 +3,29 @@
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <!--Menus-->
     <sys:String x:Key="i18n_switch">Switch</sys:String>
-    <sys:String x:Key="i18n_cnx">Connection</sys:String>
-    <sys:String x:Key="i18n_view">View</sys:String>
-    <sys:String x:Key="i18n_cfg">Configuration</sys:String>
+    <sys:String x:Key="i18n_cnx">Conexión</sys:String>
+    <sys:String x:Key="i18n_view">Mostrar</sys:String>
+    <sys:String x:Key="i18n_cfg">Configuración</sys:String>
     <sys:String x:Key="i18n_msw">Switch...</sys:String>
-    <sys:String x:Key="i18n_disc">Disconnect</sys:String>
-    <sys:String x:Key="i18n_exit">Exit</sys:String>
+    <sys:String x:Key="i18n_disc">Desconectar</sys:String>
+    <sys:String x:Key="i18n_exit">Cerrar</sys:String>
     <sys:String x:Key="i18n_log">Log</sys:String>
-    <sys:String x:Key="i18n_appLog">View App Log</sys:String>
-    <sys:String x:Key="i18n_activ">View Activities</sys:String>
-    <sys:String x:Key="i18n_level">Log Level</sys:String>
+    <sys:String x:Key="i18n_appLog">Mostrar Log</sys:String>
+    <sys:String x:Key="i18n_activ">Mostrar Actividades</sys:String>
+    <sys:String x:Key="i18n_level">Nivel de Log</sys:String>
     <sys:String x:Key="i18n_vcboot">vcboot.cfg</sys:String>
     <sys:String x:Key="i18n_sshot">Snapshot</sys:String>
-    <sys:String x:Key="i18n_ps">Power Supplies</sys:String>
-    <sys:String x:Key="i18n_src">Search MAC</sys:String>
-    <sys:String x:Key="i18n_theme">Theme</sys:String>
-    <sys:String x:Key="i18n_dark">Dark</sys:String>
-    <sys:String x:Key="i18n_light">Light</sys:String>
-    <sys:String x:Key="i18n_help">Help</sys:String>
-    <sys:String x:Key="i18n_about">About</sys:String>
-    <sys:String x:Key="i18n_frst">Factory Reset...</sys:String>
-    <sys:String x:Key="i18n_cfgWiz">Basic Configuration Wizard...</sys:String>
-    <sys:String x:Key="i18n_lang">Language</sys:String>
-    <sys:String x:Key="i18n_options">Options</sys:String>
+    <sys:String x:Key="i18n_ps">Fuentes de Alimentación</sys:String>
+    <sys:String x:Key="i18n_src">Buscar MAC</sys:String>
+    <sys:String x:Key="i18n_theme">Tema</sys:String>
+    <sys:String x:Key="i18n_dark">Oscuro</sys:String>
+    <sys:String x:Key="i18n_light">Claro</sys:String>
+    <sys:String x:Key="i18n_help">Ayuda</sys:String>
+    <sys:String x:Key="i18n_about">Sobre</sys:String>
+    <sys:String x:Key="i18n_frst">Restauración de fábrica...</sys:String>
+    <sys:String x:Key="i18n_cfgWiz">Asistente de Configuración Básica...</sys:String>
+    <sys:String x:Key="i18n_lang">Idioma</sys:String>
+    <sys:String x:Key="i18n_options">Opciones</sys:String>
 
     <!--Buttons-->
     <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>
@@ -120,7 +120,7 @@
 
     <!--Config Wizard Dialog-->
     <sys:String x:Key="i18n_sysPar">System Parameters</sys:String>
-    <sys:String x:Key="i18n_netCfg">Network Configuration</sys:String>
+    <sys:String x:Key="i18n_netCfg">Network Configuración</sys:String>
     <sys:String x:Key="i18n_mngtIp">Management IP Address</sys:String>
     <sys:String x:Key="i18n_mask">Netmask</sys:String>
     <sys:String x:Key="i18n_admPwd">Admin Password</sys:String>
@@ -348,7 +348,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
 
     <!--Other Messages-->
     <sys:String x:Key="i18n_rsNocnx">Could not connect to switch</sys:String>
-    <sys:String x:Key="i18n_rsConn">Connection</sys:String>
+    <sys:String x:Key="i18n_rsConn">Conexión</sys:String>
     <sys:String x:Key="i18n_rsMem">Writing memory on switch</sys:String>
     <sys:String x:Key="i18n_rsMemc">Write memory completed</sys:String>
     <sys:String x:Key="i18n_rsReboot">Waiting for switch</sys:String>
@@ -362,7 +362,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_fromsw">from switch</sys:String>
     <sys:String x:Key="i18n_noSftp">Cannot connect secure FTP on switch</sys:String>
     <sys:String x:Key="i18n_lsnap">Reading configuration snapshot...</sys:String>
-    <sys:String x:Key="i18n_tsnap">Configuration Shapshot</sys:String>
+    <sys:String x:Key="i18n_tsnap">Configuración Shapshot</sys:String>
     <sys:String x:Key="i18n_sport">Search Port</sys:String>
     <sys:String x:Key="i18n_fmac">Could not find MAC Address</sys:String>
     <sys:String x:Key="i18n_fdev">Could not find device or vendor</sys:String>
@@ -398,7 +398,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_disable">Disabling</sys:String>
     <sys:String x:Key="i18n_onsl">on slot</sys:String>
     <sys:String x:Key="i18n_cnsw">Connect to switch</sys:String>
-    <sys:String x:Key="i18n_dcnsw">Disconnect switch</sys:String>
+    <sys:String x:Key="i18n_dcnsw">Desconectar switch</sys:String>
     <sys:String x:Key="i18n_cert" xml:space="preserve">
 The switch booted on Certified directory, no changes can be saved.
 Do you want to reboot the switch on Working directory?"
