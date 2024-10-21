@@ -331,8 +331,6 @@ A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS 
     <sys:String x:Key="i18n_taRun">Executando...</sys:String>
     <sys:String x:Key="i18n_taIdle">Análise de Tráfego</sys:String>
     <sys:String x:Key="i18n_taSave">Deseja salvar o relatório de Análise de tráfego?</sys:String>
-    <sys:String x:Key="i18n_taInt">interrompido pelo usuário</sys:String>
-    <sys:String x:Key="i18n_taIntb">interrompido pelo usuário antes de</sys:String>
     <sys:String x:Key="i18n_taDisc">Desconectando da switch</sys:String>
     <sys:String x:Key="i18n_tappLog">Log da Aplicação</sys:String>
     <sys:String x:Key="i18n_tactLog">Log de Atividades</sys:String>
@@ -343,7 +341,7 @@ A ALE USA INC. ESPECIFICAMENTE SE ISENTA DE QUAISQUER GARANTIAS, INCLUINDO, MAS 
     <sys:String x:Key="i18n_min">min</sys:String>
     <sys:String x:Key="i18n_sec">s</sys:String>
     <sys:String x:Key="i18n_ms">ms</sys:String>
-    <sys:String x:Key="i18n_tadur">duração atual:</sys:String>
+    <sys:String x:Key="i18n_tadur">Duração atual:</sys:String>
     <sys:String x:Key="i18n_tacont">Ainda deseja continuar</sys:String>
     <sys:String x:Key="i18n_selDur">Selecione a duracao para a análise de tráfego</sys:String>
     <sys:String x:Key="i18n_tamin">minuto</sys:String>
@@ -429,7 +427,6 @@ Deseja salvar agora?
 A operação de escrita pode durar cerca de 30 segundos
     </sys:String>
     <sys:String x:Key="i18n_swrst">Reiniciando a switch</sys:String>
-    <sys:String x:Key="i18n_swrsti">interrompida pelo usuário antes de</sys:String>
     <sys:String x:Key="i18n_swready" xml:space="preserve">
 Pronto para conectar.
 Duração da reinicialização: </sys:String>

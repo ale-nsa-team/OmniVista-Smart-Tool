@@ -2185,7 +2185,7 @@ namespace PoEWizard.Comm
 
         private void LogActivity(string action, string data = null)
         {
-            string txt = $"Switch {SwitchModel.Name} ({SwitchModel.IpAddress}), S/N {SwitchModel.SerialNumber}, model {SwitchModel.Model}: {action}";
+            string txt = $"Switch {SwitchModel.Name} ({SwitchModel.IpAddress}): {action}";
             if (!string.IsNullOrEmpty(data)) txt += data;
             Logger.Activity(txt);
             Activity.Log(SwitchModel, action.Contains(".") ? action : $"{action}.");

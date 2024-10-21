@@ -84,8 +84,8 @@ namespace PoEWizard.Data
                 unit = HOUR;
                 selDuration = selectedDur / 3600;
             }
-            if (selDuration > 1) this.SelectedDuration += "s";
             this.SelectedDuration = $"{selDuration} {unit}";
+            if (selDuration > 1) this.SelectedDuration += "s";
         }
 
         public void Complete(string completion, string ddmReport)

@@ -2,6 +2,7 @@
 using System.Linq;
 using PoEWizard.Data;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Device
 {
@@ -36,18 +37,18 @@ namespace PoEWizard.Device
 
         public ChassisModel(Dictionary<string, string> dict)
         {
-            string nb = Utils.GetDictValue(dict, ID);
+            string nb = GetDictValue(dict, ID);
             Number = int.TryParse(nb, out int n) ? n : 1;
-            Model =  Utils.GetDictValue(dict, MODEL_NAME);
-            Type = Utils.GetDictValue(dict, MODULE_TYPE);
-            string role = Utils.GetDictValue(dict, ROLE);
+            Model =  GetDictValue(dict, MODEL_NAME);
+            Type = GetDictValue(dict, MODULE_TYPE);
+            string role = GetDictValue(dict, ROLE);
             IsMaster = role == "Master";
-            AdminStatus = Utils.GetDictValue(dict, ADMIN_STATUS);
-            OperationalStatus = Utils.GetDictValue(dict, OPERATIONAL_STATUS);
-            SerialNumber = Utils.GetDictValue(dict, SERIAL_NUMBER);
-            PartNumber = Utils.GetDictValue(dict, PART_NUMBER);
-            HardwareRevision = Utils.GetDictValue(dict, HARDWARE_REVISION);
-            MacAddress = Utils.GetDictValue(dict, CHASSIS_MAC_ADDRESS);
+            AdminStatus = GetDictValue(dict, ADMIN_STATUS);
+            OperationalStatus = GetDictValue(dict, OPERATIONAL_STATUS);
+            SerialNumber = GetDictValue(dict, SERIAL_NUMBER);
+            PartNumber = GetDictValue(dict, PART_NUMBER);
+            HardwareRevision = GetDictValue(dict, HARDWARE_REVISION);
+            MacAddress = GetDictValue(dict, CHASSIS_MAC_ADDRESS);
             Slots = new List<SlotModel>();
             PowerSupplies = new List<PowerSupplyModel>();
             Temperature = null;
@@ -58,7 +59,7 @@ namespace PoEWizard.Device
         {
             foreach (Dictionary<string, string> dict in list)
             {
-                int slotId = Utils.ParseNumber(Utils.GetDictValue(dict, CHAS_SLOT_PORT), 1);
+                int slotId = ParseNumber(GetDictValue(dict, CHAS_SLOT_PORT), 1);
                 var slot = this.Slots.FirstOrDefault(x => x.Number == slotId);
                 if (slot == null) return;
                 slot.LoadFromDictionary(dict);

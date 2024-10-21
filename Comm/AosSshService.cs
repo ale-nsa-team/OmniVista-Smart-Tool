@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.RestUrl;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Comm
 {
@@ -94,7 +95,7 @@ namespace PoEWizard.Comm
                 }
                 StringBuilder txt = new StringBuilder("Disconnecting Switch \"");
                 txt.Append(this._switch.Name).Append("\" (IP: ").Append(this._switch.IpAddress).Append("), Disconnect Time Duration: ");
-                txt.Append(Utils.CalcStringDuration(startDisconnectTime));
+                txt.Append(CalcStringDuration(startDisconnectTime));
                 LogDebug("DisconnectSshClient", txt.ToString());
             }
             catch (Exception ex)
@@ -194,7 +195,7 @@ namespace PoEWizard.Comm
                 {
                     return result;
                 }
-                dur = Utils.GetTimeDuration(startTime);
+                dur = GetTimeDuration(startTime);
             }
             return null;
         }
@@ -216,23 +217,23 @@ namespace PoEWizard.Comm
                             }
                             else if (keyVal.Key.Contains(D_CLI_TIMER.Replace(" ", "_")))
                             {
-                                this._cli_inactivity_timer = Utils.StringToInt(keyVal.Value);
+                                this._cli_inactivity_timer = StringToInt(keyVal.Value);
                             }
                             else if (keyVal.Key.Contains(D_FTP_TIMER.Replace(" ", "_")))
                             {
-                                this._ftp_inactivity_timer = Utils.StringToInt(keyVal.Value);
+                                this._ftp_inactivity_timer = StringToInt(keyVal.Value);
                             }
                             else if (keyVal.Key.Contains(D_HTTP_TIMER.Replace(" ", "_")))
                             {
-                                this._http_inactivity_timer = Utils.StringToInt(keyVal.Value);
+                                this._http_inactivity_timer = StringToInt(keyVal.Value);
                             }
                             else if (keyVal.Key.Contains(D_LOGIN_TIMER.Replace(" ", "_")))
                             {
-                                this._login_timer = Utils.StringToInt(keyVal.Value);
+                                this._login_timer = StringToInt(keyVal.Value);
                             }
                             else if (keyVal.Key.Contains(D_LOGIN_ATTEMPTS.Replace(" ", "_")))
                             {
-                                this._login_attempts = Utils.StringToInt(keyVal.Value);
+                                this._login_attempts = StringToInt(keyVal.Value);
                             }
                         }
                         catch (Exception ex)
@@ -302,7 +303,7 @@ namespace PoEWizard.Comm
                     result = WaitEndDataReceived(cmd, maxWait, expected);
                     result = WaitConfirm(cmd, result);
                     response[RESPONSE] = result;
-                    response[DURATION] = Utils.CalcStringDuration(startTime);
+                    response[DURATION] = CalcStringDuration(startTime);
                     return response;
                 }
                 else
@@ -364,13 +365,13 @@ namespace PoEWizard.Comm
                 DateTime startTime = DateTime.Now;
                 DisconnectSshClient();
                 txt = new StringBuilder("Disconnected the SSH session on Switch \"");
-                txt.Append(this._switch.Name).Append("\", Duration: ").Append(Utils.CalcStringDuration(startTime));
+                txt.Append(this._switch.Name).Append("\", Duration: ").Append(CalcStringDuration(startTime));
                 LogInfo("ResetSSHConnection", txt.ToString());
                 Thread.Sleep(1000);
                 startTime = DateTime.Now;
                 ConnectSSH();
                 txt = new StringBuilder("Reconnected the SSH session on Switch \"");
-                txt.Append(this._switch.Name).Append("\", Duration: ").Append(Utils.CalcStringDuration(startTime));
+                txt.Append(this._switch.Name).Append("\", Duration: ").Append(CalcStringDuration(startTime));
                 LogInfo("ResetSSHConnection", txt.ToString());
                 Thread.Sleep(1000);
             }
@@ -496,9 +497,9 @@ namespace PoEWizard.Comm
                         return;
                     }
                     Thread.Sleep(20);
-                    dur = Utils.GetTimeDuration(startTime);
+                    dur = GetTimeDuration(startTime);
                 }
-                throw new SwitchCommandError("Took too long (> " + Utils.CalcStringDuration(startTime) + ") to send command \"" + cmd + "\"!");
+                throw new SwitchCommandError("Took too long (> " + CalcStringDuration(startTime) + ") to send command \"" + cmd + "\"!");
             }
             catch (SwitchCommandError ex)
             {
@@ -569,7 +570,7 @@ namespace PoEWizard.Comm
                         return rec_buffer;
                     }
                     Thread.Sleep(100);
-                    dur = Utils.GetTimeDuration(startTime);
+                    dur = GetTimeDuration(startTime);
                     if (!this._received_buffer.ToString().Contains(cmd) && (dur >= (maxWait / 2)))
                     {
                         waitCmdCnt++;
@@ -600,7 +601,7 @@ namespace PoEWizard.Comm
                                           startTime, waitCmdCnt, cmd, this._received_buffer.ToString());
                     AbortCommand(cmd, maxWait);
                 }
-                throw new SwitchCommandError("Waited too long for the response from the command \"" + cmd + "\" (> " + Utils.CalcStringDuration(startTime) + ")!");
+                throw new SwitchCommandError("Waited too long for the response from the command \"" + cmd + "\" (> " + CalcStringDuration(startTime) + ")!");
             }
             catch (SwitchCommandError ex)
             {
@@ -637,7 +638,7 @@ namespace PoEWizard.Comm
                     timeCnt = 0;
                 }
                 Thread.Sleep(500);
-                dur = Utils.GetTimeDuration(startTime);
+                dur = GetTimeDuration(startTime);
             }
             this._prev_command_failed = cmd;
             LogCommandIncomplete("Waited too long for the prompt on Abort Command", startTime, waitPromptCnt, cmd, chunkData);
@@ -894,7 +895,7 @@ namespace PoEWizard.Comm
             {
                 StringBuilder txt = new StringBuilder(title);
                 txt.Append("\r\nCommand: \"").Append(cmd).Append("\" , Duration: ");
-                txt.Append(Utils.CalcStringDuration(startTime)).Append("\r\nData Received from the switch:\r\n").Append(response);
+                txt.Append(CalcStringDuration(startTime)).Append("\r\nData Received from the switch:\r\n").Append(response);
                 return txt.ToString();
             }
             catch { }
@@ -929,7 +930,7 @@ namespace PoEWizard.Comm
                 if (Logger.LogLevel == LogLevel.Trace)
                 {
                     StringBuilder txt = new StringBuilder("Command: \"");
-                    txt.Append(cmd).Append("\", Send Duration: ").Append(Utils.CalcStringDuration(startTime));
+                    txt.Append(cmd).Append("\", Send Duration: ").Append(CalcStringDuration(startTime));
                     LogTrace("SendCommandToSwitch", txt.ToString());
                 }
             }
@@ -945,7 +946,7 @@ namespace PoEWizard.Comm
                 if (Logger.LogLevel == LogLevel.Trace && this._received_buffer != null)
                 {
                     StringBuilder txt = new StringBuilder("Command: \"");
-                    txt.Append(cmd).Append("\", Response Duration: ").Append(Utils.CalcStringDuration(startTime));
+                    txt.Append(cmd).Append("\", Response Duration: ").Append(CalcStringDuration(startTime));
                     txt.Append("\r\nSwitch Response:\r\n").Append(this._received_buffer);
                     LogTrace("WaitResponseFromSwitch", txt.ToString());
                 }
@@ -961,8 +962,8 @@ namespace PoEWizard.Comm
             {
                 StringBuilder txt = new StringBuilder("Connecting to Switch \"");
                 txt.Append(this._switch.Name).Append("\" (IP: ").Append(this._switch.IpAddress).Append("), Connect Time Duration: ");
-                txt.Append(Utils.CalcStringDuration(startConnectTime)).Append(", Search Prompt Duration: ");
-                txt.Append(Utils.CalcStringDuration(startPromptTime)).Append("\r\nSSH Session configuration:\r\n").Append("Session Prompt: \"");
+                txt.Append(CalcStringDuration(startConnectTime)).Append(", Search Prompt Duration: ");
+                txt.Append(CalcStringDuration(startPromptTime)).Append("\r\nSSH Session configuration:\r\n").Append("Session Prompt: \"");
                 txt.Append(this.SessionPrompt).Append("\", Login Timer: ").Append(this._login_timer).Append(" sec, Max. Login Attempts: ");
                 txt.Append(this._login_attempts).Append(", CLI Inactivity Timer: ").Append(this._cli_inactivity_timer);
                 txt.Append(" min, FTP Inactivity Timer: ").Append(this._ftp_inactivity_timer).Append(" min, HTTP Inactivity Timer: ");

@@ -3,82 +3,82 @@
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <!--Menus-->
     <sys:String x:Key="i18n_switch">Switch</sys:String>
-    <sys:String x:Key="i18n_cnx">Connection</sys:String>
-    <sys:String x:Key="i18n_view">View</sys:String>
-    <sys:String x:Key="i18n_cfg">Configuration</sys:String>
+    <sys:String x:Key="i18n_cnx">Verbindung</sys:String>
+    <sys:String x:Key="i18n_view">Anzeigen</sys:String>
+    <sys:String x:Key="i18n_cfg">Konfiguration</sys:String>
     <sys:String x:Key="i18n_msw">Switch...</sys:String>
-    <sys:String x:Key="i18n_disc">Disconnect</sys:String>
-    <sys:String x:Key="i18n_exit">Exit</sys:String>
+    <sys:String x:Key="i18n_disc">Trennen</sys:String>
+    <sys:String x:Key="i18n_exit">Abschließen</sys:String>
     <sys:String x:Key="i18n_log">Log</sys:String>
-    <sys:String x:Key="i18n_appLog">View App Log</sys:String>
-    <sys:String x:Key="i18n_activ">View Activities</sys:String>
-    <sys:String x:Key="i18n_level">Log Level</sys:String>
+    <sys:String x:Key="i18n_appLog">Log anzeigen</sys:String>
+    <sys:String x:Key="i18n_activ">Aktivitäten anzeigen</sys:String>
+    <sys:String x:Key="i18n_level">Log stufen festlegen</sys:String>
     <sys:String x:Key="i18n_vcboot">vcboot.cfg</sys:String>
     <sys:String x:Key="i18n_sshot">Snapshot</sys:String>
-    <sys:String x:Key="i18n_ps">Power Supplies</sys:String>
-    <sys:String x:Key="i18n_src">Search MAC</sys:String>
-    <sys:String x:Key="i18n_theme">Theme</sys:String>
-    <sys:String x:Key="i18n_dark">Dark</sys:String>
-    <sys:String x:Key="i18n_light">Light</sys:String>
-    <sys:String x:Key="i18n_help">Help</sys:String>
-    <sys:String x:Key="i18n_about">About</sys:String>
-    <sys:String x:Key="i18n_frst">Factory Reset...</sys:String>
-    <sys:String x:Key="i18n_cfgWiz">Basic Configuration Wizard...</sys:String>
-    <sys:String x:Key="i18n_lang">Language</sys:String>
-    <sys:String x:Key="i18n_options">Options</sys:String>
+    <sys:String x:Key="i18n_ps">Netzteile</sys:String>
+    <sys:String x:Key="i18n_src">Suchen Mac-Adresse</sys:String>
+    <sys:String x:Key="i18n_theme">Thema</sys:String>
+    <sys:String x:Key="i18n_dark">Dunkel</sys:String>
+    <sys:String x:Key="i18n_light">Licht</sys:String>
+    <sys:String x:Key="i18n_help">Helfen</sys:String>
+    <sys:String x:Key="i18n_about">Über</sys:String>
+    <sys:String x:Key="i18n_frst">Werksreset...</sys:String>
+    <sys:String x:Key="i18n_cfgWiz">Unterstützung Konfiguration der Basis...</sys:String>
+    <sys:String x:Key="i18n_lang">Sprachlich</sys:String>
+    <sys:String x:Key="i18n_options">Auswahl</sys:String>
 
     <!--Buttons-->
-    <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>
-    <sys:String x:Key="i18n_poeWiz">Run PoE Wizard</sys:String>
-    <sys:String x:Key="i18n_rfrsh">Refresh</sys:String>
-    <sys:String x:Key="i18n_save">Write Memory</sys:String>
-    <sys:String x:Key="i18n_reboot">Reboot</sys:String>
-    <sys:String x:Key="i18n_trfAna">Traffic Analysis</sys:String>
-    <sys:String x:Key="i18n_logcol">Collect Logs</sys:String>
-    <sys:String x:Key="i18n_cnxBtn">Connect</sys:String>
-    <sys:String x:Key="i18n_canBtn">Cancel</sys:String>
+    <sys:String x:Key="i18n_ptRst">Port Zurücksetzen</sys:String>
+    <sys:String x:Key="i18n_poeWiz">Starten PoE-Assistenten</sys:String>
+    <sys:String x:Key="i18n_rfrsh">Aktualisieren</sys:String>
+    <sys:String x:Key="i18n_save">Speicher Sparen</sys:String>
+    <sys:String x:Key="i18n_reboot">Neustart</sys:String>
+    <sys:String x:Key="i18n_trfAna">Netzwerkverkehrs</sys:String>
+    <sys:String x:Key="i18n_logcol">Logs Abrufen</sys:String>
+    <sys:String x:Key="i18n_cnxBtn">Anschließen</sys:String>
+    <sys:String x:Key="i18n_canBtn">Aufheben</sys:String>
     <sys:String x:Key="i18n_okBtn">OK</sys:String>
-    <sys:String x:Key="i18n_yBtn">Yes</sys:String>
-    <sys:String x:Key="i18n_nBtn">No</sys:String>
-    <sys:String x:Key="i18n_subBtn">Submit</sys:String>
-    <sys:String x:Key="i18n_nextBtn">Next</sys:String>
-    <sys:String x:Key="i18n_prevBtn">Previous</sys:String>
-    <sys:String x:Key="i18n_closeBtn">Close</sys:String>
-    <sys:String x:Key="i18n_creBtn">Create</sys:String>
-    <sys:String x:Key="i18n_clrBtn">Clear Log</sys:String>
-    <sys:String x:Key="i18n_svBtn">Save</sys:String>
+    <sys:String x:Key="i18n_yBtn">Ja</sys:String>
+    <sys:String x:Key="i18n_nBtn">Nein</sys:String>
+    <sys:String x:Key="i18n_subBtn">Bestätigen</sys:String>
+    <sys:String x:Key="i18n_nextBtn">Nächste</sys:String>
+    <sys:String x:Key="i18n_prevBtn">Vorherige</sys:String>
+    <sys:String x:Key="i18n_closeBtn">Abschließen</sys:String>
+    <sys:String x:Key="i18n_creBtn">Erschaffen</sys:String>
+    <sys:String x:Key="i18n_clrBtn">Log Löschen</sys:String>
+    <sys:String x:Key="i18n_svBtn">Speichern</sys:String>
 
     <!--System Information-->
     <sys:String x:Key="i18n_swName">Name:</sys:String>
-    <sys:String x:Key="i18n_ipAddr">IP Address:</sys:String>
-    <sys:String x:Key="i18n_release">Release:</sys:String>
-    <sys:String x:Key="i18n_runningDir">Running Directory:</sys:String>
-    <sys:String x:Key="i18n_sync">Synchronization:</sys:String>
-    <sys:String x:Key="i18n_loc">Location:</sys:String>
-    <sys:String x:Key="i18n_contact">Contact:</sys:String>
-    <sys:String x:Key="i18n_poeDbgLvl">PoE Debug Level:</sys:String>
-    <sys:String x:Key="i18n_cmmDbgLvl">CMM Debug Level:</sys:String>
-    <sys:String x:Key="i18n_swModel">Model:</sys:String>
-    <sys:String x:Key="i18n_sn">Serial Number:</sys:String>
-    <sys:String x:Key="i18n_mac">MAC Address:</sys:String>
-    <sys:String x:Key="i18n_temp">Temperature:</sys:String>
-    <sys:String x:Key="i18n_cpu">CPU Usage:</sys:String>
-    <sys:String x:Key="i18n_fpga">FPGA Version:</sys:String>
-    <sys:String x:Key="i18n_cpld">CPLD Version:</sys:String>
-    <sys:String x:Key="i18n_flash">Free Flash Memory:</sys:String>
+    <sys:String x:Key="i18n_ipAddr">IP-Adresse:</sys:String>
+    <sys:String x:Key="i18n_release">Version:</sys:String>
+    <sys:String x:Key="i18n_runningDir">Laufverzeichnis:</sys:String>
+    <sys:String x:Key="i18n_sync">Synchronisation:</sys:String>
+    <sys:String x:Key="i18n_loc">Stelle:</sys:String>
+    <sys:String x:Key="i18n_contact">Kontakt:</sys:String>
+    <sys:String x:Key="i18n_poeDbgLvl">Debug-Ebene PoE:</sys:String>
+    <sys:String x:Key="i18n_cmmDbgLvl">Debug-Ebene CMM:</sys:String>
+    <sys:String x:Key="i18n_swModel">Modell:</sys:String>
+    <sys:String x:Key="i18n_sn">Seriennummer:</sys:String>
+    <sys:String x:Key="i18n_mac">MAC-Adresse:</sys:String>
+    <sys:String x:Key="i18n_temp">Temperatur:</sys:String>
+    <sys:String x:Key="i18n_cpu">CPU-Verkehr:</sys:String>
+    <sys:String x:Key="i18n_fpga">FPGA-Version:</sys:String>
+    <sys:String x:Key="i18n_cpld">CPLD-Version:</sys:String>
+    <sys:String x:Key="i18n_flash">Flash-Speicher Verfügbar:</sys:String>
 
     <!--Slot Table-->
     <sys:String x:Key="i18n_slot">Slot</sys:String>
     <sys:String x:Key="i18n_nports">#Ports</sys:String>
-    <sys:String x:Key="i18n_npoe">#Poe Ports</sys:String>
-    <sys:String x:Key="i18n_buget">Budget (Watts)</sys:String>
-    <sys:String x:Key="i18n_cons">Consumption (Watts)</sys:String>
-    <sys:String x:Key="i18n_btSupp">802.3BT Support</sys:String>
-    <sys:String x:Key="i18n_slPw">Power</sys:String>
-    <sys:String x:Key="i18n_fpoe">Fast PoE</sys:String>
+    <sys:String x:Key="i18n_npoe">#Poe-Ports</sys:String>
+    <sys:String x:Key="i18n_buget">Max Leistung (Watts)</sys:String>
+    <sys:String x:Key="i18n_cons">Verbringen (Watts)</sys:String>
+    <sys:String x:Key="i18n_btSupp">Unterstützt 802.3BT</sys:String>
+    <sys:String x:Key="i18n_slPw">Verbringen</sys:String>
+    <sys:String x:Key="i18n_fpoe">Schnelles PoE</sys:String>
     <sys:String x:Key="i18n_ppoe">Perpetual PoE</sys:String>
-    <sys:String x:Key="i18n_poeSt">PoE Status</sys:String>
-    <sys:String x:Key="i18n_vcRole">VC Master/Slave</sys:String>
+    <sys:String x:Key="i18n_poeSt">Ständig PoE</sys:String>
+    <sys:String x:Key="i18n_vcRole">VC-Rolle</sys:String>
 
     <!--Port Table-->
     <sys:String x:Key="i18n_port">Port</sys:String>
@@ -330,8 +330,6 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_taRun">Running...</sys:String>
     <sys:String x:Key="i18n_taIdle">Traffic Analysis</sys:String>
     <sys:String x:Key="i18n_taSave">Do you want to save the traffic analysis report</sys:String>
-    <sys:String x:Key="i18n_taInt">interrupted by the user</sys:String>
-    <sys:String x:Key="i18n_taIntb">interrupted by the user before</sys:String>
     <sys:String x:Key="i18n_taDisc">Disconnecting switch</sys:String>
     <sys:String x:Key="i18n_tappLog">Application Log</sys:String>
     <sys:String x:Key="i18n_tactLog">Activity Log</sys:String>
@@ -350,7 +348,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
 
     <!--Other Messages-->
     <sys:String x:Key="i18n_rsNocnx">Could not connect to switch</sys:String>
-    <sys:String x:Key="i18n_rsConn">Connection</sys:String>
+    <sys:String x:Key="i18n_rsConn">Verbindung</sys:String>
     <sys:String x:Key="i18n_rsMem">Writing memory on switch</sys:String>
     <sys:String x:Key="i18n_rsMemc">Write memory completed</sys:String>
     <sys:String x:Key="i18n_rsReboot">Waiting for switch</sys:String>
@@ -400,7 +398,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_disable">Disabling</sys:String>
     <sys:String x:Key="i18n_onsl">on slot</sys:String>
     <sys:String x:Key="i18n_cnsw">Connect to switch</sys:String>
-    <sys:String x:Key="i18n_dcnsw">Disconnect switch</sys:String>
+    <sys:String x:Key="i18n_dcnsw">Trennen switch</sys:String>
     <sys:String x:Key="i18n_cert" xml:space="preserve">
 The switch booted on Certified directory, no changes can be saved.
 Do you want to reboot the switch on Working directory?"
@@ -428,7 +426,6 @@ Do you want to save it now?
 It may take up to 30 sec to execute Write Memory
     </sys:String>
     <sys:String x:Key="i18n_swrst">Rebooting switch</sys:String>
-    <sys:String x:Key="i18n_swrsti">interrupted by the user before</sys:String>
     <sys:String x:Key="i18n_swready" xml:space="preserve">
 ready to connect
 Reboot duration: </sys:String>

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Device
 {
@@ -44,15 +45,15 @@ namespace PoEWizard.Device
 
         public void LoadFromDictionary(Dictionary<string, string> dict)
         {
-            if (dict.ContainsKey(MAX_POWER)) this.Budget = ParseDouble(Utils.GetDictValue(dict, MAX_POWER));
-            if (dict.ContainsKey(INIT_STATUS)) this.IsInitialized = Utils.GetDictValue(dict, INIT_STATUS).ToLower() == "initialized";
-            if (dict.ContainsKey(BT_SUPPORT)) this.Is8023btSupport = Utils.GetDictValue(dict, BT_SUPPORT) == "Yes";
+            if (dict.ContainsKey(MAX_POWER)) this.Budget = ParseDouble(GetDictValue(dict, MAX_POWER));
+            if (dict.ContainsKey(INIT_STATUS)) this.IsInitialized = GetDictValue(dict, INIT_STATUS).ToLower() == "initialized";
+            if (dict.ContainsKey(BT_SUPPORT)) this.Is8023btSupport = GetDictValue(dict, BT_SUPPORT) == "Yes";
             this.IsPoeModeEnable = !this.Is8023btSupport;
-            if (dict.ContainsKey(CLASS_DETECTION)) this.PowerClassDetection = Utils.ConvertToConfigType(dict, CLASS_DETECTION);
-            if (dict.ContainsKey(HI_RES_DETECTION)) this.IsHiResDetection = Utils.ConvertToConfigType(dict, HI_RES_DETECTION) == ConfigType.Enable;
-            if (dict.ContainsKey(PPOE)) this.PPoE = Utils.ConvertToConfigType(dict, PPOE);
-            if (dict.ContainsKey(FPOE)) this.FPoE = Utils.ConvertToConfigType(dict, FPOE);
-            if (dict.ContainsKey(USAGE_THRESHOLD)) this.Threshold = ParseDouble(Utils.GetDictValue(dict, USAGE_THRESHOLD));
+            if (dict.ContainsKey(CLASS_DETECTION)) this.PowerClassDetection = ConvertToConfigType(dict, CLASS_DETECTION);
+            if (dict.ContainsKey(HI_RES_DETECTION)) this.IsHiResDetection = ConvertToConfigType(dict, HI_RES_DETECTION) == ConfigType.Enable;
+            if (dict.ContainsKey(PPOE)) this.PPoE = ConvertToConfigType(dict, PPOE);
+            if (dict.ContainsKey(FPOE)) this.FPoE = ConvertToConfigType(dict, FPOE);
+            if (dict.ContainsKey(USAGE_THRESHOLD)) this.Threshold = ParseDouble(GetDictValue(dict, USAGE_THRESHOLD));
         }
 
         public void LoadFromList(List<Dictionary<string, string>> list, DictionaryType dt)
@@ -109,7 +110,7 @@ namespace PoEWizard.Device
 
         private string GetLabelPoeStatus()
         {
-            return Utils.GetEnumDescription(this.PoeStatus);
+            return GetEnumDescription(this.PoeStatus);
         }
 
         private string ConvertMasterSlaveToString()
