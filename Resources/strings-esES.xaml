@@ -49,23 +49,23 @@
     <sys:String x:Key="i18n_svBtn">Salvar</sys:String>
 
     <!--System Information-->
-    <sys:String x:Key="i18n_swName">Name:</sys:String>
-    <sys:String x:Key="i18n_ipAddr">IP Address:</sys:String>
-    <sys:String x:Key="i18n_release">Release:</sys:String>
-    <sys:String x:Key="i18n_runningDir">Running Directory:</sys:String>
-    <sys:String x:Key="i18n_sync">Synchronization:</sys:String>
-    <sys:String x:Key="i18n_loc">Location:</sys:String>
-    <sys:String x:Key="i18n_contact">Contact:</sys:String>
-    <sys:String x:Key="i18n_poeDbgLvl">PoE Debug Level:</sys:String>
-    <sys:String x:Key="i18n_cmmDbgLvl">CMM Debug Level:</sys:String>
-    <sys:String x:Key="i18n_swModel">Model:</sys:String>
-    <sys:String x:Key="i18n_sn">Serial Number:</sys:String>
-    <sys:String x:Key="i18n_mac">MAC Address:</sys:String>
-    <sys:String x:Key="i18n_temp">Temperature:</sys:String>
-    <sys:String x:Key="i18n_cpu">CPU Usage:</sys:String>
-    <sys:String x:Key="i18n_fpga">FPGA Version:</sys:String>
-    <sys:String x:Key="i18n_cpld">CPLD Version:</sys:String>
-    <sys:String x:Key="i18n_flash">Free Flash Memory:</sys:String>
+    <sys:String x:Key="i18n_swName">Nombre:</sys:String>
+    <sys:String x:Key="i18n_ipAddr">Dirección IP:</sys:String>
+    <sys:String x:Key="i18n_release">Versión:</sys:String>
+    <sys:String x:Key="i18n_runningDir">Directorio en Ejecución:</sys:String>
+    <sys:String x:Key="i18n_sync">Sincronización:</sys:String>
+    <sys:String x:Key="i18n_loc">Sitio:</sys:String>
+    <sys:String x:Key="i18n_contact">Contacto:</sys:String>
+    <sys:String x:Key="i18n_poeDbgLvl">Nivel de Depuración PoE:</sys:String>
+    <sys:String x:Key="i18n_cmmDbgLvl">Nivel de Depuración CMM:</sys:String>
+    <sys:String x:Key="i18n_swModel">Modelo:</sys:String>
+    <sys:String x:Key="i18n_sn">Número de Serie:</sys:String>
+    <sys:String x:Key="i18n_mac">Dirección MAC:</sys:String>
+    <sys:String x:Key="i18n_temp">Temperatura:</sys:String>
+    <sys:String x:Key="i18n_cpu">Tráfico de CPU:</sys:String>
+    <sys:String x:Key="i18n_fpga">Versión FPGA:</sys:String>
+    <sys:String x:Key="i18n_cpld">Versión CPLD:</sys:String>
+    <sys:String x:Key="i18n_flash">Memoria Flash Disponible:</sys:String>
 
     <!--Slot Table-->
     <sys:String x:Key="i18n_slot">Slot</sys:String>

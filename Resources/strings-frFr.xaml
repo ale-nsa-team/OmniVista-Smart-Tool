@@ -49,23 +49,23 @@
     <sys:String x:Key="i18n_svBtn">Sauver</sys:String>
 
     <!--System Information-->
-    <sys:String x:Key="i18n_swName">Name:</sys:String>
-    <sys:String x:Key="i18n_ipAddr">IP Address:</sys:String>
-    <sys:String x:Key="i18n_release">Release:</sys:String>
-    <sys:String x:Key="i18n_runningDir">Running Directory:</sys:String>
-    <sys:String x:Key="i18n_sync">Synchronization:</sys:String>
-    <sys:String x:Key="i18n_loc">Location:</sys:String>
+    <sys:String x:Key="i18n_swName">Nom:</sys:String>
+    <sys:String x:Key="i18n_ipAddr">Adresse IP:</sys:String>
+    <sys:String x:Key="i18n_release">Version:</sys:String>
+    <sys:String x:Key="i18n_runningDir">Répertoire d'exécution:</sys:String>
+    <sys:String x:Key="i18n_sync">Synchronisation:</sys:String>
+    <sys:String x:Key="i18n_loc">Site:</sys:String>
     <sys:String x:Key="i18n_contact">Contact:</sys:String>
-    <sys:String x:Key="i18n_poeDbgLvl">PoE Debug Level:</sys:String>
-    <sys:String x:Key="i18n_cmmDbgLvl">CMM Debug Level:</sys:String>
-    <sys:String x:Key="i18n_swModel">Model:</sys:String>
-    <sys:String x:Key="i18n_sn">Serial Number:</sys:String>
-    <sys:String x:Key="i18n_mac">MAC Address:</sys:String>
-    <sys:String x:Key="i18n_temp">Temperature:</sys:String>
-    <sys:String x:Key="i18n_cpu">CPU Usage:</sys:String>
-    <sys:String x:Key="i18n_fpga">FPGA Version:</sys:String>
-    <sys:String x:Key="i18n_cpld">CPLD Version:</sys:String>
-    <sys:String x:Key="i18n_flash">Free Flash Memory:</sys:String>
+    <sys:String x:Key="i18n_poeDbgLvl">Niveau Débogage PoE:</sys:String>
+    <sys:String x:Key="i18n_cmmDbgLvl">Niveau Débogage CMM:</sys:String>
+    <sys:String x:Key="i18n_swModel">Modèle:</sys:String>
+    <sys:String x:Key="i18n_sn">Numéro de Série:</sys:String>
+    <sys:String x:Key="i18n_mac">Adresse MAC:</sys:String>
+    <sys:String x:Key="i18n_temp">Température:</sys:String>
+    <sys:String x:Key="i18n_cpu">Trafic CPU:</sys:String>
+    <sys:String x:Key="i18n_fpga">Version FPGA:</sys:String>
+    <sys:String x:Key="i18n_cpld">Version CPLD:</sys:String>
+    <sys:String x:Key="i18n_flash">Mémoire Flash Disponible:</sys:String>
 
     <!--Slot Table-->
     <sys:String x:Key="i18n_slot">Slot</sys:String>

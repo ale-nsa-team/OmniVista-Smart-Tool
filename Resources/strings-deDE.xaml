@@ -50,22 +50,22 @@
 
     <!--System Information-->
     <sys:String x:Key="i18n_swName">Name:</sys:String>
-    <sys:String x:Key="i18n_ipAddr">IP Address:</sys:String>
-    <sys:String x:Key="i18n_release">Release:</sys:String>
-    <sys:String x:Key="i18n_runningDir">Running Directory:</sys:String>
-    <sys:String x:Key="i18n_sync">Synchronization:</sys:String>
-    <sys:String x:Key="i18n_loc">Location:</sys:String>
-    <sys:String x:Key="i18n_contact">Contact:</sys:String>
-    <sys:String x:Key="i18n_poeDbgLvl">PoE Debug Level:</sys:String>
-    <sys:String x:Key="i18n_cmmDbgLvl">CMM Debug Level:</sys:String>
-    <sys:String x:Key="i18n_swModel">Model:</sys:String>
-    <sys:String x:Key="i18n_sn">Serial Number:</sys:String>
-    <sys:String x:Key="i18n_mac">MAC Address:</sys:String>
-    <sys:String x:Key="i18n_temp">Temperature:</sys:String>
-    <sys:String x:Key="i18n_cpu">CPU Usage:</sys:String>
-    <sys:String x:Key="i18n_fpga">FPGA Version:</sys:String>
-    <sys:String x:Key="i18n_cpld">CPLD Version:</sys:String>
-    <sys:String x:Key="i18n_flash">Free Flash Memory:</sys:String>
+    <sys:String x:Key="i18n_ipAddr">IP-Adresse:</sys:String>
+    <sys:String x:Key="i18n_release">Version:</sys:String>
+    <sys:String x:Key="i18n_runningDir">Laufverzeichnis:</sys:String>
+    <sys:String x:Key="i18n_sync">Synchronisation:</sys:String>
+    <sys:String x:Key="i18n_loc">Stelle:</sys:String>
+    <sys:String x:Key="i18n_contact">Kontakt:</sys:String>
+    <sys:String x:Key="i18n_poeDbgLvl">Debug-Ebene PoE:</sys:String>
+    <sys:String x:Key="i18n_cmmDbgLvl">Debug-Ebene CMM:</sys:String>
+    <sys:String x:Key="i18n_swModel">Modell:</sys:String>
+    <sys:String x:Key="i18n_sn">Seriennummer:</sys:String>
+    <sys:String x:Key="i18n_mac">MAC-Adresse:</sys:String>
+    <sys:String x:Key="i18n_temp">Temperatur:</sys:String>
+    <sys:String x:Key="i18n_cpu">CPU-Verkehr:</sys:String>
+    <sys:String x:Key="i18n_fpga">FPGA-Version:</sys:String>
+    <sys:String x:Key="i18n_cpld">CPLD-Version:</sys:String>
+    <sys:String x:Key="i18n_flash">Flash-Speicher Verfügbar:</sys:String>
 
     <!--Slot Table-->
     <sys:String x:Key="i18n_slot">Slot</sys:String>
