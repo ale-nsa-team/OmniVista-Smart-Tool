@@ -1,6 +1,5 @@
 ﻿using PoEWizard.Data;
 using System;
-using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using static PoEWizard.Data.Constants;
@@ -15,7 +14,7 @@ namespace PoEWizard.Components
     {
         public string SavedPassword;
         public string Password { get; set; }
-        private Config cfg;
+        private readonly Config cfg;
         
         public PassCode(Window owner, Config config)
         {
