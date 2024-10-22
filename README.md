@@ -28,7 +28,7 @@ For example: strings-enUS.xaml, strings-frFR.xaml, etc. Once the language file i
 the language menu option.
 
 Note that log files and some configuration options are saved in the user's %AppData% folder (normally c:\users\<username>\AppData\Roaming) under folder
-Alcatel-Lucent Enterprise/AOS Toolkit
+Alcatel-Lucent Enterprise/AOS Toolkit.
 Log files are under Log folder and configuration options are found in file app.cfg.
 The app.cfg may have the following entries:
 - theme (Dark/Light)
@@ -36,7 +36,7 @@ The app.cfg may have the following entries:
 - hash (corresponds to the password required for dangerous operations, such as reboot switch and factory default)
 - switches (list of switch IP addresses the user has connected to, presented as a drop-down in the log-in screen)
 There is a hardcoded password in class Data/Constants.cs (DEFAULT_PASS_CODE) that can be used for the first time the password is requested.
-The user may change that, by selecting the Change Password option, in the password dialog. One the password is changed, the built in
+The user may change that, by selecting the Change Password option, in the password dialog. Once the password is changed, the built in
 password is no longer accepted. The user needs to delete the app.cfg file to reactivate the built in password.
 
 
