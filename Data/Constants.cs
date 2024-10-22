@@ -101,9 +101,6 @@ namespace PoEWizard.Data
         #region strings
         // Used by Password Code
         public const string DEFAULT_PASS_CODE = "@AleT00lkit#";
-        public const string PASSCODE_FILENAME = "tmp.cfg";
-        public const string PASSCODE_FOLDER = "snapshot";
-        public const string PASSCODE_SUB_FOLDER = "temp";
         // General constants
         public static readonly List<string> timezones = new List<string>()
         {
@@ -396,6 +393,10 @@ namespace PoEWizard.Data
         public const int MAX_NB_SNAPSHOT_SAVED = 500;
         public const int MAX_NB_SNAPSHOT_DAYS = 30;
         public const int MAX_NB_LINES_CHANGES_DISPLAYED = 20;
+        #endregion
+
+        #region Login Credentials Limits
+        public const int MAX_LIST_SIZE = 20;
         #endregion
     }
 }

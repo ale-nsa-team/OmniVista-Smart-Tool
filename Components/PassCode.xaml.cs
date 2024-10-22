@@ -92,23 +92,5 @@ namespace PoEWizard.Components
                 cm.ShowDialog();
             }
         }
-
-        private string GetFilePath()
-        {
-            string filepath = string.Empty;
-            try
-            {
-                string folder = Path.Combine(MainWindow.DataPath, PASSCODE_FOLDER);
-                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
-                folder = Path.Combine(folder, PASSCODE_SUB_FOLDER);
-                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
-                filepath = Path.Combine(folder, PASSCODE_FILENAME);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-            return filepath;
-        }
     }
 }
