@@ -51,6 +51,8 @@
             <MenuItem Header="{DynamicResource i18n_cfg}">
                 <MenuItem Header="{DynamicResource i18n_frst}" x:Name="_factoryRst" IsEnabled="False" Click="FactoryReset" />
                 <MenuItem Header="{DynamicResource i18n_cfgWiz}" x:Name="_cfgMenuItem" IsEnabled="False" Click="LaunchConfigWizard"/>
+                <MenuItem Header="{DynamicResource i18n_backup}" x:Name="_cfgBackup" IsEnabled="False" Click="LaunchBackupCfg"/>
+                <MenuItem Header="{DynamicResource i18n_restore}" x:Name="_cfgRestore" IsEnabled="False" Click="LaunchRestoreCfg"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource i18n_options}" HorizontalAlignment="Right">
                 <MenuItem Header="{DynamicResource i18n_level}" x:Name="_logLevels">

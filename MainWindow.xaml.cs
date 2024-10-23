@@ -434,6 +434,103 @@ namespace PoEWizard
             }
         }
 
+        private void LaunchBackupCfg(object sender, RoutedEventArgs e)
+        {
+            LaunchBackup();
+        }
+
+        private async void LaunchBackup()
+        {
+            try
+            {
+                DisableButtons();
+                string cfgChanges = await GetSyncStatus(Translate("i18n_bckSync"));
+                if (device.RunningDir == CERTIFIED_DIR)
+                {
+                    AskRebootCertified();
+                }
+                else if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
+                {
+                    ShowMessageBox(Translate("i18n_bck"), $"{Translate("i18n_notBck")} {device.Name} {Translate("i18n_notCert")}", MsgBoxIcons.Error);
+                    return;
+                }
+                if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(Translate("i18n_bck"), cfgChanges))
+                {
+                    await Task.Run(() => restApiService.WriteMemory());
+                    await GetSyncStatus(Translate("i18n_bckSync"));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
+                EnableButtons();
+            }
+        }
+
+        private void LaunchRestoreCfg(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                PassCode pc = new PassCode(this, config);
+                if (pc.ShowDialog() == true)
+                {
+                    if (pc.Password != pc.SavedPassword)
+                    {
+                        ShowMessageBox(Translate("i18n_rest"), Translate("i18n_badPwd"), MsgBoxIcons.Error);
+                    }
+                    else
+                    {
+                        LaunchRestore();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
+        private async void LaunchRestore()
+        {
+            try
+            {
+                DisableButtons();
+                string cfgChanges = await GetSyncStatus(Translate("i18n_restSync"));
+                if (device.RunningDir == CERTIFIED_DIR)
+                {
+                    AskRebootCertified();
+                }
+                else if (ShowMessageBox(Translate("i18n_rest"), $"{Translate("i18n_restConfirm")} {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                {
+                    if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
+                    {
+                        ShowMessageBox(Translate("i18n_rest"), $"{Translate("i18n_notRest")} {device.Name} {Translate("i18n_notCert")}", MsgBoxIcons.Error);
+                        return;
+                    }
+                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(Translate("i18n_rest"), cfgChanges))
+                    {
+                        await Task.Run(() => restApiService.WriteMemory());
+                        await GetSyncStatus(Translate("i18n_restSync"));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
+                EnableButtons();
+            }
+        }
+
         private async void ResetPort_Click(object sender, RoutedEventArgs e)
         {
             string title = $"{Translate("i18n_rstpp")} {selectedPort.Name}";
@@ -500,7 +597,7 @@ namespace PoEWizard
                 {
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
                     {
-                        ShowMessageBox(Translate("i18n_rebsw"), $"{Translate("i18n_frebsw1")} {device.Name} {Translate("i18n_frebsw2")}", MsgBoxIcons.Error);
+                        ShowMessageBox(Translate("i18n_rebsw"), $"{Translate("i18n_frebsw1")} {device.Name} {Translate("i18n_notCert")}", MsgBoxIcons.Error);
                         return;
                     }
                     if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(Translate("i18n_rebsw"), cfgChanges))
@@ -1103,6 +1200,8 @@ namespace PoEWizard
             {
                 _writeMemory.IsEnabled = false;
                 _cfgMenuItem.IsEnabled = false;
+                _cfgBackup.IsEnabled = false;
+                _cfgRestore.IsEnabled = false;
             }
         }
 
@@ -1918,6 +2017,8 @@ namespace PoEWizard
             _searchMacMenuItem.IsEnabled = val;
             _factoryRst.IsEnabled = val;
             _cfgMenuItem.IsEnabled = val;
+            _cfgBackup.IsEnabled = val;
+            _cfgRestore.IsEnabled = val;
         }
 
         private void ReselectPort()
