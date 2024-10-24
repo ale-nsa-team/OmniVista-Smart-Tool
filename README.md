@@ -14,7 +14,7 @@ to be sent to the users. The following files should be added to the archive:
 - ALE-InstallersToolkit.exe
 - ALE-InstallersTookit.exe.config
 - HtmlAgilityPack.dll
-- Microsof.Bcl.AsyncInterfaces.dll
+- Microsoft.Bcl.AsyncInterfaces.dll
 - RenciSshNet.dll
 - oui.csv
 
