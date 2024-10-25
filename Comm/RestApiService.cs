@@ -36,6 +36,7 @@ namespace PoEWizard.Comm
         private DateTime progressStartTime;
         private SftpService _sftpService = null;
         private DateTime _backupStartTime;
+        private VlanConfigModel _vlanSettings = null;
 
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
@@ -206,6 +207,7 @@ namespace PoEWizard.Comm
             SendProgressReport(Translate("i18n_sys"));
             GetSyncStatus();
             _dictList = SendCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
+            _vlanSettings = new VlanConfigModel(_dictList);
             _dict = _dictList.FirstOrDefault(d => d[IP_ADDR] == SwitchModel.IpAddress);
             if (_dict != null) SwitchModel.NetMask = _dict[SUBNET_MASK];
             _dictList = SendCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
@@ -691,6 +693,18 @@ namespace PoEWizard.Comm
                     serial += $"Chassis {chassis.Number} serial number: {chassis.SerialNumber}";
                 }
                 File.WriteAllText(filePath, serial);
+            }
+            if (_vlanSettings?.VlanList?.Count > 0)
+            {
+                filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "vlan-configurations.csv");
+                StringBuilder txt = new StringBuilder();
+                txt.Append(VLAN_NAME).Append(",").Append(VLAN_IP).Append(",").Append(VLAN_MASK).Append(",").Append(VLAN_DEVICE);
+                foreach(VlanModel vlan in _vlanSettings.VlanList)
+                {
+                    txt.Append("\r\n\"").Append(vlan.Name).Append("\",\"").Append(vlan.IpAddress).Append("\",\"");
+                    txt.Append(vlan.SubnetMask).Append("\",\"").Append(vlan.Device).Append("\"");
+                }
+                File.WriteAllText(filePath, txt.ToString());
             }
         }
 

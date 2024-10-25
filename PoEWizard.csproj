@@ -234,6 +234,7 @@
     <Compile Include="Device\PortModel.cs" />
     <Compile Include="Device\SwitchTrafficModel.cs" />
     <Compile Include="Device\SystemModel.cs" />
+    <Compile Include="Device\VlanConfigModel.cs" />
     <Compile Include="Exceptions\CustomExceptions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

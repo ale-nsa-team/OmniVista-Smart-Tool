@@ -311,6 +311,13 @@ namespace PoEWizard.Data
         public const string MIB_SWITCH_CFG_DNS = "systemDNS";
         public const string MIB_SWITCH_CFG_DHCP = "alaDhcpRelay";
         public const string MIB_SWITCH_CFG_NTP = "alaNtpPeer";
+        // Used by "SHOW_IP_INTERFACE"
+        public const string VLAN_NAME = "Name";
+        public const string VLAN_IP = "IP Address";
+        public const string VLAN_MASK = "Subnet Mask";
+        public const string VLAN_STATUS = "Status";
+        public const string VLAN_FWD = "Forward";
+        public const string VLAN_DEVICE = "Device";
         // Used by BuildOuiTable method of MainWindow.xaml.cs class
         public const string OUI_FILE = "oui.csv";
         // Used by Config Wizard
