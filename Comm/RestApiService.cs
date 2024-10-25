@@ -649,22 +649,6 @@ namespace PoEWizard.Comm
                 string msg = $"{Translate("i18n_bckRunning")} {SwitchModel.Name}";
                 Logger.Info(msg);
                 StartProgressBar($"{msg}{WAITING}", 135);
-                string users = SendCommand(new CmdRequest(Command.SHOW_USER, ParseType.NoParsing)) as string;
-                string filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "additional-users.txt");
-                File.WriteAllText(filePath, users);
-                filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "backup-date.txt");
-                File.WriteAllText(filePath, DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt"));
-                filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "serial.txt");
-                if (SwitchModel?.ChassisList?.Count > 0)
-                {
-                    string serial = string.Empty;
-                    foreach (ChassisModel chassis in SwitchModel?.ChassisList)
-                    {
-                        if (!string.IsNullOrEmpty(serial)) serial += "\r\n";
-                        serial += $"Chassis {chassis.Number} serial number: {chassis.SerialNumber}";
-                    }
-                    File.WriteAllText(filePath, serial);
-                }
                 _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
                 string sftpError = _sftpService.Connect();
                 DowloadSwitchFiles(FLASH_CERTIFIED_DIR, FLASH_CERTIFIED_FILES);
@@ -673,6 +657,7 @@ namespace PoEWizard.Comm
                 DowloadSwitchFiles(FLASH_SYSTEM_DIR, FLASH_SYSTEM_FILES);
                 DowloadSwitchFiles(FLASH_WORKING_DIR, FLASH_WORKING_FILES);
                 DowloadSwitchFiles(FLASH_PYTHON_DIR, FLASH_PYTHON_FILES);
+                CreateAdditionalFiles();
                 Logger.Activity($"Backup completed (duration: {CalcStringDuration(_backupStartTime)})");
                 return CompressBackupFiles();
             }
@@ -686,6 +671,26 @@ namespace PoEWizard.Comm
                 _sftpService?.Disconnect();
                 _sftpService = null;
                 CloseProgressBar();
+            }
+        }
+
+        private void CreateAdditionalFiles()
+        {
+            string users = SendCommand(new CmdRequest(Command.SHOW_USER, ParseType.NoParsing)) as string;
+            string filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "additional-users.txt");
+            File.WriteAllText(filePath, users);
+            filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "backup-date.txt");
+            File.WriteAllText(filePath, DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt"));
+            filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "serial.txt");
+            if (SwitchModel?.ChassisList?.Count > 0)
+            {
+                string serial = string.Empty;
+                foreach (ChassisModel chassis in SwitchModel?.ChassisList)
+                {
+                    if (!string.IsNullOrEmpty(serial)) serial += "\r\n";
+                    serial += $"Chassis {chassis.Number} serial number: {chassis.SerialNumber}";
+                }
+                File.WriteAllText(filePath, serial);
             }
         }
 
