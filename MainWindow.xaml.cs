@@ -459,11 +459,35 @@ namespace PoEWizard
                     await Task.Run(() => restApiService.WriteMemory());
                     await GetSyncStatus(Translate("i18n_bckSync"));
                 }
-                await Task.Run(() => restApiService.BackupConfiguration());
+                string zipPath = await Task.Run(() => restApiService.BackupConfiguration());
+                if (!string.IsNullOrEmpty(zipPath))
+                {
+                    Logger.Activity($"Created zip file \"{zipPath}\"");
+                    var sfd = new SaveFileDialog()
+                    {
+                        Filter = $"{Translate("i18n_tarf")}|*.tar",
+                        Title = Translate("i18n_sfile"),
+                        InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+                        FileName = Path.GetFileName(zipPath)
+                    };
+                    FileInfo info = new FileInfo(zipPath);
+                    if (sfd.ShowDialog() == true)
+                    {
+                        string saveas = sfd.FileName;
+                        File.Copy(zipPath, saveas, true);
+                        File.Delete(zipPath);
+                        info = new FileInfo(saveas);
+                    }
+                }
+                else
+                {
+                    ShowMessageBox(Translate("i18n_bckCfg"), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!", MsgBoxIcons.Error);
+                }
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
+                ShowMessageBox(Translate("i18n_bckCfg"), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!", MsgBoxIcons.Error);
             }
             finally
             {

@@ -196,6 +196,8 @@ Please confirm your action.
     <sys:String x:Key="i18n_notBck">Cannot Backup the switch configuration</sys:String>
     <sys:String x:Key="i18n_bckRunning">Backing up configuration of switch</sys:String>
     <sys:String x:Key="i18n_bckDowloading">Downloading file</sys:String>
+    <sys:String x:Key="i18n_bckFail">Backup config of switch $1 has failed</sys:String>
+    <sys:String x:Key="i18n_bckZipping">Compressing backup configuration files</sys:String>
 
     <!--Restore Messages-->
     <sys:String x:Key="i18n_restCfg">Restore Switch Config</sys:String>

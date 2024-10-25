@@ -4,6 +4,7 @@ using PoEWizard.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -640,7 +641,7 @@ namespace PoEWizard.Comm
             CloseProgressBar();
         }
 
-        public void BackupConfiguration()
+        public string BackupConfiguration()
         {
             try
             {
@@ -657,10 +658,12 @@ namespace PoEWizard.Comm
                 DowloadSwitchFiles(FLASH_WORKING_DIR, FLASH_WORKING_FILES);
                 DowloadSwitchFiles(FLASH_PYTHON_DIR, FLASH_PYTHON_FILES);
                 Logger.Activity($"Backup completed (duration: {CalcStringDuration(_backupStartTime)})");
+                return CompressBackupFiles();
             }
             catch (Exception ex)
             {
                 Logger.Warn(ex.Message);
+                return null;
             }
             finally
             {
@@ -700,21 +703,64 @@ namespace PoEWizard.Comm
         private void DownloadRemoteFile(string srcFileDir, string fileName)
         {
             string srcFilePath = $"{srcFileDir}/{fileName}";
-            Thread th = new Thread(() => SendProgressDownload(fileName));
+            Thread th = new Thread(() => SendProgressDownload($"{Translate("i18n_bckDowloading")} {fileName}"));
             th.Start();
             _sftpService.DownloadFile(srcFilePath, $"{BACKUP_DIR}{srcFileDir.Replace("/", "\\")}\\{fileName}");
             th.Abort();
         }
 
-        private void SendProgressDownload(string fileName)
+        private void SendProgressDownload(string progrMsg)
         {
             int dur;
             while (Thread.CurrentThread.IsAlive)
             {
                 string msg = $"({CalcStringDurationTranslate(_backupStartTime, true)}){WAITING}";
                 dur = (int)GetTimeDuration(_backupStartTime);
-                UpdateProgressBarMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name} {msg}\n{Translate("i18n_bckDowloading")} {fileName}", dur);
+                UpdateProgressBarMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name} {msg}\n{progrMsg}", dur);
                 Thread.Sleep(1000);
+                if (dur >= 300) break;
+            }
+        }
+
+        private string CompressBackupFiles()
+        {
+            DateTime startTime = DateTime.Now;
+            string zipPath = string.Empty;
+            try
+            {
+                string backupPath = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
+                zipPath = Path.Combine(MainWindow.DataPath, $"backup-{SwitchModel.Name}_{DateTime.Now:MM-dd-yyyy_hh_mm_ss}.zip");
+                Thread th = new Thread(() => SendProgressDownload(Translate("i18n_bckZipping")));
+                th.Start();
+                if (File.Exists(zipPath)) File.Delete(zipPath);
+                ZipFile.CreateFromDirectory(backupPath, zipPath, CompressionLevel.Fastest, true);
+                PurgeBackupFiles(backupPath);
+                th.Abort();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            Logger.Activity($"Compressing backup files completed (duration: {CalcStringDuration(startTime)})");
+            return zipPath;
+        }
+
+        private void PurgeBackupFiles(string backupPath)
+        {
+            foreach (string filePath in Directory.GetFiles(backupPath))
+            {
+                try
+                {
+                    File.Delete(filePath);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            }
+            foreach (string d in Directory.GetDirectories(backupPath))
+            {
+                PurgeBackupFiles(d);
             }
         }
 
@@ -1477,17 +1523,12 @@ namespace PoEWizard.Comm
             if (_wizardSwitchPort.MaxPower < maxDefaultPower)
             {
                 _wizardReportResult.SetReturnParameter(_wizardSwitchPort.Name, maxDefaultPower);
-                info = Translate("i18n_bmxpw")
-                        .Replace("$1", _wizardSwitchPort.Name)
-                        .Replace("$2", $"{_wizardSwitchPort.MaxPower}")
-                        .Replace("$3", $"{maxDefaultPower}");
+                info = Translate("i18n_bmxpw").Replace("$1", _wizardSwitchPort.Name).Replace("$2", $"{_wizardSwitchPort.MaxPower}").Replace("$3", $"{maxDefaultPower}");
                 _wizardReportResult.UpdateAlert(_wizardSwitchPort.Name, WizardResult.Warning, info);
             }
             else
             {
-                 info = "\n    " + Translate("i18n_gmxpw")
-                        .Replace("$1", _wizardSwitchPort.Name)
-                        .Replace("$2", $"{_wizardSwitchPort.MaxPower}");
+                 info = "\n    " + Translate("i18n_gmxpw").Replace("$1", _wizardSwitchPort.Name).Replace("$2", $"{_wizardSwitchPort.MaxPower}");
                 _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed, info);
             }
             Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
@@ -1502,10 +1543,7 @@ namespace PoEWizard.Comm
                 return;
             }
             double maxDefaultPower = (double)obj;
-            string wizardAction = Translate("i18n_rstmxpw")
-                    .Replace("$1", _wizardSwitchPort.Name)
-                    .Replace("$2", $"{_wizardSwitchPort.MaxPower}")
-                    .Replace("$3", $"{maxDefaultPower}");
+            string wizardAction = Translate("i18n_rstmxpw").Replace("$1", _wizardSwitchPort.Name).Replace("$2", $"{_wizardSwitchPort.MaxPower}").Replace("$3", $"{maxDefaultPower}");
             _progress.Report(new ProgressReport(wizardAction));
             double prevMaxPower = _wizardSwitchPort.MaxPower;
             SetMaxPowerToDefault(maxDefaultPower);

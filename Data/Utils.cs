@@ -83,7 +83,7 @@ namespace PoEWizard.Data
             if (sec > 0) duration.Add($"{sec} {Translate("i18n_sec")}");
             if (!skipMs && milliSec > 0) duration.Add($"{milliSec} {Translate("i18n_ms")}");
             if (duration.Count == 0) return $"< 1 {Translate("i18n_ms")}";
-            return string.Join(", ", duration);
+            return string.Join(" ", duration);
         }
 
         public static bool IsTimeExpired(DateTime startTime, double period)
