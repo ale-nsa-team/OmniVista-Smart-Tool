@@ -451,14 +451,15 @@ namespace PoEWizard
                 }
                 else if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
                 {
-                    ShowMessageBox(Translate("i18n_bck"), $"{Translate("i18n_notBck")} {device.Name} {Translate("i18n_notCert")}", MsgBoxIcons.Error);
+                    ShowMessageBox(Translate("i18n_bckCfg"), $"{Translate("i18n_notBck")} {device.Name} {Translate("i18n_notCert")}", MsgBoxIcons.Error);
                     return;
                 }
-                if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(Translate("i18n_bck"), cfgChanges))
+                if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(Translate("i18n_bckCfg"), cfgChanges))
                 {
                     await Task.Run(() => restApiService.WriteMemory());
                     await GetSyncStatus(Translate("i18n_bckSync"));
                 }
+                await Task.Run(() => restApiService.BackupConfiguration());
             }
             catch (Exception ex)
             {
@@ -481,7 +482,7 @@ namespace PoEWizard
                 {
                     if (pc.Password != pc.SavedPassword)
                     {
-                        ShowMessageBox(Translate("i18n_rest"), Translate("i18n_badPwd"), MsgBoxIcons.Error);
+                        ShowMessageBox(Translate("i18n_restCfg"), Translate("i18n_badPwd"), MsgBoxIcons.Error);
                     }
                     else
                     {

@@ -33,6 +33,8 @@ namespace PoEWizard.Comm
         private double totalProgressBar;
         private double progressBarCnt;
         private DateTime progressStartTime;
+        private SftpService _sftpService = null;
+        private DateTime _backupStartTime;
 
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
@@ -638,6 +640,84 @@ namespace PoEWizard.Comm
             CloseProgressBar();
         }
 
+        public void BackupConfiguration()
+        {
+            try
+            {
+                _backupStartTime = DateTime.Now;
+                string msg = $"{Translate("i18n_bckRunning")} {SwitchModel.Name}";
+                Logger.Info(msg);
+                StartProgressBar($"{msg}{WAITING}", 110);
+                _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
+                string sftpError = _sftpService.Connect();
+                DowloadSwitchFiles(FLASH_CERTIFIED_DIR, FLASH_CERTIFIED_FILES);
+                DowloadSwitchFiles(FLASH_NETWORK_DIR, FLASH_NETWORK_FILES);
+                DowloadSwitchFiles(FLASH_SWITCH_DIR, FLASH_SWITCH_FILES);
+                DowloadSwitchFiles(FLASH_SYSTEM_DIR, FLASH_SYSTEM_FILES);
+                DowloadSwitchFiles(FLASH_WORKING_DIR, FLASH_WORKING_FILES);
+                DowloadSwitchFiles(FLASH_PYTHON_DIR, FLASH_PYTHON_FILES);
+                Logger.Activity($"Backup completed (duration: {CalcStringDuration(_backupStartTime)})");
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn(ex.Message);
+            }
+            finally
+            {
+                _sftpService?.Disconnect();
+                _sftpService = null;
+                CloseProgressBar();
+            }
+        }
+
+        private void DowloadSwitchFiles(string remoteDir, List<string> filesToDownload)
+        {
+            List<string> filesList = _sftpService.GetFilesInRemoteDir(remoteDir);
+            foreach (string fileName in filesToDownload)
+            {
+                try
+                {
+                    if (fileName.StartsWith("*.")) DownloadFilteredRemoteFiles(remoteDir, fileName);
+                    else if (filesList.Contains(fileName)) DownloadRemoteFile(remoteDir, fileName);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warn(ex.Message);
+                }
+            }
+        }
+
+        private void DownloadFilteredRemoteFiles(string remoteDir, string fileSuffix)
+        {
+            List<string> files = _sftpService.GetFilesInRemoteDir(remoteDir, fileSuffix.Replace("*", string.Empty));
+            if (files.Count < 1) return;
+            foreach (string fileName in files)
+            {
+                DownloadRemoteFile(remoteDir, fileName);
+            }
+        }
+
+        private void DownloadRemoteFile(string srcFileDir, string fileName)
+        {
+            string srcFilePath = $"{srcFileDir}/{fileName}";
+            Thread th = new Thread(() => SendProgressDownload(fileName));
+            th.Start();
+            _sftpService.DownloadFile(srcFilePath, $"{BACKUP_DIR}{srcFileDir.Replace("/", "\\")}\\{fileName}");
+            th.Abort();
+        }
+
+        private void SendProgressDownload(string fileName)
+        {
+            int dur;
+            while (Thread.CurrentThread.IsAlive)
+            {
+                string msg = $"({CalcStringDurationTranslate(_backupStartTime, true)}){WAITING}";
+                dur = (int)GetTimeDuration(_backupStartTime);
+                UpdateProgressBarMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name} {msg}\n{Translate("i18n_bckDowloading")} {fileName}", dur);
+                Thread.Sleep(1000);
+            }
+        }
+
         private void SaveConfigSnapshot()
         {
             try
@@ -1016,9 +1096,7 @@ namespace PoEWizard.Comm
                 RefreshPoEData();
                 UpdatePortData();
                 DateTime startTime = DateTime.Now;
-                string progressMessage = _wizardSwitchPort.Poe == PoeStatus.NoPoe 
-                    ? $"{Translate("i18n_rstp")} {port}" 
-                    : $"{Translate("i18n_rstpp")} {port}";
+                string progressMessage = _wizardSwitchPort.Poe == PoeStatus.NoPoe ? $"{Translate("i18n_rstp")} {port}" : $"{Translate("i18n_rstpp")} {port}";
                 if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
                 {
                     RestartEthernetOnPort(progressMessage, 10);
@@ -1127,8 +1205,7 @@ namespace PoEWizard.Comm
 
         public void PowerSlotUpOrDown(Command cmd, string slotNr)
         {
-            string msg = (cmd == Command.POWER_UP_SLOT ? Translate("i18n_poeon"): Translate("i18n_poeoff")) + 
-                $"{Translate("i18n_onsl")} {slotNr}";
+            string msg = $"{(cmd == Command.POWER_UP_SLOT ? Translate("i18n_poeon") : Translate("i18n_poeoff"))} {Translate("i18n_onsl")} {slotNr}";
             _wizardProgressReport = new ProgressReport($"{msg}{WAITING}");
             try
             {
@@ -2117,8 +2194,8 @@ namespace PoEWizard.Comm
         {
             DateTime startTime = DateTime.Now;
             string i18n = powerUp ? "i18n_poeon" : "i18n_poeoff";
-            StringBuilder txt = new StringBuilder(Translate(i18n)).Append(Translate("i18n_onsl"))
-                .Append(_wizardSwitchSlot.Name).Append($" {Translate("i18n_onsw")} ").Append(SwitchModel.Name);
+            StringBuilder txt = new StringBuilder(Translate(i18n)).Append(" ").Append(Translate("i18n_onsl"));
+            txt.Append(_wizardSwitchSlot.Name).Append($" {Translate("i18n_onsw")} ").Append(SwitchModel.Name);
             _progress.Report(new ProgressReport($"{txt}{WAITING}"));
             int dur = 0;
             while (dur < 50)

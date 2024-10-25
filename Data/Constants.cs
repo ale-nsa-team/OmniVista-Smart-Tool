@@ -369,6 +369,46 @@ namespace PoEWizard.Data
         public const string MATCH_USER = @"(User name)\s*=\s*(.+),";
         #endregion
 
+        #region Backup Configuration Files
+        public const string BACKUP_DIR = "config-backup-recovery";
+        //	1) /flash/certified:
+        public const string FLASH_CERTIFIED_DIR = "/flash/certified";
+        public static readonly List<string> FLASH_CERTIFIED_FILES = new List<string>()
+        {
+            "appmon_vcboot.cfg", "cloudagent.cfg", "vcboot.cfg", "vcsetup.cfg"
+        };
+        //	2) /flash/network:
+        public const string FLASH_NETWORK_DIR = "/flash/network";
+        public static readonly List<string> FLASH_NETWORK_FILES = new List<string>()
+        {
+            "vcpolicy.cfg", "cloudagent.cfg", "vcboot.cfg", "vcsetup.cfg"
+        };
+        //	3) /flash/switch:
+        public const string FLASH_SWITCH_DIR = "/flash/switch";
+        public static readonly List<string> FLASH_SWITCH_FILES = new List<string>()
+        {
+            "afnId.txt", "dhcpBind.db", "dhcpClient.db", "dhcp.db", "dhcpd.conf", "dhcpd.conf.lastgood", "dhcpd.pcy", "dhcpd.pid", "pre_banner.txt"
+        };
+        //	4) /flash/system:
+        public const string FLASH_SYSTEM_DIR = "/flash/system";
+        public static readonly List<string> FLASH_SYSTEM_FILES = new List<string>()
+        {
+            "lockoutSetting", "random-seed", "userPrivPasswordTable"
+        };
+        //	5) /flash/working:
+        public const string FLASH_WORKING_DIR = "/flash/working";
+        public static readonly List<string> FLASH_WORKING_FILES = new List<string>()
+        {
+            "appmon_vcboot.cfg", "cloudagent.cfg", "vcboot.cfg", "vcsetup.cfg", "*.img"
+        };
+        //	6) /flash/python:
+        public const string FLASH_PYTHON_DIR = "/flash/python";
+        public static readonly List<string> FLASH_PYTHON_FILES = new List<string>()
+        {
+            "*.sh", "*.py"
+        };
+        #endregion
+
         #region Number of Mac Addresses Limits
         public const int MAX_SEARCH_NB_MAC_PER_PORT = 1500;
         public const int MAX_SCAN_NB_MAC_PER_PORT = 52;
