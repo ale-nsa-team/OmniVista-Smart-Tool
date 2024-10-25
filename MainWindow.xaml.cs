@@ -459,7 +459,8 @@ namespace PoEWizard
                     await Task.Run(() => restApiService.WriteMemory());
                     await GetSyncStatus(Translate("i18n_bckSync"));
                 }
-                string zipPath = await Task.Run(() => restApiService.BackupConfiguration());
+                bool backupImage = ShowMessageBox(Translate("i18n_bckCfg"), $"{Translate("i18n_bckAskImg")}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes;
+                string zipPath = await Task.Run(() => restApiService.BackupConfiguration(135, backupImage));
                 if (!string.IsNullOrEmpty(zipPath))
                 {
                     Logger.Activity($"Created zip file \"{zipPath}\"");

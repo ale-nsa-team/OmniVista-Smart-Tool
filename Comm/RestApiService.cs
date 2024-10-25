@@ -643,21 +643,21 @@ namespace PoEWizard.Comm
             CloseProgressBar();
         }
 
-        public string BackupConfiguration()
+        public string BackupConfiguration(double maxDur, bool backupImage)
         {
             try
             {
                 _backupStartTime = DateTime.Now;
                 string msg = $"{Translate("i18n_bckRunning")} {SwitchModel.Name}";
                 Logger.Info(msg);
-                StartProgressBar($"{msg}{WAITING}", 135);
+                StartProgressBar($"{msg}{WAITING}", maxDur);
                 _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
                 string sftpError = _sftpService.Connect();
                 DowloadSwitchFiles(FLASH_CERTIFIED_DIR, FLASH_CERTIFIED_FILES);
                 DowloadSwitchFiles(FLASH_NETWORK_DIR, FLASH_NETWORK_FILES);
                 DowloadSwitchFiles(FLASH_SWITCH_DIR, FLASH_SWITCH_FILES);
                 DowloadSwitchFiles(FLASH_SYSTEM_DIR, FLASH_SYSTEM_FILES);
-                DowloadSwitchFiles(FLASH_WORKING_DIR, FLASH_WORKING_FILES);
+                DowloadSwitchFiles(FLASH_WORKING_DIR, FLASH_WORKING_FILES, backupImage);
                 DowloadSwitchFiles(FLASH_PYTHON_DIR, FLASH_PYTHON_FILES);
                 CreateAdditionalFiles();
                 Logger.Activity($"Backup completed (duration: {CalcStringDuration(_backupStartTime)})");
@@ -678,44 +678,56 @@ namespace PoEWizard.Comm
 
         private void CreateAdditionalFiles()
         {
-            string users = SendCommand(new CmdRequest(Command.SHOW_USER, ParseType.NoParsing)) as string;
-            string filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "additional-users.txt");
-            File.WriteAllText(filePath, users);
-            filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "backup-date.txt");
-            File.WriteAllText(filePath, DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt"));
-            filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "serial.txt");
-            if (SwitchModel?.ChassisList?.Count > 0)
+            Thread th = null;
+            try
             {
-                string serial = string.Empty;
-                foreach (ChassisModel chassis in SwitchModel?.ChassisList)
+                th = new Thread(() => SendProgressDownload(Translate("i18n_bckAddFiles")));
+                th.Start();
+                string users = SendCommand(new CmdRequest(Command.SHOW_USER, ParseType.NoParsing)) as string;
+                string filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "additional-users.txt");
+                File.WriteAllText(filePath, users);
+                filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "backup-date.txt");
+                File.WriteAllText(filePath, DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt"));
+                filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "serial.txt");
+                if (SwitchModel?.ChassisList?.Count > 0)
                 {
-                    if (!string.IsNullOrEmpty(serial)) serial += "\r\n";
-                    serial += $"Chassis {chassis.Number} serial number: {chassis.SerialNumber}";
+                    string serial = string.Empty;
+                    foreach (ChassisModel chassis in SwitchModel?.ChassisList)
+                    {
+                        if (!string.IsNullOrEmpty(serial)) serial += "\r\n";
+                        serial += $"Chassis {chassis.Number} serial number: {chassis.SerialNumber}";
+                    }
+                    File.WriteAllText(filePath, serial);
                 }
-                File.WriteAllText(filePath, serial);
+                if (_vlanSettings?.VlanList?.Count > 0)
+                {
+                    filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "vlan-configurations.csv");
+                    StringBuilder txt = new StringBuilder();
+                    txt.Append(VLAN_NAME).Append(",").Append(VLAN_IP).Append(",").Append(VLAN_MASK).Append(",").Append(VLAN_DEVICE);
+                    foreach (VlanModel vlan in _vlanSettings.VlanList)
+                    {
+                        txt.Append("\r\n\"").Append(vlan.Name).Append("\",\"").Append(vlan.IpAddress).Append("\",\"");
+                        txt.Append(vlan.SubnetMask).Append("\",\"").Append(vlan.Device).Append("\"");
+                    }
+                    File.WriteAllText(filePath, txt.ToString());
+                }
+                th.Abort();
             }
-            if (_vlanSettings?.VlanList?.Count > 0)
+            catch (Exception ex)
             {
-                filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "vlan-configurations.csv");
-                StringBuilder txt = new StringBuilder();
-                txt.Append(VLAN_NAME).Append(",").Append(VLAN_IP).Append(",").Append(VLAN_MASK).Append(",").Append(VLAN_DEVICE);
-                foreach(VlanModel vlan in _vlanSettings.VlanList)
-                {
-                    txt.Append("\r\n\"").Append(vlan.Name).Append("\",\"").Append(vlan.IpAddress).Append("\",\"");
-                    txt.Append(vlan.SubnetMask).Append("\",\"").Append(vlan.Device).Append("\"");
-                }
-                File.WriteAllText(filePath, txt.ToString());
+                th?.Abort();
+                Logger.Error(ex);
             }
         }
 
-        private void DowloadSwitchFiles(string remoteDir, List<string> filesToDownload)
+        private void DowloadSwitchFiles(string remoteDir, List<string> filesToDownload, bool backImage = true)
         {
             List<string> filesList = _sftpService.GetFilesInRemoteDir(remoteDir);
             foreach (string fileName in filesToDownload)
             {
                 try
                 {
-                    if (fileName.StartsWith("*.")) DownloadFilteredRemoteFiles(remoteDir, fileName);
+                    if (fileName.StartsWith("*.")) DownloadFilteredRemoteFiles(remoteDir, fileName, backImage);
                     else if (filesList.Contains(fileName)) DownloadRemoteFile(remoteDir, fileName);
                 }
                 catch (Exception ex)
@@ -725,23 +737,57 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void DownloadFilteredRemoteFiles(string remoteDir, string fileSuffix)
+        private void DownloadFilteredRemoteFiles(string remoteDir, string fileSuffix, bool backImage = true)
         {
             List<string> files = _sftpService.GetFilesInRemoteDir(remoteDir, fileSuffix.Replace("*", string.Empty));
             if (files.Count < 1) return;
             foreach (string fileName in files)
             {
-                DownloadRemoteFile(remoteDir, fileName);
+                if (!fileName.Contains(".img") || (fileName.Contains(".img") && backImage)) DownloadRemoteFile(remoteDir, fileName);
             }
         }
 
         private void DownloadRemoteFile(string srcFileDir, string fileName)
         {
-            string srcFilePath = $"{srcFileDir}/{fileName}";
-            Thread th = new Thread(() => SendProgressDownload($"{Translate("i18n_bckDowloading")} {fileName}"));
-            th.Start();
-            _sftpService.DownloadFile(srcFilePath, $"{BACKUP_DIR}{srcFileDir.Replace("/", "\\")}\\{fileName}");
-            th.Abort();
+            Thread th = null;
+            try
+            {
+                th = new Thread(() => SendProgressDownload($"{Translate("i18n_bckDowloading")} {fileName}"));
+                th.Start();
+                string srcFilePath = $"{srcFileDir}/{fileName}";
+                _sftpService.DownloadFile(srcFilePath, $"{BACKUP_DIR}{srcFileDir.Replace("/", "\\")}\\{fileName}");
+                th.Abort();
+            }
+            catch (Exception ex)
+            {
+                th?.Abort();
+                Logger.Error(ex);
+            }
+        }
+
+        private string CompressBackupFiles()
+        {
+            Thread th = null;
+            DateTime startTime = DateTime.Now;
+            string zipPath = string.Empty;
+            try
+            {
+                string backupPath = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
+                zipPath = Path.Combine(MainWindow.DataPath, $"backup-{SwitchModel.Name}_{DateTime.Now:MM-dd-yyyy_hh_mm_ss}.zip");
+                th = new Thread(() => SendProgressDownload(Translate("i18n_bckZipping")));
+                th.Start();
+                if (File.Exists(zipPath)) File.Delete(zipPath);
+                ZipFile.CreateFromDirectory(backupPath, zipPath, CompressionLevel.Fastest, true);
+                PurgeBackupFiles(backupPath);
+                th.Abort();
+            }
+            catch (Exception ex)
+            {
+                th?.Abort();
+                Logger.Error(ex);
+            }
+            Logger.Activity($"Compressing backup files completed (duration: {CalcStringDuration(startTime)})");
+            return zipPath;
         }
 
         private void SendProgressDownload(string progrMsg)
@@ -755,29 +801,6 @@ namespace PoEWizard.Comm
                 Thread.Sleep(1000);
                 if (dur >= 300) break;
             }
-        }
-
-        private string CompressBackupFiles()
-        {
-            DateTime startTime = DateTime.Now;
-            string zipPath = string.Empty;
-            try
-            {
-                string backupPath = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
-                zipPath = Path.Combine(MainWindow.DataPath, $"backup-{SwitchModel.Name}_{DateTime.Now:MM-dd-yyyy_hh_mm_ss}.zip");
-                Thread th = new Thread(() => SendProgressDownload(Translate("i18n_bckZipping")));
-                th.Start();
-                if (File.Exists(zipPath)) File.Delete(zipPath);
-                ZipFile.CreateFromDirectory(backupPath, zipPath, CompressionLevel.Fastest, true);
-                PurgeBackupFiles(backupPath);
-                th.Abort();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-            Logger.Activity($"Compressing backup files completed (duration: {CalcStringDuration(startTime)})");
-            return zipPath;
         }
 
         private void PurgeBackupFiles(string backupPath)
