@@ -376,8 +376,9 @@ namespace PoEWizard.Data
         public const string MATCH_USER = @"(User name)\s*=\s*(.+),";
         #endregion
 
-        #region Backup Configuration Files
-        public const string BACKUP_DIR = "config-backup-recovery";
+        #region Backup/Restore Switch Configuration
+        public const string BACKUP_DIR = "backup";
+        public const string RESTORE_DIR = "restore";
         //	1) /flash/certified:
         public const string FLASH_CERTIFIED_DIR = "/flash/certified";
         public static readonly List<string> FLASH_CERTIFIED_FILES = new List<string>()

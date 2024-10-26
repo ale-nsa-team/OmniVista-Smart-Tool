@@ -200,12 +200,17 @@ Please confirm your action.
     <sys:String x:Key="i18n_bckFail">Backup config of switch $1 has failed</sys:String>
     <sys:String x:Key="i18n_bckZipping">Compressing backup configuration files</sys:String>
     <sys:String x:Key="i18n_bckAddFiles">Creating additional files</sys:String>
+    <sys:String x:Key="i18n_zipFile">Zip file</sys:String>
+    <sys:String x:Key="i18n_bckSaving">Saving switch $1 backup file</sys:String>
+    <sys:String x:Key="i18n_fileSize">File size</sys:String>
+    <sys:String x:Key="i18n_bckDur">Backup duration</sys:String>
 
     <!--Restore Messages-->
     <sys:String x:Key="i18n_restCfg">Restore Switch Config</sys:String>
     <sys:String x:Key="i18n_restConfirm">Are you sure you want to restore the config on switch</sys:String>
     <sys:String x:Key="i18n_restSync">Checking Sync Status before restore</sys:String>
     <sys:String x:Key="i18n_notRest">Cannot Restore switch configuration</sys:String>
+    <sys:String x:Key="i18n_restSelFile">Select switch backup file to restore</sys:String>
 
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwiz">PoE Wizard</sys:String>

@@ -460,24 +460,28 @@ namespace PoEWizard
                     await GetSyncStatus(Translate("i18n_bckSync"));
                 }
                 bool backupImage = ShowMessageBox(Translate("i18n_bckCfg"), $"{Translate("i18n_bckAskImg")}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes;
-                string zipPath = await Task.Run(() => restApiService.BackupConfiguration(135, backupImage));
+                DateTime startTime = DateTime.Now;
+                double maxDur = backupImage ? 135 : 10;
+                string zipPath = await Task.Run(() => restApiService.BackupConfiguration(maxDur, backupImage));
                 if (!string.IsNullOrEmpty(zipPath))
                 {
-                    Logger.Activity($"Created zip file \"{zipPath}\"");
+                    Logger.Info($"Created zip file \"{zipPath}\", backup duration: {CalcStringDuration(startTime)}");
+                    string title = $"{Translate("i18n_bckSaving").Replace("$1", device.Name)}{WAITING}";
+                    string info = $"{Translate("i18n_fileSize")}: {PrintNumberBytes(new FileInfo(zipPath).Length)}";
+                    ShowInfoBox($"{title}\n{info}\n{Translate("i18n_bckDur")}: {CalcStringDurationTranslate(startTime, true)}");
+                    ShowProgress($"{title}");
                     var sfd = new SaveFileDialog()
                     {
-                        Filter = $"{Translate("i18n_tarf")}|*.tar",
-                        Title = Translate("i18n_sfile"),
+                        Filter = $"{Translate("i18n_zipFile")}|*.zip",
+                        Title = Translate("i18n_bckSavefile"),
                         InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
                         FileName = Path.GetFileName(zipPath)
                     };
-                    FileInfo info = new FileInfo(zipPath);
                     if (sfd.ShowDialog() == true)
                     {
                         string saveas = sfd.FileName;
                         File.Copy(zipPath, saveas, true);
                         File.Delete(zipPath);
-                        info = new FileInfo(saveas);
                     }
                 }
                 else
@@ -543,6 +547,16 @@ namespace PoEWizard
                         await Task.Run(() => restApiService.WriteMemory());
                         await GetSyncStatus(Translate("i18n_restSync"));
                     }
+                    var ofd = new OpenFileDialog()
+                    {
+                        Filter = $"{Translate("i18n_zipFile")}|*.zip",
+                        Title = Translate("i18n_restSelFile"),
+                        InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+                    };
+                    if (ofd.ShowDialog() == true)
+                    {
+                        RestoreSwitchConfiguration(ofd.FileName);
+                    }
                 }
             }
             catch (Exception ex)
@@ -555,6 +569,17 @@ namespace PoEWizard
                 HideInfoBox();
                 EnableButtons();
             }
+        }
+
+        private void RestoreSwitchConfiguration(string selFilePath)
+        {
+            string folder = Path.Combine(DataPath, RESTORE_DIR);
+            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+            string destPath = Path.Combine(folder, Path.GetFileName(selFilePath));
+            File.Copy(selFilePath, destPath, true);
+            StringBuilder txt = new StringBuilder("Launching restore configuration of switch ").Append(device.Name).Append(" (").Append(device.IpAddress);
+            txt.Append(").\nSelected file: \"").Append(selFilePath).Append("\", size: ").Append(PrintNumberBytes(new FileInfo(selFilePath).Length));
+            Logger.Activity(txt.ToString());
         }
 
         private async void ResetPort_Click(object sender, RoutedEventArgs e)

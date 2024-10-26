@@ -773,7 +773,7 @@ namespace PoEWizard.Comm
             try
             {
                 string backupPath = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
-                zipPath = Path.Combine(MainWindow.DataPath, $"backup-{SwitchModel.Name}_{DateTime.Now:MM-dd-yyyy_hh_mm_ss}.zip");
+                zipPath = Path.Combine(MainWindow.DataPath, $"{SwitchModel.Name}_{DateTime.Now:MM-dd-yyyy_hh_mm_ss}.zip");
                 th = new Thread(() => SendProgressDownload(Translate("i18n_bckZipping")));
                 th.Start();
                 if (File.Exists(zipPath)) File.Delete(zipPath);
