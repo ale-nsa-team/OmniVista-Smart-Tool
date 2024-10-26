@@ -1,12 +1,13 @@
-﻿using System;
+﻿using PoEWizard.Data;
+using Renci.SshNet;
+using Renci.SshNet.Sftp;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using PoEWizard.Data;
-using Renci.SshNet;
-using Renci.SshNet.Sftp;
 using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Comm
@@ -108,6 +109,19 @@ namespace PoEWizard.Comm
             return null;
         }
 
+        public void UnzipBackupSwitchFiles(string selFilePath)
+        {
+            using (ZipArchive archive = ZipFile.OpenRead(selFilePath))
+            {
+                foreach (ZipArchiveEntry entry in archive.Entries)
+                {
+                    string filePath = entry.FullName;
+                    CreateLocalDirectory(filePath);
+                    entry.ExtractToFile(Path.Combine(MainWindow.DataPath, entry.FullName), true);
+                }
+            }
+        }
+
         private void CreateLocalDirectory(string destPath)
         {
             string dir = Path.GetDirectoryName(destPath);
@@ -184,10 +198,7 @@ namespace PoEWizard.Comm
         private IEnumerable<ISftpFile> ListDirectoryWC(string pattern)
         {
             string directoryName = (pattern[0] == '/' ? "" : "/") + pattern.Substring(0, pattern.LastIndexOf('/'));
-            string regexPattern = pattern.Substring(pattern.LastIndexOf('/') + 1)
-                    .Replace(".", "\\.")
-                    .Replace("*", ".*")
-                    .Replace("?", ".");
+            string regexPattern = pattern.Substring(pattern.LastIndexOf('/') + 1).Replace(".", "\\.").Replace("*", ".*").Replace("?", ".");
             Regex reg = new Regex('^' + regexPattern + '$');
 
             var results = _sftpClient.ListDirectory(string.IsNullOrEmpty(directoryName) ? "/" : directoryName);

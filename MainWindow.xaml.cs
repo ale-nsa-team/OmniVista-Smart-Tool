@@ -492,7 +492,7 @@ namespace PoEWizard
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                ShowMessageBox(Translate("i18n_bckCfg"), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!", MsgBoxIcons.Error);
+                ShowMessageBox(Translate("i18n_bckCfg"), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!\n{ex.Message}", MsgBoxIcons.Error);
             }
             finally
             {
@@ -562,6 +562,7 @@ namespace PoEWizard
             catch (Exception ex)
             {
                 Logger.Error(ex);
+                ShowMessageBox(Translate("i18n_restCfg"), $"{Translate("i18n_restFail").Replace("$1", device.Name)}!\n{ex.Message}", MsgBoxIcons.Error);
             }
             finally
             {
@@ -573,13 +574,13 @@ namespace PoEWizard
 
         private void RestoreSwitchConfiguration(string selFilePath)
         {
-            string folder = Path.Combine(DataPath, RESTORE_DIR);
-            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
-            string destPath = Path.Combine(folder, Path.GetFileName(selFilePath));
-            File.Copy(selFilePath, destPath, true);
+            string restoreFolder = Path.Combine(DataPath, BACKUP_DIR);
+            if (!Directory.Exists(restoreFolder)) Directory.CreateDirectory(restoreFolder);
             StringBuilder txt = new StringBuilder("Launching restore configuration of switch ").Append(device.Name).Append(" (").Append(device.IpAddress);
             txt.Append(").\nSelected file: \"").Append(selFilePath).Append("\", size: ").Append(PrintNumberBytes(new FileInfo(selFilePath).Length));
             Logger.Activity(txt.ToString());
+            sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
+            sftpService.UnzipBackupSwitchFiles(selFilePath);
         }
 
         private async void ResetPort_Click(object sender, RoutedEventArgs e)

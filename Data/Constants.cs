@@ -377,8 +377,7 @@ namespace PoEWizard.Data
         #endregion
 
         #region Backup/Restore Switch Configuration
-        public const string BACKUP_DIR = "backup";
-        public const string RESTORE_DIR = "restore";
+        public const string BACKUP_DIR = "backup-restore";
         //	1) /flash/certified:
         public const string FLASH_CERTIFIED_DIR = "/flash/certified";
         public static readonly List<string> FLASH_CERTIFIED_FILES = new List<string>()

@@ -211,6 +211,7 @@ Please confirm your action.
     <sys:String x:Key="i18n_restSync">Checking Sync Status before restore</sys:String>
     <sys:String x:Key="i18n_notRest">Cannot Restore switch configuration</sys:String>
     <sys:String x:Key="i18n_restSelFile">Select switch backup file to restore</sys:String>
+    <sys:String x:Key="i18n_restFail">Restore config of switch $1 has failed</sys:String>
 
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwiz">PoE Wizard</sys:String>
