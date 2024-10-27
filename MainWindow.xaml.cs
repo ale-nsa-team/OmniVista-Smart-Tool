@@ -451,15 +451,20 @@ namespace PoEWizard
                 }
                 else if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
                 {
-                    ShowMessageBox(TranslateBackupConfig(), $"{Translate("i18n_notBck")} {device.Name} {Translate("i18n_notCert")}", MsgBoxIcons.Error);
+                    ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notBck")}\n{Translate("i18n_bckNotCert")}", MsgBoxIcons.Error);
                     return;
                 }
-                if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(TranslateBackupConfig(), cfgChanges))
+                if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(TranslateBackupRunning(), cfgChanges))
                 {
                     await Task.Run(() => restApiService.WriteMemory());
                     await GetSyncStatus(Translate("i18n_bckSync"));
                 }
-                MsgBoxResult backupChoice = ShowMessageBox(TranslateBackupConfig(), $"{Translate("i18n_bckAskImg")}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
+                else
+                {
+                    ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notBck")}\n{Translate("i18n_bckNotSync")}", MsgBoxIcons.Error);
+                    return;
+                }
+                MsgBoxResult backupChoice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_bckAskImg")}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
                 bool backupImage = backupChoice == MsgBoxResult.Yes;
                 if (backupChoice == MsgBoxResult.Cancel) return;
                 DateTime startTime = DateTime.Now;
@@ -488,13 +493,13 @@ namespace PoEWizard
                 }
                 else
                 {
-                    ShowMessageBox(TranslateBackupConfig(), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!", MsgBoxIcons.Error);
+                    ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!", MsgBoxIcons.Error);
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                ShowMessageBox(TranslateBackupConfig(), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!\n{ex.Message}", MsgBoxIcons.Error);
+                ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!\n{ex.Message}", MsgBoxIcons.Error);
             }
             finally
             {
@@ -504,7 +509,7 @@ namespace PoEWizard
             }
         }
 
-        private string TranslateBackupConfig()
+        private string TranslateBackupRunning()
         {
             return $"{Translate("i18n_bckRunning")} {device.Name}";
         }
@@ -518,7 +523,7 @@ namespace PoEWizard
                 {
                     if (pc.Password != pc.SavedPassword)
                     {
-                        ShowMessageBox(TranslateRestoringConfig(), Translate("i18n_badPwd"), MsgBoxIcons.Error);
+                        ShowMessageBox(TranslateRestoreRunning(), Translate("i18n_badPwd"), MsgBoxIcons.Error);
                     }
                     else
                     {
@@ -542,17 +547,12 @@ namespace PoEWizard
                 {
                     AskRebootCertified();
                 }
-                else if (ShowMessageBox(TranslateRestoringConfig(), $"{Translate("i18n_restConfirm")} {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                else if (ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restConfirm")} {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
                 {
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
                     {
-                        ShowMessageBox(TranslateRestoringConfig(), $"{Translate("i18n_notRest")} {Translate("i18n_notCert")}!", MsgBoxIcons.Error);
+                        ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_notRest")}\n{Translate("i18n_bckNotCert")}", MsgBoxIcons.Error);
                         return;
-                    }
-                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(TranslateRestoringConfig(), cfgChanges))
-                    {
-                        await Task.Run(() => restApiService.WriteMemory());
-                        await GetSyncStatus(Translate("i18n_restSync"));
                     }
                     var ofd = new OpenFileDialog()
                     {
@@ -569,7 +569,7 @@ namespace PoEWizard
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                ShowMessageBox(TranslateRestoringConfig(), $"{Translate("i18n_restFail")}!\n{ex.Message}", MsgBoxIcons.Error);
+                ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restFail")}!\n{ex.Message}", MsgBoxIcons.Error);
             }
             finally
             {
@@ -620,16 +620,16 @@ namespace PoEWizard
             }
             else
             {
-                invalidMsg = $"{Translate("i18n_restInv")}";
+                invalidMsg = $"{Translate("i18n_restInv").Replace("$1", $"{Path.GetFileName(selFilePath)}")}";
             }
             if (!string.IsNullOrEmpty(invalidMsg))
             {
-                ShowMessageBox(TranslateRestoringConfig(), $"{Translate("i18n_notRest")}\n{invalidMsg}", MsgBoxIcons.Error);
+                ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_notRest")}\n{invalidMsg}", MsgBoxIcons.Error);
                 return;
             }
         }
 
-        private string TranslateRestoringConfig()
+        private string TranslateRestoreRunning()
         {
             return $"{Translate("i18n_restRunning")} {device.Name}";
         }

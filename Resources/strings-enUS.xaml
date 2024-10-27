@@ -193,16 +193,18 @@ Please confirm your action.
     <!--Backup Messages-->
     <sys:String x:Key="i18n_bckRunning">Backing up configuration of switch</sys:String>
     <sys:String x:Key="i18n_bckSync">Checking Sync Status before backup</sys:String>
-    <sys:String x:Key="i18n_notBck">Cannot Backup the switch configuration</sys:String>
+    <sys:String x:Key="i18n_notBck">Cannot backup switch configuration!</sys:String>
     <sys:String x:Key="i18n_bckAskImg">Do you want to backup the image (*.img) files</sys:String>
     <sys:String x:Key="i18n_bckDowloading">Downloading file</sys:String>
-    <sys:String x:Key="i18n_bckFail">Backup config of switch $1 has failed</sys:String>
+    <sys:String x:Key="i18n_bckFail">Backup configuration of switch $1 has failed</sys:String>
     <sys:String x:Key="i18n_bckZipping">Compressing backup configuration files</sys:String>
     <sys:String x:Key="i18n_bckAddFiles">Creating additional files</sys:String>
     <sys:String x:Key="i18n_zipFile">Zip file</sys:String>
     <sys:String x:Key="i18n_bckSaving">Saving switch $1 backup file</sys:String>
     <sys:String x:Key="i18n_fileSize">File size</sys:String>
     <sys:String x:Key="i18n_bckDur">Backup duration</sys:String>
+    <sys:String x:Key="i18n_bckNotCert">Switch is not running on certified.</sys:String>
+    <sys:String x:Key="i18n_bckNotSync">Switch configuration is not synchronized.</sys:String>
 
     <!--Restore Messages-->
     <sys:String x:Key="i18n_restRunning">Restoring configuration of switch</sys:String>
@@ -211,7 +213,7 @@ Please confirm your action.
     <sys:String x:Key="i18n_notRest">Cannot restore switch configuration!</sys:String>
     <sys:String x:Key="i18n_restSelFile">Select switch backup file to restore</sys:String>
     <sys:String x:Key="i18n_restFail">Restore switch configuration has failed</sys:String>
-    <sys:String x:Key="i18n_restInv">The backup file is invalid.</sys:String>
+    <sys:String x:Key="i18n_restInv">The backup file $1 is invalid.</sys:String>
     <sys:String x:Key="i18n_restInvSw">The backup file belongs to another switch $1 ($2).</sys:String>
     <sys:String x:Key="i18n_restUnzip">Unzipping backup file</sys:String>
 
