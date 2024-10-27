@@ -637,6 +637,25 @@ namespace PoEWizard.Data
         {
             return (string)MainWindow.Strings[key] ?? key;
         }
+
+        public static string[] GetFilesInDirectory(string backupPath)
+        {
+            return Directory.GetFiles(backupPath, "*.*", SearchOption.AllDirectories);
+        }
+
+        public static void PurgeBackupFiles(string backupPath)
+        {
+            string[] listFiles = GetFilesInDirectory(backupPath);
+            foreach (string filePath in listFiles)
+            {
+                try
+                {
+                    File.Delete(filePath);
+                }
+                catch { }
+            }
+        }
+
     }
 }
 

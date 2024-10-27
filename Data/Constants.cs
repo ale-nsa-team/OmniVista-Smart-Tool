@@ -116,7 +116,8 @@ namespace PoEWizard.Data
         public const string WORKING_DIR = "Working";
         public const string CERTIFIED_DIR = "Certified";
         public const string MIN_AOS_VERSION = "8.9 R1";
-        public const string VCBOOT_PATH = "/flash/working/vcboot.cfg";
+        public const string VCBOOT_FILE = "vcboot.cfg";
+        public const string VCBOOT_PATH = "/flash/working/" + VCBOOT_FILE;
         public const string SWLOG_PATH = "/flash/tech_support_complete.tar";
         public const string WAITING = "  . . .";
         public const string C = " \u2103";
@@ -378,17 +379,21 @@ namespace PoEWizard.Data
 
         #region Backup/Restore Switch Configuration
         public const string BACKUP_DIR = "backup-restore";
+        public const string BACKUP_SWITCH_INFO_FILE = "switch-info.txt";
+        public const string BACKUP_VLAN_CSV_FILE = "vlan-configurations.csv";
+        public const string BACKUP_USERS_FILE = "additional-users.txt";
+        public const string BACKUP_DATE_FILE = "backup-date.txt";
         //	1) /flash/certified:
         public const string FLASH_CERTIFIED_DIR = "/flash/certified";
         public static readonly List<string> FLASH_CERTIFIED_FILES = new List<string>()
         {
-            "appmon_vcboot.cfg", "cloudagent.cfg", "vcboot.cfg", "vcsetup.cfg"
+            "appmon_vcboot.cfg", "cloudagent.cfg", VCBOOT_FILE, "vcsetup.cfg"
         };
         //	2) /flash/network:
         public const string FLASH_NETWORK_DIR = "/flash/network";
         public static readonly List<string> FLASH_NETWORK_FILES = new List<string>()
         {
-            "vcpolicy.cfg", "cloudagent.cfg", "vcboot.cfg", "vcsetup.cfg"
+            "vcpolicy.cfg", "cloudagent.cfg", VCBOOT_FILE, "vcsetup.cfg"
         };
         //	3) /flash/switch:
         public const string FLASH_SWITCH_DIR = "/flash/switch";
@@ -406,7 +411,7 @@ namespace PoEWizard.Data
         public const string FLASH_WORKING_DIR = "/flash/working";
         public static readonly List<string> FLASH_WORKING_FILES = new List<string>()
         {
-            "appmon_vcboot.cfg", "cloudagent.cfg", "vcboot.cfg", "vcsetup.cfg", "*.img"
+            "appmon_vcboot.cfg", "cloudagent.cfg", VCBOOT_FILE, "vcsetup.cfg", "*.img"
         };
         //	6) /flash/python:
         public const string FLASH_PYTHON_DIR = "/flash/python";

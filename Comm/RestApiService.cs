@@ -676,32 +676,62 @@ namespace PoEWizard.Comm
             }
         }
 
+        public void UnzipBackupSwitchFiles(double maxDur, string selFilePath)
+        {
+            Thread th = null;
+            try
+            {
+                _backupStartTime = DateTime.Now;
+                string msg = $"{Translate("i18n_restRunning")} {SwitchModel.Name}";
+                StartProgressBar($"{msg}{WAITING}", maxDur);
+                th = new Thread(() => SendProgressMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name}", _backupStartTime, Translate("i18n_restUnzip")));
+                th.Start();
+                PurgeBackupFiles(Path.Combine(MainWindow.DataPath, BACKUP_DIR));
+                string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
+                if (!Directory.Exists(restoreFolder)) Directory.CreateDirectory(restoreFolder);
+                StringBuilder txt = new StringBuilder("Launching restore configuration of switch ").Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress);
+                txt.Append(").\nSelected file: \"").Append(selFilePath).Append("\", size: ").Append(PrintNumberBytes(new FileInfo(selFilePath).Length));
+                Logger.Activity(txt.ToString());
+                _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
+                _sftpService.UnzipBackupSwitchFiles(selFilePath);
+                string swInfoFilePath = Path.Combine(restoreFolder, BACKUP_SWITCH_INFO_FILE);
+                string vlanFilePath = Path.Combine(restoreFolder, BACKUP_VLAN_CSV_FILE);
+                string vcBootFilePath = Path.Combine(restoreFolder, FLASH_WORKING_DIR, VCBOOT_FILE);
+                th.Abort();
+            }
+            catch (Exception ex)
+            {
+                th?.Abort();
+                Logger.Error(ex);
+            }
+        }
+
         private void CreateAdditionalFiles()
         {
             Thread th = null;
             try
             {
-                th = new Thread(() => SendProgressDownload(Translate("i18n_bckAddFiles")));
+                th = new Thread(() => SendProgressMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name}", _backupStartTime, Translate("i18n_bckAddFiles")));
                 th.Start();
                 string users = SendCommand(new CmdRequest(Command.SHOW_USER, ParseType.NoParsing)) as string;
-                string filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "additional-users.txt");
+                string filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, BACKUP_USERS_FILE);
                 File.WriteAllText(filePath, users);
-                filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "backup-date.txt");
-                File.WriteAllText(filePath, DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt"));
-                filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "serial.txt");
+                filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, BACKUP_SWITCH_INFO_FILE);
+                StringBuilder sb = new StringBuilder();
+                string swInfo = $"Switch name: {SwitchModel.Name}\r\nSwitch IP Address: {SwitchModel.IpAddress}";
                 if (SwitchModel?.ChassisList?.Count > 0)
                 {
-                    string serial = string.Empty;
                     foreach (ChassisModel chassis in SwitchModel?.ChassisList)
                     {
-                        if (!string.IsNullOrEmpty(serial)) serial += "\r\n";
-                        serial += $"Chassis {chassis.Number} serial number: {chassis.SerialNumber}";
+                        swInfo += $"\r\nChassis {chassis.Number} serial number: {chassis.SerialNumber}";
                     }
-                    File.WriteAllText(filePath, serial);
                 }
+                File.WriteAllText(filePath, swInfo);
+                filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, BACKUP_DATE_FILE);
+                File.WriteAllText(filePath, DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt"));
                 if (_vlanSettings?.VlanList?.Count > 0)
                 {
-                    filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, "vlan-configurations.csv");
+                    filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, BACKUP_VLAN_CSV_FILE);
                     StringBuilder txt = new StringBuilder();
                     txt.Append(VLAN_NAME).Append(",").Append(VLAN_IP).Append(",").Append(VLAN_MASK).Append(",").Append(VLAN_DEVICE);
                     foreach (VlanModel vlan in _vlanSettings.VlanList)
@@ -752,7 +782,7 @@ namespace PoEWizard.Comm
             Thread th = null;
             try
             {
-                th = new Thread(() => SendProgressDownload($"{Translate("i18n_bckDowloading")} {fileName}"));
+                th = new Thread(() => SendProgressMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name}", _backupStartTime, $"{Translate("i18n_bckDowloading")} {fileName}"));
                 th.Start();
                 string srcFilePath = $"{srcFileDir}/{fileName}";
                 _sftpService.DownloadFile(srcFilePath, $"{BACKUP_DIR}{srcFileDir.Replace("/", "\\")}\\{fileName}");
@@ -774,7 +804,7 @@ namespace PoEWizard.Comm
             {
                 string backupPath = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
                 zipPath = Path.Combine(MainWindow.DataPath, $"{SwitchModel.Name}_{DateTime.Now:MM-dd-yyyy_hh_mm_ss}.zip");
-                th = new Thread(() => SendProgressDownload(Translate("i18n_bckZipping")));
+                th = new Thread(() => SendProgressMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name}", _backupStartTime, Translate("i18n_bckZipping")));
                 th.Start();
                 if (File.Exists(zipPath)) File.Delete(zipPath);
                 ZipFile.CreateFromDirectory(backupPath, zipPath, CompressionLevel.Fastest, true);
@@ -790,35 +820,16 @@ namespace PoEWizard.Comm
             return zipPath;
         }
 
-        private void SendProgressDownload(string progrMsg)
+        private void SendProgressMessage(string title, DateTime startTime, string progrMsg)
         {
             int dur;
             while (Thread.CurrentThread.IsAlive)
             {
-                string msg = $"({CalcStringDurationTranslate(_backupStartTime, true)}){WAITING}";
-                dur = (int)GetTimeDuration(_backupStartTime);
-                UpdateProgressBarMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name} {msg}\n{progrMsg}", dur);
+                string msg = $"({CalcStringDurationTranslate(startTime, true)}){WAITING}";
+                dur = (int)GetTimeDuration(startTime);
+                UpdateProgressBarMessage($"{title} {msg}\n{progrMsg}", dur);
                 Thread.Sleep(1000);
                 if (dur >= 300) break;
-            }
-        }
-
-        private void PurgeBackupFiles(string backupPath)
-        {
-            foreach (string filePath in Directory.GetFiles(backupPath))
-            {
-                try
-                {
-                    File.Delete(filePath);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                }
-            }
-            foreach (string d in Directory.GetDirectories(backupPath))
-            {
-                PurgeBackupFiles(d);
             }
         }
 

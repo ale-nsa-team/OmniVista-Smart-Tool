@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Device
 {
@@ -63,7 +64,7 @@ namespace PoEWizard.Device
             restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
             sftp.DeleteFile("/flash/.bash_history");
             LoadTemplate(TEMPLATE);
-            sftp.UploadFile(Path.Combine(MainWindow.DataPath, TEMPLATE), "/flash/working/vcboot.cfg");
+            sftp.UploadFile(Path.Combine(MainWindow.DataPath, TEMPLATE), VCBOOT_PATH);
             sftp.Disconnect();
         }
 

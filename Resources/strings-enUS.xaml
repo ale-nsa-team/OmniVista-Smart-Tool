@@ -24,8 +24,8 @@
     <sys:String x:Key="i18n_about">About</sys:String>
     <sys:String x:Key="i18n_frst">Factory Reset...</sys:String>
     <sys:String x:Key="i18n_cfgWiz">Basic Configuration Wizard...</sys:String>
-    <sys:String x:Key="i18n_backup">Backup...</sys:String>
-    <sys:String x:Key="i18n_restore">Restore...</sys:String>
+    <sys:String x:Key="i18n_backup">Backup</sys:String>
+    <sys:String x:Key="i18n_restore">Restore</sys:String>
     <sys:String x:Key="i18n_lang">Language</sys:String>
     <sys:String x:Key="i18n_options">Options</sys:String>
 
@@ -209,9 +209,13 @@ Please confirm your action.
     <sys:String x:Key="i18n_restCfg">Restore Switch Config</sys:String>
     <sys:String x:Key="i18n_restConfirm">Are you sure you want to restore the config on switch</sys:String>
     <sys:String x:Key="i18n_restSync">Checking Sync Status before restore</sys:String>
-    <sys:String x:Key="i18n_notRest">Cannot Restore switch configuration</sys:String>
+    <sys:String x:Key="i18n_notRest">Cannot restore switch $1 configuration</sys:String>
     <sys:String x:Key="i18n_restSelFile">Select switch backup file to restore</sys:String>
     <sys:String x:Key="i18n_restFail">Restore config of switch $1 has failed</sys:String>
+    <sys:String x:Key="i18n_restInv">because the backup file is invalid</sys:String>
+    <sys:String x:Key="i18n_restInvSw">Switch selected is not connected</sys:String>
+    <sys:String x:Key="i18n_restRunning">Restoring configuration of switch</sys:String>
+    <sys:String x:Key="i18n_restUnzip">Unzipping backup file</sys:String>
 
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwiz">PoE Wizard</sys:String>

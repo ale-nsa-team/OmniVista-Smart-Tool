@@ -243,7 +243,7 @@ namespace PoEWizard
                 TextViewer tv = new TextViewer(Translate("i18n_tvcboot"), res)
                 {
                     Owner = this,
-                    SaveFilename = device.Name + "-vcboot.cfg"
+                    SaveFilename = $"{device.Name}-{VCBOOT_FILE}"
                 };
                 Logger.Debug("Displaying vcboot file.");
                 tv.Show();
@@ -535,14 +535,14 @@ namespace PoEWizard
                 {
                     AskRebootCertified();
                 }
-                else if (ShowMessageBox(Translate("i18n_rest"), $"{Translate("i18n_restConfirm")} {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                else if (ShowMessageBox(Translate("i18n_restCfg"), $"{Translate("i18n_restConfirm")} {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
                 {
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
                     {
-                        ShowMessageBox(Translate("i18n_rest"), $"{Translate("i18n_notRest")} {device.Name} {Translate("i18n_notCert")}", MsgBoxIcons.Error);
+                        ShowMessageBox(Translate("i18n_restCfg"), $"{Translate("i18n_notRest").Replace("$1", device.Name)} {Translate("i18n_notCert")}!", MsgBoxIcons.Error);
                         return;
                     }
-                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(Translate("i18n_rest"), cfgChanges))
+                    if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(Translate("i18n_restCfg"), cfgChanges))
                     {
                         await Task.Run(() => restApiService.WriteMemory());
                         await GetSyncStatus(Translate("i18n_restSync"));
@@ -572,15 +572,22 @@ namespace PoEWizard
             }
         }
 
-        private void RestoreSwitchConfiguration(string selFilePath)
+        private async void RestoreSwitchConfiguration(string selFilePath)
         {
+            await Task.Run(() => restApiService.UnzipBackupSwitchFiles(5, selFilePath));
             string restoreFolder = Path.Combine(DataPath, BACKUP_DIR);
-            if (!Directory.Exists(restoreFolder)) Directory.CreateDirectory(restoreFolder);
-            StringBuilder txt = new StringBuilder("Launching restore configuration of switch ").Append(device.Name).Append(" (").Append(device.IpAddress);
-            txt.Append(").\nSelected file: \"").Append(selFilePath).Append("\", size: ").Append(PrintNumberBytes(new FileInfo(selFilePath).Length));
-            Logger.Activity(txt.ToString());
-            sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
-            sftpService.UnzipBackupSwitchFiles(selFilePath);
+            string swInfoFilePath = Path.Combine(restoreFolder, BACKUP_SWITCH_INFO_FILE);
+            string vlanFilePath = Path.Combine(restoreFolder, BACKUP_VLAN_CSV_FILE);
+            string vcBootFilePath = Path.Combine(restoreFolder, FLASH_WORKING_DIR, VCBOOT_FILE);
+            if (File.Exists(vcBootFilePath) && File.Exists(swInfoFilePath) && File.Exists(vlanFilePath))
+            {
+                string swInfo = File.ReadAllText(swInfoFilePath);
+            }
+            else
+            {
+                ShowMessageBox(Translate("i18n_restCfg"), $"{Translate("i18n_notRest").Replace("$1", device.Name)} {Translate("i18n_restInv")}!", MsgBoxIcons.Error);
+
+            }
         }
 
         private async void ResetPort_Click(object sender, RoutedEventArgs e)
