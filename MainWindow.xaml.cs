@@ -454,15 +454,15 @@ namespace PoEWizard
                     ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notBck")}\n{Translate("i18n_bckNotCert")}", MsgBoxIcons.Error);
                     return;
                 }
-                if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(TranslateBackupRunning(), cfgChanges))
+                if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized)
                 {
+                    if (!AuthorizeWriteMemory(TranslateBackupRunning(), cfgChanges))
+                    {
+                        ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notBck")}\n{Translate("i18n_bckNotSync")}", MsgBoxIcons.Error);
+                        return;
+                    }
                     await Task.Run(() => restApiService.WriteMemory());
                     await GetSyncStatus(Translate("i18n_bckSync"));
-                }
-                else
-                {
-                    ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notBck")}\n{Translate("i18n_bckNotSync")}", MsgBoxIcons.Error);
-                    return;
                 }
                 MsgBoxResult backupChoice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_bckAskImg")}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
                 bool backupImage = backupChoice == MsgBoxResult.Yes;
@@ -486,10 +486,9 @@ namespace PoEWizard
                     };
                     if (sfd.ShowDialog() == true)
                     {
-                        string saveas = sfd.FileName;
-                        File.Copy(zipPath, saveas, true);
-                        File.Delete(zipPath);
+                        File.Copy(zipPath, sfd.FileName, true);
                     }
+                    File.Delete(zipPath);
                 }
                 else
                 {
