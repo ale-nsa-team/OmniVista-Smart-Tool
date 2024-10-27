@@ -623,6 +623,7 @@ namespace PoEWizard
             }
             if (!string.IsNullOrEmpty(invalidMsg))
             {
+                PurgeFilesInFolder(Path.Combine(DataPath, BACKUP_DIR));
                 ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_notRest")}\n{invalidMsg}", MsgBoxIcons.Error);
                 return;
             }

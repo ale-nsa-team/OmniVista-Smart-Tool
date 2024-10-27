@@ -686,7 +686,7 @@ namespace PoEWizard.Comm
                 StartProgressBar($"{msg}{WAITING}", maxDur);
                 th = new Thread(() => SendProgressMessage(msg, _backupStartTime, Translate("i18n_restUnzip")));
                 th.Start();
-                PurgeBackupFiles(Path.Combine(MainWindow.DataPath, BACKUP_DIR));
+                PurgeFilesInFolder(Path.Combine(MainWindow.DataPath, BACKUP_DIR));
                 string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
                 if (!Directory.Exists(restoreFolder)) Directory.CreateDirectory(restoreFolder);
                 StringBuilder txt = new StringBuilder("Launching restore configuration of switch ").Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress);
@@ -808,7 +808,7 @@ namespace PoEWizard.Comm
                 th.Start();
                 if (File.Exists(zipPath)) File.Delete(zipPath);
                 ZipFile.CreateFromDirectory(backupPath, zipPath, CompressionLevel.Fastest, true);
-                PurgeBackupFiles(backupPath);
+                PurgeFilesInFolder(backupPath);
                 th.Abort();
             }
             catch (Exception ex)

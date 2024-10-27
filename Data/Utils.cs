@@ -638,14 +638,14 @@ namespace PoEWizard.Data
             return (string)MainWindow.Strings[key] ?? key;
         }
 
-        public static string[] GetFilesInDirectory(string backupPath)
+        public static string[] GetFilesInFolder(string folder)
         {
-            return Directory.GetFiles(backupPath, "*.*", SearchOption.AllDirectories);
+            return Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
         }
 
-        public static void PurgeBackupFiles(string backupPath)
+        public static void PurgeFilesInFolder(string folder)
         {
-            string[] listFiles = GetFilesInDirectory(backupPath);
+            string[] listFiles = GetFilesInFolder(folder);
             foreach (string filePath in listFiles)
             {
                 try
