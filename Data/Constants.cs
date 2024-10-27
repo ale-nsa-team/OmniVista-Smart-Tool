@@ -117,8 +117,12 @@ namespace PoEWizard.Data
         public const string CERTIFIED_DIR = "Certified";
         public const string MIN_AOS_VERSION = "8.9 R1";
         public const string VCBOOT_FILE = "vcboot.cfg";
-        public const string VCBOOT_PATH = "/flash/working/" + VCBOOT_FILE;
-        public const string SWLOG_PATH = "/flash/tech_support_complete.tar";
+        public const string FLASH_DIR = "flash";
+        public const string FLASH_WORKING = "working";
+        public const string FLASH_WORKING_DIR = "/" + FLASH_DIR + "/" + FLASH_WORKING;
+        public const string FLASH_CERTIFIED_DIR = "/" + FLASH_DIR + "/certified";
+        public const string VCBOOT_PATH = "/" + FLASH_WORKING_DIR + "/" + VCBOOT_FILE;
+        public const string SWLOG_PATH = "/" + FLASH_DIR + "/tech_support_complete.tar";
         public const string WAITING = "  . . .";
         public const string C = " \u2103";
         public const string F = " \u2109";
@@ -383,38 +387,38 @@ namespace PoEWizard.Data
         public const string BACKUP_VLAN_CSV_FILE = "vlan-configurations.csv";
         public const string BACKUP_USERS_FILE = "additional-users.txt";
         public const string BACKUP_DATE_FILE = "backup-date.txt";
+        public const string BACKUP_SWITCH_NAME = "Switch name";
+        public const string BACKUP_SWITCH_IP = "Switch IP Address";
         //	1) /flash/certified:
-        public const string FLASH_CERTIFIED_DIR = "/flash/certified";
         public static readonly List<string> FLASH_CERTIFIED_FILES = new List<string>()
         {
             "appmon_vcboot.cfg", "cloudagent.cfg", VCBOOT_FILE, "vcsetup.cfg"
         };
         //	2) /flash/network:
-        public const string FLASH_NETWORK_DIR = "/flash/network";
+        public const string FLASH_NETWORK_DIR = "/" + FLASH_DIR + "/network";
         public static readonly List<string> FLASH_NETWORK_FILES = new List<string>()
         {
             "vcpolicy.cfg", "cloudagent.cfg", VCBOOT_FILE, "vcsetup.cfg"
         };
         //	3) /flash/switch:
-        public const string FLASH_SWITCH_DIR = "/flash/switch";
+        public const string FLASH_SWITCH_DIR = "/" + FLASH_DIR + "/switch";
         public static readonly List<string> FLASH_SWITCH_FILES = new List<string>()
         {
             "afnId.txt", "dhcpBind.db", "dhcpClient.db", "dhcp.db", "dhcpd.conf", "dhcpd.conf.lastgood", "dhcpd.pcy", "dhcpd.pid", "pre_banner.txt"
         };
         //	4) /flash/system:
-        public const string FLASH_SYSTEM_DIR = "/flash/system";
+        public const string FLASH_SYSTEM_DIR = "/" + FLASH_DIR + "/system";
         public static readonly List<string> FLASH_SYSTEM_FILES = new List<string>()
         {
             "lockoutSetting", "random-seed", "userPrivPasswordTable"
         };
         //	5) /flash/working:
-        public const string FLASH_WORKING_DIR = "/flash/working";
         public static readonly List<string> FLASH_WORKING_FILES = new List<string>()
         {
             "appmon_vcboot.cfg", "cloudagent.cfg", VCBOOT_FILE, "vcsetup.cfg", "*.img"
         };
         //	6) /flash/python:
-        public const string FLASH_PYTHON_DIR = "/flash/python";
+        public const string FLASH_PYTHON_DIR = "/" + FLASH_DIR + "/python";
         public static readonly List<string> FLASH_PYTHON_FILES = new List<string>()
         {
             "*.sh", "*.py"

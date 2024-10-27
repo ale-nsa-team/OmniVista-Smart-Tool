@@ -684,7 +684,7 @@ namespace PoEWizard.Comm
                 _backupStartTime = DateTime.Now;
                 string msg = $"{Translate("i18n_restRunning")} {SwitchModel.Name}";
                 StartProgressBar($"{msg}{WAITING}", maxDur);
-                th = new Thread(() => SendProgressMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name}", _backupStartTime, Translate("i18n_restUnzip")));
+                th = new Thread(() => SendProgressMessage(msg, _backupStartTime, Translate("i18n_restUnzip")));
                 th.Start();
                 PurgeBackupFiles(Path.Combine(MainWindow.DataPath, BACKUP_DIR));
                 string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
@@ -718,7 +718,7 @@ namespace PoEWizard.Comm
                 File.WriteAllText(filePath, users);
                 filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, BACKUP_SWITCH_INFO_FILE);
                 StringBuilder sb = new StringBuilder();
-                string swInfo = $"Switch name: {SwitchModel.Name}\r\nSwitch IP Address: {SwitchModel.IpAddress}";
+                string swInfo = $"{BACKUP_SWITCH_NAME}: {SwitchModel.Name}\r\n{BACKUP_SWITCH_IP}: {SwitchModel.IpAddress}";
                 if (SwitchModel?.ChassisList?.Count > 0)
                 {
                     foreach (ChassisModel chassis in SwitchModel?.ChassisList)

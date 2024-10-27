@@ -17,37 +17,37 @@ namespace PoEWizard.Device
 
         private static readonly List<string> files = new List<string>()
         {
-            "/flash/working/*.cfg",
-            "/flash/certified/*.cfg",
-            "/flash/working/*.conf",
-            "/flash/certified/*.conf",
-            "/flash/working/*.sav",
-            "/flash/certified/*.sav",
-            "/flash/working/*.md5",
-            "/flash/certified/*.md5",
-            "/flash/working/*.txt",
-            "/flash/certified/*.txt",
-            "/flash/working/*.cfg-ft",
-            "/flash/certified/*.cfg-ft",
-            "/flash/working/Udiag.img",
-            "/flash/working/Urescue.img",
-            "/flash/certified/Udiag.img",
-            "/flash/certified/Urescue.img",
-            "/flash/*.err",
-            "/flash/*.cfg",
-            "/flash/tech*",
-            "/flash/swlog_archive/*",
-            "/flash/system/user*",
-            "/flash/switch/cloud/*",
-            "/flash/switch/dhcpd*",
-            "/flash/switch/*.txt",
-            "/flash/libcurl*",
-            "/flash/agcmm*",
-            "/flash/working/pkg/*",
-            "/flash/certified/pkg/*",
-            "/flash/pmd",
-            "/flash/serial.txt",
-            "/flash/rcl.log"
+            $"/{FLASH_WORKING_DIR}/*.cfg",
+            $"/{FLASH_CERTIFIED_DIR}/*.cfg",
+            $"/{FLASH_WORKING_DIR}/*.conf",
+            $"/{FLASH_CERTIFIED_DIR}/*.conf",
+            $"/{FLASH_WORKING_DIR}/*.sav",
+            $"/{FLASH_CERTIFIED_DIR}/*.sav",
+            $"/{FLASH_WORKING_DIR}/*.md5",
+            $"/{FLASH_CERTIFIED_DIR}/*.md5",
+            $"/{FLASH_WORKING_DIR}/*.txt",
+            $"/{FLASH_CERTIFIED_DIR}/*.txt",
+            $"/{FLASH_WORKING_DIR}/*.cfg-ft",
+            $"/{FLASH_CERTIFIED_DIR}/*.cfg-ft",
+            $"/{FLASH_WORKING_DIR}/Udiag.img",
+            $"/{FLASH_WORKING_DIR}/Urescue.img",
+            $"/{FLASH_CERTIFIED_DIR}/Udiag.img",
+            $"/{FLASH_CERTIFIED_DIR}/Urescue.img",
+            $"/{FLASH_DIR}/*.err",
+            $"/{FLASH_DIR}/*.cfg",
+            $"/{FLASH_DIR}/tech*",
+            $"/{FLASH_DIR}/swlog_archive/*",
+            $"/{FLASH_DIR}/system/user*",
+            $"/{FLASH_DIR}/switch/cloud/*",
+            $"/{FLASH_DIR}/switch/dhcpd*",
+            $"/{FLASH_DIR}/switch/*.txt",
+            $"/{FLASH_DIR}/libcurl*",
+            $"/{FLASH_DIR}/agcmm*",
+            $"/{FLASH_WORKING_DIR}/pkg/*",
+            $"/{FLASH_CERTIFIED_DIR}/pkg/*",
+            $"/{FLASH_DIR}/pmd",
+            $"/{FLASH_DIR}/serial.txt",
+            $"/{FLASH_DIR}/rcl.log"
         };
 
         public static void Reset(SwitchModel device)
@@ -62,7 +62,7 @@ namespace PoEWizard.Device
             //}
             restSvc = MainWindow.restApiService;
             restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
-            sftp.DeleteFile("/flash/.bash_history");
+            sftp.DeleteFile($"/{FLASH_DIR}/.bash_history");
             LoadTemplate(TEMPLATE);
             sftp.UploadFile(Path.Combine(MainWindow.DataPath, TEMPLATE), VCBOOT_PATH);
             sftp.Disconnect();
