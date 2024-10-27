@@ -191,11 +191,10 @@ Please confirm your action.
     <sys:String x:Key="i18n_newRec">New Trap Receiver</sys:String>
 
     <!--Backup Messages-->
-    <sys:String x:Key="i18n_bckCfg">Backup Switch Config</sys:String>
+    <sys:String x:Key="i18n_bckRunning">Backing up configuration of switch</sys:String>
     <sys:String x:Key="i18n_bckSync">Checking Sync Status before backup</sys:String>
     <sys:String x:Key="i18n_notBck">Cannot Backup the switch configuration</sys:String>
-    <sys:String x:Key="i18n_bckAskImg">Do you want to backup the image files</sys:String>
-    <sys:String x:Key="i18n_bckRunning">Backing up configuration of switch</sys:String>
+    <sys:String x:Key="i18n_bckAskImg">Do you want to backup the image (*.img) files</sys:String>
     <sys:String x:Key="i18n_bckDowloading">Downloading file</sys:String>
     <sys:String x:Key="i18n_bckFail">Backup config of switch $1 has failed</sys:String>
     <sys:String x:Key="i18n_bckZipping">Compressing backup configuration files</sys:String>
@@ -206,7 +205,7 @@ Please confirm your action.
     <sys:String x:Key="i18n_bckDur">Backup duration</sys:String>
 
     <!--Restore Messages-->
-    <sys:String x:Key="i18n_restRunning">Restoring configuration of the switch</sys:String>
+    <sys:String x:Key="i18n_restRunning">Restoring configuration of switch</sys:String>
     <sys:String x:Key="i18n_restConfirm">Are you sure you want to restore the config on switch</sys:String>
     <sys:String x:Key="i18n_restSync">Checking Sync Status before restore</sys:String>
     <sys:String x:Key="i18n_notRest">Cannot restore switch configuration!</sys:String>

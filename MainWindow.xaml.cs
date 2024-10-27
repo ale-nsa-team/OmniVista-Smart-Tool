@@ -451,15 +451,15 @@ namespace PoEWizard
                 }
                 else if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
                 {
-                    ShowMessageBox(Translate("i18n_bckCfg"), $"{Translate("i18n_notBck")} {device.Name} {Translate("i18n_notCert")}", MsgBoxIcons.Error);
+                    ShowMessageBox(TranslateBackupConfig(), $"{Translate("i18n_notBck")} {device.Name} {Translate("i18n_notCert")}", MsgBoxIcons.Error);
                     return;
                 }
-                if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(Translate("i18n_bckCfg"), cfgChanges))
+                if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(TranslateBackupConfig(), cfgChanges))
                 {
                     await Task.Run(() => restApiService.WriteMemory());
                     await GetSyncStatus(Translate("i18n_bckSync"));
                 }
-                MsgBoxResult backupChoice = ShowMessageBox(Translate("i18n_bckCfg"), $"{Translate("i18n_bckAskImg")}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
+                MsgBoxResult backupChoice = ShowMessageBox(TranslateBackupConfig(), $"{Translate("i18n_bckAskImg")}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
                 bool backupImage = backupChoice == MsgBoxResult.Yes;
                 if (backupChoice == MsgBoxResult.Cancel) return;
                 DateTime startTime = DateTime.Now;
@@ -488,13 +488,13 @@ namespace PoEWizard
                 }
                 else
                 {
-                    ShowMessageBox(Translate("i18n_bckCfg"), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!", MsgBoxIcons.Error);
+                    ShowMessageBox(TranslateBackupConfig(), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!", MsgBoxIcons.Error);
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                ShowMessageBox(Translate("i18n_bckCfg"), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!\n{ex.Message}", MsgBoxIcons.Error);
+                ShowMessageBox(TranslateBackupConfig(), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!\n{ex.Message}", MsgBoxIcons.Error);
             }
             finally
             {
@@ -502,6 +502,11 @@ namespace PoEWizard
                 HideInfoBox();
                 EnableButtons();
             }
+        }
+
+        private string TranslateBackupConfig()
+        {
+            return $"{Translate("i18n_bckRunning")} {device.Name}";
         }
 
         private void LaunchRestoreCfg(object sender, RoutedEventArgs e)
