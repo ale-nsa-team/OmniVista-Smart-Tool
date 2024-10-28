@@ -564,8 +564,8 @@ namespace PoEWizard
                     if (ofd.ShowDialog() == true)
                     {
                         await Task.Run(() => restApiService.UnzipBackupSwitchFiles(5, ofd.FileName));
-                        await RestoreSwitchConfiguration(ofd.FileName);
-                        await RebootSwitch();
+                        bool reboot = await RestoreSwitchConfiguration(ofd.FileName);
+                        if (reboot) await RebootSwitch();
                     }
                 }
             }
@@ -582,7 +582,7 @@ namespace PoEWizard
             }
         }
 
-        private async Task RestoreSwitchConfiguration(string selFilePath)
+        private async Task<bool> RestoreSwitchConfiguration(string selFilePath)
         {
             string restoreFolder = Path.Combine(DataPath, BACKUP_DIR);
             string swInfoFilePath = Path.Combine(restoreFolder, BACKUP_SWITCH_INFO_FILE);
@@ -630,7 +630,7 @@ namespace PoEWizard
                     if (alert.Length > 0)
                     {
                         MsgBoxResult choice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notMatchSerial").Replace("$1", device.Name)}\n{alert}", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
-                        if (choice == MsgBoxResult.Cancel) return;
+                        if (choice == MsgBoxResult.Cancel) return false;
                     }
                     LoadVlanConfig(swName, swIp);
                 }
@@ -661,8 +661,9 @@ namespace PoEWizard
             {
                 PurgeFilesInFolder(Path.Combine(DataPath, BACKUP_DIR));
                 ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_notRest")}\n{invalidMsg}", MsgBoxIcons.Error);
-                return;
+                return false;
             }
+            return true;
         }
 
         private StringBuilder CheckSerialNumber(string swName, string swIp, List<Dictionary<string, string>> serial)
