@@ -196,6 +196,9 @@
       <DependentUpon>TrafficDurationSelection.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Validators.cs" />
+    <Compile Include="Components\VlanSettings.xaml.cs">
+      <DependentUpon>VlanSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Data\Activity.cs" />
     <Compile Include="Data\ChassisSlotPort.cs" />
     <Compile Include="Data\CliParseUtils.cs" />
@@ -346,6 +349,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\TrafficDurationSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\VlanSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

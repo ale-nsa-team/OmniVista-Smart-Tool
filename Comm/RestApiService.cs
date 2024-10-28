@@ -36,7 +36,7 @@ namespace PoEWizard.Comm
         private DateTime progressStartTime;
         private SftpService _sftpService = null;
         private DateTime _backupStartTime;
-        private VlanConfigModel _vlanSettings = null;
+        private VlanConfigModel _vlanConfig = null;
 
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
@@ -207,7 +207,7 @@ namespace PoEWizard.Comm
             SendProgressReport(Translate("i18n_sys"));
             GetSyncStatus();
             _dictList = SendCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
-            _vlanSettings = new VlanConfigModel(_dictList);
+            _vlanConfig = new VlanConfigModel(_dictList);
             _dict = _dictList.FirstOrDefault(d => d[IP_ADDR] == SwitchModel.IpAddress);
             if (_dict != null) SwitchModel.NetMask = _dict[SUBNET_MASK];
             _dictList = SendCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
@@ -729,12 +729,12 @@ namespace PoEWizard.Comm
                 File.WriteAllText(filePath, swInfo);
                 filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, BACKUP_DATE_FILE);
                 File.WriteAllText(filePath, DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt"));
-                if (_vlanSettings?.VlanList?.Count > 0)
+                if (_vlanConfig?.VlanList?.Count > 0)
                 {
                     filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, BACKUP_VLAN_CSV_FILE);
                     StringBuilder txt = new StringBuilder();
                     txt.Append(VLAN_NAME).Append(",").Append(VLAN_IP).Append(",").Append(VLAN_MASK).Append(",").Append(VLAN_DEVICE);
-                    foreach (VlanModel vlan in _vlanSettings.VlanList)
+                    foreach (VlanModel vlan in _vlanConfig.VlanList)
                     {
                         txt.Append("\r\n\"").Append(vlan.Name).Append("\",\"").Append(vlan.IpAddress).Append("\",\"");
                         txt.Append(vlan.SubnetMask).Append("\",\"").Append(vlan.Device).Append("\"");

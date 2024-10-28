@@ -216,6 +216,13 @@ Please confirm your action.
     <sys:String x:Key="i18n_restInv">The backup file $1 is invalid.</sys:String>
     <sys:String x:Key="i18n_restInvSw">The backup file belongs to another switch $1 ($2).</sys:String>
     <sys:String x:Key="i18n_restUnzip">Unzipping backup file</sys:String>
+    <sys:String x:Key="i18n_vlanName">Name</sys:String>
+    <sys:String x:Key="i18n_vlanIp">IP Address</sys:String>
+    <sys:String x:Key="i18n_vlanMask">Subnet Mask</sys:String>
+    <sys:String x:Key="i18n_vlanDev">Device</sys:String>
+    <sys:String x:Key="i18n_vlanOk">Continue</sys:String>
+    <sys:String x:Key="i18n_vlanCancel">Cancel</sys:String>
+    <sys:String x:Key="i18n_vlanAsk">Do you want to continue the restore?</sys:String>
 
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwiz">PoE Wizard</sys:String>

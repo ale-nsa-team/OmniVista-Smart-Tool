@@ -611,6 +611,7 @@ namespace PoEWizard
                         }
                         if (swName == device.Name && swIp == device.IpAddress)
                         {
+                            LoadVlanConfig();
                             return;
                         }
                         invalidMsg = $"{Translate("i18n_restInvSw").Replace("$1", swName).Replace("$2", swIp)}";
@@ -626,6 +627,30 @@ namespace PoEWizard
                 PurgeFilesInFolder(Path.Combine(DataPath, BACKUP_DIR));
                 ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_notRest")}\n{invalidMsg}", MsgBoxIcons.Error);
                 return;
+            }
+        }
+
+        private void LoadVlanConfig()
+        {
+            try
+            {
+                List<Dictionary<string, string>> dictList = CliParseUtils.ParseVlanConfig(File.ReadAllText(Path.Combine(Path.Combine(DataPath, BACKUP_DIR), BACKUP_VLAN_CSV_FILE)));
+                var vlan = new VlanSettings(dictList)
+                {
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                };
+                HideInfoBox();
+                vlan._tile.Text = $"{Translate("i18n_restRunning")} {device.Name} ({device.IpAddress})";
+                vlan.ShowDialog();
+                if (vlan.Proceed)
+                {
+                    Logger.Info("Restoring backup");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
             }
         }
 
