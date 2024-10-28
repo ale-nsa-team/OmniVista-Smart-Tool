@@ -194,7 +194,7 @@ Please confirm your action.
     <sys:String x:Key="i18n_bckRunning">Backing up configuration of switch</sys:String>
     <sys:String x:Key="i18n_bckSync">Checking Sync Status before backup</sys:String>
     <sys:String x:Key="i18n_notBck">Cannot backup switch configuration!</sys:String>
-    <sys:String x:Key="i18n_bckAskImg">Do you want to backup the image (*.img) files</sys:String>
+    <sys:String x:Key="i18n_bckAskImg">Do you want to backup the /flash/working AOS boot image file?</sys:String>
     <sys:String x:Key="i18n_bckDowloading">Downloading file</sys:String>
     <sys:String x:Key="i18n_bckFail">Backup configuration of switch $1 has failed</sys:String>
     <sys:String x:Key="i18n_bckZipping">Compressing backup configuration files</sys:String>
@@ -208,21 +208,27 @@ Please confirm your action.
 
     <!--Restore Messages-->
     <sys:String x:Key="i18n_restRunning">Restoring configuration of switch</sys:String>
-    <sys:String x:Key="i18n_restConfirm">Are you sure you want to restore the config on switch</sys:String>
+    <sys:String x:Key="i18n_restConfirm" xml:space="preserve">Are you sure you want to restore the configuration on switch $1?
+Restoring an incorrect or out dated backup can disrupt the network.
+Proceed with caution.</sys:String>
     <sys:String x:Key="i18n_restSync">Checking Sync Status before restore</sys:String>
     <sys:String x:Key="i18n_notRest">Cannot restore switch configuration!</sys:String>
     <sys:String x:Key="i18n_restSelFile">Select switch backup file to restore</sys:String>
     <sys:String x:Key="i18n_restFail">Restore switch configuration has failed</sys:String>
-    <sys:String x:Key="i18n_restInv">The backup file $1 is invalid.</sys:String>
-    <sys:String x:Key="i18n_restInvSw">The backup file belongs to another switch $1 ($2).</sys:String>
+    <sys:String x:Key="i18n_restInv">The backup file $1 is invalid</sys:String>
+    <sys:String x:Key="i18n_restInvSw">The backup file belongs to another switch $1 ($2)</sys:String>
     <sys:String x:Key="i18n_restUnzip">Unzipping backup file</sys:String>
     <sys:String x:Key="i18n_vlanName">Name</sys:String>
     <sys:String x:Key="i18n_vlanIp">IP Address</sys:String>
     <sys:String x:Key="i18n_vlanMask">Subnet Mask</sys:String>
     <sys:String x:Key="i18n_vlanDev">Device</sys:String>
-    <sys:String x:Key="i18n_vlanOk">Continue</sys:String>
-    <sys:String x:Key="i18n_vlanCancel">Cancel</sys:String>
-    <sys:String x:Key="i18n_vlanAsk">Do you want to continue the restore?</sys:String>
+    <sys:String x:Key="i18n_vlanOk">Ok</sys:String>
+    <sys:String x:Key="i18n_vlanTitle">List of VLANs on switch</sys:String>
+    <sys:String x:Key="i18n_restChassis">Chassis</sys:String>
+    <sys:String x:Key="i18n_notMatchSerial">Serial number of switch $1 doesn't match!</sys:String>
+    <sys:String x:Key="i18n_restNotExist">doesn't exist on switch</sys:String>
+    <sys:String x:Key="i18n_restNotMatch">Backup file chassis $1 S/N is $2 and switch chassis $1 S/N is $3.</sys:String>
+    <sys:String x:Key="i18n_restAskImg">Do you want to restore the /flash/working AOS boot image file?</sys:String>
 
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwiz">PoE Wizard</sys:String>

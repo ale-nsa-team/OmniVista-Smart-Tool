@@ -389,6 +389,8 @@ namespace PoEWizard.Data
         public const string BACKUP_DATE_FILE = "backup-date.txt";
         public const string BACKUP_SWITCH_NAME = "Switch name";
         public const string BACKUP_SWITCH_IP = "Switch IP Address";
+        public const string BACKUP_CHASSIS = "Chassis";
+        public const string BACKUP_SERIAL_NUMBER = "S/N";
         //	1) /flash/certified:
         public static readonly List<string> FLASH_CERTIFIED_FILES = new List<string>()
         {

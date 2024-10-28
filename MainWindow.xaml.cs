@@ -546,7 +546,7 @@ namespace PoEWizard
                 {
                     AskRebootCertified();
                 }
-                else if (ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restConfirm")} {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                else if (ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restConfirm").Replace("$1", device.Name)}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
                 {
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
                     {
@@ -588,35 +588,58 @@ namespace PoEWizard
             string invalidMsg = null;
             if (File.Exists(vcBootFilePath) && File.Exists(swInfoFilePath) && File.Exists(vlanFilePath))
             {
+                string swName = string.Empty;
+                string swIp = string.Empty;
+                List<Dictionary<string, string>> serial = new List<Dictionary<string, string>>();
                 string swInfo = File.ReadAllText(swInfoFilePath);
                 if (!string.IsNullOrEmpty(swInfo))
                 {
                     string[] lines = swInfo.Split('\n');
                     if (lines.Length > 1)
                     {
-                        string swName = string.Empty;
-                        string swIp = string.Empty;
                         foreach (string line in lines)
                         {
                             if (string.IsNullOrEmpty(line)) continue;
-                            if (line.Contains(':') && (line.Contains(BACKUP_SWITCH_NAME) || line.Contains(BACKUP_SWITCH_IP)))
+                            if (line.Contains(':'))
                             {
                                 string[] split = line.Split(':');
                                 if (split.Length > 1)
                                 {
                                     if (split[0].Trim() == BACKUP_SWITCH_NAME) swName = split[1].Trim();
                                     else if (split[0].Trim() == BACKUP_SWITCH_IP) swIp = split[1].Trim();
+                                    else if (split[0].Contains(BACKUP_SERIAL_NUMBER) && split[0].Contains(BACKUP_CHASSIS))
+                                    {
+                                        Dictionary<string, string> dict = new Dictionary<string, string>
+                                        {
+                                            [BACKUP_CHASSIS] = Regex.Split(split[0].Trim(), BACKUP_SERIAL_NUMBER)[0].Replace(BACKUP_CHASSIS, string.Empty).Trim(),
+                                            [BACKUP_SERIAL_NUMBER] = split[1].Trim()
+                                        };
+                                        serial.Add(dict);
+                                    }
                                 }
                             }
                         }
-                        if (swName == device.Name && swIp == device.IpAddress)
-                        {
-                            LoadVlanConfig();
-                            return;
-                        }
-                        invalidMsg = $"{Translate("i18n_restInvSw").Replace("$1", swName).Replace("$2", swIp)}";
+                    }
+                    StringBuilder alert = CheckSerialNumber(swName, swIp, serial);
+                    if (alert.Length > 0)
+                    {
+                        MsgBoxResult choice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notMatchSerial").Replace("$1", device.Name)}\n{alert}", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                        if (choice == MsgBoxResult.Cancel) return;
+                    }
+                    LoadVlanConfig(swName, swIp);
+                }
+                string[] filesList = GetFilesInFolder(Path.Combine(restoreFolder, FLASH_DIR, FLASH_WORKING));
+                bool foundImg = false;
+                foreach (string file in filesList)
+                {
+                   if (file.EndsWith(".img"))
+                   {
+                        foundImg = true;
+                        break;
                     }
                 }
+                bool restoreImage = false;
+                if (foundImg) restoreImage = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_restAskImg")}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes;
             }
             else
             {
@@ -630,7 +653,39 @@ namespace PoEWizard
             }
         }
 
-        private void LoadVlanConfig()
+        private StringBuilder CheckSerialNumber(string swName, string swIp, List<Dictionary<string, string>> serial)
+        {
+            StringBuilder alert = new StringBuilder();
+            foreach (Dictionary<string, string> dict in serial)
+            {
+                if (!dict.ContainsKey(BACKUP_CHASSIS)) continue;
+                int chassisNr = StringToInt(dict[BACKUP_CHASSIS]);
+                ChassisModel chassis = device.GetChassis(chassisNr);
+                if (chassis == null)
+                {
+                    if (alert.Length > 0) alert.Append("\n");
+                    alert.Append(Translate("i18n_restChassis")).Append(" ").Append(chassisNr).Append(" ").Append(Translate("i18n_restNotExist")).Append(".");
+                    continue;
+                }
+                if (!dict.ContainsKey(BACKUP_SERIAL_NUMBER)) continue;
+                string sn = dict[BACKUP_SERIAL_NUMBER];
+                if (sn != chassis.SerialNumber)
+                {
+                    if (alert.Length > 0) alert.Append("\n");
+                    alert.Append(Translate("i18n_restNotMatch").Replace("$1", chassisNr.ToString()).Replace("$2", sn).Replace("$", chassis.SerialNumber));
+                }
+            }
+            if (alert.Length > 0)
+            {
+                if (swIp != device.IpAddress || swName != device.Name)
+                {
+                    alert.Append("\n").Append(Translate("i18n_restInvSw").Replace("$1", swName).Replace("$2", swIp)).Append(".");
+                }
+            }
+            return alert;
+        }
+
+        private void LoadVlanConfig(string switchName, string switchIp)
         {
             try
             {
@@ -641,7 +696,7 @@ namespace PoEWizard
                     WindowStartupLocation = WindowStartupLocation.CenterOwner
                 };
                 HideInfoBox();
-                vlan._tile.Text = $"{Translate("i18n_restRunning")} {device.Name} ({device.IpAddress})";
+                vlan._tile.Text = $"{Translate("i18n_vlanTitle")} {switchName} ({switchIp})";
                 vlan.ShowDialog();
                 if (vlan.Proceed)
                 {

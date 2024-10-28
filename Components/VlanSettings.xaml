@@ -19,10 +19,10 @@
     <Grid Style="{DynamicResource popupWindow}">
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
-            <RowDefinition MinHeight="50" Height="*" />
+            <RowDefinition MinHeight="50" Height="*" MaxHeight="600" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock x:Name="_tile" Grid.Row="0" Grid.Column="0" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_restVlan}" HorizontalAlignment="Center" >
+        <TextBlock x:Name="_tile" Grid.Row="0" Grid.Column="0" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_vlanTitle}" HorizontalAlignment="Center" >
         </TextBlock>
         <Border Grid.Row="1" Style="{DynamicResource gridBorder}" Margin="5">
             <DataGrid x:Name="_vlanView" 
@@ -55,10 +55,8 @@
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
-        <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="5,0,0,0" >
-            <TextBlock Grid.Row="2" Grid.Column="0" Margin="10,10,0,10" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_vlanAsk}"/>
-            <Button Grid.Row="2" Grid.Column="1" Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="10,0,0,0" Content="{DynamicResource i18n_vlanOk}"/>
-            <Button Grid.Row="2" Grid.Column="2"  Click="BtnCancel_Click" Style="{DynamicResource defaultButton}" Margin="20,0,0,0" Content="{DynamicResource i18n_vlanCancel}"/>
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal"  HorizontalAlignment="Center" >
+            <Button Grid.Row="2" Grid.Column="0" Click="BtnOk_Click" Style="{DynamicResource defaultButton}" HorizontalAlignment="Center" Margin="0,0,0,5" Content="{DynamicResource i18n_vlanOk}"/>
         </StackPanel>
     </Grid>
 </Window>

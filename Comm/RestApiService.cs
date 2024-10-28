@@ -723,7 +723,7 @@ namespace PoEWizard.Comm
                 {
                     foreach (ChassisModel chassis in SwitchModel?.ChassisList)
                     {
-                        swInfo += $"\r\nChassis {chassis.Number} serial number: {chassis.SerialNumber}";
+                        swInfo += $"\r\n{BACKUP_CHASSIS} {chassis.Number} {BACKUP_SERIAL_NUMBER}: {chassis.SerialNumber}";
                     }
                 }
                 File.WriteAllText(filePath, swInfo);
