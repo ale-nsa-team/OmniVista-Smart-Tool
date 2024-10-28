@@ -65,13 +65,13 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void UploadFile(string localPath, string remotePath)
+        public void UploadFile(string localPath, string remotePath, bool overWrite = false)
         {
             try
             {
                 using (var fs = new FileStream(localPath, FileMode.Open))
                 {
-                    _sftpClient.UploadFile(fs, remotePath);
+                    _sftpClient.UploadFile(fs, remotePath, overWrite);
                 }
             }
             catch (Exception ex)

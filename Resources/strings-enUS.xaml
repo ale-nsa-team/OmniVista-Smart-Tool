@@ -195,7 +195,8 @@ Please confirm your action.
     <sys:String x:Key="i18n_bckSync">Checking Sync Status before backup</sys:String>
     <sys:String x:Key="i18n_notBck">Cannot backup switch configuration!</sys:String>
     <sys:String x:Key="i18n_bckAskImg">Do you want to backup the /flash/working AOS boot image file?</sys:String>
-    <sys:String x:Key="i18n_bckDowloading">Downloading file</sys:String>
+    <sys:String x:Key="i18n_bckDowloading">Downloading configuration files</sys:String>
+    <sys:String x:Key="i18n_bckDowloadFile">Downloading file</sys:String>
     <sys:String x:Key="i18n_bckFail">Backup configuration of switch $1 has failed</sys:String>
     <sys:String x:Key="i18n_bckZipping">Compressing backup configuration files</sys:String>
     <sys:String x:Key="i18n_bckAddFiles">Creating additional files</sys:String>
@@ -229,6 +230,8 @@ Proceed with caution.</sys:String>
     <sys:String x:Key="i18n_restNotExist">doesn't exist on switch</sys:String>
     <sys:String x:Key="i18n_restNotMatch">Backup file chassis $1 S/N is $2 and switch chassis $1 S/N is $3.</sys:String>
     <sys:String x:Key="i18n_restAskImg">Do you want to restore the /flash/working AOS boot image file?</sys:String>
+    <sys:String x:Key="i18n_restUpLoading">Uploading backup files to switch</sys:String>
+    <sys:String x:Key="i18n_restUploadFile">Uploading file</sys:String>
 
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwiz">PoE Wizard</sys:String>

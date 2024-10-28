@@ -647,21 +647,28 @@ namespace PoEWizard.Comm
         {
             try
             {
-                _backupStartTime = DateTime.Now;
-                string msg = $"{Translate("i18n_bckRunning")} {SwitchModel.Name}";
-                Logger.Info(msg);
-                StartProgressBar($"{msg}{WAITING}", maxDur);
                 _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
                 string sftpError = _sftpService.Connect();
-                DowloadSwitchFiles(FLASH_CERTIFIED_DIR, FLASH_CERTIFIED_FILES);
-                DowloadSwitchFiles(FLASH_NETWORK_DIR, FLASH_NETWORK_FILES);
-                DowloadSwitchFiles(FLASH_SWITCH_DIR, FLASH_SWITCH_FILES);
-                DowloadSwitchFiles(FLASH_SYSTEM_DIR, FLASH_SYSTEM_FILES);
-                DowloadSwitchFiles(FLASH_WORKING_DIR, FLASH_WORKING_FILES, backupImage);
-                DowloadSwitchFiles(FLASH_PYTHON_DIR, FLASH_PYTHON_FILES);
-                CreateAdditionalFiles();
-                Logger.Activity($"Backup completed (duration: {CalcStringDuration(_backupStartTime)})");
-                return CompressBackupFiles();
+                if (string.IsNullOrEmpty(sftpError))
+                {
+                    _backupStartTime = DateTime.Now;
+                    string msg = $"{Translate("i18n_bckRunning")} {SwitchModel.Name}";
+                    Logger.Info(msg);
+                    StartProgressBar($"{msg}{WAITING}", maxDur);
+                    DowloadSwitchFiles(FLASH_CERTIFIED_DIR, FLASH_CERTIFIED_FILES);
+                    DowloadSwitchFiles(FLASH_NETWORK_DIR, FLASH_NETWORK_FILES);
+                    DowloadSwitchFiles(FLASH_SWITCH_DIR, FLASH_SWITCH_FILES);
+                    DowloadSwitchFiles(FLASH_SYSTEM_DIR, FLASH_SYSTEM_FILES);
+                    DowloadSwitchFiles(FLASH_WORKING_DIR, FLASH_WORKING_FILES, backupImage);
+                    DowloadSwitchFiles(FLASH_PYTHON_DIR, FLASH_PYTHON_FILES);
+                    CreateAdditionalFiles();
+                    Logger.Activity($"Backup completed (duration: {CalcStringDuration(_backupStartTime)})");
+                    return CompressBackupFiles();
+                }
+                else
+                {
+                    throw new Exception($"Fail to establish the SFTP connection to switch {SwitchModel.Name} ({SwitchModel.IpAddress})!\r\nReason: {sftpError}");
+                }
             }
             catch (Exception ex)
             {
@@ -697,6 +704,75 @@ namespace PoEWizard.Comm
                 string swInfoFilePath = Path.Combine(restoreFolder, BACKUP_SWITCH_INFO_FILE);
                 string vlanFilePath = Path.Combine(restoreFolder, BACKUP_VLAN_CSV_FILE);
                 string vcBootFilePath = Path.Combine(restoreFolder, FLASH_WORKING_DIR, VCBOOT_FILE);
+                th.Abort();
+            }
+            catch (Exception ex)
+            {
+                th?.Abort();
+                Logger.Error(ex);
+            }
+        }
+
+        public void UploadConfigurationFiles(double maxDur, bool restoreImage)
+        {
+            try
+            {
+                _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
+                string sftpError = _sftpService.Connect();
+                if (string.IsNullOrEmpty(sftpError))
+                {
+                    _backupStartTime = DateTime.Now;
+                    string msg = $"{Translate("i18n_restRunning")} {SwitchModel.Name}";
+                    Logger.Info(msg);
+                    StartProgressBar($"{msg}{WAITING}", maxDur);
+                    string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
+                    string[] filesList = GetFilesInFolder(Path.Combine(restoreFolder, FLASH_DIR));
+                    foreach (string localFilePath in filesList)
+                    {
+                        try
+                        {
+                            if (localFilePath.EndsWith(".img") && !restoreImage) continue;
+                            UploadRemoteFile(localFilePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
+                        }
+                    }
+                    Logger.Activity($"Backup completed (duration: {CalcStringDuration(_backupStartTime)})");                }
+                else
+                {
+                    throw new Exception($"Fail to establish the SFTP connection to switch {SwitchModel.Name} ({SwitchModel.IpAddress})!\r\nReason: {sftpError}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn(ex.Message);
+            }
+            finally
+            {
+                _sftpService?.Disconnect();
+                _sftpService = null;
+                CloseProgressBar();
+            }
+        }
+
+        private void UploadRemoteFile(string localFilePath)
+        {
+            Thread th = null;
+            try
+            {
+                string fileName = Path.GetFileName(localFilePath);
+                th = new Thread(() => SendProgressMessage($"{Translate("i18n_restRunning")} {SwitchModel.Name}", _backupStartTime, $"{Translate("i18n_restUploadFile")} {fileName}"));
+                th.Start();
+                string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
+                FileInfo fileInfo = new FileInfo(localFilePath);
+                if (fileInfo.Exists && fileInfo.Length > 0)
+                {
+                    string remotepath = $"{Path.GetDirectoryName(localFilePath).Replace(restoreFolder, string.Empty).Replace("\\", "/")}/{fileName}";
+                    Logger.Debug($"Uploading file \"{remotepath}\"");
+                    _sftpService.UploadFile(localFilePath, remotepath, true);
+                }
                 th.Abort();
             }
             catch (Exception ex)
@@ -782,7 +858,7 @@ namespace PoEWizard.Comm
             Thread th = null;
             try
             {
-                th = new Thread(() => SendProgressMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name}", _backupStartTime, $"{Translate("i18n_bckDowloading")} {fileName}"));
+                th = new Thread(() => SendProgressMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name}", _backupStartTime, $"{Translate("i18n_bckDowloadFile")} {fileName}"));
                 th.Start();
                 string srcFilePath = $"{srcFileDir}/{fileName}";
                 _sftpService.DownloadFile(srcFilePath, $"{BACKUP_DIR}{srcFileDir.Replace("/", "\\")}\\{fileName}");
@@ -885,7 +961,7 @@ namespace PoEWizard.Comm
                 if (waitSec <= 0) return string.Empty;
                 msg = $"{Translate("i18n_rsReboot")} {SwitchModel.Name} {Translate("i18n_reboot")} ";
                 WaitSec(msg, 5);
-                _progress.Report(new ProgressReport($"{msg}..."));
+                _progress.Report(new ProgressReport($"{msg}{WAITING}"));
                 double dur = 0;
                 while (dur <= 60)
                 {
