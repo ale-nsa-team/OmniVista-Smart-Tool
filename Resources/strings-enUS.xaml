@@ -220,9 +220,10 @@ Proceed with caution.</sys:String>
     <sys:String x:Key="i18n_restInvSw">The backup file belongs to another switch $1 ($2)</sys:String>
     <sys:String x:Key="i18n_restUnzip">Unzipping backup file</sys:String>
     <sys:String x:Key="i18n_restChassis">Chassis</sys:String>
-    <sys:String x:Key="i18n_notMatchSerial">Serial number of switch $1 doesn't match!</sys:String>
+    <sys:String x:Key="i18n_restSerial">S/N</sys:String>
+    <sys:String x:Key="i18n_notMatchSerial">Serial Numbers don't match!</sys:String>
     <sys:String x:Key="i18n_restNotExist">doesn't exist on switch</sys:String>
-    <sys:String x:Key="i18n_restNotMatch">Backup file chassis $1 S/N is $2 and switch chassis $1 S/N is $3.</sys:String>
+    <sys:String x:Key="i18n_restNotMatch">Backup file is $1 and switch is $2.</sys:String>
     <sys:String x:Key="i18n_restAskImg">Do you want to restore the /flash/working AOS boot image file?</sys:String>
     <sys:String x:Key="i18n_restUpLoading">Uploading backup files to switch</sys:String>
     <sys:String x:Key="i18n_restUploadFile">Uploading file</sys:String>

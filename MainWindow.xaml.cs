@@ -636,7 +636,7 @@ namespace PoEWizard
                     StringBuilder alert = CheckSerialNumber(swName, swIp, serial);
                     if (alert.Length > 0)
                     {
-                        MsgBoxResult choice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notMatchSerial").Replace("$1", device.Name)}\n{alert}", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                        MsgBoxResult choice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notMatchSerial")}\n{alert}", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                         if (choice == MsgBoxResult.Cancel) return false;
                     }
                     List<Dictionary<string, string>> dictList = CliParseUtils.ParseVlanConfig(File.ReadAllText(Path.Combine(Path.Combine(DataPath, BACKUP_DIR), BACKUP_VLAN_CSV_FILE)));
@@ -693,7 +693,8 @@ namespace PoEWizard
                 if (sn != chassis.SerialNumber)
                 {
                     if (alert.Length > 0) alert.Append("\n");
-                    alert.Append(Translate("i18n_restNotMatch").Replace("$1", chassisNr.ToString()).Replace("$2", sn).Replace("$", chassis.SerialNumber));
+                    alert.Append(Translate("i18n_restChassis")).Append(" ").Append(chassisNr).Append(" ").Append(Translate("i18n_restSerial")).Append(":\n");
+                    alert.Append("    - ").Append(Translate("i18n_restNotMatch").Replace("$1", sn).Replace("$2", chassis.SerialNumber));
                 }
             }
             if (alert.Length > 0)
