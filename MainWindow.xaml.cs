@@ -557,7 +557,6 @@ namespace PoEWizard
                             if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
                             {
                                 ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_notRest")}\n{Translate("i18n_bckNotCert")}", MsgBoxIcons.Error);
-                                return;
                             }
                             var ofd = new OpenFileDialog()
                             {
