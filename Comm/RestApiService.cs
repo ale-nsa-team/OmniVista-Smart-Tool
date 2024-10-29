@@ -670,8 +670,15 @@ namespace PoEWizard.Comm
                     DowloadSwitchFiles(FLASH_WORKING_DIR, FLASH_WORKING_FILES, backupImage);
                     DowloadSwitchFiles(FLASH_PYTHON_DIR, FLASH_PYTHON_FILES);
                     CreateAdditionalFiles();
-                    Logger.Activity($"Backup completed (duration: {CalcStringDuration(_backupStartTime)})");
-                    return CompressBackupFiles();
+                    string backupFile = CompressBackupFiles();
+                    StringBuilder sb = new StringBuilder("Backup configuration of switch ");
+                    sb.Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress).Append(") completed.");
+                    FileInfo info = new FileInfo(backupFile);
+                    if (info?.Length > 0) sb.Append("\r\nFile created: \"").Append(info.Name).Append("\" (").Append(PrintNumberBytes(info.Length)).Append(")");
+                    else sb.Append("\r\nBackup file not created!");
+                    sb.Append("\r\nBackup duration: ").Append(CalcStringDuration(_backupStartTime));
+                    Logger.Activity(sb.ToString());
+                    return backupFile;
                 }
                 else
                 {
@@ -727,6 +734,7 @@ namespace PoEWizard.Comm
             {
                 _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
                 string sftpError = _sftpService.Connect();
+                List<string> filesUploaded = new List<string>();
                 if (string.IsNullOrEmpty(sftpError))
                 {
                     _backupStartTime = DateTime.Now;
@@ -740,14 +748,21 @@ namespace PoEWizard.Comm
                         try
                         {
                             if (localFilePath.EndsWith(".img") && !restoreImage) continue;
-                            UploadRemoteFile(localFilePath);
+                            string fileInfo = UploadRemoteFile(localFilePath);
+                            if (!string.IsNullOrEmpty (fileInfo)) filesUploaded.Add(fileInfo);
                         }
                         catch (Exception ex)
                         {
                             Logger.Error(ex);
                         }
                     }
-                    Logger.Activity($"Backup completed (duration: {CalcStringDuration(_backupStartTime)})");                }
+                    StringBuilder sb = new StringBuilder("Upload configuration files of switch ");
+                    sb.Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress).Append(") completed.");
+                    if (filesUploaded?.Count > 0) sb.Append("\r\nFiles uploaded:\r\n  ").Append(string.Join(", ", filesUploaded));
+                    else sb.Append("\r\nConfiguration files not uploaded!");
+                    sb.Append("\r\nUpload duration: ").Append(CalcStringDuration(_backupStartTime));
+                    Logger.Activity(sb.ToString());
+                }
                 else
                 {
                     throw new Exception($"Fail to establish the SFTP connection to switch {SwitchModel.Name} ({SwitchModel.IpAddress})!\r\nReason: {sftpError}");
@@ -765,8 +780,9 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void UploadRemoteFile(string localFilePath)
+        private string UploadRemoteFile(string localFilePath)
         {
+            string fileInfo = string.Empty;
             Thread th = null;
             try
             {
@@ -774,10 +790,11 @@ namespace PoEWizard.Comm
                 th = new Thread(() => SendProgressMessage($"{Translate("i18n_restRunning")} {SwitchModel.Name}", _backupStartTime, $"{Translate("i18n_restUploadFile")} {fileName}"));
                 th.Start();
                 string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
-                FileInfo fileInfo = new FileInfo(localFilePath);
-                if (fileInfo.Exists && fileInfo.Length > 0)
+                FileInfo info = new FileInfo(localFilePath);
+                if (info.Exists && info.Length > 0)
                 {
                     string remotepath = $"{Path.GetDirectoryName(localFilePath).Replace(restoreFolder, string.Empty).Replace("\\", "/")}/{fileName}";
+                    fileInfo = $"{info.Name} ({PrintNumberBytes(info.Length)})";
                     Logger.Debug($"Uploading file \"{remotepath}\"");
                     _sftpService.UploadFile(localFilePath, remotepath, true);
                 }
@@ -788,6 +805,7 @@ namespace PoEWizard.Comm
                 th?.Abort();
                 Logger.Error(ex);
             }
+            return fileInfo;
         }
 
         private void CreateAdditionalFiles()

@@ -656,6 +656,11 @@ namespace PoEWizard.Data
             }
         }
 
+        public static int MaxLineLen(string s)
+        {
+            return s.Split('\n').Max(l => l.Length);
+        }
+
     }
 }
 

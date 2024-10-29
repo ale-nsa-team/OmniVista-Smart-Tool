@@ -294,16 +294,15 @@ namespace PoEWizard
                 ShowInfoBox(title);
                 ShowProgress(title);
                 List<Dictionary<string, string>> dictList = await Task.Run(() => restApiService.GetVlanSettings());
+                HideInfoBox();
+                HideProgress();
                 ShowVlan($"{Translate("i18n_vlanTitle")}", dictList);
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
-            }
-            finally
-            {
                 HideInfoBox();
                 HideProgress();
+                Logger.Error(ex);
             }
         }
 
@@ -2054,6 +2053,9 @@ namespace PoEWizard
         {
             _infoBlock.Inlines.Clear();
             _infoBlock.Inlines.Add(message);
+            int maxLen = MaxLineLen(message);
+            if (maxLen > 70) _infoBox.Width = 500;
+            else _infoBox.Width = 400;
             _infoBox.Visibility = Visibility.Visible;
         }
 
