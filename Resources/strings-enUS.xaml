@@ -227,6 +227,7 @@ Proceed with caution.</sys:String>
     <sys:String x:Key="i18n_restAskImg">Do you want to restore the /flash/working AOS boot image file?</sys:String>
     <sys:String x:Key="i18n_restUpLoading">Uploading backup files to switch</sys:String>
     <sys:String x:Key="i18n_restUploadFile">Uploading file</sys:String>
+    <sys:String x:Key="i18n_restNotCert">Switch is in certified mode, Continue?</sys:String>
 
     <!--VLAN Messages-->
     <sys:String x:Key="i18n_vlanReading">Reading VLAN information</sys:String>
