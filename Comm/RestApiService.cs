@@ -1,5 +1,4 @@
-﻿using PoEWizard.Components;
-using PoEWizard.Data;
+﻿using PoEWizard.Data;
 using PoEWizard.Device;
 using PoEWizard.Exceptions;
 using System;
@@ -270,6 +269,23 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
+                Logger.Error(ex);
+            }
+            return null;
+        }
+
+        public Dictionary<string, string> RunSwitchCommandSsh(Command cmd, string[] data)
+        {
+            try
+            {
+                ConnectAosSsh();
+                Dictionary<string, string> result = SshService?.SendCommand(new RestUrlEntry(cmd), data);
+                DisconnectAosSsh();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                DisconnectAosSsh();
                 Logger.Error(ex);
             }
             return null;
