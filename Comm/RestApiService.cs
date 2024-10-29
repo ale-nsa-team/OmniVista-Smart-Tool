@@ -1,4 +1,5 @@
-﻿using PoEWizard.Data;
+﻿using PoEWizard.Components;
+using PoEWizard.Data;
 using PoEWizard.Device;
 using PoEWizard.Exceptions;
 using System;
@@ -36,7 +37,7 @@ namespace PoEWizard.Comm
         private DateTime progressStartTime;
         private SftpService _sftpService = null;
         private DateTime _backupStartTime;
-        private VlanConfigModel _vlanConfig = null;
+        private List<VlanModel> _vlanSettings = new List<VlanModel>();
 
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
@@ -206,13 +207,20 @@ namespace PoEWizard.Comm
         {
             SendProgressReport(Translate("i18n_sys"));
             GetSyncStatus();
-            _dictList = SendCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
-            _vlanConfig = new VlanConfigModel(_dictList);
-            _dict = _dictList.FirstOrDefault(d => d[IP_ADDR] == SwitchModel.IpAddress);
-            if (_dict != null) SwitchModel.NetMask = _dict[SUBNET_MASK];
+            GetVlanSettings();
             _dictList = SendCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
             _dict = _dictList.FirstOrDefault(d => d[DNS_DEST] == "0.0.0.0/0");
             if (_dict != null) SwitchModel.DefaultGwy = _dict[GATEWAY];
+        }
+
+        public List<Dictionary<string, string>> GetVlanSettings()
+        {
+            _dictList = SendCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
+            _vlanSettings = new List<VlanModel>();
+            foreach (Dictionary<string, string> dict in _dictList) { _vlanSettings.Add(new VlanModel(dict)); }
+            _dict = _dictList.FirstOrDefault(d => d[IP_ADDR] == SwitchModel.IpAddress);
+            if (_dict != null) SwitchModel.NetMask = _dict[SUBNET_MASK];
+            return _dictList;
         }
 
         public string GetSyncStatus()
@@ -805,12 +813,12 @@ namespace PoEWizard.Comm
                 File.WriteAllText(filePath, swInfo);
                 filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, BACKUP_DATE_FILE);
                 File.WriteAllText(filePath, DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt"));
-                if (_vlanConfig?.VlanList?.Count > 0)
+                if (_vlanSettings?.Count > 0)
                 {
                     filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, BACKUP_VLAN_CSV_FILE);
                     StringBuilder txt = new StringBuilder();
                     txt.Append(VLAN_NAME).Append(",").Append(VLAN_IP).Append(",").Append(VLAN_MASK).Append(",").Append(VLAN_DEVICE);
-                    foreach (VlanModel vlan in _vlanConfig.VlanList)
+                    foreach (VlanModel vlan in _vlanSettings)
                     {
                         txt.Append("\r\n\"").Append(vlan.Name).Append("\",\"").Append(vlan.IpAddress).Append("\",\"");
                         txt.Append(vlan.SubnetMask).Append("\",\"").Append(vlan.Device).Append("\"");

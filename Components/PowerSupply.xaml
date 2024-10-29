@@ -18,10 +18,13 @@
     </Window.Resources>
     <Grid Style="{DynamicResource popupWindow}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" Style="{DynamicResource gridBorder}" Margin="5">
+        <TextBlock x:Name="_title" Grid.Row="0" Grid.Column="0" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_ps}" HorizontalAlignment="Center" >
+        </TextBlock>
+        <Border Grid.Row="1" Style="{DynamicResource gridBorder}" Margin="5">
             <DataGrid x:Name="_psView" 
                   Style="{DynamicResource defaultGrid}"
                   ItemsSource="{Binding PSList}"
@@ -91,7 +94,7 @@
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
-        <Button Grid.Row="1" Click="BtnOk_Click" Style="{DynamicResource defaultButton}" 
+        <Button Grid.Row="2" Click="BtnOk_Click" Style="{DynamicResource defaultButton}" 
                 Margin="5" Content="{DynamicResource i18n_closeBtn}"/>
     </Grid>
 </Window>

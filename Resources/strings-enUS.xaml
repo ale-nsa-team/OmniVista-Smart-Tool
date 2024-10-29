@@ -219,12 +219,6 @@ Proceed with caution.</sys:String>
     <sys:String x:Key="i18n_restInv">The backup file $1 is invalid</sys:String>
     <sys:String x:Key="i18n_restInvSw">The backup file belongs to another switch $1 ($2)</sys:String>
     <sys:String x:Key="i18n_restUnzip">Unzipping backup file</sys:String>
-    <sys:String x:Key="i18n_vlanName">Name</sys:String>
-    <sys:String x:Key="i18n_vlanIp">IP Address</sys:String>
-    <sys:String x:Key="i18n_vlanMask">Subnet Mask</sys:String>
-    <sys:String x:Key="i18n_vlanDev">Device</sys:String>
-    <sys:String x:Key="i18n_vlanOk">Ok</sys:String>
-    <sys:String x:Key="i18n_vlanTitle">List of VLANs on switch</sys:String>
     <sys:String x:Key="i18n_restChassis">Chassis</sys:String>
     <sys:String x:Key="i18n_notMatchSerial">Serial number of switch $1 doesn't match!</sys:String>
     <sys:String x:Key="i18n_restNotExist">doesn't exist on switch</sys:String>
@@ -232,6 +226,17 @@ Proceed with caution.</sys:String>
     <sys:String x:Key="i18n_restAskImg">Do you want to restore the /flash/working AOS boot image file?</sys:String>
     <sys:String x:Key="i18n_restUpLoading">Uploading backup files to switch</sys:String>
     <sys:String x:Key="i18n_restUploadFile">Uploading file</sys:String>
+
+    <!--VLAN Messages-->
+    <sys:String x:Key="i18n_vlanReading">Reading VLAN information</sys:String>
+    <sys:String x:Key="i18n_vlanName">Name</sys:String>
+    <sys:String x:Key="i18n_vlanIp">IP Address</sys:String>
+    <sys:String x:Key="i18n_vlanMask">Subnet Mask</sys:String>
+    <sys:String x:Key="i18n_vlanDev">Device</sys:String>
+    <sys:String x:Key="i18n_vlanOk">Ok</sys:String>
+    <sys:String x:Key="i18n_viewVlan">VLAN Settings</sys:String>
+    <sys:String x:Key="i18n_vlanTitle">VLAN Settings</sys:String>
+    <sys:String x:Key="i18n_vlanBck">VLAN Settings in backup file of switch</sys:String>
 
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwiz">PoE Wizard</sys:String>

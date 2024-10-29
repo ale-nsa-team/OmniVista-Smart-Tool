@@ -1,17 +1,7 @@
 ﻿using PoEWizard.Device;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using static PoEWizard.Data.Constants;
 
 namespace PoEWizard.Components
@@ -21,7 +11,7 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class VlanSettings : Window
     {
-        public List<VlanModel> VlanList { get; set; }
+        public ObservableCollection<VlanModel> VlanList { get; set; }
         public bool Proceed {  get; set; }
         public VlanSettings(List<Dictionary<string, string>> dictList)
         {
@@ -37,7 +27,7 @@ namespace PoEWizard.Components
             }
             Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             Resources.MergedDictionaries.Add(MainWindow.Strings);
-            this.VlanList = new List<VlanModel>();
+            this.VlanList = new ObservableCollection<VlanModel>();
             foreach (Dictionary<string, string> dict in dictList)
             {
                 this.VlanList.Add(new VlanModel(dict));

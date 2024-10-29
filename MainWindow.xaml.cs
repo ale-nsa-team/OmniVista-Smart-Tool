@@ -286,6 +286,27 @@ namespace PoEWizard
             ps.Show();
         }
 
+        private async void ViewVlan_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string title = $"{Translate("i18n_vlanReading")} {device.Name}{WAITING}";
+                ShowInfoBox(title);
+                ShowProgress(title);
+                List<Dictionary<string, string>> dictList = await Task.Run(() => restApiService.GetVlanSettings());
+                ShowVlan($"{Translate("i18n_vlanTitle")}", dictList);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            finally
+            {
+                HideInfoBox();
+                HideProgress();
+            }
+        }
+
         private async void SearchMac_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -316,9 +337,12 @@ namespace PoEWizard
             }
             catch (Exception ex)
             {
+                Logger.Error(ex);
+            }
+            finally
+            {
                 HideInfoBox();
                 HideProgress();
-                Logger.Error(ex);
             }
         }
 
@@ -434,12 +458,7 @@ namespace PoEWizard
             }
         }
 
-        private void LaunchBackupCfg(object sender, RoutedEventArgs e)
-        {
-            LaunchBackup();
-        }
-
-        private async void LaunchBackup()
+        private async void LaunchBackupCfg(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -515,10 +534,11 @@ namespace PoEWizard
             return $"{Translate("i18n_bckRunning")} {device.Name}";
         }
 
-        private void LaunchRestoreCfg(object sender, RoutedEventArgs e)
+        private async void LaunchRestoreCfg(object sender, RoutedEventArgs e)
         {
             try
             {
+                DisableButtons();
                 PassCode pc = new PassCode(this, config);
                 if (pc.ShowDialog() == true)
                 {
@@ -528,44 +548,31 @@ namespace PoEWizard
                     }
                     else
                     {
-                        LaunchRestore();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
-
-        private async void LaunchRestore()
-        {
-            try
-            {
-                DisableButtons();
-                string cfgChanges = await GetSyncStatus(Translate("i18n_restSync"));
-                if (device.RunningDir == CERTIFIED_DIR)
-                {
-                    AskRebootCertified();
-                }
-                else if (ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restConfirm").Replace("$1", device.Name)}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
-                {
-                    if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
-                    {
-                        ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_notRest")}\n{Translate("i18n_bckNotCert")}", MsgBoxIcons.Error);
-                        return;
-                    }
-                    var ofd = new OpenFileDialog()
-                    {
-                        Filter = $"{Translate("i18n_zipFile")}|*.zip",
-                        Title = Translate("i18n_restSelFile"),
-                        InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
-                    };
-                    if (ofd.ShowDialog() == true)
-                    {
-                        await Task.Run(() => restApiService.UnzipBackupSwitchFiles(5, ofd.FileName));
-                        bool reboot = await RestoreSwitchConfiguration(ofd.FileName);
-                        if (reboot) await RebootSwitch();
+                        string cfgChanges = await GetSyncStatus(Translate("i18n_restSync"));
+                        if (device.RunningDir == CERTIFIED_DIR)
+                        {
+                            AskRebootCertified();
+                        }
+                        else if (ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restConfirm").Replace("$1", device.Name)}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                        {
+                            if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
+                            {
+                                ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_notRest")}\n{Translate("i18n_bckNotCert")}", MsgBoxIcons.Error);
+                                return;
+                            }
+                            var ofd = new OpenFileDialog()
+                            {
+                                Filter = $"{Translate("i18n_zipFile")}|*.zip",
+                                Title = Translate("i18n_restSelFile"),
+                                InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+                            };
+                            if (ofd.ShowDialog() == true)
+                            {
+                                await Task.Run(() => restApiService.UnzipBackupSwitchFiles(5, ofd.FileName));
+                                bool reboot = await RestoreSwitchConfiguration(ofd.FileName);
+                                if (reboot) await RebootSwitch();
+                            }
+                        }
                     }
                 }
             }
@@ -632,7 +639,8 @@ namespace PoEWizard
                         MsgBoxResult choice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notMatchSerial").Replace("$1", device.Name)}\n{alert}", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                         if (choice == MsgBoxResult.Cancel) return false;
                     }
-                    LoadVlanConfig(swName, swIp);
+                    List<Dictionary<string, string>> dictList = CliParseUtils.ParseVlanConfig(File.ReadAllText(Path.Combine(Path.Combine(DataPath, BACKUP_DIR), BACKUP_VLAN_CSV_FILE)));
+                    ShowVlan($"{Translate("i18n_vlanBck")} {swName} ({swIp})", dictList);
                 }
                 string[] filesList = GetFilesInFolder(Path.Combine(restoreFolder, FLASH_DIR, FLASH_WORKING));
                 bool foundImg = false;
@@ -698,28 +706,16 @@ namespace PoEWizard
             return alert;
         }
 
-        private void LoadVlanConfig(string switchName, string switchIp)
+        private void ShowVlan(string title, List<Dictionary<string, string>> dictList)
         {
-            try
+            var vlan = new VlanSettings(dictList)
             {
-                List<Dictionary<string, string>> dictList = CliParseUtils.ParseVlanConfig(File.ReadAllText(Path.Combine(Path.Combine(DataPath, BACKUP_DIR), BACKUP_VLAN_CSV_FILE)));
-                var vlan = new VlanSettings(dictList)
-                {
-                    Owner = this,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner
-                };
-                HideInfoBox();
-                vlan._tile.Text = $"{Translate("i18n_vlanTitle")} {switchName} ({switchIp})";
-                vlan.ShowDialog();
-                if (vlan.Proceed)
-                {
-                    Logger.Info("Restoring backup");
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            HideInfoBox();
+            vlan._title.Text = $"{title}";
+            vlan.ShowDialog();
         }
 
         private string TranslateRestoreRunning()
@@ -2219,6 +2215,7 @@ namespace PoEWizard
             _collectLogs.IsEnabled = val;
             _psMenuItem.IsEnabled = val;
             _searchMacMenuItem.IsEnabled = val;
+            _vlanMenuItem.IsEnabled = val;
             _factoryRst.IsEnabled = val;
             _cfgMenuItem.IsEnabled = val;
             _cfgBackup.IsEnabled = val;

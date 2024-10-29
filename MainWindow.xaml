@@ -44,6 +44,7 @@
                 <MenuItem Header="{DynamicResource i18n_sshot}" x:Name="_snapshotMenuItem" IsEnabled="False" Click="ViewSnapshot_Click"/>
                 <MenuItem Header="{DynamicResource i18n_ps}" x:Name="_psMenuItem" IsEnabled="False" Click="ViewPS_Click" />
                 <MenuItem Header="{DynamicResource i18n_src}" x:Name="_searchMacMenuItem" IsEnabled="False" Click="SearchMac_Click" />
+                <MenuItem Header="{DynamicResource i18n_viewVlan}" x:Name="_vlanMenuItem" IsEnabled="False" Click="ViewVlan_Click" />
                 <Separator/>
                 <MenuItem Header="{DynamicResource i18n_help}" Click="Help_Click"/>
                 <MenuItem Header="{DynamicResource i18n_about}" Click="About_Click"/>

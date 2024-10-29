@@ -38,6 +38,8 @@ namespace PoEWizard.Components
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
             this.MouseDown += delegate { this.DragMove(); };
+            this.Height = this._psView.ActualHeight + 105;
+            this.Top = this.Owner.Height > this.Height ? this.Owner.Top + (this.Owner.Height - this.Height) / 2 : this.Top;
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)

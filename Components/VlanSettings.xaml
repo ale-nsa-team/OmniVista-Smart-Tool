@@ -22,7 +22,7 @@
             <RowDefinition MinHeight="50" Height="*" MaxHeight="600" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock x:Name="_tile" Grid.Row="0" Grid.Column="0" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_vlanTitle}" HorizontalAlignment="Center" >
+        <TextBlock x:Name="_title" Grid.Row="0" Grid.Column="0" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_vlanTitle}" HorizontalAlignment="Center" >
         </TextBlock>
         <Border Grid.Row="1" Style="{DynamicResource gridBorder}" Margin="5">
             <DataGrid x:Name="_vlanView" 
