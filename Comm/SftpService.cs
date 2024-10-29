@@ -1,12 +1,13 @@
-﻿using System;
+﻿using PoEWizard.Data;
+using Renci.SshNet;
+using Renci.SshNet.Sftp;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using PoEWizard.Data;
-using Renci.SshNet;
-using Renci.SshNet.Sftp;
 using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Comm
@@ -64,13 +65,13 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void UploadFile(string localPath, string remotePath)
+        public void UploadFile(string localPath, string remotePath, bool overWrite = false)
         {
             try
             {
                 using (var fs = new FileStream(localPath, FileMode.Open))
                 {
-                    _sftpClient.UploadFile(fs, remotePath);
+                    _sftpClient.UploadFile(fs, remotePath, overWrite);
                 }
             }
             catch (Exception ex)
@@ -79,12 +80,21 @@ namespace PoEWizard.Comm
             }
         }
 
-        public string DownloadFile(string remotePath)
+        public string DownloadFile(string remotePath, string destPath = null)
         {
             try
             {
                 DateTime startTime = DateTime.Now;
-                string localPath = Path.Combine(MainWindow.DataPath, Path.GetFileName(remotePath));
+                string localPath;
+                if (string.IsNullOrEmpty(destPath))
+                {
+                    localPath = Path.Combine(MainWindow.DataPath, Path.GetFileName(remotePath));
+                }
+                else
+                {
+                    localPath = Path.Combine(MainWindow.DataPath, destPath);
+                    CreateLocalDirectory(destPath);
+                }
                 using (var fs = new FileStream(localPath, FileMode.Create))
                 {
                     _sftpClient.DownloadFile(remotePath, fs);
@@ -94,9 +104,35 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                Logger.Error("Error downloading file.", ex);
+                if (!ex.Message.Contains("No such file")) Logger.Error("Error downloading file.", ex);
             }
             return null;
+        }
+
+        public void UnzipBackupSwitchFiles(string selFilePath)
+        {
+            using (ZipArchive archive = ZipFile.OpenRead(selFilePath))
+            {
+                foreach (ZipArchiveEntry entry in archive.Entries)
+                {
+                    string filePath = entry.FullName;
+                    CreateLocalDirectory(filePath);
+                    entry.ExtractToFile(Path.Combine(MainWindow.DataPath, entry.FullName), true);
+                }
+            }
+        }
+
+        private void CreateLocalDirectory(string destPath)
+        {
+            string dir = Path.GetDirectoryName(destPath);
+            string[] split = dir.Split('\\');
+            string destDir = MainWindow.DataPath;
+            foreach (string fld in split)
+            {
+                if (string.IsNullOrEmpty(fld)) continue;
+                destDir = Path.Combine(destDir, fld.Trim());
+                if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
+            }
         }
 
         public string DownloadToMemory(string remotePath)
@@ -139,6 +175,21 @@ namespace PoEWizard.Comm
             return 0;
         }
 
+        public List<string> GetFilesInRemoteDir(string remoteDir, string suffix = null)
+        {
+            List<string> filesList = new List<string>();
+            var files = _sftpClient.ListDirectory(remoteDir);
+            foreach (var file in files)
+            {
+                if (file.IsRegularFile)
+                {
+                    if (string.IsNullOrEmpty(suffix)) filesList.Add(file.Name);
+                    else if (file.Name.EndsWith(suffix)) filesList.Add(file.Name);
+                }
+            }
+            return filesList;
+        }
+
         public void Disconnect()
         {
             _sftpClient?.Disconnect();
@@ -147,10 +198,7 @@ namespace PoEWizard.Comm
         private IEnumerable<ISftpFile> ListDirectoryWC(string pattern)
         {
             string directoryName = (pattern[0] == '/' ? "" : "/") + pattern.Substring(0, pattern.LastIndexOf('/'));
-            string regexPattern = pattern.Substring(pattern.LastIndexOf('/') + 1)
-                    .Replace(".", "\\.")
-                    .Replace("*", ".*")
-                    .Replace("?", ".");
+            string regexPattern = pattern.Substring(pattern.LastIndexOf('/') + 1).Replace(".", "\\.").Replace("*", ".*").Replace("?", ".");
             Regex reg = new Regex('^' + regexPattern + '$');
 
             var results = _sftpClient.ListDirectory(string.IsNullOrEmpty(directoryName) ? "/" : directoryName);

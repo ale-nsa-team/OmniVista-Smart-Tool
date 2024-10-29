@@ -243,7 +243,7 @@ namespace PoEWizard
                 TextViewer tv = new TextViewer(Translate("i18n_tvcboot"), res)
                 {
                     Owner = this,
-                    SaveFilename = device.Name + "-vcboot.cfg"
+                    SaveFilename = $"{device.Name}-{VCBOOT_FILE}"
                 };
                 Logger.Debug("Displaying vcboot file.");
                 tv.Show();
@@ -286,6 +286,26 @@ namespace PoEWizard
             ps.Show();
         }
 
+        private async void ViewVlan_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string title = $"{Translate("i18n_vlanReading")} {device.Name}{WAITING}";
+                ShowInfoBox(title);
+                ShowProgress(title);
+                List<Dictionary<string, string>> dictList = await Task.Run(() => restApiService.GetVlanSettings());
+                HideInfoBox();
+                HideProgress();
+                ShowVlan($"{Translate("i18n_vlanTitle")}", dictList);
+            }
+            catch (Exception ex)
+            {
+                HideInfoBox();
+                HideProgress();
+                Logger.Error(ex);
+            }
+        }
+
         private async void SearchMac_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -316,9 +336,12 @@ namespace PoEWizard
             }
             catch (Exception ex)
             {
+                Logger.Error(ex);
+            }
+            finally
+            {
                 HideInfoBox();
                 HideProgress();
-                Logger.Error(ex);
             }
         }
 
@@ -434,6 +457,272 @@ namespace PoEWizard
             }
         }
 
+        private async void LaunchBackupCfg(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DisableButtons();
+                string cfgChanges = await GetSyncStatus(Translate("i18n_bckSync"));
+                if (device.RunningDir == CERTIFIED_DIR)
+                {
+                    AskRebootCertified();
+                }
+                else if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
+                {
+                    ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notBck")}\n{Translate("i18n_bckNotCert")}", MsgBoxIcons.Error);
+                    return;
+                }
+                if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized)
+                {
+                    if (!AuthorizeWriteMemory(TranslateBackupRunning(), cfgChanges))
+                    {
+                        ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notBck")}\n{Translate("i18n_bckNotSync")}", MsgBoxIcons.Error);
+                        return;
+                    }
+                    await Task.Run(() => restApiService.WriteMemory());
+                    await GetSyncStatus(Translate("i18n_bckSync"));
+                }
+                MsgBoxResult backupChoice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_bckAskImg")}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
+                bool backupImage = backupChoice == MsgBoxResult.Yes;
+                if (backupChoice == MsgBoxResult.Cancel) return;
+                string title = $"{Translate("i18n_bckRunning")} {device.Name}{WAITING}";
+                ShowInfoBox($"{title}\n{Translate("i18n_bckDowloading")}");
+                ShowProgress(title);
+                DateTime startTime = DateTime.Now;
+                double maxDur = backupImage ? 135 : 10;
+                string zipPath = await Task.Run(() => restApiService.BackupConfiguration(maxDur, backupImage));
+                if (!string.IsNullOrEmpty(zipPath))
+                {
+                    Logger.Info($"Created zip file \"{zipPath}\", backup duration: {CalcStringDuration(startTime)}");
+                    string info = $"{Translate("i18n_fileSize")}: {PrintNumberBytes(new FileInfo(zipPath).Length)}";
+                    ShowInfoBox($"{title}\n{info}\n{Translate("i18n_bckDur")}: {CalcStringDurationTranslate(startTime, true)}");
+                    ShowProgress(title);
+                    var sfd = new SaveFileDialog()
+                    {
+                        Filter = $"{Translate("i18n_zipFile")}|*.zip",
+                        Title = Translate("i18n_bckSavefile"),
+                        InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+                        FileName = Path.GetFileName(zipPath)
+                    };
+                    if (sfd.ShowDialog() == true)
+                    {
+                        File.Copy(zipPath, sfd.FileName, true);
+                    }
+                    File.Delete(zipPath);
+                }
+                else
+                {
+                    ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!", MsgBoxIcons.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!\n{ex.Message}", MsgBoxIcons.Error);
+            }
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
+                EnableButtons();
+            }
+        }
+
+        private string TranslateBackupRunning()
+        {
+            return $"{Translate("i18n_bckRunning")} {device.Name}";
+        }
+
+        private async void LaunchRestoreCfg(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DisableButtons();
+                PassCode pc = new PassCode(this, config);
+                if (pc.ShowDialog() == true)
+                {
+                    if (pc.Password != pc.SavedPassword)
+                    {
+                        ShowMessageBox(TranslateRestoreRunning(), Translate("i18n_badPwd"), MsgBoxIcons.Error);
+                    }
+                    else
+                    {
+                        string cfgChanges = await GetSyncStatus(Translate("i18n_restSync"));
+                        if (device.RunningDir == CERTIFIED_DIR)
+                        {
+                            AskRebootCertified();
+                        }
+                        else if (ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restConfirm").Replace("$1", device.Name)}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                        {
+                            if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
+                            {
+                                ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_notRest")}\n{Translate("i18n_bckNotCert")}", MsgBoxIcons.Error);
+                                return;
+                            }
+                            var ofd = new OpenFileDialog()
+                            {
+                                Filter = $"{Translate("i18n_zipFile")}|*.zip",
+                                Title = Translate("i18n_restSelFile"),
+                                InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+                            };
+                            if (ofd.ShowDialog() == true)
+                            {
+                                await Task.Run(() => restApiService.UnzipBackupSwitchFiles(5, ofd.FileName));
+                                bool reboot = await RestoreSwitchConfiguration(ofd.FileName);
+                                if (reboot) await RebootSwitch();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restFail")}!\n{ex.Message}", MsgBoxIcons.Error);
+            }
+            finally
+            {
+                HideProgress();
+                HideInfoBox();
+                EnableButtons();
+            }
+        }
+
+        private async Task<bool> RestoreSwitchConfiguration(string selFilePath)
+        {
+            string restoreFolder = Path.Combine(DataPath, BACKUP_DIR);
+            string swInfoFilePath = Path.Combine(restoreFolder, BACKUP_SWITCH_INFO_FILE);
+            string vlanFilePath = Path.Combine(restoreFolder, BACKUP_VLAN_CSV_FILE);
+            string vcBootFilePath = Path.Combine(restoreFolder, FLASH_DIR, FLASH_WORKING, VCBOOT_FILE);
+            string invalidMsg = null;
+            string title = $"{Translate("i18n_restRunning")} {device.Name}{WAITING}";
+            ShowInfoBox($"{title}\n{Translate("i18n_restUpLoading")}");
+            ShowProgress(title);
+            if (File.Exists(vcBootFilePath) && File.Exists(swInfoFilePath) && File.Exists(vlanFilePath))
+            {
+                string swName = string.Empty;
+                string swIp = string.Empty;
+                List<Dictionary<string, string>> serial = new List<Dictionary<string, string>>();
+                string swInfo = File.ReadAllText(swInfoFilePath);
+                if (!string.IsNullOrEmpty(swInfo))
+                {
+                    string[] lines = swInfo.Split('\n');
+                    if (lines.Length > 1)
+                    {
+                        foreach (string line in lines)
+                        {
+                            if (string.IsNullOrEmpty(line)) continue;
+                            if (line.Contains(':'))
+                            {
+                                string[] split = line.Split(':');
+                                if (split.Length > 1)
+                                {
+                                    if (split[0].Trim() == BACKUP_SWITCH_NAME) swName = split[1].Trim();
+                                    else if (split[0].Trim() == BACKUP_SWITCH_IP) swIp = split[1].Trim();
+                                    else if (split[0].Contains(BACKUP_SERIAL_NUMBER) && split[0].Contains(BACKUP_CHASSIS))
+                                    {
+                                        Dictionary<string, string> dict = new Dictionary<string, string>
+                                        {
+                                            [BACKUP_CHASSIS] = Regex.Split(split[0].Trim(), BACKUP_SERIAL_NUMBER)[0].Replace(BACKUP_CHASSIS, string.Empty).Trim(),
+                                            [BACKUP_SERIAL_NUMBER] = split[1].Trim()
+                                        };
+                                        serial.Add(dict);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    StringBuilder alert = CheckSerialNumber(swName, swIp, serial);
+                    if (alert.Length > 0)
+                    {
+                        MsgBoxResult choice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notMatchSerial")}\n{alert}", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                        if (choice == MsgBoxResult.Cancel) return false;
+                    }
+                    List<Dictionary<string, string>> dictList = CliParseUtils.ParseVlanConfig(File.ReadAllText(Path.Combine(Path.Combine(DataPath, BACKUP_DIR), BACKUP_VLAN_CSV_FILE)));
+                    ShowVlan($"{Translate("i18n_vlanBck")} {swName} ({swIp})", dictList);
+                }
+                string[] filesList = GetFilesInFolder(Path.Combine(restoreFolder, FLASH_DIR, FLASH_WORKING));
+                bool foundImg = false;
+                foreach (string file in filesList)
+                {
+                    if (file.EndsWith(".img"))
+                    {
+                        foundImg = true;
+                        break;
+                    }
+                }
+                bool restoreImg = false;
+                if (foundImg)
+                {
+                    restoreImg = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_restAskImg")}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes;
+                }
+                ShowInfoBox($"{title}\n{Translate("i18n_restUpLoading")}");
+                double maxDur = restoreImg ? 135 : 10;
+                await Task.Run(() => restApiService.UploadConfigurationFiles(maxDur, restoreImg));
+            }
+            else
+            {
+                invalidMsg = $"{Translate("i18n_restInv").Replace("$1", $"{Path.GetFileName(selFilePath)}")}";
+            }
+            if (!string.IsNullOrEmpty(invalidMsg))
+            {
+                PurgeFilesInFolder(Path.Combine(DataPath, BACKUP_DIR));
+                ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_notRest")}\n{invalidMsg}", MsgBoxIcons.Error);
+                return false;
+            }
+            return true;
+        }
+
+        private StringBuilder CheckSerialNumber(string swName, string swIp, List<Dictionary<string, string>> serial)
+        {
+            StringBuilder alert = new StringBuilder();
+            foreach (Dictionary<string, string> dict in serial)
+            {
+                if (!dict.ContainsKey(BACKUP_CHASSIS)) continue;
+                int chassisNr = StringToInt(dict[BACKUP_CHASSIS]);
+                ChassisModel chassis = device.GetChassis(chassisNr);
+                if (chassis == null)
+                {
+                    if (alert.Length > 0) alert.Append("\n");
+                    alert.Append(Translate("i18n_restChassis")).Append(" ").Append(chassisNr).Append(" ").Append(Translate("i18n_restNotExist")).Append(".");
+                    continue;
+                }
+                if (!dict.ContainsKey(BACKUP_SERIAL_NUMBER)) continue;
+                string sn = dict[BACKUP_SERIAL_NUMBER];
+                if (sn != chassis.SerialNumber)
+                {
+                    if (alert.Length > 0) alert.Append("\n");
+                    alert.Append(Translate("i18n_restChassis")).Append(" ").Append(chassisNr).Append(" ").Append(Translate("i18n_restSerial")).Append(":\n");
+                    alert.Append("    - ").Append(Translate("i18n_restNotMatch").Replace("$1", sn).Replace("$2", chassis.SerialNumber));
+                }
+            }
+            if (alert.Length > 0)
+            {
+                if (swIp != device.IpAddress || swName != device.Name)
+                {
+                    alert.Append("\n").Append(Translate("i18n_restInvSw").Replace("$1", swName).Replace("$2", swIp)).Append(".");
+                }
+            }
+            return alert;
+        }
+
+        private void ShowVlan(string title, List<Dictionary<string, string>> dictList)
+        {
+            var vlan = new VlanSettings(dictList)
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            HideInfoBox();
+            vlan._title.Text = $"{title}";
+            vlan.ShowDialog();
+        }
+
+        private string TranslateRestoreRunning()
+        {
+            return $"{Translate("i18n_restRunning")} {device.Name}";
+        }
+
         private async void ResetPort_Click(object sender, RoutedEventArgs e)
         {
             string title = $"{Translate("i18n_rstpp")} {selectedPort.Name}";
@@ -500,7 +789,7 @@ namespace PoEWizard
                 {
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
                     {
-                        ShowMessageBox(Translate("i18n_rebsw"), $"{Translate("i18n_frebsw1")} {device.Name} {Translate("i18n_frebsw2")}", MsgBoxIcons.Error);
+                        ShowMessageBox(Translate("i18n_rebsw"), $"{Translate("i18n_frebsw1")} {device.Name} {Translate("i18n_notCert")}", MsgBoxIcons.Error);
                         return;
                     }
                     if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(Translate("i18n_rebsw"), cfgChanges))
@@ -513,17 +802,7 @@ namespace PoEWizard
                     bool close = StopTrafficAnalysis(TrafficStatus.Abort, title, Translate("i18n_taSave"), confirm);
                     if (!close) return;
                     await WaitCloseTrafficAnalysis();
-                    DisableButtons();
-                    _switchMenuItem.IsEnabled = false;
-                    string switchName = device.Name;
-                    string duration = await Task.Run(() => restApiService.RebootSwitch(420));
-                    SetDisconnectedState();
-                    if (string.IsNullOrEmpty(duration)) return;
-                    string txt = $"{Translate("i18n_switch")} {switchName} {Translate("i18n_swready")} {duration}";
-                    if (ShowMessageBox(Translate("i18n_rebsw"), $"{txt}\n{Translate("i18n_recsw")} {switchName}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
-                    {
-                        Connect();
-                    }
+                    await RebootSwitch();
                 }
             }
             catch (Exception ex)
@@ -534,6 +813,24 @@ namespace PoEWizard
             {
                 HideInfoBox();
                 HideProgress();
+            }
+        }
+
+        private async Task RebootSwitch()
+        {
+            string title = $"{Translate("i18n_rsReboot")} {device.Name} {Translate("i18n_reboot")}{WAITING}";
+            ShowInfoBox(title);
+            ShowProgress(title);
+            DisableButtons();
+            _switchMenuItem.IsEnabled = false;
+            string switchName = device.Name;
+            string duration = await Task.Run(() => restApiService.RebootSwitch(420));
+            SetDisconnectedState();
+            if (string.IsNullOrEmpty(duration)) return;
+            string txt = $"{Translate("i18n_switch")} {switchName} {Translate("i18n_swready")} {duration}";
+            if (ShowMessageBox(Translate("i18n_rebsw"), $"{txt}\n{Translate("i18n_recsw")} {switchName}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+            {
+                Connect();
             }
         }
 
@@ -830,7 +1127,7 @@ namespace PoEWizard
                     port.PriorityLevel = (PriorityLevelType)Enum.Parse(typeof(PriorityLevelType), cb.SelectedValue.ToString());
                     if (port == null) return;
                     string txt = $"{Translate("i18n_cprio")} {port.PriorityLevel} on port {port.Name}";
-                    ShowProgress($"{txt}...");
+                    ShowProgress($"{txt}{WAITING}");
                     bool ok = false;
                     await Task.Run(() => ok = restApiService.ChangePowerPriority(port.Name, port.PriorityLevel));
                     if (ok)
@@ -953,7 +1250,7 @@ namespace PoEWizard
             {
                 string action = cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_FAST_ENABLE ? Translate("i18n_enable") : Translate("i18n_disable");
                 string poeType = (cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_PERPETUAL_DISABLE) ? Translate("i18n_ppoe") : Translate("i18n_fpoe");
-                ShowProgress($"{action} {poeType} {Translate("i18n_onsl")} {selectedSlot.Name}...");
+                ShowProgress($"{action} {poeType} {Translate("i18n_onsl")} {selectedSlot.Name}{WAITING}");
                 bool ok = false;
                 await Task.Run(() => ok = restApiService.SetPerpetualOrFastPoe(selectedSlot, cmd));
                 await WaitAckProgress();
@@ -1075,7 +1372,7 @@ namespace PoEWizard
                     config.Set("switches", string.Join(",", ips));
                 }
                 UpdateConnectedState();
-                await CheckSwitchScanResult($"{Translate("i18n_cnsw")} {device.Name}...", startTime);
+                await CheckSwitchScanResult($"{Translate("i18n_cnsw")} {device.Name}{WAITING}", startTime);
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
                     AskRebootCertified();
@@ -1103,6 +1400,8 @@ namespace PoEWizard
             {
                 _writeMemory.IsEnabled = false;
                 _cfgMenuItem.IsEnabled = false;
+                _cfgBackup.IsEnabled = false;
+                _cfgRestore.IsEnabled = false;
             }
         }
 
@@ -1172,7 +1471,7 @@ namespace PoEWizard
                 string barText = $"{Translate("i18n_pwRun")} {Translate("i18n_onport")} {selectedPort.Name}{WAITING}";
                 ShowProgress(barText);
                 DateTime startTime = DateTime.Now;
-                await Task.Run(() => restApiService.ScanSwitch($"{Translate("i18n_pwRun")} {Translate("i18n_onport")} {selectedPort.Name}...", reportResult));
+                await Task.Run(() => restApiService.ScanSwitch($"{Translate("i18n_pwRun")} {Translate("i18n_onport")} {selectedPort.Name}{WAITING}", reportResult));
                 ShowProgress(barText);
                 switch (selectedDeviceType)
                 {
@@ -1754,6 +2053,9 @@ namespace PoEWizard
         {
             _infoBlock.Inlines.Clear();
             _infoBlock.Inlines.Add(message);
+            int maxLen = MaxLineLen(message);
+            if (maxLen > 70) _infoBox.Width = 500;
+            else _infoBox.Width = 400;
             _infoBox.Visibility = Visibility.Visible;
         }
 
@@ -1916,8 +2218,11 @@ namespace PoEWizard
             _collectLogs.IsEnabled = val;
             _psMenuItem.IsEnabled = val;
             _searchMacMenuItem.IsEnabled = val;
+            _vlanMenuItem.IsEnabled = val;
             _factoryRst.IsEnabled = val;
             _cfgMenuItem.IsEnabled = val;
+            _cfgBackup.IsEnabled = val;
+            _cfgRestore.IsEnabled = val;
         }
 
         private void ReselectPort()
@@ -1934,7 +2239,7 @@ namespace PoEWizard
 
         private void ReselectSlot()
         {
-            if (selectedSlot != null && _slotsView.Items?.Count > selectedSlotIndex)
+            if (selectedSlot != null && selectedSlotIndex >= 0 && _slotsView.Items?.Count > selectedSlotIndex)
             {
                 _slotsView.SelectionChanged -= SlotSelection_Changed;
                 _slotsView.SelectedItem = _slotsView.Items[selectedSlotIndex];

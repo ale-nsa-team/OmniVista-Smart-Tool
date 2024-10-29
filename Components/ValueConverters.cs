@@ -507,11 +507,6 @@ namespace PoEWizard.Components
         {
             return DependencyProperty.UnsetValue;
         }
-
-        private int MaxLineLen(string s)
-        {
-            return s.Split('\n').Max(l => l.Length);
-        }
     }
 
     public class DeviceFilterToTooltipConverter : IMultiValueConverter

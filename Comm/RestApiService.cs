@@ -1,9 +1,11 @@
-﻿using PoEWizard.Data;
+﻿using PoEWizard.Components;
+using PoEWizard.Data;
 using PoEWizard.Device;
 using PoEWizard.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -33,6 +35,9 @@ namespace PoEWizard.Comm
         private double totalProgressBar;
         private double progressBarCnt;
         private DateTime progressStartTime;
+        private SftpService _sftpService = null;
+        private DateTime _backupStartTime;
+        private List<VlanModel> _vlanSettings = new List<VlanModel>();
 
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
@@ -202,12 +207,20 @@ namespace PoEWizard.Comm
         {
             SendProgressReport(Translate("i18n_sys"));
             GetSyncStatus();
-            _dictList = SendCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
-            _dict = _dictList.FirstOrDefault(d => d[IP_ADDR] == SwitchModel.IpAddress);
-            if (_dict != null) SwitchModel.NetMask = _dict[SUBNET_MASK];
+            GetVlanSettings();
             _dictList = SendCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
             _dict = _dictList.FirstOrDefault(d => d[DNS_DEST] == "0.0.0.0/0");
             if (_dict != null) SwitchModel.DefaultGwy = _dict[GATEWAY];
+        }
+
+        public List<Dictionary<string, string>> GetVlanSettings()
+        {
+            _dictList = SendCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
+            _vlanSettings = new List<VlanModel>();
+            foreach (Dictionary<string, string> dict in _dictList) { _vlanSettings.Add(new VlanModel(dict)); }
+            _dict = _dictList.FirstOrDefault(d => d[IP_ADDR] == SwitchModel.IpAddress);
+            if (_dict != null) SwitchModel.NetMask = _dict[SUBNET_MASK];
+            return _dictList;
         }
 
         public string GetSyncStatus()
@@ -638,6 +651,290 @@ namespace PoEWizard.Comm
             CloseProgressBar();
         }
 
+        public string BackupConfiguration(double maxDur, bool backupImage)
+        {
+            try
+            {
+                _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
+                string sftpError = _sftpService.Connect();
+                if (string.IsNullOrEmpty(sftpError))
+                {
+                    _backupStartTime = DateTime.Now;
+                    string msg = $"{Translate("i18n_bckRunning")} {SwitchModel.Name}";
+                    Logger.Info(msg);
+                    StartProgressBar($"{msg}{WAITING}", maxDur);
+                    DowloadSwitchFiles(FLASH_CERTIFIED_DIR, FLASH_CERTIFIED_FILES);
+                    DowloadSwitchFiles(FLASH_NETWORK_DIR, FLASH_NETWORK_FILES);
+                    DowloadSwitchFiles(FLASH_SWITCH_DIR, FLASH_SWITCH_FILES);
+                    DowloadSwitchFiles(FLASH_SYSTEM_DIR, FLASH_SYSTEM_FILES);
+                    DowloadSwitchFiles(FLASH_WORKING_DIR, FLASH_WORKING_FILES, backupImage);
+                    DowloadSwitchFiles(FLASH_PYTHON_DIR, FLASH_PYTHON_FILES);
+                    CreateAdditionalFiles();
+                    string backupFile = CompressBackupFiles();
+                    StringBuilder sb = new StringBuilder("Backup configuration of switch ");
+                    sb.Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress).Append(") completed.");
+                    FileInfo info = new FileInfo(backupFile);
+                    if (info?.Length > 0) sb.Append("\r\nFile created: \"").Append(info.Name).Append("\" (").Append(PrintNumberBytes(info.Length)).Append(")");
+                    else sb.Append("\r\nBackup file not created!");
+                    sb.Append("\r\nBackup duration: ").Append(CalcStringDuration(_backupStartTime));
+                    Logger.Activity(sb.ToString());
+                    return backupFile;
+                }
+                else
+                {
+                    throw new Exception($"Fail to establish the SFTP connection to switch {SwitchModel.Name} ({SwitchModel.IpAddress})!\r\nReason: {sftpError}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn(ex.Message);
+                return null;
+            }
+            finally
+            {
+                _sftpService?.Disconnect();
+                _sftpService = null;
+                CloseProgressBar();
+            }
+        }
+
+        public void UnzipBackupSwitchFiles(double maxDur, string selFilePath)
+        {
+            Thread th = null;
+            try
+            {
+                _backupStartTime = DateTime.Now;
+                string msg = $"{Translate("i18n_restRunning")} {SwitchModel.Name}";
+                StartProgressBar($"{msg}{WAITING}", maxDur);
+                th = new Thread(() => SendProgressMessage(msg, _backupStartTime, Translate("i18n_restUnzip")));
+                th.Start();
+                PurgeFilesInFolder(Path.Combine(MainWindow.DataPath, BACKUP_DIR));
+                string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
+                if (!Directory.Exists(restoreFolder)) Directory.CreateDirectory(restoreFolder);
+                StringBuilder txt = new StringBuilder("Launching restore configuration of switch ").Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress);
+                txt.Append(").\nSelected file: \"").Append(selFilePath).Append("\", size: ").Append(PrintNumberBytes(new FileInfo(selFilePath).Length));
+                Logger.Activity(txt.ToString());
+                _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
+                _sftpService.UnzipBackupSwitchFiles(selFilePath);
+                string swInfoFilePath = Path.Combine(restoreFolder, BACKUP_SWITCH_INFO_FILE);
+                string vlanFilePath = Path.Combine(restoreFolder, BACKUP_VLAN_CSV_FILE);
+                string vcBootFilePath = Path.Combine(restoreFolder, FLASH_WORKING_DIR, VCBOOT_FILE);
+                th.Abort();
+            }
+            catch (Exception ex)
+            {
+                th?.Abort();
+                Logger.Error(ex);
+            }
+        }
+
+        public void UploadConfigurationFiles(double maxDur, bool restoreImage)
+        {
+            try
+            {
+                _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
+                string sftpError = _sftpService.Connect();
+                List<string> filesUploaded = new List<string>();
+                if (string.IsNullOrEmpty(sftpError))
+                {
+                    _backupStartTime = DateTime.Now;
+                    string msg = $"{Translate("i18n_restRunning")} {SwitchModel.Name}";
+                    Logger.Info(msg);
+                    StartProgressBar($"{msg}{WAITING}", maxDur);
+                    string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
+                    string[] filesList = GetFilesInFolder(Path.Combine(restoreFolder, FLASH_DIR));
+                    foreach (string localFilePath in filesList)
+                    {
+                        try
+                        {
+                            if (localFilePath.EndsWith(".img") && !restoreImage) continue;
+                            string fileInfo = UploadRemoteFile(localFilePath);
+                            if (!string.IsNullOrEmpty (fileInfo)) filesUploaded.Add(fileInfo);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
+                        }
+                    }
+                    StringBuilder sb = new StringBuilder("Upload configuration files of switch ");
+                    sb.Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress).Append(") completed.");
+                    if (filesUploaded?.Count > 0) sb.Append("\r\nFiles uploaded:\r\n  ").Append(string.Join(", ", filesUploaded));
+                    else sb.Append("\r\nConfiguration files not uploaded!");
+                    sb.Append("\r\nUpload duration: ").Append(CalcStringDuration(_backupStartTime));
+                    Logger.Activity(sb.ToString());
+                }
+                else
+                {
+                    throw new Exception($"Fail to establish the SFTP connection to switch {SwitchModel.Name} ({SwitchModel.IpAddress})!\r\nReason: {sftpError}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn(ex.Message);
+            }
+            finally
+            {
+                _sftpService?.Disconnect();
+                _sftpService = null;
+                CloseProgressBar();
+            }
+        }
+
+        private string UploadRemoteFile(string localFilePath)
+        {
+            string fileInfo = string.Empty;
+            Thread th = null;
+            try
+            {
+                string fileName = Path.GetFileName(localFilePath);
+                th = new Thread(() => SendProgressMessage($"{Translate("i18n_restRunning")} {SwitchModel.Name}", _backupStartTime, $"{Translate("i18n_restUploadFile")} {fileName}"));
+                th.Start();
+                string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
+                FileInfo info = new FileInfo(localFilePath);
+                if (info.Exists && info.Length > 0)
+                {
+                    string remotepath = $"{Path.GetDirectoryName(localFilePath).Replace(restoreFolder, string.Empty).Replace("\\", "/")}/{fileName}";
+                    fileInfo = $"{info.Name} ({PrintNumberBytes(info.Length)})";
+                    Logger.Debug($"Uploading file \"{remotepath}\"");
+                    _sftpService.UploadFile(localFilePath, remotepath, true);
+                }
+                th.Abort();
+            }
+            catch (Exception ex)
+            {
+                th?.Abort();
+                Logger.Error(ex);
+            }
+            return fileInfo;
+        }
+
+        private void CreateAdditionalFiles()
+        {
+            Thread th = null;
+            try
+            {
+                th = new Thread(() => SendProgressMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name}", _backupStartTime, Translate("i18n_bckAddFiles")));
+                th.Start();
+                string users = SendCommand(new CmdRequest(Command.SHOW_USER, ParseType.NoParsing)) as string;
+                string filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, BACKUP_USERS_FILE);
+                File.WriteAllText(filePath, users);
+                filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, BACKUP_SWITCH_INFO_FILE);
+                StringBuilder sb = new StringBuilder();
+                string swInfo = $"{BACKUP_SWITCH_NAME}: {SwitchModel.Name}\r\n{BACKUP_SWITCH_IP}: {SwitchModel.IpAddress}";
+                if (SwitchModel?.ChassisList?.Count > 0)
+                {
+                    foreach (ChassisModel chassis in SwitchModel?.ChassisList)
+                    {
+                        swInfo += $"\r\n{BACKUP_CHASSIS} {chassis.Number} {BACKUP_SERIAL_NUMBER}: {chassis.SerialNumber}";
+                    }
+                }
+                File.WriteAllText(filePath, swInfo);
+                filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, BACKUP_DATE_FILE);
+                File.WriteAllText(filePath, DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt"));
+                if (_vlanSettings?.Count > 0)
+                {
+                    filePath = Path.Combine(MainWindow.DataPath, BACKUP_DIR, BACKUP_VLAN_CSV_FILE);
+                    StringBuilder txt = new StringBuilder();
+                    txt.Append(VLAN_NAME).Append(",").Append(VLAN_IP).Append(",").Append(VLAN_MASK).Append(",").Append(VLAN_DEVICE);
+                    foreach (VlanModel vlan in _vlanSettings)
+                    {
+                        txt.Append("\r\n\"").Append(vlan.Name).Append("\",\"").Append(vlan.IpAddress).Append("\",\"");
+                        txt.Append(vlan.SubnetMask).Append("\",\"").Append(vlan.Device).Append("\"");
+                    }
+                    File.WriteAllText(filePath, txt.ToString());
+                }
+                th.Abort();
+            }
+            catch (Exception ex)
+            {
+                th?.Abort();
+                Logger.Error(ex);
+            }
+        }
+
+        private void DowloadSwitchFiles(string remoteDir, List<string> filesToDownload, bool backImage = true)
+        {
+            List<string> filesList = _sftpService.GetFilesInRemoteDir(remoteDir);
+            foreach (string fileName in filesToDownload)
+            {
+                try
+                {
+                    if (fileName.StartsWith("*.")) DownloadFilteredRemoteFiles(remoteDir, fileName, backImage);
+                    else if (filesList.Contains(fileName)) DownloadRemoteFile(remoteDir, fileName);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warn(ex.Message);
+                }
+            }
+        }
+
+        private void DownloadFilteredRemoteFiles(string remoteDir, string fileSuffix, bool backImage = true)
+        {
+            List<string> files = _sftpService.GetFilesInRemoteDir(remoteDir, fileSuffix.Replace("*", string.Empty));
+            if (files.Count < 1) return;
+            foreach (string fileName in files)
+            {
+                if (!fileName.Contains(".img") || (fileName.Contains(".img") && backImage)) DownloadRemoteFile(remoteDir, fileName);
+            }
+        }
+
+        private void DownloadRemoteFile(string srcFileDir, string fileName)
+        {
+            Thread th = null;
+            try
+            {
+                th = new Thread(() => SendProgressMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name}", _backupStartTime, $"{Translate("i18n_bckDowloadFile")} {fileName}"));
+                th.Start();
+                string srcFilePath = $"{srcFileDir}/{fileName}";
+                _sftpService.DownloadFile(srcFilePath, $"{BACKUP_DIR}{srcFileDir.Replace("/", "\\")}\\{fileName}");
+                th.Abort();
+            }
+            catch (Exception ex)
+            {
+                th?.Abort();
+                Logger.Error(ex);
+            }
+        }
+
+        private string CompressBackupFiles()
+        {
+            Thread th = null;
+            DateTime startTime = DateTime.Now;
+            string zipPath = string.Empty;
+            try
+            {
+                string backupPath = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
+                zipPath = Path.Combine(MainWindow.DataPath, $"{SwitchModel.Name}_{DateTime.Now:MM-dd-yyyy_hh_mm_ss}.zip");
+                th = new Thread(() => SendProgressMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name}", _backupStartTime, Translate("i18n_bckZipping")));
+                th.Start();
+                if (File.Exists(zipPath)) File.Delete(zipPath);
+                ZipFile.CreateFromDirectory(backupPath, zipPath, CompressionLevel.Fastest, true);
+                PurgeFilesInFolder(backupPath);
+                th.Abort();
+            }
+            catch (Exception ex)
+            {
+                th?.Abort();
+                Logger.Error(ex);
+            }
+            Logger.Activity($"Compressing backup files completed (duration: {CalcStringDuration(startTime)})");
+            return zipPath;
+        }
+
+        private void SendProgressMessage(string title, DateTime startTime, string progrMsg)
+        {
+            int dur;
+            while (Thread.CurrentThread.IsAlive)
+            {
+                string msg = $"({CalcStringDurationTranslate(startTime, true)}){WAITING}";
+                dur = (int)GetTimeDuration(startTime);
+                UpdateProgressBarMessage($"{title} {msg}\n{progrMsg}", dur);
+                Thread.Sleep(1000);
+                if (dur >= 300) break;
+            }
+        }
+
         private void SaveConfigSnapshot()
         {
             try
@@ -690,7 +987,7 @@ namespace PoEWizard.Comm
                 if (waitSec <= 0) return string.Empty;
                 msg = $"{Translate("i18n_rsReboot")} {SwitchModel.Name} {Translate("i18n_reboot")} ";
                 WaitSec(msg, 5);
-                _progress.Report(new ProgressReport($"{msg}..."));
+                _progress.Report(new ProgressReport($"{msg}{WAITING}"));
                 double dur = 0;
                 while (dur <= 60)
                 {
@@ -1016,9 +1313,7 @@ namespace PoEWizard.Comm
                 RefreshPoEData();
                 UpdatePortData();
                 DateTime startTime = DateTime.Now;
-                string progressMessage = _wizardSwitchPort.Poe == PoeStatus.NoPoe 
-                    ? $"{Translate("i18n_rstp")} {port}" 
-                    : $"{Translate("i18n_rstpp")} {port}";
+                string progressMessage = _wizardSwitchPort.Poe == PoeStatus.NoPoe ? $"{Translate("i18n_rstp")} {port}" : $"{Translate("i18n_rstpp")} {port}";
                 if (_wizardSwitchPort.Poe == PoeStatus.NoPoe)
                 {
                     RestartEthernetOnPort(progressMessage, 10);
@@ -1127,8 +1422,7 @@ namespace PoEWizard.Comm
 
         public void PowerSlotUpOrDown(Command cmd, string slotNr)
         {
-            string msg = (cmd == Command.POWER_UP_SLOT ? Translate("i18n_poeon"): Translate("i18n_poeoff")) + 
-                $"{Translate("i18n_onsl")} {slotNr}";
+            string msg = $"{(cmd == Command.POWER_UP_SLOT ? Translate("i18n_poeon") : Translate("i18n_poeoff"))} {Translate("i18n_onsl")} {slotNr}";
             _wizardProgressReport = new ProgressReport($"{msg}{WAITING}");
             try
             {
@@ -1400,17 +1694,12 @@ namespace PoEWizard.Comm
             if (_wizardSwitchPort.MaxPower < maxDefaultPower)
             {
                 _wizardReportResult.SetReturnParameter(_wizardSwitchPort.Name, maxDefaultPower);
-                info = Translate("i18n_bmxpw")
-                        .Replace("$1", _wizardSwitchPort.Name)
-                        .Replace("$2", $"{_wizardSwitchPort.MaxPower}")
-                        .Replace("$3", $"{maxDefaultPower}");
+                info = Translate("i18n_bmxpw").Replace("$1", _wizardSwitchPort.Name).Replace("$2", $"{_wizardSwitchPort.MaxPower}").Replace("$3", $"{maxDefaultPower}");
                 _wizardReportResult.UpdateAlert(_wizardSwitchPort.Name, WizardResult.Warning, info);
             }
             else
             {
-                 info = "\n    " + Translate("i18n_gmxpw")
-                        .Replace("$1", _wizardSwitchPort.Name)
-                        .Replace("$2", $"{_wizardSwitchPort.MaxPower}");
+                 info = "\n    " + Translate("i18n_gmxpw").Replace("$1", _wizardSwitchPort.Name).Replace("$2", $"{_wizardSwitchPort.MaxPower}");
                 _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed, info);
             }
             Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
@@ -1425,10 +1714,7 @@ namespace PoEWizard.Comm
                 return;
             }
             double maxDefaultPower = (double)obj;
-            string wizardAction = Translate("i18n_rstmxpw")
-                    .Replace("$1", _wizardSwitchPort.Name)
-                    .Replace("$2", $"{_wizardSwitchPort.MaxPower}")
-                    .Replace("$3", $"{maxDefaultPower}");
+            string wizardAction = Translate("i18n_rstmxpw").Replace("$1", _wizardSwitchPort.Name).Replace("$2", $"{_wizardSwitchPort.MaxPower}").Replace("$3", $"{maxDefaultPower}");
             _progress.Report(new ProgressReport(wizardAction));
             double prevMaxPower = _wizardSwitchPort.MaxPower;
             SetMaxPowerToDefault(maxDefaultPower);
@@ -2117,8 +2403,8 @@ namespace PoEWizard.Comm
         {
             DateTime startTime = DateTime.Now;
             string i18n = powerUp ? "i18n_poeon" : "i18n_poeoff";
-            StringBuilder txt = new StringBuilder(Translate(i18n)).Append(Translate("i18n_onsl"))
-                .Append(_wizardSwitchSlot.Name).Append($" {Translate("i18n_onsw")} ").Append(SwitchModel.Name);
+            StringBuilder txt = new StringBuilder(Translate(i18n)).Append(" ").Append(Translate("i18n_onsl"));
+            txt.Append(_wizardSwitchSlot.Name).Append($" {Translate("i18n_onsw")} ").Append(SwitchModel.Name);
             _progress.Report(new ProgressReport($"{txt}{WAITING}"));
             int dur = 0;
             while (dur < 50)

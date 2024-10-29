@@ -475,6 +475,48 @@ namespace PoEWizard.Data
             return table;
         }
 
+        public static List<Dictionary<string, string>> ParseVlanConfig(string inputData)
+        {
+            string[] split;
+            List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();
+            Dictionary<string, string> dict;
+            string[] keys = new string[4];
+            using (StringReader reader = new StringReader(inputData))
+            {
+                string line;
+                string keyId = string.Empty;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (string.IsNullOrEmpty(line)) continue;
+                    split = line.Trim().Split(',');
+                    dict = new Dictionary<string, string>();
+                    bool isKeyLine = line.Contains(VLAN_NAME) && line.Contains(VLAN_IP);
+                    if (isKeyLine) keys = new string[split.Length];
+                    for (int col = 0; col < split.Length; col++)
+                    {
+                        string sValue = split[col].Trim();
+                        if (string.IsNullOrEmpty(sValue)) continue;
+                        if (isKeyLine)
+                        {
+                            keys[col] = sValue;
+                            if (col >= split.Length - 1) isKeyLine = false;
+                            continue;
+                        }
+                        else
+                        {
+                            dict[keys[col]] = sValue.Replace("\"", string.Empty);
+                        }
+                        if (col >= split.Length - 1)
+                        {
+                            table.Add(dict);
+                            break;
+                        }
+                    }
+                }
+            }
+            return table;
+        }
+
         private static Dictionary<string, string> ParseTable(string data, Regex regex)
         {
             Dictionary<string, string> table = new Dictionary<string, string>();

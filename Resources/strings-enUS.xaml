@@ -24,6 +24,8 @@
     <sys:String x:Key="i18n_about">About</sys:String>
     <sys:String x:Key="i18n_frst">Factory Reset...</sys:String>
     <sys:String x:Key="i18n_cfgWiz">Basic Configuration Wizard...</sys:String>
+    <sys:String x:Key="i18n_backup">Backup</sys:String>
+    <sys:String x:Key="i18n_restore">Restore</sys:String>
     <sys:String x:Key="i18n_lang">Language</sys:String>
     <sys:String x:Key="i18n_options">Options</sys:String>
 
@@ -187,6 +189,55 @@ Please confirm your action.
     <sys:String x:Key="i18n_newComm">New Community</sys:String>
     <sys:String x:Key="i18n_commUsr">Associated User</sys:String>
     <sys:String x:Key="i18n_newRec">New Trap Receiver</sys:String>
+
+    <!--Backup Messages-->
+    <sys:String x:Key="i18n_bckRunning">Backing up configuration of switch</sys:String>
+    <sys:String x:Key="i18n_bckSync">Checking Sync Status before backup</sys:String>
+    <sys:String x:Key="i18n_notBck">Cannot backup switch configuration!</sys:String>
+    <sys:String x:Key="i18n_bckAskImg">Do you want to backup the /flash/working AOS boot image file?</sys:String>
+    <sys:String x:Key="i18n_bckDowloading">Downloading configuration files</sys:String>
+    <sys:String x:Key="i18n_bckDowloadFile">Downloading file</sys:String>
+    <sys:String x:Key="i18n_bckFail">Backup configuration of switch $1 has failed</sys:String>
+    <sys:String x:Key="i18n_bckZipping">Compressing backup configuration files</sys:String>
+    <sys:String x:Key="i18n_bckAddFiles">Creating additional files</sys:String>
+    <sys:String x:Key="i18n_zipFile">Zip file</sys:String>
+    <sys:String x:Key="i18n_bckSaving">Saving switch $1 backup file</sys:String>
+    <sys:String x:Key="i18n_fileSize">File size</sys:String>
+    <sys:String x:Key="i18n_bckDur">Backup duration</sys:String>
+    <sys:String x:Key="i18n_bckNotCert">Switch is not running on certified.</sys:String>
+    <sys:String x:Key="i18n_bckNotSync">Switch configuration is not synchronized.</sys:String>
+
+    <!--Restore Messages-->
+    <sys:String x:Key="i18n_restRunning">Restoring configuration of switch</sys:String>
+    <sys:String x:Key="i18n_restConfirm" xml:space="preserve">Are you sure you want to restore the configuration on switch $1?
+Restoring an incorrect or out dated backup can disrupt the network.
+Proceed with caution.</sys:String>
+    <sys:String x:Key="i18n_restSync">Checking Sync Status before restore</sys:String>
+    <sys:String x:Key="i18n_notRest">Cannot restore switch configuration!</sys:String>
+    <sys:String x:Key="i18n_restSelFile">Select switch backup file to restore</sys:String>
+    <sys:String x:Key="i18n_restFail">Restore switch configuration has failed</sys:String>
+    <sys:String x:Key="i18n_restInv">The backup file $1 is invalid</sys:String>
+    <sys:String x:Key="i18n_restInvSw">The backup file belongs to another switch $1 ($2)</sys:String>
+    <sys:String x:Key="i18n_restUnzip">Unzipping backup file</sys:String>
+    <sys:String x:Key="i18n_restChassis">Chassis</sys:String>
+    <sys:String x:Key="i18n_restSerial">S/N</sys:String>
+    <sys:String x:Key="i18n_notMatchSerial">Serial Numbers don't match!</sys:String>
+    <sys:String x:Key="i18n_restNotExist">doesn't exist on switch</sys:String>
+    <sys:String x:Key="i18n_restNotMatch">Backup file is $1 and switch is $2.</sys:String>
+    <sys:String x:Key="i18n_restAskImg">Do you want to restore the /flash/working AOS boot image file?</sys:String>
+    <sys:String x:Key="i18n_restUpLoading">Uploading backup files to switch</sys:String>
+    <sys:String x:Key="i18n_restUploadFile">Uploading file</sys:String>
+
+    <!--VLAN Messages-->
+    <sys:String x:Key="i18n_vlanReading">Reading VLAN information</sys:String>
+    <sys:String x:Key="i18n_vlanName">Name</sys:String>
+    <sys:String x:Key="i18n_vlanIp">IP Address</sys:String>
+    <sys:String x:Key="i18n_vlanMask">Subnet Mask</sys:String>
+    <sys:String x:Key="i18n_vlanDev">Device</sys:String>
+    <sys:String x:Key="i18n_vlanOk">Ok</sys:String>
+    <sys:String x:Key="i18n_viewVlan">VLAN Settings</sys:String>
+    <sys:String x:Key="i18n_vlanTitle">VLAN Settings</sys:String>
+    <sys:String x:Key="i18n_vlanBck">VLAN Settings in backup file of switch</sys:String>
 
     <!--PoE Wizard Messages-->
     <sys:String x:Key="i18n_pwiz">PoE Wizard</sys:String>
@@ -373,7 +424,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_rebsw">Reboot Switch</sys:String>
     <sys:String x:Key="i18n_crebsw">Are you sure you want to reboot switch</sys:String>
     <sys:String x:Key="i18n_frebsw1">Cannot rebot switch</sys:String>
-    <sys:String x:Key="i18n_frebsw2">because it is not certified</sys:String>
+    <sys:String x:Key="i18n_notCert">because it is not certified</sys:String>
     <sys:String x:Key="i18n_recsw">Do you want to reconnect to switch</sys:String>
     <sys:String x:Key="i18n_rstg">Restarting</sys:String>
     <sys:String x:Key="i18n_rstp">Restarting port</sys:String>
@@ -420,8 +471,7 @@ Do you want to reboot the switch on Working directory?"
     <sys:String x:Key="i18n_nosync">Flash memory is not synchronized</sys:String>
     <sys:String x:Key="i18n_cfgch">Significant configuration changes</sys:String>
     <sys:String x:Key="i18n_nocfgch">No significant configuration changes.</sys:String>
-    <sys:String x:Key="i18n_cfsave" xml:space="preserve">
-Do you want to save it now?
+    <sys:String x:Key="i18n_cfsave" xml:space="preserve">Do you want to save it now?
 It may take up to 30 sec to execute Write Memory
     </sys:String>
     <sys:String x:Key="i18n_swrst">Rebooting switch</sys:String>

@@ -83,7 +83,7 @@ namespace PoEWizard.Data
             if (sec > 0) duration.Add($"{sec} {Translate("i18n_sec")}");
             if (!skipMs && milliSec > 0) duration.Add($"{milliSec} {Translate("i18n_ms")}");
             if (duration.Count == 0) return $"< 1 {Translate("i18n_ms")}";
-            return string.Join(", ", duration);
+            return string.Join(" ", duration);
         }
 
         public static bool IsTimeExpired(DateTime startTime, double period)
@@ -637,6 +637,30 @@ namespace PoEWizard.Data
         {
             return (string)MainWindow.Strings[key] ?? key;
         }
+
+        public static string[] GetFilesInFolder(string folder)
+        {
+            return Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
+        }
+
+        public static void PurgeFilesInFolder(string folder)
+        {
+            string[] listFiles = GetFilesInFolder(folder);
+            foreach (string filePath in listFiles)
+            {
+                try
+                {
+                    File.Delete(filePath);
+                }
+                catch { }
+            }
+        }
+
+        public static int MaxLineLen(string s)
+        {
+            return s.Split('\n').Max(l => l.Length);
+        }
+
     }
 }
 
