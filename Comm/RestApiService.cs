@@ -65,7 +65,7 @@ namespace PoEWizard.Comm
                 StartProgressBar(progrMsg, 31);
                 _progress.Report(new ProgressReport(progrMsg));
                 UpdateProgressBar(progressBarCnt);
-                RestApiClient.Login();
+                LoginRestApi();
                 UpdateProgressBar(++progressBarCnt); //  1
                 if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"{Translate("i18n_rsNocnx")} {SwitchModel.IpAddress}!");
                 SwitchModel.IsConnected = true;
@@ -92,6 +92,29 @@ namespace PoEWizard.Comm
             }
             CloseProgressBar();
             DisconnectAosSsh();
+        }
+
+        private void LoginRestApi()
+        {
+            if (!IsReachable(SwitchModel.IpAddress)) throw new SwitchConnectionFailure($"Failed to establish a connection to {SwitchModel.IpAddress}!");
+            DateTime startTime = DateTime.Now;
+            try
+            {
+                RestApiClient.Login();
+                return;
+            }
+            catch (SwitchAuthenticationFailure ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            string error = EnableRestApi();
+            if (!string.IsNullOrEmpty(error)) throw new SwitchConnectionFailure(error);
+            Logger.Warn($"Enabling Rest API on switch {SwitchModel.IpAddress}!\r\nDuration: {CalcStringDuration(startTime)}");
+            RestApiClient.Login();
         }
 
         public void RefreshSwitch(string source, WizardReport reportResult = null)
@@ -203,38 +226,32 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void EnableRestApi()
+        private string EnableRestApi()
         {
-            string progrMsg = $"{Translate("i18n_rsCnx")} {SwitchModel.IpAddress}{WAITING}";
+            string error = null;
+            string progrMsg = $"{Translate("i18n_enableRest")} {SwitchModel.IpAddress}{WAITING}";
             try
             {
-                if (SwitchModel?.ChassisList?.Count > 0)
-                {
-                    try
-                    {
-                        ConnectAosSsh();
-                        string sessionPrompt = SshService.SessionPrompt;
-                        LinuxCommandSeq cmdSeq = new LinuxCommandSeq(
-                            new List<LinuxCommand> {
-                                new LinuxCommand("ip service http admin-state enable", sessionPrompt),
-                                new LinuxCommand("aaa authentication default local", sessionPrompt),
-                                new LinuxCommand("aaa  authentication http local", sessionPrompt),
-                                new LinuxCommand("write memory", sessionPrompt)
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(ex);
-                        string response = SendCommand(new CmdRequest(Command.SHOW_FREE_SPACE, ParseType.NoParsing)).ToString();
-                        if (!string.IsNullOrEmpty(response)) SwitchModel.LoadFreeFlashFromList(response);
-                    }
-                }
+                StartProgressBar(progrMsg, 31);
+                _progress.Report(new ProgressReport(progrMsg));
+                UpdateProgressBar(progressBarCnt);
+                ConnectAosSsh();
+                string sessionPrompt = SshService.SessionPrompt;
+                LinuxCommandSeq cmdSeq = new LinuxCommandSeq(
+                    new List<LinuxCommand> {
+                                new LinuxCommand("ip service http admin-state enable", sessionPrompt), new LinuxCommand("aaa authentication default local", sessionPrompt),
+                                new LinuxCommand("aaa  authentication http local", sessionPrompt), new LinuxCommand("write memory", sessionPrompt)
+                });
+                LinuxCommandSeq result = SendSshLinuxCommandSeq(cmdSeq, progrMsg);
+                DisconnectAosSsh();
             }
             catch (Exception ex)
             {
-                SendSwitchError(progrMsg, ex);
+                Logger.Error(ex);
+                error = ex.Message;
+                DisconnectAosSsh();
             }
-            DisconnectAosSsh();
+            return error;
         }
         public void GetSystemInfo()
         {

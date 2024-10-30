@@ -566,7 +566,12 @@ namespace PoEWizard
                         Activity.Log(device, "Launching restore configuration");
                         await Task.Run(() => restApiService.UnzipBackupSwitchFiles(5, ofd.FileName));
                         bool reboot = await RestoreSwitchConfiguration(ofd.FileName);
-                        if (reboot) await RebootSwitch();
+                        if (reboot)
+                        {
+                            MsgBoxResult res = ShowMessageBox(TranslateRestoreRunning(), Translate("i18n_restReboot"), MsgBoxIcons.Question, MsgBoxButtons.YesNo);
+                            if (res == MsgBoxResult.No) return;
+                            await RebootSwitch();
+                        }
                     }
                 }
             }

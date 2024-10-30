@@ -116,6 +116,10 @@ namespace PoEWizard.Comm
                         throw new SwitchAuthenticationFailure("Invalid response body - token not found!");
                     }
                 }
+                else if (response.Result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    throw new SwitchAuthenticationFailure("Authentication failed!");
+                }
                 else
                 {
                     this._connected = false;

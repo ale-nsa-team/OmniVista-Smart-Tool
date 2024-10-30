@@ -204,7 +204,8 @@ Please confirm your action.
     <sys:String x:Key="i18n_bckSaving">Saving switch $1 backup file</sys:String>
     <sys:String x:Key="i18n_fileSize">File size</sys:String>
     <sys:String x:Key="i18n_bckDur">Backup duration</sys:String>
-    <sys:String x:Key="i18n_bckNotCert">Switch is in certified mode, Continue?</sys:String>
+    <sys:String x:Key="i18n_bckNotCert" xml:space="preserve">Switch is in certified mode.
+Do you want to Continue?</sys:String>
 
     <!--Restore Messages-->
     <sys:String x:Key="i18n_restRunning">Restoring configuration of switch</sys:String>
@@ -226,6 +227,9 @@ Proceed with caution.</sys:String>
     <sys:String x:Key="i18n_restAskImg">Do you want to restore the /flash/working AOS boot image file?</sys:String>
     <sys:String x:Key="i18n_restUpLoading">Uploading backup files to switch</sys:String>
     <sys:String x:Key="i18n_restUploadFile">Uploading file</sys:String>
+    <sys:String x:Key="i18n_restReboot" xml:space="preserve">The switch will need to be restarted to update restored configuration.
+You MUST log back in and save all changes after the reboot.
+Do you want to continue?</sys:String>
 
     <!--VLAN Messages-->
     <sys:String x:Key="i18n_vlanReading">Reading VLAN information</sys:String>
@@ -342,6 +346,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_rlldp">Reading LLDP remote information</sys:String>
     <sys:String x:Key="i18n_rmac">Reading MAC address information</sys:String>
     <sys:String x:Key="i18n_rpdet">Reading ports detailed information</sys:String>
+    <sys:String x:Key="i18n_enableRest">Enabling REST API on switch</sys:String>
 
     <!--Collect Logs-->
     <sys:String x:Key="i18n_getLog">Get Switch Log</sys:String>
