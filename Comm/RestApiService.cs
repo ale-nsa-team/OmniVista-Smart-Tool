@@ -1,5 +1,4 @@
-﻿using PoEWizard.Components;
-using PoEWizard.Data;
+﻿using PoEWizard.Data;
 using PoEWizard.Device;
 using PoEWizard.Exceptions;
 using System;
@@ -65,6 +64,7 @@ namespace PoEWizard.Comm
                 string progrMsg = $"{Translate("i18n_rsCnx")} {SwitchModel.IpAddress}{WAITING}";
                 StartProgressBar(progrMsg, 31);
                 _progress.Report(new ProgressReport(progrMsg));
+                UpdateProgressBar(progressBarCnt);
                 RestApiClient.Login();
                 UpdateProgressBar(++progressBarCnt); //  1
                 if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"{Translate("i18n_rsNocnx")} {SwitchModel.IpAddress}!");
@@ -203,6 +203,39 @@ namespace PoEWizard.Comm
             }
         }
 
+        private void EnableRestApi()
+        {
+            string progrMsg = $"{Translate("i18n_rsCnx")} {SwitchModel.IpAddress}{WAITING}";
+            try
+            {
+                if (SwitchModel?.ChassisList?.Count > 0)
+                {
+                    try
+                    {
+                        ConnectAosSsh();
+                        string sessionPrompt = SshService.SessionPrompt;
+                        LinuxCommandSeq cmdSeq = new LinuxCommandSeq(
+                            new List<LinuxCommand> {
+                                new LinuxCommand("ip service http admin-state enable", sessionPrompt),
+                                new LinuxCommand("aaa authentication default local", sessionPrompt),
+                                new LinuxCommand("aaa  authentication http local", sessionPrompt),
+                                new LinuxCommand("write memory", sessionPrompt)
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                        string response = SendCommand(new CmdRequest(Command.SHOW_FREE_SPACE, ParseType.NoParsing)).ToString();
+                        if (!string.IsNullOrEmpty(response)) SwitchModel.LoadFreeFlashFromList(response);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError(progrMsg, ex);
+            }
+            DisconnectAosSsh();
+        }
         public void GetSystemInfo()
         {
             SendProgressReport(Translate("i18n_sys"));
@@ -270,6 +303,50 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
+                Logger.Error(ex);
+            }
+            return null;
+        }
+
+        public LinuxCommandSeq SendSshLinuxCommandSeq(LinuxCommandSeq cmdEntry, string progressMsg)
+        {
+            try
+            {
+                _progress.Report(new ProgressReport(progressMsg));
+                UpdateProgressBar(++progressBarCnt); //  1
+                DateTime startTime = DateTime.Now;
+                ConnectAosSsh();
+                string msg = $"{progressMsg} {Translate("i18n_onsw")} {SwitchModel.Name}";
+                Dictionary<string, string> response = new Dictionary<string, string>();
+                cmdEntry.StartTime = DateTime.Now;
+                foreach (LinuxCommand cmdLinux in cmdEntry.CommandSeq)
+                {
+                    cmdLinux.Response = SshService?.SendLinuxCommand(cmdLinux);
+                    if (cmdLinux.DelaySec > 0) WaitSec(msg, cmdLinux.DelaySec);
+                    SendWaitProgressReport(msg, startTime);
+                    UpdateProgressBar(++progressBarCnt); //  1
+                }
+                cmdEntry.Duration = CalcStringDuration(cmdEntry.StartTime);
+                return cmdEntry;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public Dictionary<string, string> RunSwitchCommandSsh(Command cmd, string[] data)
+        {
+            try
+            {
+                ConnectAosSsh();
+                Dictionary<string, string> result = SshService?.SendCommand(new RestUrlEntry(cmd), data);
+                DisconnectAosSsh();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                DisconnectAosSsh();
                 Logger.Error(ex);
             }
             return null;
@@ -591,33 +668,6 @@ namespace PoEWizard.Comm
             return null;
         }
 
-        public LinuxCommandSeq SendSshLinuxCommandSeq(LinuxCommandSeq cmdEntry, string progressMsg)
-        {
-            try
-            {
-                _progress.Report(new ProgressReport(progressMsg));
-                UpdateProgressBar(++progressBarCnt); //  1
-                DateTime startTime = DateTime.Now;
-                ConnectAosSsh();
-                string msg = $"{progressMsg} {Translate("i18n_onsw")} {SwitchModel.Name}";
-                Dictionary<string, string> response = new Dictionary<string, string>();
-                cmdEntry.StartTime = DateTime.Now;
-                foreach (LinuxCommand cmdLinux in cmdEntry.CommandSeq)
-                {
-                    cmdLinux.Response = SshService?.SendLinuxCommand(cmdLinux);
-                    if (cmdLinux.DelaySec > 0) WaitSec(msg, cmdLinux.DelaySec);
-                    SendWaitProgressReport(msg, startTime);
-                    UpdateProgressBar(++progressBarCnt); //  1
-                }
-                cmdEntry.Duration = CalcStringDuration(cmdEntry.StartTime);
-                return cmdEntry;
-            }
-            catch (Exception ex)
-            {
-               throw ex;
-            }
-        }
-
         public void WriteMemory(int waitSec = 40)
         {
             try
@@ -663,6 +713,7 @@ namespace PoEWizard.Comm
                     string msg = $"{Translate("i18n_bckRunning")} {SwitchModel.Name}";
                     Logger.Info(msg);
                     StartProgressBar($"{msg}{WAITING}", maxDur);
+                    PurgeBackupRestoreFolder();
                     DowloadSwitchFiles(FLASH_CERTIFIED_DIR, FLASH_CERTIFIED_FILES);
                     DowloadSwitchFiles(FLASH_NETWORK_DIR, FLASH_NETWORK_FILES);
                     DowloadSwitchFiles(FLASH_SWITCH_DIR, FLASH_SWITCH_FILES);
@@ -708,17 +759,18 @@ namespace PoEWizard.Comm
                 StartProgressBar($"{msg}{WAITING}", maxDur);
                 th = new Thread(() => SendProgressMessage(msg, _backupStartTime, Translate("i18n_restUnzip")));
                 th.Start();
-                PurgeFilesInFolder(Path.Combine(MainWindow.DataPath, BACKUP_DIR));
-                string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
-                if (!Directory.Exists(restoreFolder)) Directory.CreateDirectory(restoreFolder);
-                StringBuilder txt = new StringBuilder("Launching restore configuration of switch ").Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress);
-                txt.Append(").\nSelected file: \"").Append(selFilePath).Append("\", size: ").Append(PrintNumberBytes(new FileInfo(selFilePath).Length));
-                Logger.Activity(txt.ToString());
+                string restoreFolder = PurgeBackupRestoreFolder();
                 _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
+                DateTime startTime = DateTime.Now;
                 _sftpService.UnzipBackupSwitchFiles(selFilePath);
                 string swInfoFilePath = Path.Combine(restoreFolder, BACKUP_SWITCH_INFO_FILE);
                 string vlanFilePath = Path.Combine(restoreFolder, BACKUP_VLAN_CSV_FILE);
                 string vcBootFilePath = Path.Combine(restoreFolder, FLASH_WORKING_DIR, VCBOOT_FILE);
+                StringBuilder txt = new StringBuilder($"Unzipping backup configuration file of switch ");
+                txt.Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress).Append(").");
+                txt.Append("\r\nSelected file: \"").Append(selFilePath).Append("\", size: ").Append(PrintNumberBytes(new FileInfo(selFilePath).Length));
+                txt.Append("\r\nDuration: ").Append(Utils.CalcStringDuration(startTime));
+                Logger.Activity(txt.ToString());
                 th.Abort();
             }
             catch (Exception ex)
@@ -728,13 +780,21 @@ namespace PoEWizard.Comm
             }
         }
 
+        private string PurgeBackupRestoreFolder()
+        {
+            string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
+            if (Directory.Exists(restoreFolder)) PurgeFilesInFolder(restoreFolder);
+            return restoreFolder;
+        }
+
         public void UploadConfigurationFiles(double maxDur, bool restoreImage)
         {
             try
             {
                 _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
                 string sftpError = _sftpService.Connect();
-                List<string> filesUploaded = new List<string>();
+                StringBuilder filesUploaded = new StringBuilder();
+                int cnt = 0;
                 if (string.IsNullOrEmpty(sftpError))
                 {
                     _backupStartTime = DateTime.Now;
@@ -749,7 +809,13 @@ namespace PoEWizard.Comm
                         {
                             if (localFilePath.EndsWith(".img") && !restoreImage) continue;
                             string fileInfo = UploadRemoteFile(localFilePath);
-                            if (!string.IsNullOrEmpty (fileInfo)) filesUploaded.Add(fileInfo);
+                            if (!string.IsNullOrEmpty(fileInfo))
+                            {
+                                if (cnt % 5 == 0) filesUploaded.Append("\r\n\t");
+                                else if (filesUploaded.Length > 0) filesUploaded.Append(", ");
+                                filesUploaded.Append(fileInfo);
+                                cnt++;
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -758,7 +824,7 @@ namespace PoEWizard.Comm
                     }
                     StringBuilder sb = new StringBuilder("Upload configuration files of switch ");
                     sb.Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress).Append(") completed.");
-                    if (filesUploaded?.Count > 0) sb.Append("\r\nFiles uploaded:\r\n  ").Append(string.Join(", ", filesUploaded));
+                    if (filesUploaded?.Length > 0) sb.Append("\r\nFiles uploaded:").Append(filesUploaded);
                     else sb.Append("\r\nConfiguration files not uploaded!");
                     sb.Append("\r\nUpload duration: ").Append(CalcStringDuration(_backupStartTime));
                     Logger.Activity(sb.ToString());
@@ -793,10 +859,11 @@ namespace PoEWizard.Comm
                 FileInfo info = new FileInfo(localFilePath);
                 if (info.Exists && info.Length > 0)
                 {
+                    DateTime startTime = DateTime.Now;
                     string remotepath = $"{Path.GetDirectoryName(localFilePath).Replace(restoreFolder, string.Empty).Replace("\\", "/")}/{fileName}";
-                    fileInfo = $"{info.Name} ({PrintNumberBytes(info.Length)})";
-                    Logger.Debug($"Uploading file \"{remotepath}\"");
                     _sftpService.UploadFile(localFilePath, remotepath, true);
+                    fileInfo = $"{remotepath} ({PrintNumberBytes(info.Length)}, {CalcStringDuration(startTime)})";
+                    Logger.Debug($"Uploading file \"{remotepath}\"");
                 }
                 th.Abort();
             }

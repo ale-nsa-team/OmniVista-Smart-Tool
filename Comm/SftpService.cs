@@ -73,11 +73,21 @@ namespace PoEWizard.Comm
                 {
                     _sftpClient.UploadFile(fs, remotePath, overWrite);
                 }
+                UpdateLastWriteTime(localPath, remotePath);
             }
             catch (Exception ex)
             {
-                Logger.Error("Error uploading file.", ex);
+                Logger.Error($"Error uploading file {remotePath}", ex);
             }
+        }
+
+        private void UpdateLastWriteTime(string localPath, string remotePath)
+        {
+            try
+            {
+                _sftpClient.SetLastWriteTime(remotePath, File.GetLastWriteTime(localPath));
+            }
+            catch { }
         }
 
         public string DownloadFile(string remotePath, string destPath = null)
