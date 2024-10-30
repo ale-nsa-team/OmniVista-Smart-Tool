@@ -11,6 +11,7 @@ namespace PoEWizard.Device
     {
         public string Number { get; set; }
         public string Name { get; set; }
+        public int Index { get; set; }
         public PoeStatus Poe { get; set; } = PoeStatus.NoPoe;
         public double Power { get; set; }
         public double MaxPower { get; set; }

@@ -134,6 +134,8 @@ namespace PoEWizard.Comm
                 UpdateProgressBar(++progressBarCnt); // 12
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_PORTS_LIST, ParseType.Htable3)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.PortsList);
+                _dict = SendCommand(new CmdRequest(Command.SHOW_LLDP_LOCAL, ParseType.LldpLocalTable)) as Dictionary<string, string>;
+                SwitchModel.LoadFromDictionary(_dict, DictionaryType.PortIdList);
                 UpdateProgressBar(++progressBarCnt); // 13
                 SendProgressReport(Translate("i18n_psi"));
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_POWER_SUPPLIES, ParseType.Htable2)) as List<Dictionary<string, string>>;
@@ -394,6 +396,8 @@ namespace PoEWizard.Comm
                         return CliParseUtils.ParseTrafficTable(resp[STRING].ToString());
                     case ParseType.NoParsing:
                         return resp[STRING].ToString();
+                    case ParseType.LldpLocalTable:
+                        return CliParseUtils.ParseLldpLocalTable(resp[STRING].ToString());
                     default:
                         return resp;
                 }

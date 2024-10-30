@@ -94,6 +94,13 @@ namespace PoEWizard.Device
                     RunningDir = ToPascalCase(GetDictValue(dict, SYS_RUNNING_CONFIGURATION));
                     break;
 
+                case DictionaryType.PortIdList:
+                    foreach (string key in dict.Keys)
+                    {
+                        PortModel port = this.GetPort(key);
+                        if (port != null) port.Index = int.TryParse(dict[key], out int i) ? i : 0;
+                    }
+                    break;
                 case DictionaryType.MicroCode:
                     Version = GetDictValue(dict, RELEASE);
                     break;

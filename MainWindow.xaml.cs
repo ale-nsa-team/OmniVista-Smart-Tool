@@ -1124,7 +1124,7 @@ namespace PoEWizard
             {
                 string alias = tb.Text.Trim();
                 currAlias = string.Empty;
-                restApiService.RunSwitchCommand(new CmdRequest(Command.SET_PORT_ALIAS, selectedPort.Name, alias));
+                restApiService.RunSwitchCommand(new CmdRequest(Command.SET_PORT_ALIAS, selectedPort.Index.ToString(), alias));
             } 
         }
 

@@ -169,6 +169,19 @@ namespace PoEWizard.Data
             return table;
         }
 
+        public static Dictionary<string, string> ParseLldpLocalTable(string data)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            var ports = Regex.Matches(data, MATCH_LOCAL_PORT);
+            var ids = Regex.Matches(data, MATCH_PORT_ID);
+            if (ports.Count != ids.Count) { return dict; }
+            for (int i = 0; i < ports.Count; i++)
+            {
+                dict.Add(ports[i].Groups["port"].Value, ids[i].Groups["id"].Value);
+            }
+            return dict;
+        }
+
         public static Dictionary<string, List<Dictionary<string, string>>> ParseLldpRemoteTable(string data)
         {
             Dictionary<string, List<Dictionary<string, string>>> dictList = new Dictionary<string, List<Dictionary<string, string>>>();

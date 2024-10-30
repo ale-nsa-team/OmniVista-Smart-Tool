@@ -51,6 +51,7 @@ namespace PoEWizard.Data
             [Command.SHOW_TEMPERATURE] = $"show temperature",
             [Command.SHOW_HEALTH] = $"show health all cpu",
             [Command.SHOW_LAN_POWER_CONFIG] = $"show lanpower slot {DAT} port-config",
+            [Command.SHOW_LLDP_LOCAL] = "show lldp local-port",
             [Command.SHOW_LLDP_REMOTE] = "show lldp remote-system",
             [Command.POWER_CLASS_DETECTION_ENABLE] = $"lanpower slot {DAT} class-detection enable",
             [Command.SHOW_SLOT_LAN_POWER_STATUS] = $"show lanpower slot {DAT} status",
@@ -252,12 +253,10 @@ namespace PoEWizard.Data
                     case Command.DEBUG_UPDATE_LPCMM_LEVEL:      // 135
                     case Command.DEBUG_UPDATE_LLDPNI_LEVEL:     // 136
                     case Command.SET_PORT_ALIAS:
-                        foreach (string key in dict.Keys.ToList())
+                        for (int i = 0; i < dict.Keys.Count; i++)
                         {
-                            if (data.Length > 0) dict[key] = dict[key].Replace(DAT, data[0] ?? string.Empty);
-                            if (data.Length > 1) dict[key] = dict[key].Replace(DAT, data[1] ?? string.Empty);
-                            if (data.Length > 2) dict[key] = dict[key].Replace(DAT, data[2] ?? string.Empty);
-                            if (data.Length > 3) dict[key] = dict[key].Replace(DAT, data[3] ?? string.Empty);
+                            var elem = dict.ElementAt(i);
+                            dict[elem.Key] = elem.Value.Replace(DAT, data[i] ?? string.Empty); 
                         }
                         return dict;
 

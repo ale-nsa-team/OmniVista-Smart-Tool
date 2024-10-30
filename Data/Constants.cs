@@ -29,14 +29,14 @@ namespace PoEWizard.Data
             [Description("Not Supported")]
             NotSupported
         }
-        public enum ParseType { Htable, Htable2, Htable3, Vtable, Etable, MVTable, Text, MibTable, LldpRemoteTable, TrafficTable, NoParsing }
+        public enum ParseType { Htable, Htable2, Htable3, Vtable, Etable, MVTable, Text, MibTable, LldpLocalTable, LldpRemoteTable, TrafficTable, NoParsing }
         public enum EType { Fiber, Copper, Unknown }
         public enum PriorityLevelType { Low, High, Critical }
         public enum PowerSupplyState { Up, Down, Unknown }
         public enum ChassisStatus { Unknown, Up, Down }
         public enum DictionaryType
         {
-            SystemRunningDir, Chassis, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PowerSupply, LldpRemoteList,
+            SystemRunningDir, Chassis, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PortIdList, PowerSupply, LldpRemoteList,
             TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, ShowInterfacesList, None
         }
         public enum ConfigType { Enable, Disable, Unavailable }
@@ -379,6 +379,8 @@ namespace PoEWizard.Data
         public const string MATCH_AOS_VERSION = @"(\d+)\.(\d+)([\.\d +]+)(\.R)(\d+)";
         public const string MATCH_POE_RUNNING = @"Lanpower chassis \d slot \d service running ...";
         public const string MATCH_USER = @"(User name)\s*=\s*(.+),";
+        public const string MATCH_LOCAL_PORT = @"(Local.+)(?<port>\d/\d/\d+)(.+)";
+        public const string MATCH_PORT_ID = @"(Port ID)(\s+= )(?<id>\d+)(.+)";
         #endregion
 
         #region Backup/Restore Switch Configuration
