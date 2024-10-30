@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
-        Title="PowerSupply" MinHeight="110" Height="200" Width="1000" WindowStyle="None" ShowInTaskbar="False">
+        Title="PowerSupply" MinHeight="110" Height="500" Width="1000" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -19,7 +19,7 @@
     <Grid Style="{DynamicResource popupWindow}">
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
-            <RowDefinition Height="*" />
+            <RowDefinition MinHeight="50" Height="*" MaxHeight="500" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TextBlock x:Name="_title" Grid.Row="0" Grid.Column="0" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_ps}" HorizontalAlignment="Center" >
@@ -30,7 +30,6 @@
                   ItemsSource="{Binding PSList}"
                   ColumnHeaderStyle="{DynamicResource gridHeader}"
                   CellStyle="{DynamicResource gridCell}"
-                  IsHitTestVisible="False"
                   IsReadOnly="True">
                 <DataGrid.Columns>
                     <DataGridTextColumn Width="*" Binding="{Binding Path=Name}">
