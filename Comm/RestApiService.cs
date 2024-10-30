@@ -64,6 +64,7 @@ namespace PoEWizard.Comm
                 string progrMsg = $"{Translate("i18n_rsCnx")} {SwitchModel.IpAddress}{WAITING}";
                 StartProgressBar(progrMsg, 31);
                 _progress.Report(new ProgressReport(progrMsg));
+                UpdateProgressBar(progressBarCnt);
                 RestApiClient.Login();
                 UpdateProgressBar(++progressBarCnt); //  1
                 if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"{Translate("i18n_rsNocnx")} {SwitchModel.IpAddress}!");
@@ -679,6 +680,7 @@ namespace PoEWizard.Comm
                     string msg = $"{Translate("i18n_bckRunning")} {SwitchModel.Name}";
                     Logger.Info(msg);
                     StartProgressBar($"{msg}{WAITING}", maxDur);
+                    PurgeBackupRestoreFolder("Launching backup configuration");
                     DowloadSwitchFiles(FLASH_CERTIFIED_DIR, FLASH_CERTIFIED_FILES);
                     DowloadSwitchFiles(FLASH_NETWORK_DIR, FLASH_NETWORK_FILES);
                     DowloadSwitchFiles(FLASH_SWITCH_DIR, FLASH_SWITCH_FILES);
@@ -724,12 +726,7 @@ namespace PoEWizard.Comm
                 StartProgressBar($"{msg}{WAITING}", maxDur);
                 th = new Thread(() => SendProgressMessage(msg, _backupStartTime, Translate("i18n_restUnzip")));
                 th.Start();
-                PurgeFilesInFolder(Path.Combine(MainWindow.DataPath, BACKUP_DIR));
-                string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
-                if (!Directory.Exists(restoreFolder)) Directory.CreateDirectory(restoreFolder);
-                StringBuilder txt = new StringBuilder("Launching restore configuration of switch ").Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress);
-                txt.Append(").\nSelected file: \"").Append(selFilePath).Append("\", size: ").Append(PrintNumberBytes(new FileInfo(selFilePath).Length));
-                Logger.Activity(txt.ToString());
+                string restoreFolder = PurgeBackupRestoreFolder("Unzipping backup configuration file", selFilePath);
                 _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
                 _sftpService.UnzipBackupSwitchFiles(selFilePath);
                 string swInfoFilePath = Path.Combine(restoreFolder, BACKUP_SWITCH_INFO_FILE);
@@ -742,6 +739,16 @@ namespace PoEWizard.Comm
                 th?.Abort();
                 Logger.Error(ex);
             }
+        }
+
+        private string PurgeBackupRestoreFolder(string title, string filePath = null)
+        {
+            string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
+            if (Directory.Exists(restoreFolder)) PurgeFilesInFolder(restoreFolder);
+            StringBuilder txt = new StringBuilder($"{title} of switch ").Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress).Append(").");
+            if (!string.IsNullOrEmpty(filePath)) txt.Append("\nSelected file: \"").Append(filePath).Append("\", size: ").Append(PrintNumberBytes(new FileInfo(filePath).Length));
+            Logger.Activity(txt.ToString());
+            return restoreFolder;
         }
 
         public void UploadConfigurationFiles(double maxDur, bool restoreImage)

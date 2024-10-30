@@ -463,22 +463,15 @@ namespace PoEWizard
             {
                 DisableButtons();
                 string cfgChanges = await GetSyncStatus(Translate("i18n_bckSync"));
-                if (device.RunningDir == CERTIFIED_DIR)
+                if (device.RunningDir == CERTIFIED_DIR || (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized))
                 {
-                    AskRebootCertified();
-                }
-                else if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
-                {
-                    ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notBck")}\n{Translate("i18n_bckNotCert")}", MsgBoxIcons.Error);
-                    return;
-                }
-                if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized)
-                {
-                    if (!AuthorizeWriteMemory(TranslateBackupRunning(), cfgChanges))
+                    if (ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_bckNotCert")}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
                     {
-                        ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notBck")}\n{Translate("i18n_bckNotSync")}", MsgBoxIcons.Error);
                         return;
                     }
+                }
+                else if (device.RunningDir != CERTIFIED_DIR && device.SyncStatus == SyncStatusType.NotSynchronized && AuthorizeWriteMemory(TranslateBackupRunning(), cfgChanges))
+                {
                     await Task.Run(() => restApiService.WriteMemory());
                     await GetSyncStatus(Translate("i18n_bckSync"));
                 }
@@ -544,36 +537,34 @@ namespace PoEWizard
                     if (pc.Password != pc.SavedPassword)
                     {
                         ShowMessageBox(TranslateRestoreRunning(), Translate("i18n_badPwd"), MsgBoxIcons.Error);
+                        return;
                     }
                     else
                     {
                         string cfgChanges = await GetSyncStatus(Translate("i18n_restSync"));
-                        if (device.RunningDir == CERTIFIED_DIR)
+                        if (ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restConfirm").Replace("$1", device.Name)}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
                         {
-                            AskRebootCertified();
+                            return;
                         }
-                        else if (ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restConfirm").Replace("$1", device.Name)}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                        if (device.RunningDir == CERTIFIED_DIR || (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized))
                         {
-                            if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
+                            if (ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_bckNotCert")}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
                             {
-                                if (ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restNotCert")}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
-                                {
-                                    return;
-                                }
-                            }
-                            var ofd = new OpenFileDialog()
-                            {
-                                Filter = $"{Translate("i18n_zipFile")}|*.zip",
-                                Title = Translate("i18n_restSelFile"),
-                                InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
-                            };
-                            if (ofd.ShowDialog() == true)
-                            {
-                                await Task.Run(() => restApiService.UnzipBackupSwitchFiles(5, ofd.FileName));
-                                bool reboot = await RestoreSwitchConfiguration(ofd.FileName);
-                                if (reboot) await RebootSwitch();
+                                return;
                             }
                         }
+                    }
+                    var ofd = new OpenFileDialog()
+                    {
+                        Filter = $"{Translate("i18n_zipFile")}|*.zip",
+                        Title = Translate("i18n_restSelFile"),
+                        InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+                    };
+                    if (ofd.ShowDialog() == true)
+                    {
+                        await Task.Run(() => restApiService.UnzipBackupSwitchFiles(5, ofd.FileName));
+                        bool reboot = await RestoreSwitchConfiguration(ofd.FileName);
+                        if (reboot) await RebootSwitch();
                     }
                 }
             }
@@ -1402,8 +1393,6 @@ namespace PoEWizard
             {
                 _writeMemory.IsEnabled = false;
                 _cfgMenuItem.IsEnabled = false;
-                _cfgBackup.IsEnabled = false;
-                _cfgRestore.IsEnabled = false;
             }
         }
 

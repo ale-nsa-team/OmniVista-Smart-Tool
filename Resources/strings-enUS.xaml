@@ -204,8 +204,7 @@ Please confirm your action.
     <sys:String x:Key="i18n_bckSaving">Saving switch $1 backup file</sys:String>
     <sys:String x:Key="i18n_fileSize">File size</sys:String>
     <sys:String x:Key="i18n_bckDur">Backup duration</sys:String>
-    <sys:String x:Key="i18n_bckNotCert">Switch is not running on certified.</sys:String>
-    <sys:String x:Key="i18n_bckNotSync">Switch configuration is not synchronized.</sys:String>
+    <sys:String x:Key="i18n_bckNotCert">Switch is in certified mode, Continue?</sys:String>
 
     <!--Restore Messages-->
     <sys:String x:Key="i18n_restRunning">Restoring configuration of switch</sys:String>
@@ -227,7 +226,6 @@ Proceed with caution.</sys:String>
     <sys:String x:Key="i18n_restAskImg">Do you want to restore the /flash/working AOS boot image file?</sys:String>
     <sys:String x:Key="i18n_restUpLoading">Uploading backup files to switch</sys:String>
     <sys:String x:Key="i18n_restUploadFile">Uploading file</sys:String>
-    <sys:String x:Key="i18n_restNotCert">Switch is in certified mode, Continue?</sys:String>
 
     <!--VLAN Messages-->
     <sys:String x:Key="i18n_vlanReading">Reading VLAN information</sys:String>
