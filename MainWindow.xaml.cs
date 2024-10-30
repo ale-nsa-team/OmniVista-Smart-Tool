@@ -475,6 +475,7 @@ namespace PoEWizard
                     await Task.Run(() => restApiService.WriteMemory());
                     await GetSyncStatus(Translate("i18n_bckSync"));
                 }
+                Activity.Log(device, "Launching backup configuration");
                 MsgBoxResult backupChoice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_bckAskImg")}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
                 bool backupImage = backupChoice == MsgBoxResult.Yes;
                 if (backupChoice == MsgBoxResult.Cancel) return;
@@ -562,6 +563,7 @@ namespace PoEWizard
                     };
                     if (ofd.ShowDialog() == true)
                     {
+                        Activity.Log(device, "Launching restore configuration");
                         await Task.Run(() => restApiService.UnzipBackupSwitchFiles(5, ofd.FileName));
                         bool reboot = await RestoreSwitchConfiguration(ofd.FileName);
                         if (reboot) await RebootSwitch();
