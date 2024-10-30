@@ -203,6 +203,39 @@ namespace PoEWizard.Comm
             }
         }
 
+        private void EnableRestApi()
+        {
+            string progrMsg = $"{Translate("i18n_rsCnx")} {SwitchModel.IpAddress}{WAITING}";
+            try
+            {
+                if (SwitchModel?.ChassisList?.Count > 0)
+                {
+                    try
+                    {
+                        ConnectAosSsh();
+                        string sessionPrompt = SshService.SessionPrompt;
+                        LinuxCommandSeq cmdSeq = new LinuxCommandSeq(
+                            new List<LinuxCommand> {
+                                new LinuxCommand("ip service http admin-state enable", sessionPrompt),
+                                new LinuxCommand("aaa authentication default local", sessionPrompt),
+                                new LinuxCommand("aaa  authentication http local", sessionPrompt),
+                                new LinuxCommand("write memory", sessionPrompt)
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                        string response = SendCommand(new CmdRequest(Command.SHOW_FREE_SPACE, ParseType.NoParsing)).ToString();
+                        if (!string.IsNullOrEmpty(response)) SwitchModel.LoadFreeFlashFromList(response);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError(progrMsg, ex);
+            }
+            DisconnectAosSsh();
+        }
         public void GetSystemInfo()
         {
             SendProgressReport(Translate("i18n_sys"));
@@ -273,6 +306,33 @@ namespace PoEWizard.Comm
                 Logger.Error(ex);
             }
             return null;
+        }
+
+        public LinuxCommandSeq SendSshLinuxCommandSeq(LinuxCommandSeq cmdEntry, string progressMsg)
+        {
+            try
+            {
+                _progress.Report(new ProgressReport(progressMsg));
+                UpdateProgressBar(++progressBarCnt); //  1
+                DateTime startTime = DateTime.Now;
+                ConnectAosSsh();
+                string msg = $"{progressMsg} {Translate("i18n_onsw")} {SwitchModel.Name}";
+                Dictionary<string, string> response = new Dictionary<string, string>();
+                cmdEntry.StartTime = DateTime.Now;
+                foreach (LinuxCommand cmdLinux in cmdEntry.CommandSeq)
+                {
+                    cmdLinux.Response = SshService?.SendLinuxCommand(cmdLinux);
+                    if (cmdLinux.DelaySec > 0) WaitSec(msg, cmdLinux.DelaySec);
+                    SendWaitProgressReport(msg, startTime);
+                    UpdateProgressBar(++progressBarCnt); //  1
+                }
+                cmdEntry.Duration = CalcStringDuration(cmdEntry.StartTime);
+                return cmdEntry;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public Dictionary<string, string> RunSwitchCommandSsh(Command cmd, string[] data)
@@ -606,33 +666,6 @@ namespace PoEWizard.Comm
                 return SshService?.SendCommand(new RestUrlEntry(cmdTranslation[cmd]), data);
             }
             return null;
-        }
-
-        public LinuxCommandSeq SendSshLinuxCommandSeq(LinuxCommandSeq cmdEntry, string progressMsg)
-        {
-            try
-            {
-                _progress.Report(new ProgressReport(progressMsg));
-                UpdateProgressBar(++progressBarCnt); //  1
-                DateTime startTime = DateTime.Now;
-                ConnectAosSsh();
-                string msg = $"{progressMsg} {Translate("i18n_onsw")} {SwitchModel.Name}";
-                Dictionary<string, string> response = new Dictionary<string, string>();
-                cmdEntry.StartTime = DateTime.Now;
-                foreach (LinuxCommand cmdLinux in cmdEntry.CommandSeq)
-                {
-                    cmdLinux.Response = SshService?.SendLinuxCommand(cmdLinux);
-                    if (cmdLinux.DelaySec > 0) WaitSec(msg, cmdLinux.DelaySec);
-                    SendWaitProgressReport(msg, startTime);
-                    UpdateProgressBar(++progressBarCnt); //  1
-                }
-                cmdEntry.Duration = CalcStringDuration(cmdEntry.StartTime);
-                return cmdEntry;
-            }
-            catch (Exception ex)
-            {
-               throw ex;
-            }
         }
 
         public void WriteMemory(int waitSec = 40)
