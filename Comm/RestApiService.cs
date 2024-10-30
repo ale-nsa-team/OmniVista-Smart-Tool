@@ -705,7 +705,7 @@ namespace PoEWizard.Comm
                         if (period > 20 && period % 5 == 0) GetSyncStatus();
                     }
                     catch { }
-                    if (SwitchModel.SyncStatus != SyncStatusType.NotSynchronized || dur >= waitSec) break;
+                    if (dur >= waitSec || (SwitchModel.SyncStatus == SyncStatusType.Synchronized && dur > 20)) break;
                     UpdateProgressBarMessage($"{msg} ({(int)dur} {Translate("i18n_sec")}){WAITING}", dur);
                 }
                 LogActivity("Write memory completed", $", duration: {CalcStringDuration(progressStartTime)}");
