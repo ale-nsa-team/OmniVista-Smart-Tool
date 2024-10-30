@@ -452,6 +452,11 @@ namespace PoEWizard.Data
             return "";
         }
 
+        public static string GetIfIndex(string port)
+        {
+            return null;
+        }
+
         public static string GetEnumDescription(Enum enaumValue)
         {
             try

@@ -746,6 +746,18 @@
         </Style.Resources>
     </Style>
 
+    <Style TargetType="TextBox" x:Key="gridTextBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Style.Resources>
+            <Style TargetType="ToolTip">
+                <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+                <Setter Property="Background" Value="{StaticResource barBackground}" />
+            </Style>
+        </Style.Resources>
+    </Style>
+
     <Style TargetType="TextBlock" x:Key="devToolTip">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
