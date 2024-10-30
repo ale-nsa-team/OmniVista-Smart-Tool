@@ -350,7 +350,7 @@ namespace PoEWizard.Data
             return hex.Length == 2 && Regex.IsMatch(hex, "^[0-9a-fA-F]{1,2}$");
         }
 
-        public static bool IsReachable(string ipAddress)
+        public static bool IsReachable(string ipAddress, int waitTimeSec = 5)
         {
             if (!IsValidIP(ipAddress)) return false;
             Ping pinger = null;
@@ -358,7 +358,7 @@ namespace PoEWizard.Data
             {
                 pinger = new Ping();
                 int success = 0;
-                for (int i = 0; i < 5; i++)
+                for (int cnt = 0; cnt < waitTimeSec; cnt++)
                 {
                     PingReply reply = pinger.Send(ipAddress, 1000);
                     if (reply.Status == IPStatus.Success) success++;

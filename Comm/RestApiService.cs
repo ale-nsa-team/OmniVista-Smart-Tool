@@ -96,7 +96,8 @@ namespace PoEWizard.Comm
 
         private void LoginRestApi()
         {
-            if (!IsReachable(SwitchModel.IpAddress)) throw new SwitchConnectionFailure($"Failed to establish a connection to {SwitchModel.IpAddress}!");
+            if (!IsReachable(SwitchModel.IpAddress, SwitchModel.CnxTimeout))
+                throw new SwitchConnectionFailure($"Failed to establish a connection to {SwitchModel.IpAddress} within {SwitchModel.CnxTimeout} sec!");
             DateTime startTime = DateTime.Now;
             try
             {
@@ -248,7 +249,7 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                error = ex.Message;
+                error = $"Device {this.SwitchModel.IpAddress} doesn't support ALE Rest API or is not an ALE switch!";
                 DisconnectAosSsh();
             }
             return error;
