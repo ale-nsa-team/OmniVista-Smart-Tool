@@ -680,7 +680,7 @@ namespace PoEWizard.Comm
                     string msg = $"{Translate("i18n_bckRunning")} {SwitchModel.Name}";
                     Logger.Info(msg);
                     StartProgressBar($"{msg}{WAITING}", maxDur);
-                    PurgeBackupRestoreFolder("Launching backup configuration");
+                    PurgeBackupRestoreFolder();
                     DowloadSwitchFiles(FLASH_CERTIFIED_DIR, FLASH_CERTIFIED_FILES);
                     DowloadSwitchFiles(FLASH_NETWORK_DIR, FLASH_NETWORK_FILES);
                     DowloadSwitchFiles(FLASH_SWITCH_DIR, FLASH_SWITCH_FILES);
@@ -726,12 +726,18 @@ namespace PoEWizard.Comm
                 StartProgressBar($"{msg}{WAITING}", maxDur);
                 th = new Thread(() => SendProgressMessage(msg, _backupStartTime, Translate("i18n_restUnzip")));
                 th.Start();
-                string restoreFolder = PurgeBackupRestoreFolder("Unzipping backup configuration file", selFilePath);
+                string restoreFolder = PurgeBackupRestoreFolder();
                 _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
+                DateTime startTime = DateTime.Now;
                 _sftpService.UnzipBackupSwitchFiles(selFilePath);
                 string swInfoFilePath = Path.Combine(restoreFolder, BACKUP_SWITCH_INFO_FILE);
                 string vlanFilePath = Path.Combine(restoreFolder, BACKUP_VLAN_CSV_FILE);
                 string vcBootFilePath = Path.Combine(restoreFolder, FLASH_WORKING_DIR, VCBOOT_FILE);
+                StringBuilder txt = new StringBuilder($"Unzipping backup configuration file of switch ");
+                txt.Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress).Append(").");
+                txt.Append("\r\nSelected file: \"").Append(selFilePath).Append("\", size: ").Append(PrintNumberBytes(new FileInfo(selFilePath).Length));
+                txt.Append("\r\nDuration: ").Append(Utils.CalcStringDuration(startTime));
+                Logger.Activity(txt.ToString());
                 th.Abort();
             }
             catch (Exception ex)
@@ -741,13 +747,10 @@ namespace PoEWizard.Comm
             }
         }
 
-        private string PurgeBackupRestoreFolder(string title, string filePath = null)
+        private string PurgeBackupRestoreFolder()
         {
             string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
             if (Directory.Exists(restoreFolder)) PurgeFilesInFolder(restoreFolder);
-            StringBuilder txt = new StringBuilder($"{title} of switch ").Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress).Append(").");
-            if (!string.IsNullOrEmpty(filePath)) txt.Append("\nSelected file: \"").Append(filePath).Append("\", size: ").Append(PrintNumberBytes(new FileInfo(filePath).Length));
-            Logger.Activity(txt.ToString());
             return restoreFolder;
         }
 
