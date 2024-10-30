@@ -30,7 +30,6 @@ namespace PoEWizard.Components
         private readonly RestApiService restSrv;
         private readonly ImageSource eye_open;
         private readonly ImageSource eye_closed;
-        private readonly ResourceDictionary strings;
 
         public CfgWizPage4(SnmpModel snmpData)
         {
@@ -49,8 +48,6 @@ namespace PoEWizard.Components
 
             eye_open = (ImageSource)Resources.MergedDictionaries[0]["eye_open"];
             eye_closed = (ImageSource)Resources.MergedDictionaries[0]["eye_closed"];
-
-            strings = Resources.MergedDictionaries[1];
             data = snmpData;
             DataContext = data;
             restSrv = MainWindow.restApiService;

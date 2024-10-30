@@ -148,6 +148,7 @@ namespace PoEWizard.Data
             [Command.SET_CONTACT] = $"system contact {DAT}",
             [Command.SET_LOCATION] = $"system location \"{DAT}\"",
             [Command.SET_DEFAULT_GATEWAY] = $"ip static-route 0.0.0.0/0 gateway {DAT}",
+            [Command.SET_PORT_ALIAS] = "urn=ifXTable",
             [Command.SHOW_IP_SERVICE] = "show ip service",
             [Command.SHOW_DNS_CONFIG] = "urn=systemDNS&mibObject0=systemDNSEnableDnsResolver&mibObject1=systemDNSDomainName&mibObject2=systemDNSNsAddr1&mibObject3=systemDNSNsAddr2&mibObject4=systemDNSNsAddr3",
             [Command.SHOW_DHCP_CONFIG] = "urn=alaDhcpRelayGlobalConfig&mibObject0=alaDhcpRelayAdminStatus&mibObject1=alaDhcpRelayForwardDelay&mibObject2=alaDhcpRelayMaximumHops&mibObject3=alaDhcpRelayPxeSupport&mibObject4=alaDhcpRelayInsertAgentInformation&mibObject5=alaDhcpRelayInsertAgentInformationPolicy&mibObject6=alaDhcpRelayPerInterfaceMode",
@@ -250,6 +251,7 @@ namespace PoEWizard.Data
                     case Command.DEBUG_UPDATE_LPNI_LEVEL:       // 134
                     case Command.DEBUG_UPDATE_LPCMM_LEVEL:      // 135
                     case Command.DEBUG_UPDATE_LLDPNI_LEVEL:     // 136
+                    case Command.SET_PORT_ALIAS:
                         foreach (string key in dict.Keys.ToList())
                         {
                             if (data.Length > 0) dict[key] = dict[key].Replace(DAT, data[0] ?? string.Empty);
@@ -290,6 +292,11 @@ namespace PoEWizard.Data
                 { "mibObject1-T1", "systemSwitchLoggingAppName:lpCmm" },
                 { "mibObject2-T1", $"systemSwitchLoggingLevel:{DAT}" },
                 { "mibObject3-T1", "systemSwitchLoggingVrf:" }
+            },
+            [Command.SET_PORT_ALIAS] = new Dictionary<string, string>
+            {
+                {"mibObject0", $"ifIndex:{DAT}"},
+                {"mibObject1", $"ifAlias:{DAT}"}
             }
         };
         #endregion

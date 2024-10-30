@@ -61,6 +61,7 @@ namespace PoEWizard
         private DateTime startTrafficAnalysisTime;
         private double maxCollectLogsDur = 0;
         private string lastMacAddress = string.Empty;
+        private string currAlias = string.Empty;
         private readonly Config config;
         #endregion
 
@@ -1112,6 +1113,24 @@ namespace PoEWizard
                 _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
                 _btnResetPort.IsEnabled = true;
             }
+        }
+
+        private void OnPortAliasGotFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is TextBox tb)
+            {
+                currAlias = tb.Text.Trim();
+            }
+        }
+
+        private void OnPortAliasLostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is TextBox tb && tb.Text.Trim() != currAlias)
+            {
+                string alias = tb.Text.Trim();
+                currAlias = string.Empty;
+                restApiService.RunSwitchCommand(new CmdRequest(Command.SET_PORT_ALIAS, selectedPort.Name, alias));
+            } 
         }
 
         private async void Priority_Changed(object sender, SelectionChangedEventArgs e)

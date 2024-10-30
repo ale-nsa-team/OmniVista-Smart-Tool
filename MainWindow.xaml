@@ -361,15 +361,17 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Width="1.2*" IsReadOnly="True">
+                    <DataGridTemplateColumn Width="1.2*" IsReadOnly="False">
                         <DataGridTemplateColumn.Header>
                             <TextBlock Text="{DynamicResource i18n_alias}" />
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Alias}" Style="{DynamicResource toolTip}"
-                                Foreground="{DynamicResource fontColor}"
-                                ToolTip="{Binding Path=Alias, Converter={StaticResource ToStringConverter}}" />
+                                <TextBox Text="{Binding Path=Alias, UpdateSourceTrigger=PropertyChanged}" 
+                                    Style="{DynamicResource gridTextBox}"
+                                    GotFocus="OnPortAliasGotFocus"
+                                    LostFocus="OnPortAliasLostFocus"
+                                    ToolTip="{Binding Path=Alias, Converter={StaticResource ToStringConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
