@@ -458,5 +458,11 @@ namespace PoEWizard.Data
         #region Login Credentials Limits
         public const int MAX_LIST_SIZE = 20;
         #endregion
+
+        #region Reboot Switch Limits
+        public const int MAX_SWITCH_REBOOT_TIME_SEC = 420;
+        public const int SWITCH_REBOOT_EXPECTED_TIME_SEC = 320;
+        public const int SWITCH_WAIT_INIT_TIME_SEC = 120;
+        #endregion
     }
 }

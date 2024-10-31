@@ -571,6 +571,7 @@ namespace PoEWizard
                         {
                             MsgBoxResult res = ShowMessageBox(TranslateRestoreRunning(), Translate("i18n_restReboot"), MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                             if (res == MsgBoxResult.No) return;
+                            restApiService?.StopTrafficAnalysis(TrafficStatus.Abort, $"interrupted by restore configuration before rebooting the switch {device.Name}");
                             await RebootSwitch();
                         }
                     }
@@ -785,7 +786,7 @@ namespace PoEWizard
         {
             try
             {
-                string cfgChanges = await GetSyncStatus(Translate("i18n_swrst"));
+                string cfgChanges = await GetSyncStatus($"{Translate("i18n_swrst")} {device.Name}");
                 if (ShowMessageBox(Translate("i18n_rebsw"), $"{Translate("i18n_crebsw")} {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
                 {
                     if (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized)
@@ -819,20 +820,22 @@ namespace PoEWizard
 
         private async Task RebootSwitch()
         {
-            string title = $"{Translate("i18n_rsReboot")} {device.Name} {Translate("i18n_reboot")}{WAITING}";
+            string lastIp = device.IpAddress;
+            string lastPasswd = device.Password;
+            string title = $"{Translate("i18n_rebooting").Replace("$1", device.Name)}{WAITING}";
             ShowInfoBox(title);
             ShowProgress(title);
-            DisableButtons();
+            ClearMainWindowGui();
             _comImg.Visibility = Visibility.Collapsed;
             _btnConnect.Visibility = Visibility.Collapsed;
-            _switchAttributes.Text = string.Empty;
             _switchMenuItem.IsEnabled = false;
             string switchName = device.Name;
-            string duration = await Task.Run(() => restApiService.RebootSwitch(420));
+            string rebootMsg = await Task.Run(() => restApiService.RebootSwitch(MAX_SWITCH_REBOOT_TIME_SEC));
             SetDisconnectedState();
-            if (string.IsNullOrEmpty(duration)) return;
-            string txt = $"{Translate("i18n_switch")} {switchName} {Translate("i18n_swready")} {duration}";
-            if (ShowMessageBox(Translate("i18n_rebsw"), $"{txt}\n{Translate("i18n_recsw")} {switchName}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+            lastIpAddr = lastIp;
+            lastPwd = lastPasswd;
+            if (string.IsNullOrEmpty(rebootMsg)) return;
+            if (ShowMessageBox(Translate("i18n_rebsw"), $"{rebootMsg}\n{Translate("i18n_recsw")} {switchName}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
             {
                 Connect();
             }
@@ -2197,27 +2200,36 @@ namespace PoEWizard
 
         private void SetDisconnectedState()
         {
-            _comImg.Source = (ImageSource)currentDict["disconnected"];
             lastIpAddr = device.IpAddress;
             lastPwd = device.Password;
+            ClearMainWindowGui();
+            _comImg.Visibility = Visibility.Visible;
+            _btnConnect.Visibility = Visibility.Visible;
+            _switchMenuItem.IsEnabled = true;
+            _comImg.Source = (ImageSource)currentDict["disconnected"];
+            _comImg.ToolTip = Translate("i18n_recon_tt");
+            restApiService = null;
+        }
+
+        private void ClearMainWindowGui()
+        {
+            DisableButtons();
             DataContext = null;
             device = new SwitchModel();
-            _switchAttributes.Text = string.Empty;
-            _switchMenuItem.IsEnabled = true;
-            DisableButtons();
-            _comImg.ToolTip = Translate("i18n_recon_tt");
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
             _tempStatus.Visibility = Visibility.Hidden;
             _cpu.Visibility = Visibility.Hidden;
+            _release.IsEnabled = false;
+            _release.Visibility = Visibility.Hidden;
             _slotsView.Visibility = Visibility.Hidden;
             _portList.Visibility = Visibility.Hidden;
             _fpgaLbl.Visibility = Visibility.Visible;
             _cpldLbl.Visibility = Visibility.Collapsed;
+            _switchAttributes.Text = null;
             selectedPort = null;
             selectedPortIndex = -1;
             selectedSlotIndex = -1;
             DataContext = device;
-            restApiService = null;
         }
 
         private void DisableButtons()

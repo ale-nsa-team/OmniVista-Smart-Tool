@@ -479,6 +479,7 @@ namespace PoEWizard.Comm
             }
             finally
             {
+                ResetWizardSlotPort();
                 DisconnectAosSsh();
             }
         }
@@ -727,6 +728,7 @@ namespace PoEWizard.Comm
         {
             try
             {
+                ResetWizardSlotPort();
                 _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
                 string sftpError = _sftpService.Connect();
                 if (string.IsNullOrEmpty(sftpError))
@@ -1066,15 +1068,19 @@ namespace PoEWizard.Comm
 
         public string RebootSwitch(int waitSec)
         {
-            progressStartTime = DateTime.Now;
+            string rebootDur;
+            string waitInitDur;
             try
             {
+                ResetWizardSlotPort();
+                progressStartTime = DateTime.Now;
                 string msg = $"{Translate("i18n_swrst")} {SwitchModel.Name}";
                 Logger.Info(msg);
-                StartProgressBar($"{msg}{WAITING}", 320);
+                StartProgressBar($"{msg}{WAITING}", SWITCH_REBOOT_EXPECTED_TIME_SEC + SWITCH_WAIT_INIT_TIME_SEC);
                 SendRebootSwitchRequest();
                 if (waitSec <= 0) return string.Empty;
-                msg = $"{Translate("i18n_rsReboot")} {SwitchModel.Name} {Translate("i18n_reboot")} ";
+                DateTime rebootTime = DateTime.Now;
+                msg = $"{Translate("i18n_rebooting").Replace("$1", SwitchModel.Name)}";
                 WaitSec(msg, 5);
                 _progress.Report(new ProgressReport($"{msg}{WAITING}"));
                 double dur = 0;
@@ -1108,7 +1114,14 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                 }
-                LogActivity("Switch rebooted", $", duration: {CalcStringDuration(progressStartTime, true)}");
+                if (SWITCH_WAIT_INIT_TIME_SEC > 0)
+                {
+                    rebootDur = CalcStringDurationTranslate(rebootTime, true);
+                    DateTime waitStartTime = DateTime.Now;
+                    WaitSec($"{Translate("i18n_rstwait")} {SwitchModel.Name} ", SWITCH_WAIT_INIT_TIME_SEC, $"{FirstChToUpper(Translate("i18n_rstdur"))}: {rebootDur}");
+                    waitInitDur = CalcStringDurationTranslate(waitStartTime, true);
+                }
+                LogActivity("Switch rebooted", $", duration: {rebootDur}");
             }
             catch (Exception ex)
             {
@@ -1116,7 +1129,10 @@ namespace PoEWizard.Comm
                 return null;
             }
             CloseProgressBar();
-            return CalcStringDurationTranslate(progressStartTime, true);
+            StringBuilder rebootMsg = new StringBuilder(Translate("i18n_switch")).Append(" ").Append(SwitchModel.Name).Append(" ").Append(Translate("i18n_swready"));
+            if (!string.IsNullOrEmpty(rebootDur)) rebootMsg.Append(" (").Append(Translate("i18n_rstdur")).Append(": ").Append(rebootDur).Append(").");
+            if (!string.IsNullOrEmpty(waitInitDur)) rebootMsg.Append("\n").Append(Translate("i18n_initdur")).Append(": ").Append(waitInitDur);
+            return rebootMsg.ToString();
         }
 
         private void SendRebootSwitchRequest()
@@ -1360,6 +1376,10 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError(action, ex);
             }
+            finally
+            {
+                ResetWizardSlotPort();
+            }
             return false;
         }
 
@@ -1389,6 +1409,10 @@ namespace PoEWizard.Comm
             catch (Exception ex)
             {
                 SendSwitchError(Translate("i18n_chprio"), ex);
+            }
+            finally
+            {
+                ResetWizardSlotPort();
             }
             return false;
         }
@@ -1432,6 +1456,7 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError(Translate("i18n_chprio"), ex);
             }
+            ResetWizardSlotPort();
         }
 
         private void RestartEthernetOnPort(string progressMessage, int waitTimeSec = 5)
@@ -1527,6 +1552,7 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError(msg, ex);
             }
+            ResetWizardSlotPort();
         }
 
         public void RunPoeWizard(string port, WizardReport reportResult, List<Command> commands, int waitSec)
@@ -1551,6 +1577,16 @@ namespace PoEWizard.Comm
             {
                 SendSwitchError(Translate("i18n_pwiz"), ex);
             }
+            finally
+            {
+                ResetWizardSlotPort();
+            }
+        }
+
+        private void ResetWizardSlotPort()
+        {
+            _wizardSwitchSlot = null;
+            _wizardSwitchPort = null;
         }
 
         private bool IsPoeWizardAborted(string msg)
@@ -2133,7 +2169,7 @@ namespace PoEWizard.Comm
             return false;
         }
 
-        private void WaitSec(string msg, int waitSec)
+        private void WaitSec(string msg1, int waitSec, string msg2 = null)
         {
             if (waitSec < 1) return;
             DateTime startTime = DateTime.Now;
@@ -2141,18 +2177,19 @@ namespace PoEWizard.Comm
             while (dur <= waitSec)
             {
                 if (dur >= waitSec) return;
-                SendWaitProgressReport(msg, startTime);
+                SendWaitProgressReport(msg1, startTime, msg2);
                 Thread.Sleep(1000);
                 dur = GetTimeDuration(startTime);
             }
         }
 
-        private void SendWaitProgressReport(string msg, DateTime startTime)
+        private void SendWaitProgressReport(string msg, DateTime startTime, string msg2 = null)
         {
             string strDur = CalcStringDurationTranslate(startTime, true);
             string txt = $"{msg}";
             if (!string.IsNullOrEmpty(strDur)) txt += $" ({strDur})";
             txt += $"{WAITING}{PrintPortStatus()}";
+            if (!string.IsNullOrEmpty(msg2)) txt += $"\n{msg2}";
             _progress.Report(new ProgressReport(txt));
         }
 
