@@ -17,53 +17,68 @@ namespace PoEWizard.Device
 
         private static readonly List<string> files = new List<string>()
         {
-            $"/{FLASH_WORKING_DIR}/*.cfg",
-            $"/{FLASH_CERTIFIED_DIR}/*.cfg",
-            $"/{FLASH_WORKING_DIR}/*.conf",
-            $"/{FLASH_CERTIFIED_DIR}/*.conf",
-            $"/{FLASH_WORKING_DIR}/*.sav",
-            $"/{FLASH_CERTIFIED_DIR}/*.sav",
-            $"/{FLASH_WORKING_DIR}/*.md5",
-            $"/{FLASH_CERTIFIED_DIR}/*.md5",
-            $"/{FLASH_WORKING_DIR}/*.txt",
-            $"/{FLASH_CERTIFIED_DIR}/*.txt",
-            $"/{FLASH_WORKING_DIR}/*.cfg-ft",
-            $"/{FLASH_CERTIFIED_DIR}/*.cfg-ft",
-            $"/{FLASH_WORKING_DIR}/Udiag.img",
-            $"/{FLASH_WORKING_DIR}/Urescue.img",
-            $"/{FLASH_CERTIFIED_DIR}/Udiag.img",
-            $"/{FLASH_CERTIFIED_DIR}/Urescue.img",
-            $"/{FLASH_DIR}/*.err",
-            $"/{FLASH_DIR}/*.cfg",
-            $"/{FLASH_DIR}/tech*",
-            $"/{FLASH_DIR}/swlog_archive/*",
-            $"/{FLASH_DIR}/system/user*",
-            $"/{FLASH_DIR}/switch/cloud/*",
-            $"/{FLASH_DIR}/switch/dhcpd*",
-            $"/{FLASH_DIR}/switch/*.txt",
-            $"/{FLASH_DIR}/libcurl*",
-            $"/{FLASH_DIR}/agcmm*",
-            $"/{FLASH_WORKING_DIR}/pkg/*",
-            $"/{FLASH_CERTIFIED_DIR}/pkg/*",
-            $"/{FLASH_DIR}/pmd",
-            $"/{FLASH_DIR}/serial.txt",
-            $"/{FLASH_DIR}/rcl.log"
+            $"{FLASH_WORKING_DIR}/*.cfg",
+            $"{FLASH_CERTIFIED_DIR}/*.cfg",
+            $"{FLASH_WORKING_DIR}/*.conf",
+            $"{FLASH_CERTIFIED_DIR}/*.conf",
+            $"{FLASH_WORKING_DIR}/*.sav",
+            $"{FLASH_CERTIFIED_DIR}/*.sav",
+            $"{FLASH_WORKING_DIR}/*.md5",
+            $"{FLASH_CERTIFIED_DIR}/*.md5",
+            $"{FLASH_WORKING_DIR}/*.txt",
+            $"{FLASH_CERTIFIED_DIR}/*.txt",
+            $"{FLASH_WORKING_DIR}/*.cfg-ft",
+            $"{FLASH_CERTIFIED_DIR}/*.cfg-ft",
+            $"{FLASH_WORKING_DIR}/Udiag.img",
+            $"{FLASH_WORKING_DIR}/Urescue.img",
+            $"{FLASH_CERTIFIED_DIR}/Udiag.img",
+            $"{FLASH_CERTIFIED_DIR}/Urescue.img",
+            $"{FLASH_DIR}/*.err",
+            $"{FLASH_DIR}/*.cfg",
+            $"{FLASH_DIR}/tech*",
+            $"{FLASH_DIR}/swlog_archive/*",
+            $"{FLASH_DIR}/system/user*",
+            $"{FLASH_DIR}/switch/cloud/*",
+            $"{FLASH_DIR}/switch/dhcpd*",
+            $"{FLASH_DIR}/switch/*.txt",
+            $"{FLASH_DIR}/libcurl*",
+            $"{FLASH_DIR}/agcmm*",
+            $"{FLASH_WORKING_DIR}/pkg/*",
+            $"{FLASH_CERTIFIED_DIR}/pkg/*",
+            $"{FLASH_DIR}/pmd",
+            $"{FLASH_DIR}/serial.txt",
+            $"{FLASH_DIR}/rcl.log",
+            $"{FLASH_DIR}/.bash_history"
         };
 
         public static void Reset(SwitchModel device)
         {
-            Progress.Report(new ProgressReport("Removing config files..."));
+            restSvc = MainWindow.restApiService;
+            Progress.Report(new ProgressReport("Prepairing factory default..."));
             swModel = device;
+            LinuxCommandSeq cmdSeq = new LinuxCommandSeq();
+            List<LinuxCommand> cmds = new List<LinuxCommand>();
+            foreach (string file in files)
+            {
+                cmds.Add(new LinuxCommand($"rm -f {file}"));
+            }
+            cmdSeq.AddCommandSeq(cmds);
+            LinuxCommandSeq res = restSvc.SendSshLinuxCommandSeq(cmdSeq, "Removing config files");
+            List<string> errs = new List<string>();
+            foreach(LinuxCommand cmd in cmds)
+            {
+                var resp = res.GetResponse(cmd.Command);
+                if (resp.ContainsKey(ERROR)) errs.Add(resp[ERROR]);
+            }
+            if (errs.Count > 0)
+            {
+                Progress.Report(new ProgressReport(ReportType.Error, string.Join("\n", errs),"Factory Reset"));
+            }
+            restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
+            Progress.Report(new ProgressReport("Applying basic template..."));
+            LoadTemplate(TEMPLATE);
             SftpService sftp = new SftpService(device.IpAddress, "admin", device.Password);
             sftp.Connect();
-            //foreach (string file in files)
-            //{
-            //    sftp.DeleteFile(file);
-            //}
-            restSvc = MainWindow.restApiService;
-            restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
-            sftp.DeleteFile($"/{FLASH_DIR}/.bash_history");
-            LoadTemplate(TEMPLATE);
             sftp.UploadFile(Path.Combine(MainWindow.DataPath, TEMPLATE), VCBOOT_PATH);
             sftp.Disconnect();
         }

@@ -190,6 +190,13 @@ Please confirm your action.
     <sys:String x:Key="i18n_commUsr">Associated User</sys:String>
     <sys:String x:Key="i18n_newRec">New Trap Receiver</sys:String>
 
+    <!--Factory Reset Messages-->
+    <sys:String x:Key="i18n_fctRst">Factory Reset</sys:String>
+    <sys:String x:Key="i18n_frReboot">Factory reset complete, switch will reboot now</sys:String>
+    <sys:String x:Key="i18n_frPrep">Prepairing factory default...</sys:String>
+    <sys:String x:Key="i18n_frDelete">Removing config files</sys:String>
+    <sys:String x:Key="i18n_frTmplt">Appying basic template...</sys:String>
+    
     <!--Backup Messages-->
     <sys:String x:Key="i18n_bckRunning">Backing up configuration of switch</sys:String>
     <sys:String x:Key="i18n_bckSync">Checking Sync Status before backup</sys:String>

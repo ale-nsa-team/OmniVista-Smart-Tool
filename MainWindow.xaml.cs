@@ -399,7 +399,8 @@ namespace PoEWizard
             ShowProgress(Translate("i18n_afrst"));
             FactoryDefault.Progress = progress;
             await Task.Run(() => FactoryDefault.Reset(device));
-            LaunchRebootSwitch();
+            ShowMessageBox(Translate("i18n_fctRst"), Translate("i18n_frReboot"));
+            await RebootSwitch();
         }
 
         private void LaunchConfigWizard(object sender, RoutedEventArgs e)
@@ -1133,7 +1134,7 @@ namespace PoEWizard
                 string alias = tb.Text.Trim();
                 currAlias = string.Empty;
                 restApiService.RunSwitchCommand(new CmdRequest(Command.SET_PORT_ALIAS, selectedPort.Index.ToString(), alias));
-            } 
+            }
         }
 
         private async void Priority_Changed(object sender, SelectionChangedEventArgs e)
