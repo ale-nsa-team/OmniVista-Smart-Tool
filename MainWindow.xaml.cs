@@ -502,9 +502,13 @@ namespace PoEWizard
                     };
                     if (sfd.ShowDialog() == true)
                     {
-                        File.Copy(zipPath, sfd.FileName, true);
+                        if (sfd.FileName != zipPath)
+                        {
+                            File.Copy(zipPath, sfd.FileName, true);
+                            File.Delete(zipPath);
+                        }
                     }
-                    File.Delete(zipPath);
+                    else File.Delete(zipPath);
                 }
                 else
                 {
