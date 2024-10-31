@@ -1049,7 +1049,7 @@ namespace PoEWizard.Comm
                 if (!string.IsNullOrEmpty(txt)) Logger.Warn($"Purging snapshot configuration files{txt}");
                 if (SwitchModel.SyncStatus == SyncStatusType.Synchronized)
                 {
-                    string filePath = Path.Combine(folder, Path.Combine(folder, $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}"));
+                    string filePath = Path.Combine(folder, $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}");
                     if (File.Exists(filePath))
                     {
                         string currSnapshot = File.ReadAllText(filePath);
