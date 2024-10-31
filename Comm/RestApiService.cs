@@ -1081,7 +1081,7 @@ namespace PoEWizard.Comm
                 if (waitSec <= 0) return string.Empty;
                 DateTime rebootTime = DateTime.Now;
                 msg = $"{Translate("i18n_rebooting").Replace("$1", SwitchModel.Name)}";
-                WaitSec(msg, 5);
+                WaitSec($"{msg} ", 5);
                 _progress.Report(new ProgressReport($"{msg}{WAITING}"));
                 double dur = 0;
                 while (dur <= 60)
@@ -1092,7 +1092,7 @@ namespace PoEWizard.Comm
                     }
                     Thread.Sleep(1000);
                     dur = GetTimeDuration(progressStartTime);
-                    UpdateProgressBarMessage($"{msg}({CalcStringDurationTranslate(progressStartTime, true)}){WAITING}", dur);
+                    UpdateProgressBarMessage($"{msg} ({CalcStringDurationTranslate(progressStartTime, true)}){WAITING}", dur);
                 }
                 while (dur < waitSec + 1)
                 {
@@ -1102,7 +1102,7 @@ namespace PoEWizard.Comm
                     }
                     Thread.Sleep(1000);
                     dur = (int)GetTimeDuration(progressStartTime);
-                    UpdateProgressBarMessage($"{msg}({CalcStringDurationTranslate(progressStartTime, true)}){WAITING}", dur);
+                    UpdateProgressBarMessage($"{msg} ({CalcStringDurationTranslate(progressStartTime, true)}){WAITING}", dur);
                     if (!IsReachable(SwitchModel.IpAddress)) continue;
                     try
                     {
