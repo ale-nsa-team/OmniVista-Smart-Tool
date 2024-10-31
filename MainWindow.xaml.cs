@@ -233,7 +233,7 @@ namespace PoEWizard
                 {
                     sftpService = new SftpService(device.IpAddress, device.Login, device.Password);
                     sftpError = sftpService.Connect();
-                    if (string.IsNullOrEmpty(sftpError)) res = sftpService.DownloadToMemory(VCBOOT_PATH);
+                    if (string.IsNullOrEmpty(sftpError)) res = sftpService.DownloadToMemory(VCBOOT_WORK);
                 });
                 HideProgress();
                 if (!string.IsNullOrEmpty(sftpError))
@@ -385,13 +385,13 @@ namespace PoEWizard
 
         private async void FactoryReset(object sender, RoutedEventArgs e)
         {
-            MsgBoxResult res = ShowMessageBox(Translate("i18n_tfrst"), Translate("i18n_cfrst"), MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
+            MsgBoxResult res = ShowMessageBox(Translate("i18n_fctRst"), Translate("i18n_cfrst"), MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
             if (res == MsgBoxResult.Cancel) return;
             PassCode pc = new PassCode(this, config);
             if (pc.ShowDialog() == false) return;
             if (pc.Password != pc.SavedPassword)
             {
-                ShowMessageBox(Translate("i18n_tfrst"), Translate("i18n_badPwd"), MsgBoxIcons.Error);
+                ShowMessageBox(Translate("i18n_fctRst"), Translate("i18n_badPwd"), MsgBoxIcons.Error);
                 return;
             }
             Logger.Warn($"Switch S/N {device.SerialNumber} Model {device.Model}: Factory reset applied!");
@@ -400,6 +400,15 @@ namespace PoEWizard
             FactoryDefault.Progress = progress;
             await Task.Run(() => FactoryDefault.Reset(device));
             ShowMessageBox(Translate("i18n_fctRst"), Translate("i18n_frReboot"));
+            string snapFilepath = Path.Combine(DataPath, SNAPSHOT_FOLDER, $"{device.IpAddress}{SNAPSHOT_SUFFIX}");
+            try
+            {
+                if (File.Exists(snapFilepath)) File.Delete(snapFilepath);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to delete file {snapFilepath}", ex);
+            }
             await RebootSwitch();
         }
 

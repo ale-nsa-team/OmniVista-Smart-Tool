@@ -22,7 +22,7 @@
     <sys:String x:Key="i18n_light">Light</sys:String>
     <sys:String x:Key="i18n_help">Help</sys:String>
     <sys:String x:Key="i18n_about">About</sys:String>
-    <sys:String x:Key="i18n_frst">Factory Reset...</sys:String>
+    <sys:String x:Key="i18n_frst">Configuration Reset...</sys:String>
     <sys:String x:Key="i18n_cfgWiz">Basic Configuration Wizard...</sys:String>
     <sys:String x:Key="i18n_backup">Backup</sys:String>
     <sys:String x:Key="i18n_restore">Restore</sys:String>
@@ -190,9 +190,16 @@ Please confirm your action.
     <sys:String x:Key="i18n_commUsr">Associated User</sys:String>
     <sys:String x:Key="i18n_newRec">New Trap Receiver</sys:String>
 
-    <!--Factory Reset Messages-->
-    <sys:String x:Key="i18n_fctRst">Factory Reset</sys:String>
-    <sys:String x:Key="i18n_frReboot">Factory reset complete, switch will reboot now</sys:String>
+    <!--Configuration Reset Messages-->
+    <sys:String x:Key="i18n_fctRst">Configuration Reset</sys:String>
+    <sys:String x:Key="i18n_afrst">Applying factory default...</sys:String>
+    <sys:String x:Key="i18n_cfrst" xml:space="preserve">
+ The switch configuration will be restored to factory default and 
+ a basic template will be used to setup your management IP address, 
+ so you can reconnect to the switch after it reboots.
+        
+ Please confirm your action.</sys:String>
+    <sys:String x:Key="i18n_frReboot">Configuration reset complete, switch will reboot now</sys:String>
     <sys:String x:Key="i18n_frPrep">Prepairing factory default...</sys:String>
     <sys:String x:Key="i18n_frDelete">Removing config files</sys:String>
     <sys:String x:Key="i18n_frTmplt">Appying basic template...</sys:String>
@@ -427,10 +434,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_fmac">Could not find MAC Address</sys:String>
     <sys:String x:Key="i18n_fdev">Could not find device or vendor</sys:String>
     <sys:String x:Key="i18n_onsw">on switch</sys:String>
-    <sys:String x:Key="i18n_tfrst">Factory Reset</sys:String>
-    <sys:String x:Key="i18n_cfrst">The switch configuration will be restored to factory default. Please confirm your action.</sys:String>
     <sys:String x:Key="i18n_badPwd">Invalid password</sys:String>
-    <sys:String x:Key="i18n_afrst">Applying factory default...</sys:String>
     <sys:String x:Key="i18n_rebsw">Reboot Switch</sys:String>
     <sys:String x:Key="i18n_crebsw">Are you sure you want to reboot switch</sys:String>
     <sys:String x:Key="i18n_frebsw1">Cannot rebot switch</sys:String>

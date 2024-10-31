@@ -1,14 +1,10 @@
-auto-fabric admin-state disable
-system name "{Name}"
-system location "{Location}"
-interfaces ddm enable
+auto-fabric admin-state disable remove-global-config
 vlan 1 admin-state enable
 spantree vlan 1 admin-state enable
-ip interface "IBMGT-1" address {IpAddress} mask {SubnetMask} vlan 1 
+ip interface "IBMGT-1" address {IpAddress} mask {SubnetMask} vlan 1
 aaa authentication default "local"
-aaa authentication console "local"
+aaa authentication http "local"
 aaa authentication ssh "local"
+session cli timeout 15
 ip service ssh admin-state enable
-session cli timeout 999
-session prompt default "{Name}->"
-loopback-detection enable
+ip service http admin-state enable
