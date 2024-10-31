@@ -235,7 +235,6 @@ Proceed with caution.</sys:String>
     <sys:String x:Key="i18n_restUpLoading">Uploading backup files to switch</sys:String>
     <sys:String x:Key="i18n_restUploadFile">Uploading file</sys:String>
     <sys:String x:Key="i18n_restReboot" xml:space="preserve">The switch will need to be restarted to update restored configuration.
-You MUST log back in and save all changes after the reboot.
 Do you want to continue?</sys:String>
 
     <!--VLAN Messages-->
@@ -412,7 +411,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_rsConn">Connection</sys:String>
     <sys:String x:Key="i18n_rsMem">Writing memory on switch</sys:String>
     <sys:String x:Key="i18n_rsMemc">Write memory completed</sys:String>
-    <sys:String x:Key="i18n_rsReboot">Waiting for switch</sys:String>
+    <sys:String x:Key="i18n_rebooting">Waiting for switch $1 reboot</sys:String>
     <sys:String x:Key="i18n_rsTout">did not come back within</sys:String>
     <sys:String x:Key="i18n_rsLldp">Enable LLDP description</sys:String>
     <sys:String x:Key="i18n_rsGs">Get Snapshot</sys:String>
@@ -486,8 +485,10 @@ Do you want to reboot the switch on Working directory?"
 It may take up to 30 sec to execute Write Memory
     </sys:String>
     <sys:String x:Key="i18n_swrst">Rebooting switch</sys:String>
-    <sys:String x:Key="i18n_swready" xml:space="preserve">ready to connect
-Reboot duration: </sys:String>
+    <sys:String x:Key="i18n_rstwait">Waiting for PoE devices to start on switch</sys:String>
+    <sys:String x:Key="i18n_swready">ready to connect</sys:String>
+    <sys:String x:Key="i18n_rstdur">reboot duration</sys:String>
+    <sys:String x:Key="i18n_initdur">Wait PoE devices start duration</sys:String>
     <sys:String x:Key="i18n_rst">restarted</sys:String>
     <sys:String x:Key="i18n_pfrst">failed to restart</sys:String>
     <sys:String x:Key="i18n_urst">restarted by the user</sys:String>

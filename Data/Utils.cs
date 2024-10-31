@@ -397,13 +397,13 @@ namespace PoEWizard.Data
         public static bool IsOldAosVersion(object aos)
         {
             if (aos == null) return false;
-            Match version = Regex.Match(aos.ToString(), Constants.MATCH_AOS_VERSION);
+            Match version = Regex.Match(aos.ToString(), MATCH_AOS_VERSION);
             if (version.Success && version.Groups.Count > 5)
             {
                 int v1 = int.TryParse(version.Groups[1].ToString(), out int i) ? i : 9;
                 int v2 = int.TryParse(version.Groups[2].ToString(), out i) ? i : 9;
                 int r = int.TryParse(version.Groups[5].ToString(), out i) ? i : 9;
-                string[] minver = Constants.MIN_AOS_VERSION.Split(' ');
+                string[] minver = MIN_AOS_VERSION.Split(' ');
                 int minv1 = int.Parse(minver[0].Split('.')[0]);
                 int minv2 = int.Parse(minver[0].Split('.')[1]);
                 int minr = int.Parse(minver[1].Replace("R", ""));
