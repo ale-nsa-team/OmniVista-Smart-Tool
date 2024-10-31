@@ -239,11 +239,10 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport(progrMsg));
                 UpdateProgressBar(progressBarCnt);
                 ConnectAosSsh();
-                string sessionPrompt = SshService.SessionPrompt;
                 LinuxCommandSeq cmdSeq = new LinuxCommandSeq(
                     new List<LinuxCommand> {
-                                new LinuxCommand("ip service http admin-state enable", sessionPrompt), new LinuxCommand("aaa authentication default local", sessionPrompt),
-                                new LinuxCommand("aaa  authentication http local", sessionPrompt), new LinuxCommand("write memory", sessionPrompt)
+                                new LinuxCommand("ip service http admin-state enable"), new LinuxCommand("aaa authentication default local"),
+                                new LinuxCommand("aaa  authentication http local"), new LinuxCommand("write memory")
                 });
                 LinuxCommandSeq result = SendSshLinuxCommandSeq(cmdSeq, progrMsg);
                 DisconnectAosSsh();

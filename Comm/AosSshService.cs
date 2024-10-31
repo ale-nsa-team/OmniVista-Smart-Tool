@@ -253,6 +253,7 @@ namespace PoEWizard.Comm
         {
             try
             {
+                if (string.IsNullOrEmpty(cmdLinux.Command)) cmdLinux.Expected = this.SessionPrompt;
                 Dictionary<string, string> resp = SendCliCommand(cmdLinux.Command, cmdLinux.MaxWaitSec, cmdLinux.Expected);
                 return ParseResponse(resp[RESPONSE], cmdLinux.Command);
             }
