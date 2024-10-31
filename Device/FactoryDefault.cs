@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Device
 {
@@ -54,7 +55,7 @@ namespace PoEWizard.Device
         public static void Reset(SwitchModel device)
         {
             restSvc = MainWindow.restApiService;
-            Progress.Report(new ProgressReport("Prepairing factory default..."));
+            Progress.Report(new ProgressReport(Translate("i18n_frPrep")));
             swModel = device;
             LinuxCommandSeq cmdSeq = new LinuxCommandSeq();
             List<LinuxCommand> cmds = new List<LinuxCommand>();
@@ -63,7 +64,7 @@ namespace PoEWizard.Device
                 cmds.Add(new LinuxCommand($"rm -f {file}"));
             }
             cmdSeq.AddCommandSeq(cmds);
-            LinuxCommandSeq res = restSvc.SendSshLinuxCommandSeq(cmdSeq, "Removing config files");
+            LinuxCommandSeq res = restSvc.SendSshLinuxCommandSeq(cmdSeq, Translate("i18n_frDelete"));
             List<string> errs = new List<string>();
             foreach(LinuxCommand cmd in cmds)
             {
@@ -72,14 +73,15 @@ namespace PoEWizard.Device
             }
             if (errs.Count > 0)
             {
-                Progress.Report(new ProgressReport(ReportType.Error, string.Join("\n", errs),"Factory Reset"));
+                Progress.Report(new ProgressReport(ReportType.Error, string.Join("\n", errs), Translate("i18n_fctRst")));
             }
             restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
-            Progress.Report(new ProgressReport("Applying basic template..."));
+            Progress.Report(new ProgressReport(Translate("i18n_frTmplt")));
             LoadTemplate(TEMPLATE);
             SftpService sftp = new SftpService(device.IpAddress, "admin", device.Password);
             sftp.Connect();
-            sftp.UploadFile(Path.Combine(MainWindow.DataPath, TEMPLATE), VCBOOT_PATH);
+            sftp.UploadFile(Path.Combine(MainWindow.DataPath, TEMPLATE), VCBOOT_WORK);
+            sftp.UploadFile(Path.Combine(MainWindow.DataPath, TEMPLATE), VCBOOT_CERT);
             sftp.Disconnect();
         }
 
@@ -88,8 +90,7 @@ namespace PoEWizard.Device
             try
             {
                 string content = ReadFromDisk(filename);
-                string res = content.Replace("{Name}", swModel.Name)
-                    .Replace("{Location}", swModel.Location)
+                string res = content
                     .Replace("{IpAddress}", swModel.IpAddress)
                     .Replace("{SubnetMask}", swModel.NetMask);
                 if (!string.IsNullOrEmpty(swModel.DefaultGwy))
