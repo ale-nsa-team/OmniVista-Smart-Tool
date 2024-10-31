@@ -295,7 +295,7 @@ namespace PoEWizard.Data
             [Command.SET_PORT_ALIAS] = new Dictionary<string, string>
             {
                 {"mibObject0", $"ifIndex:{DAT}"},
-                {"mibObject1", $"ifAlias:{DAT}"}
+                {"mibObject1", $"ifAlias:\"{DAT}\""}
             }
         };
         #endregion
