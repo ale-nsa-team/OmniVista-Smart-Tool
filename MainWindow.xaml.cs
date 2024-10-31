@@ -823,6 +823,9 @@ namespace PoEWizard
             ShowInfoBox(title);
             ShowProgress(title);
             DisableButtons();
+            _comImg.Visibility = Visibility.Collapsed;
+            _btnConnect.Visibility = Visibility.Collapsed;
+            _switchAttributes.Text = string.Empty;
             _switchMenuItem.IsEnabled = false;
             string switchName = device.Name;
             string duration = await Task.Run(() => restApiService.RebootSwitch(420));
@@ -2199,7 +2202,7 @@ namespace PoEWizard
             lastPwd = device.Password;
             DataContext = null;
             device = new SwitchModel();
-            _switchAttributes.Text = "";
+            _switchAttributes.Text = string.Empty;
             _switchMenuItem.IsEnabled = true;
             DisableButtons();
             _comImg.ToolTip = Translate("i18n_recon_tt");

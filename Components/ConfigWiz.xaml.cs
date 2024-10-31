@@ -129,7 +129,7 @@ namespace PoEWizard.Components
 
             if (needRefresh && !MustDisconnect)
             {
-                ShowInfoBox("i18n_reloading");
+                ShowInfoBox(Translate("i18n_reloading"));
                 await Task.Run(() => restSrv.ScanSwitch(null));
             }
             DialogResult = true;
