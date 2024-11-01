@@ -608,13 +608,17 @@ namespace PoEWizard
         {
             string restoreFolder = Path.Combine(DataPath, BACKUP_DIR);
             string swInfoFilePath = Path.Combine(restoreFolder, BACKUP_SWITCH_INFO_FILE);
-            string vlanFilePath = Path.Combine(restoreFolder, BACKUP_VLAN_CSV_FILE);
-            string vcBootFilePath = Path.Combine(restoreFolder, FLASH_DIR, FLASH_WORKING, VCBOOT_FILE);
-            string invalidMsg = null;
+            string invalidMsg = string.Empty;
+            invalidMsg = CheckBackupFile(invalidMsg, VCBOOT_FILE, FLASH_CERTIFIED);
+            invalidMsg = CheckBackupFile(invalidMsg, VCSETUP_FILE, FLASH_CERTIFIED);
+            invalidMsg = CheckBackupFile(invalidMsg, VCBOOT_FILE, FLASH_WORKING);
+            invalidMsg = CheckBackupFile(invalidMsg, VCSETUP_FILE, FLASH_WORKING);
+            invalidMsg = CheckBackupFile(invalidMsg, BACKUP_SWITCH_INFO_FILE);
+            invalidMsg = CheckBackupFile(invalidMsg, BACKUP_VLAN_CSV_FILE);
             string title = $"{Translate("i18n_restRunning")} {device.Name}{WAITING}";
             ShowInfoBox($"{title}\n{Translate("i18n_restUpLoading")}");
             ShowProgress(title);
-            if (File.Exists(vcBootFilePath) && File.Exists(swInfoFilePath) && File.Exists(vlanFilePath))
+            if (string.IsNullOrEmpty(invalidMsg))
             {
                 string swName = string.Empty;
                 string swIp = string.Empty;
@@ -676,17 +680,25 @@ namespace PoEWizard
                 double maxDur = restoreImg ? 135 : 10;
                 await Task.Run(() => restApiService.UploadConfigurationFiles(maxDur, restoreImg));
             }
-            else
-            {
-                invalidMsg = $"{Translate("i18n_restInv").Replace("$1", $"{Path.GetFileName(selFilePath)}")}";
-            }
             if (!string.IsNullOrEmpty(invalidMsg))
             {
                 PurgeFilesInFolder(Path.Combine(DataPath, BACKUP_DIR));
-                ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_notRest")}\n{invalidMsg}", MsgBoxIcons.Error);
+                ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restInv").Replace("$1", $"{Path.GetFileName(selFilePath)}")}!\n{invalidMsg}", MsgBoxIcons.Error);
                 return false;
             }
             return true;
+        }
+
+        private static string CheckBackupFile(string invalidMsg, string file, string dir = null)
+        {
+            string restoreFolder = Path.Combine(DataPath, BACKUP_DIR);
+            string filePath = !string.IsNullOrEmpty(dir) ? Path.Combine(restoreFolder, FLASH_DIR, dir, file) : Path.Combine(restoreFolder, file);
+            if (!File.Exists(filePath))
+            {
+                if (invalidMsg.Length > 0) invalidMsg += "\n";
+                invalidMsg += !string.IsNullOrEmpty(dir) ? $"{Translate("i18n_missingFile").Replace("$1", $"/{FLASH_DIR}/{dir}/{file}")}" : $"{Translate("i18n_missingFile").Replace("$1", file)}";
+            }
+            return invalidMsg;
         }
 
         private StringBuilder CheckSerialNumber(string swName, string swIp, List<Dictionary<string, string>> serial)

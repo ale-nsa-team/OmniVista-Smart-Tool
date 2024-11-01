@@ -119,8 +119,9 @@ namespace PoEWizard.Data
         public const string VCBOOT_FILE = "vcboot.cfg";
         public const string FLASH_DIR = "flash";
         public const string FLASH_WORKING = "working";
+        public const string FLASH_CERTIFIED = "certified";
         public const string FLASH_WORKING_DIR = "/" + FLASH_DIR + "/" + FLASH_WORKING;
-        public const string FLASH_CERTIFIED_DIR = "/" + FLASH_DIR + "/certified";
+        public const string FLASH_CERTIFIED_DIR = "/" + FLASH_DIR + "/" + FLASH_CERTIFIED;
         public const string VCBOOT_WORK = FLASH_WORKING_DIR + "/" + VCBOOT_FILE;
         public const string VCBOOT_CERT = FLASH_CERTIFIED_DIR + "/" + VCBOOT_FILE;
         public const string SWLOG_PATH = "/" + FLASH_DIR + "/tech_support_complete.tar";
@@ -394,16 +395,17 @@ namespace PoEWizard.Data
         public const string BACKUP_SWITCH_IP = "Switch IP Address";
         public const string BACKUP_CHASSIS = "Chassis";
         public const string BACKUP_SERIAL_NUMBER = "S/N";
+        public const string VCSETUP_FILE = "vcsetup.cfg";
         //	1) /flash/certified:
         public static readonly List<string> FLASH_CERTIFIED_FILES = new List<string>()
         {
-            "appmon_vcboot.cfg", "cloudagent.cfg", VCBOOT_FILE, "vcsetup.cfg"
+            "appmon_vcboot.cfg", "cloudagent.cfg", VCBOOT_FILE, VCSETUP_FILE
         };
         //	2) /flash/network:
         public const string FLASH_NETWORK_DIR = "/" + FLASH_DIR + "/network";
         public static readonly List<string> FLASH_NETWORK_FILES = new List<string>()
         {
-            "vcpolicy.cfg", "cloudagent.cfg", VCBOOT_FILE, "vcsetup.cfg"
+            "vcpolicy.cfg"
         };
         //	3) /flash/switch:
         public const string FLASH_SWITCH_DIR = "/" + FLASH_DIR + "/switch";
@@ -420,7 +422,7 @@ namespace PoEWizard.Data
         //	5) /flash/working:
         public static readonly List<string> FLASH_WORKING_FILES = new List<string>()
         {
-            "appmon_vcboot.cfg", "cloudagent.cfg", VCBOOT_FILE, "vcsetup.cfg", "*.img"
+            "appmon_vcboot.cfg", "cloudagent.cfg", VCBOOT_FILE, VCSETUP_FILE, "*.img"
         };
         //	6) /flash/python:
         public const string FLASH_PYTHON_DIR = "/" + FLASH_DIR + "/python";

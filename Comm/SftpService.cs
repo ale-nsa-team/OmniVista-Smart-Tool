@@ -125,9 +125,16 @@ namespace PoEWizard.Comm
             {
                 foreach (ZipArchiveEntry entry in archive.Entries)
                 {
-                    string filePath = entry.FullName;
-                    CreateLocalDirectory(filePath);
-                    entry.ExtractToFile(Path.Combine(MainWindow.DataPath, entry.FullName), true);
+                    CreateLocalDirectory(entry.FullName);
+                    try
+                    {
+                        string fileName = Path.GetFileName(entry.FullName);
+                        if (!string.IsNullOrEmpty(fileName)) entry.ExtractToFile(Path.Combine(MainWindow.DataPath, entry.FullName), true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                    }
                 }
             }
         }

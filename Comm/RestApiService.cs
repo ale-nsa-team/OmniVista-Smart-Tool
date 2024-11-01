@@ -769,13 +769,10 @@ namespace PoEWizard.Comm
                 _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
                 DateTime startTime = DateTime.Now;
                 _sftpService.UnzipBackupSwitchFiles(selFilePath);
-                string swInfoFilePath = Path.Combine(_backupFolder, BACKUP_SWITCH_INFO_FILE);
-                string vlanFilePath = Path.Combine(_backupFolder, BACKUP_VLAN_CSV_FILE);
-                string vcBootFilePath = Path.Combine(_backupFolder, FLASH_WORKING_DIR, VCBOOT_FILE);
                 StringBuilder txt = new StringBuilder($"Unzipping backup configuration file of switch ");
                 txt.Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress).Append(").");
                 txt.Append("\r\nSelected file: \"").Append(selFilePath).Append("\", size: ").Append(PrintNumberBytes(new FileInfo(selFilePath).Length));
-                txt.Append("\r\nDuration: ").Append(Utils.CalcStringDuration(startTime));
+                txt.Append("\r\nDuration: ").Append(CalcStringDuration(startTime));
                 Logger.Activity(txt.ToString());
                 th.Abort();
             }
