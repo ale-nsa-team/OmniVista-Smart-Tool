@@ -14,6 +14,7 @@ namespace PoEWizard.Device
         private const string TEMPLATE = "vcboot_template.txt";
         private static RestApiService restSvc;
         private static SwitchModel swModel;
+        private static readonly string templateFilePath = Path.Combine(MainWindow.DataPath, TEMPLATE);
         public static IProgress<ProgressReport> Progress { get; set; }
 
         private static readonly List<string> files = new List<string>()
@@ -77,29 +78,27 @@ namespace PoEWizard.Device
             }
             restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
             Progress.Report(new ProgressReport(Translate("i18n_frTmplt")));
-            LoadTemplate(TEMPLATE);
+            LoadTemplate();
             SftpService sftp = new SftpService(device.IpAddress, "admin", device.Password);
             sftp.Connect();
-            sftp.UploadFile(Path.Combine(MainWindow.DataPath, TEMPLATE), VCBOOT_WORK);
-            sftp.UploadFile(Path.Combine(MainWindow.DataPath, TEMPLATE), VCBOOT_CERT);
+            sftp.UploadFile(templateFilePath, VCBOOT_WORK);
+            sftp.UploadFile(templateFilePath, VCBOOT_CERT);
             sftp.Disconnect();
+            File.Delete(templateFilePath);
         }
 
-        private static void LoadTemplate(string filename)
+        private static void LoadTemplate()
         {
             try
             {
-                string content = ReadFromDisk(filename);
-                string res = content
-                    .Replace("{IpAddress}", swModel.IpAddress)
-                    .Replace("{SubnetMask}", swModel.NetMask);
+                string content = ReadFromDisk();
+                string res = content.Replace("{IpAddress}", swModel.IpAddress).Replace("{SubnetMask}", swModel.NetMask);
                 if (!string.IsNullOrEmpty(swModel.DefaultGwy))
                 {
                     res += $"ip static-route 0.0.0.0/0 gateway {swModel.DefaultGwy}";
                 }
-                string path = Path.Combine(MainWindow.DataPath, filename);
-                if (File.Exists(path)) File.Delete(path);
-                using (TextWriter writer = new StreamWriter(path))
+                if (File.Exists(templateFilePath)) File.Delete(templateFilePath);
+                using (TextWriter writer = new StreamWriter(templateFilePath))
                 {
                     writer.NewLine = "\n";
                     foreach (string line in res.Split('\n'))
@@ -110,25 +109,25 @@ namespace PoEWizard.Device
             }
             catch (Exception ex)
             {
-                Logger.Error($"Exception while writing config file {filename}: {ex.Message}");
+                Logger.Error($"Exception while writing config file {TEMPLATE}: {ex.Message}");
             }
 
         }
 
-        public static string ReadFromDisk(string filename)
+        public static string ReadFromDisk()
         {
             {
                 try
                 {
                     Assembly assembly = Assembly.GetExecutingAssembly();
-                    using (StreamReader reader = new StreamReader(assembly.GetManifestResourceStream($"PoEWizard.Resources.{filename}")))
+                    using (StreamReader reader = new StreamReader(assembly.GetManifestResourceStream($"PoEWizard.Resources.{TEMPLATE}")))
                     {
                         return reader.ReadToEnd();
                     }
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"Exception while reading config file {filename}: {ex.Message}");
+                    Logger.Error($"Exception while reading config file {TEMPLATE}: {ex.Message}");
                     return null;
                 }
             }

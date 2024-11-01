@@ -36,6 +36,7 @@ namespace PoEWizard.Comm
         private DateTime progressStartTime;
         private SftpService _sftpService = null;
         private DateTime _backupStartTime;
+        private readonly string _backupFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
         private List<VlanModel> _vlanSettings = new List<VlanModel>();
 
         public bool IsReady { get; set; } = false;
@@ -202,14 +203,13 @@ namespace PoEWizard.Comm
                     try
                     {
                         ConnectAosSsh();
-                        string sessionPrompt = SshService.SessionPrompt;
                         foreach (ChassisModel chassis in SwitchModel.ChassisList)
                         {
                             LinuxCommandSeq cmdSeq;
                             if (chassis.IsMaster) cmdSeq = new LinuxCommandSeq();
                             else cmdSeq = new LinuxCommandSeq(new LinuxCommand($"ssh-chassis {SwitchModel.Login}@{chassis.Number}", "Password|Are you sure", 20));
                             Thread.Sleep(500);
-                            cmdSeq.AddCommandSeq(new List<LinuxCommand> { new LinuxCommand("su", "->"), new LinuxCommand("df -h", "->"), new LinuxCommand("exit", sessionPrompt) });
+                            cmdSeq.AddCommandSeq(new List<LinuxCommand> { new LinuxCommand("su", "->"), new LinuxCommand("df -h", "->"), new LinuxCommand("exit") });
                             cmdSeq = SendSshLinuxCommandSeq(cmdSeq, $"{Translate("i18n_flashd")} {chassis.Number}");
                             _dict = cmdSeq?.GetResponse("df -h");
                             if (_dict != null && _dict.ContainsKey(OUTPUT)) SwitchModel.LoadFlashSizeFromList(_dict[OUTPUT], chassis);
@@ -352,23 +352,6 @@ namespace PoEWizard.Comm
             {
                 throw ex;
             }
-        }
-
-        public Dictionary<string, string> RunSwitchCommandSsh(Command cmd, string[] data)
-        {
-            try
-            {
-                ConnectAosSsh();
-                Dictionary<string, string> result = SshService?.SendCommand(new RestUrlEntry(cmd), data);
-                DisconnectAosSsh();
-                return result;
-            }
-            catch (Exception ex)
-            {
-                DisconnectAosSsh();
-                Logger.Error(ex);
-            }
-            return null;
         }
 
         private object SendCommand(CmdRequest cmdReq)
@@ -736,7 +719,7 @@ namespace PoEWizard.Comm
                     string msg = $"{Translate("i18n_bckRunning")} {SwitchModel.Name}";
                     Logger.Info(msg);
                     StartProgressBar($"{msg}{WAITING}", maxDur);
-                    PurgeBackupRestoreFolder();
+                    if (Directory.Exists(_backupFolder)) PurgeFilesInFolder(_backupFolder);
                     DowloadSwitchFiles(FLASH_CERTIFIED_DIR, FLASH_CERTIFIED_FILES);
                     DowloadSwitchFiles(FLASH_NETWORK_DIR, FLASH_NETWORK_FILES);
                     DowloadSwitchFiles(FLASH_SWITCH_DIR, FLASH_SWITCH_FILES);
@@ -782,13 +765,13 @@ namespace PoEWizard.Comm
                 StartProgressBar($"{msg}{WAITING}", maxDur);
                 th = new Thread(() => SendProgressMessage(msg, _backupStartTime, Translate("i18n_restUnzip")));
                 th.Start();
-                string restoreFolder = PurgeBackupRestoreFolder();
+                if (Directory.Exists(_backupFolder)) PurgeFilesInFolder(_backupFolder);
                 _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
                 DateTime startTime = DateTime.Now;
                 _sftpService.UnzipBackupSwitchFiles(selFilePath);
-                string swInfoFilePath = Path.Combine(restoreFolder, BACKUP_SWITCH_INFO_FILE);
-                string vlanFilePath = Path.Combine(restoreFolder, BACKUP_VLAN_CSV_FILE);
-                string vcBootFilePath = Path.Combine(restoreFolder, FLASH_WORKING_DIR, VCBOOT_FILE);
+                string swInfoFilePath = Path.Combine(_backupFolder, BACKUP_SWITCH_INFO_FILE);
+                string vlanFilePath = Path.Combine(_backupFolder, BACKUP_VLAN_CSV_FILE);
+                string vcBootFilePath = Path.Combine(_backupFolder, FLASH_WORKING_DIR, VCBOOT_FILE);
                 StringBuilder txt = new StringBuilder($"Unzipping backup configuration file of switch ");
                 txt.Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress).Append(").");
                 txt.Append("\r\nSelected file: \"").Append(selFilePath).Append("\", size: ").Append(PrintNumberBytes(new FileInfo(selFilePath).Length));
@@ -801,13 +784,6 @@ namespace PoEWizard.Comm
                 th?.Abort();
                 Logger.Error(ex);
             }
-        }
-
-        private string PurgeBackupRestoreFolder()
-        {
-            string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
-            if (Directory.Exists(restoreFolder)) PurgeFilesInFolder(restoreFolder);
-            return restoreFolder;
         }
 
         public void UploadConfigurationFiles(double maxDur, bool restoreImage)
@@ -824,8 +800,7 @@ namespace PoEWizard.Comm
                     string msg = $"{Translate("i18n_restRunning")} {SwitchModel.Name}";
                     Logger.Info(msg);
                     StartProgressBar($"{msg}{WAITING}", maxDur);
-                    string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
-                    string[] filesList = GetFilesInFolder(Path.Combine(restoreFolder, FLASH_DIR));
+                    string[] filesList = GetFilesInFolder(Path.Combine(_backupFolder, FLASH_DIR));
                     foreach (string localFilePath in filesList)
                     {
                         try
@@ -878,12 +853,11 @@ namespace PoEWizard.Comm
                 string fileName = Path.GetFileName(localFilePath);
                 th = new Thread(() => SendProgressMessage($"{Translate("i18n_restRunning")} {SwitchModel.Name}", _backupStartTime, $"{Translate("i18n_restUploadFile")} {fileName}"));
                 th.Start();
-                string restoreFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
                 FileInfo info = new FileInfo(localFilePath);
                 if (info.Exists && info.Length > 0)
                 {
                     DateTime startTime = DateTime.Now;
-                    string remotepath = $"{Path.GetDirectoryName(localFilePath).Replace(restoreFolder, string.Empty).Replace("\\", "/")}/{fileName}";
+                    string remotepath = $"{Path.GetDirectoryName(localFilePath).Replace(_backupFolder, string.Empty).Replace("\\", "/")}/{fileName}";
                     _sftpService.UploadFile(localFilePath, remotepath, true);
                     fileInfo = $"{remotepath} ({PrintNumberBytes(info.Length)}, {CalcStringDuration(startTime)})";
                     Logger.Debug($"Uploading file \"{remotepath}\"");
@@ -991,16 +965,17 @@ namespace PoEWizard.Comm
         {
             Thread th = null;
             DateTime startTime = DateTime.Now;
-            string zipPath = string.Empty;
+            string backupFileName = $"{SwitchModel.Name}_{DateTime.Now:MM-dd-yyyy_hh_mm_ss}.zip";
+            string destPath = Path.Combine(_backupFolder, backupFileName);
             try
             {
-                string backupPath = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
-                zipPath = Path.Combine(MainWindow.DataPath, $"{SwitchModel.Name}_{DateTime.Now:MM-dd-yyyy_hh_mm_ss}.zip");
+                string zipPath = Path.Combine(MainWindow.DataPath, backupFileName);
                 th = new Thread(() => SendProgressMessage($"{Translate("i18n_bckRunning")} {SwitchModel.Name}", _backupStartTime, Translate("i18n_bckZipping")));
                 th.Start();
                 if (File.Exists(zipPath)) File.Delete(zipPath);
-                ZipFile.CreateFromDirectory(backupPath, zipPath, CompressionLevel.Fastest, true);
-                PurgeFilesInFolder(backupPath);
+                ZipFile.CreateFromDirectory(_backupFolder, zipPath, CompressionLevel.Fastest, true);
+                PurgeFilesInFolder(_backupFolder);
+                File.Move(zipPath, destPath);
                 th.Abort();
             }
             catch (Exception ex)
@@ -1009,7 +984,7 @@ namespace PoEWizard.Comm
                 Logger.Error(ex);
             }
             Logger.Activity($"Compressing backup files completed (duration: {CalcStringDuration(startTime)})");
-            return zipPath;
+            return destPath;
         }
 
         private void SendProgressMessage(string title, DateTime startTime, string progrMsg)
