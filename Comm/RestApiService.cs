@@ -838,6 +838,7 @@ namespace PoEWizard.Comm
                 _sftpService?.Disconnect();
                 _sftpService = null;
                 CloseProgressBar();
+                if (Directory.Exists(_backupFolder)) PurgeFilesInFolder(_backupFolder);
             }
         }
 
