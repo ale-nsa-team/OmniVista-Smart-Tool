@@ -87,6 +87,8 @@ namespace PoEWizard
             DataPath = Path.Combine(appData, fileVersionInfo.CompanyName, fileVersionInfo.ProductName);
             InitializeComponent();
             this.Title += $" (V {string.Join(".", fileVersionInfo.ProductVersion.Split('.').ToList().Take(2))})";
+            this.Height = SystemParameters.PrimaryScreenHeight * 0.95;
+            this.Width = SystemParameters.PrimaryScreenWidth * 0.95;
             lightDict = Resources.MergedDictionaries[0];
             darkDict = Resources.MergedDictionaries[1];
             Strings = Resources.MergedDictionaries[2];
