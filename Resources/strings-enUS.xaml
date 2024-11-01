@@ -490,6 +490,7 @@ Do you want to reboot the switch on Working directory?"
 It may take up to 30 sec to execute Write Memory
     </sys:String>
     <sys:String x:Key="i18n_swrst">Rebooting switch</sys:String>
+    <sys:String x:Key="i18n_waitInit">Waiting initialization of switch</sys:String>
     <sys:String x:Key="i18n_rstwait">Waiting PoE devices start on switch</sys:String>
     <sys:String x:Key="i18n_swready">ready to connect</sys:String>
     <sys:String x:Key="i18n_rstdur">reboot duration</sys:String>

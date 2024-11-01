@@ -1051,7 +1051,6 @@ namespace PoEWizard.Comm
                 if (waitSec <= 0) return string.Empty;
                 DateTime rebootTime = DateTime.Now;
                 msg = $"{Translate("i18n_rebooting").Replace("$1", SwitchModel.Name)}";
-                WaitSec($"{msg} ", 5);
                 _progress.Report(new ProgressReport($"{msg}{WAITING}"));
                 double dur = 0;
                 while (dur <= 60)
@@ -1111,12 +1110,20 @@ namespace PoEWizard.Comm
                     if (this.RestApiClient == null) this.RestApiClient = new RestApiClient(SwitchModel);
                     switchName = SwitchModel.Name;
                 }
-                string msg = $"{Translate("i18n_rstwait")} {switchName}";
+                string msg = $"{Translate("i18n_waitInit")} {switchName}";
                 Logger.Info(msg);
                 StartProgressBar($"{msg}{WAITING}", WAIT_INIT_CPU_EXPECTED_TIME_SEC);
-                WaitSec($"{Translate("i18n_rstwait")} {switchName} ", MIN_WAIT_INIT_CPU_TIME_SEC);
-                if (!RestApiClient.IsConnected()) RestApiClient.Login();
+                DateTime startTime = DateTime.Now;
                 double dur = 0;
+                while (dur <= MIN_WAIT_INIT_CPU_TIME_SEC)
+                {
+                    dur = GetTimeDuration(startTime);
+                    if (dur >= MIN_WAIT_INIT_CPU_TIME_SEC) break;
+                    UpdateProgressBarMessage($"{msg} ({CalcStringDurationTranslate(startTime, true)}){WAITING}", dur);
+                    Thread.Sleep(1000);
+                }
+                if (!RestApiClient.IsConnected()) RestApiClient.Login();
+                dur = 0;
                 while (dur < MAX_WAIT_INIT_CPU_TIME_SEC)
                 {
                     Thread.Sleep(1000);
