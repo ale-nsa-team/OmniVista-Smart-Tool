@@ -1127,7 +1127,7 @@ namespace PoEWizard.Comm
                     UpdateProgressBarMessage($"{msg} ({CalcStringDurationTranslate(progressStartTime, true)}){WAITING}", dur);
                     try
                     {
-                        if (dur % 10 == 0)
+                        if (dur % 5 == 0)
                         {
                             if (!RestApiClient.IsConnected()) RestApiClient.Login();
                             if (RestApiClient.IsConnected())
@@ -1148,6 +1148,7 @@ namespace PoEWizard.Comm
                 StartProgressBar($"{msg}{WAITING}", WAIT_PORTS_UP_EXPECTED_TIME_SEC);
                 if (!RestApiClient.IsConnected()) RestApiClient.Login();
                 dur = 0;
+                int cntUp = 0;
                 while (dur < MAX_WAIT_PORTS_UP_SEC)
                 {
                     Thread.Sleep(1000);
@@ -1155,13 +1156,17 @@ namespace PoEWizard.Comm
                     UpdateProgressBarMessage($"{msg} ({CalcStringDurationTranslate(progressStartTime, true)}){WAITING}", dur);
                     try
                     {
-                        if (dur % 10 == 0)
+                        if (dur % 5 == 0)
                         {
                             if (!RestApiClient.IsConnected()) RestApiClient.Login();
                             if (RestApiClient.IsConnected())
                             {
                                 if (SwitchModel?.ChassisList?.Count < 1) break;
-                                if (GetNbPortsUp() > MIN_INIT_NB_PORTS_UP) break;
+                                if (GetNbPortsUp() > MIN_INIT_NB_PORTS_UP)
+                                {
+                                    cntUp++;
+                                    if (cntUp >= 9) break;
+                                }
                             }
                         }
                     }

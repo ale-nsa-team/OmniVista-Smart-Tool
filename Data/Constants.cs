@@ -469,7 +469,7 @@ namespace PoEWizard.Data
         public const int MAX_INIT_CPU_TRAFFIC = 60;
         public const int MAX_WAIT_PORTS_UP_SEC = 60;
         public const int WAIT_PORTS_UP_EXPECTED_TIME_SEC = 60;
-        public const int MIN_INIT_NB_PORTS_UP = 3;
+        public const int MIN_INIT_NB_PORTS_UP = 1;
         #endregion
     }
 }
