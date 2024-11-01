@@ -1043,14 +1043,13 @@ namespace PoEWizard.Comm
         public string RebootSwitch(int waitSec)
         {
             string rebootDur;
-            string waitInitDur;
             try
             {
                 ResetWizardSlotPort();
                 progressStartTime = DateTime.Now;
                 string msg = $"{Translate("i18n_swrst")} {SwitchModel.Name}";
                 Logger.Info(msg);
-                StartProgressBar($"{msg}{WAITING}", SWITCH_REBOOT_EXPECTED_TIME_SEC + SWITCH_WAIT_INIT_TIME_SEC);
+                StartProgressBar($"{msg}{WAITING}", SWITCH_REBOOT_EXPECTED_TIME_SEC);
                 SendRebootSwitchRequest();
                 if (waitSec <= 0) return string.Empty;
                 DateTime rebootTime = DateTime.Now;
@@ -1088,13 +1087,7 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                 }
-                if (SWITCH_WAIT_INIT_TIME_SEC > 0)
-                {
-                    rebootDur = CalcStringDurationTranslate(rebootTime, true);
-                    DateTime waitStartTime = DateTime.Now;
-                    WaitSec($"{Translate("i18n_rstwait")} {SwitchModel.Name} ", SWITCH_WAIT_INIT_TIME_SEC, $"{FirstChToUpper(Translate("i18n_rstdur"))}: {rebootDur}");
-                    waitInitDur = CalcStringDurationTranslate(waitStartTime, true);
-                }
+                rebootDur = CalcStringDurationTranslate(rebootTime, true);
                 LogActivity("Switch rebooted", $", duration: {rebootDur}");
             }
             catch (Exception ex)
@@ -1105,8 +1098,111 @@ namespace PoEWizard.Comm
             CloseProgressBar();
             StringBuilder rebootMsg = new StringBuilder(Translate("i18n_switch")).Append(" ").Append(SwitchModel.Name).Append(" ").Append(Translate("i18n_swready"));
             if (!string.IsNullOrEmpty(rebootDur)) rebootMsg.Append(" (").Append(Translate("i18n_rstdur")).Append(": ").Append(rebootDur).Append(").");
-            if (!string.IsNullOrEmpty(waitInitDur)) rebootMsg.Append("\n").Append(Translate("i18n_initdur")).Append(": ").Append(waitInitDur);
             return rebootMsg.ToString();
+        }
+
+        public string WaitInit(WizardReport reportResult)
+        {
+            DateTime waitStartTime = DateTime.Now;
+            try
+            {
+                ResetWizardSlotPort();
+                progressStartTime = DateTime.Now;
+                string switchName = string.Empty;
+                if (SwitchModel != null)
+                {
+                    if (this.RestApiClient == null) this.RestApiClient = new RestApiClient(SwitchModel);
+                    switchName = SwitchModel.Name;
+                }
+                string msg = $"{Translate("i18n_rstwait")} {switchName}";
+                Logger.Info(msg);
+                StartProgressBar($"{msg}{WAITING}", WAIT_INIT_CPU_EXPECTED_TIME_SEC);
+                WaitSec($"{Translate("i18n_rstwait")} {switchName} ", MIN_WAIT_INIT_CPU_TIME_SEC);
+                if (!RestApiClient.IsConnected()) RestApiClient.Login();
+                double dur = 0;
+                while (dur < MAX_WAIT_INIT_CPU_TIME_SEC)
+                {
+                    Thread.Sleep(1000);
+                    dur = (int)GetTimeDuration(progressStartTime);
+                    UpdateProgressBarMessage($"{msg} ({CalcStringDurationTranslate(progressStartTime, true)}){WAITING}", dur);
+                    try
+                    {
+                        if (dur % 5 == 0)
+                        {
+                            if (!RestApiClient.IsConnected()) RestApiClient.Login();
+                            if (RestApiClient.IsConnected())
+                            {
+                                _dict = SendCommand(new CmdRequest(Command.SHOW_HEALTH_CONFIG, ParseType.Etable)) as Dictionary<string, string>;
+                                SwitchModel.UpdateCpuThreshold(_dict);
+                                int cpuTraffic = StringToInt(SwitchModel.Cpu);
+                                if (cpuTraffic < MAX_INIT_CPU_TRAFFIC) break;
+                            }
+                        }
+                    }
+                    catch { }
+                }
+                Connect(reportResult);
+                progressStartTime = DateTime.Now;
+                msg = $"{Translate("i18n_rstwait")} {switchName}";
+                Logger.Info(msg);
+                StartProgressBar($"{msg}{WAITING}", WAIT_PORTS_UP_EXPECTED_TIME_SEC);
+                if (!RestApiClient.IsConnected()) RestApiClient.Login();
+                dur = 0;
+                int cntUp = 0;
+                while (dur < MAX_WAIT_PORTS_UP_SEC)
+                {
+                    Thread.Sleep(1000);
+                    dur = (int)GetTimeDuration(progressStartTime);
+                    UpdateProgressBarMessage($"{msg} ({CalcStringDurationTranslate(progressStartTime, true)}){WAITING}", dur);
+                    try
+                    {
+                        if (dur % 5 == 0)
+                        {
+                            if (!RestApiClient.IsConnected()) RestApiClient.Login();
+                            if (RestApiClient.IsConnected())
+                            {
+                                if (SwitchModel?.ChassisList?.Count < 1) break;
+                                if (GetNbPortsUp() > MIN_INIT_NB_PORTS_UP)
+                                {
+                                    cntUp++;
+                                    if (cntUp >= 9) break;
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                }
+                return $"{Translate("i18n_dur")} {CalcStringDurationTranslate(waitStartTime, true)}";
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError($"{Translate("i18n_rebsw")} {SwitchModel.Name}", ex);
+                return null;
+            }
+            finally
+            {
+                CloseProgressBar();
+            }
+        }
+
+        private int GetNbPortsUp()
+        {
+            int nbPortsMac = 0;
+            _dictList = SendCommand(new CmdRequest(Command.SHOW_PORTS_LIST, ParseType.Htable3)) as List<Dictionary<string, string>>;
+            SwitchModel.LoadFromList(_dictList, DictionaryType.PortsList);
+            _dictList = SendCommand(new CmdRequest(Command.SHOW_MAC_LEARNING, ParseType.Htable)) as List<Dictionary<string, string>>;
+            SwitchModel.LoadMacAddressFromList(_dictList, MAX_SCAN_NB_MAC_PER_PORT);
+            foreach (ChassisModel chassis in SwitchModel.ChassisList)
+            {
+                foreach (SlotModel slot in chassis.Slots)
+                {
+                    foreach (PortModel port in slot.Ports)
+                    {
+                        if (port.Status == PortStatus.Up && port.MacList?.Count > 0) nbPortsMac++;
+                    }
+                }
+            }
+            return nbPortsMac;
         }
 
         private void SendRebootSwitchRequest()

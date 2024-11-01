@@ -836,6 +836,7 @@ namespace PoEWizard
 
         private async Task RebootSwitch()
         {
+            string switchName = device.Name;
             string lastIp = device.IpAddress;
             string lastPasswd = device.Password;
             string title = $"{Translate("i18n_rebooting").Replace("$1", device.Name)}{WAITING}";
@@ -845,15 +846,27 @@ namespace PoEWizard
             _comImg.Visibility = Visibility.Collapsed;
             _btnConnect.Visibility = Visibility.Collapsed;
             _switchMenuItem.IsEnabled = false;
-            string switchName = device.Name;
-            string rebootMsg = await Task.Run(() => restApiService.RebootSwitch(MAX_SWITCH_REBOOT_TIME_SEC));
-            SetDisconnectedState();
-            lastIpAddr = lastIp;
-            lastPwd = lastPasswd;
-            if (string.IsNullOrEmpty(rebootMsg)) return;
-            if (ShowMessageBox(Translate("i18n_rebsw"), $"{rebootMsg}\n{Translate("i18n_recsw")} {switchName}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+            string msg = await Task.Run(() => restApiService.RebootSwitch(MAX_SWITCH_REBOOT_TIME_SEC));
+            if (string.IsNullOrEmpty(msg)) return;
+            if (ShowMessageBox(Translate("i18n_rebsw"), $"{msg}\n{Translate("i18n_recsw")} {switchName}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
             {
+                if (restApiService != null)
+                {
+                    if (restApiService.SwitchModel == null) restApiService.SwitchModel = device;
+                    reportResult = new WizardReport();
+                    msg = await Task.Run(() => restApiService?.WaitInit(reportResult));
+                    ShowMessageBox($"{Translate("i18n_rstwait")} {switchName}", $"{Translate("i18n_initEnd")} {switchName}.\n{msg}", MsgBoxIcons.Info, MsgBoxButtons.Ok);
+                }
+                SetDisconnectedState();
+                lastIpAddr = lastIp;
+                lastPwd = lastPasswd;
                 Connect();
+            }
+            else
+            {
+                SetDisconnectedState();
+                lastIpAddr = lastIp;
+                lastPwd = lastPasswd;
             }
         }
 
@@ -2235,8 +2248,6 @@ namespace PoEWizard
             _disconnectMenuItem.Visibility = Visibility.Collapsed;
             _tempStatus.Visibility = Visibility.Hidden;
             _cpu.Visibility = Visibility.Hidden;
-            _release.IsEnabled = false;
-            _release.Visibility = Visibility.Hidden;
             _slotsView.Visibility = Visibility.Hidden;
             _portList.Visibility = Visibility.Hidden;
             _fpgaLbl.Visibility = Visibility.Visible;
