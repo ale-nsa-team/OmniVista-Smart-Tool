@@ -84,7 +84,7 @@
 
     <!--Port Table-->
     <sys:String x:Key="i18n_port">Port</sys:String>
-    <sys:String x:Key="i18n_alias">Alias</sys:String>
+    <sys:String x:Key="i18n_alias">Description</sys:String>
     <sys:String x:Key="i18n_ptSt">Status</sys:String>
     <sys:String x:Key="i18n_prio">Priority</sys:String>
     <sys:String x:Key="i18n_ptPwr">Power (Watts)</sys:String>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Components
 {
@@ -32,7 +33,7 @@ namespace PoEWizard.Components
             Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             Resources.MergedDictionaries.Add(MainWindow.Strings);
 
-            _header.Text = $"{(string)MainWindow.Strings["i18n_devSel"]} {port}";
+            _header.Text = $"{Translate("i18n_devSel")} {port}";
             Devices = Enum.GetValues(typeof(DeviceType)).OfType<DeviceType>().ToList().Select(d => GetDescription(d)).ToList();
         }
 

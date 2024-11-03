@@ -57,10 +57,5 @@ namespace PoEWizard.Components
             Close();
         }
 
-        public static string Translate(string key)
-        {
-            return (string)MainWindow.Strings[key] ?? key;
-        }
-
     }
 }

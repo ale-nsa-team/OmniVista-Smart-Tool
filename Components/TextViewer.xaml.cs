@@ -61,7 +61,7 @@ namespace PoEWizard.Components
 
             if (Filename != null && File.Exists(Filename))
             {
-                _content.Document.Blocks.Add(new Paragraph(new Run((string)MainWindow.Strings["i18n_fload"])));
+                _content.Document.Blocks.Add(new Paragraph(new Run(Translate("i18n_fload"))));
                 Task.Run(() => {
                     Thread.Sleep(200);
                     Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() =>
@@ -84,8 +84,8 @@ namespace PoEWizard.Components
             string file = SaveFilename ?? (Filename != null ? Path.GetFileName(Filename) : "");
             SaveFileDialog sfd = new SaveFileDialog()
             {
-                Filter = $"{(string)MainWindow.Strings["i18n_ftxt"]}|*.txt",
-                Title = $"{(string)MainWindow.Strings["i18n_svBtn"]} {title}",
+                Filter = $"{Translate("i18n_ftxt")}|*.txt",
+                Title = $"{Translate("i18n_svBtn")} {title}",
                 InitialDirectory = Filename != null ? Path.GetDirectoryName(Filename) : Environment.SpecialFolder.MyDocuments.ToString(),
                 FileName = file
             };

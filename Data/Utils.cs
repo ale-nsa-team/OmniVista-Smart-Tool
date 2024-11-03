@@ -283,7 +283,7 @@ namespace PoEWizard.Data
 
         public static string PrintTimeDurationSec(DateTime startTime)
         {
-            return $"{RoundUp(GetTimeDuration(startTime))} {(string)MainWindow.Strings["i18n_sec"]}";
+            return $"{RoundUp(GetTimeDuration(startTime))} {Translate("i18n_sec")}";
         }
 
         public static double RoundUp(double input, int dec = 0)

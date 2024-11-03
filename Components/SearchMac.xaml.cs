@@ -55,7 +55,7 @@ namespace PoEWizard.Components
             Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             Resources.MergedDictionaries.Add(MainWindow.Strings);
 
-            any = (string)MainWindow.Strings["i18n_any"];
+            any = Translate("i18n_any");
             this.SelectedPort = null;
             SearchMacAddress(device, macAddress);
             if (this.PortsFound.Count == 1) this.SelectedPort = this.PortsFound[0].Port;

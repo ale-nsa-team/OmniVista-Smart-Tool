@@ -85,8 +85,8 @@ namespace PoEWizard.Components
             {
                 CustomMsgBox cm = new CustomMsgBox(this.Owner)
                 {
-                    Title = (string)MainWindow.Strings["i18n_chcode"],
-                    Message = $"{(string)MainWindow.Strings["i18n_codeErr"]}: {ex.Message}"
+                    Title = Translate("i18n_chcode"),
+                    Message = $"{Translate("i18n_codeErr")}: {ex.Message}"
                 };
                 cm.ShowDialog();
             }
