@@ -723,7 +723,7 @@ namespace PoEWizard
             return invalidMsg;
         }
 
-        private static string CheckMissingFile(string invalidMsg, string file, string dir = null)
+        private string CheckMissingFile(string invalidMsg, string file, string dir = null)
         {
             string restoreFolder = Path.Combine(DataPath, BACKUP_DIR);
             string filePath = !string.IsNullOrEmpty(dir) ? Path.Combine(restoreFolder, FLASH_DIR, dir, file) : Path.Combine(restoreFolder, file);
