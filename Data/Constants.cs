@@ -396,6 +396,8 @@ namespace PoEWizard.Data
         public const string BACKUP_CHASSIS = "Chassis";
         public const string BACKUP_SERIAL_NUMBER = "S/N";
         public const string VCSETUP_FILE = "vcsetup.cfg";
+        public const string SWITCH_IMG = "switchImg";
+        public const string BACKUP_IMG = "backupImg";
         //	1) /flash/certified:
         public static readonly List<string> FLASH_CERTIFIED_FILES = new List<string>()
         {
@@ -430,6 +432,12 @@ namespace PoEWizard.Data
         {
             "*.sh", "*.py"
         };
+        #endregion
+
+        #region Basic Number of Bytes Threshold
+        public const long KILO = 1024;
+        public const long MEGA = 1048576;
+        public const long GIGA = 1073741824;
         #endregion
 
         #region Number of Mac Addresses Limits

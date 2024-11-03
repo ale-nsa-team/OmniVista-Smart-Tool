@@ -668,4 +668,3 @@ namespace PoEWizard.Data
 
     }
 }
-

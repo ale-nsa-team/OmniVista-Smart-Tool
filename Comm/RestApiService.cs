@@ -307,6 +307,11 @@ namespace PoEWizard.Comm
                     SendProgressReport(Translate("i18n_rsLldp"));
                     SendCommand(new CmdRequest(Command.LLDP_SYSTEM_DESCRIPTION_ENABLE));
                 }
+                if (!SwitchModel.ConfigSnapshot.Contains(CMD_TBL[Command.LLDP_ADDRESS_ENABLE]))
+                {
+                    SendProgressReport(Translate("i18n_rsLldp"));
+                    SendCommand(new CmdRequest(Command.LLDP_ADDRESS_ENABLE));
+                }
             }
             catch (Exception ex)
             {
@@ -755,7 +760,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void UnzipBackupSwitchFiles(double maxDur, string selFilePath)
+        public List<string> UnzipBackupSwitchFiles(double maxDur, string selFilePath)
         {
             Thread th = null;
             try
@@ -767,19 +772,30 @@ namespace PoEWizard.Comm
                 th.Start();
                 if (Directory.Exists(_backupFolder)) PurgeFilesInFolder(_backupFolder);
                 _sftpService = new SftpService(SwitchModel.IpAddress, SwitchModel.Login, SwitchModel.Password);
+                _sftpService.Connect();
                 DateTime startTime = DateTime.Now;
                 _sftpService.UnzipBackupSwitchFiles(selFilePath);
+                List<string> imgFiles = _sftpService.GetFilesInRemoteDir(FLASH_WORKING_DIR, "*.img");
                 StringBuilder txt = new StringBuilder($"Unzipping backup configuration file of switch ");
                 txt.Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress).Append(").");
-                txt.Append("\r\nSelected file: \"").Append(selFilePath).Append("\", size: ").Append(PrintNumberBytes(new FileInfo(selFilePath).Length));
+                txt.Append("\r\nSelected backup file: \"").Append(selFilePath).Append("\"\r\nBackup file size: ").Append(PrintNumberBytes(new FileInfo(selFilePath).Length));
                 txt.Append("\r\nDuration: ").Append(CalcStringDuration(startTime));
+                txt.Append("\r\nImage files:\r\n\t").Append(string.Join(", ", imgFiles));
                 Logger.Activity(txt.ToString());
                 th.Abort();
+                return imgFiles;
             }
             catch (Exception ex)
             {
                 th?.Abort();
                 Logger.Error(ex);
+                return new List<string>();
+            }
+            finally
+            {
+                _sftpService?.Disconnect();
+                _sftpService = null;
+                CloseProgressBar();
             }
         }
 
@@ -931,13 +947,13 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void DownloadFilteredRemoteFiles(string remoteDir, string fileSuffix, bool backImage = true)
+        private void DownloadFilteredRemoteFiles(string remoteDir, string fileSuffix, bool isImage = true)
         {
-            List<string> files = _sftpService.GetFilesInRemoteDir(remoteDir, fileSuffix.Replace("*", string.Empty));
+            List<string> files = _sftpService.GetFilesInRemoteDir(remoteDir, fileSuffix);
             if (files.Count < 1) return;
             foreach (string fileName in files)
             {
-                if (!fileName.Contains(".img") || (fileName.Contains(".img") && backImage)) DownloadRemoteFile(remoteDir, fileName);
+                if (!fileName.Contains(".img") || (fileName.Contains(".img") && isImage)) DownloadRemoteFile(remoteDir, fileName);
             }
         }
 

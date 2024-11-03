@@ -581,7 +581,6 @@ namespace PoEWizard
                     if (ofd.ShowDialog() == true)
                     {
                         Activity.Log(device, "Launching restore configuration");
-                        await Task.Run(() => restApiService.UnzipBackupSwitchFiles(5, ofd.FileName));
                         bool reboot = await RestoreSwitchConfiguration(ofd.FileName);
                         if (reboot)
                         {
@@ -608,79 +607,16 @@ namespace PoEWizard
 
         private async Task<bool> RestoreSwitchConfiguration(string selFilePath)
         {
-            string restoreFolder = Path.Combine(DataPath, BACKUP_DIR);
-            string swInfoFilePath = Path.Combine(restoreFolder, BACKUP_SWITCH_INFO_FILE);
-            string invalidMsg = string.Empty;
-            invalidMsg = CheckBackupFile(invalidMsg, VCBOOT_FILE, FLASH_CERTIFIED);
-            invalidMsg = CheckBackupFile(invalidMsg, VCSETUP_FILE, FLASH_CERTIFIED);
-            invalidMsg = CheckBackupFile(invalidMsg, VCBOOT_FILE, FLASH_WORKING);
-            invalidMsg = CheckBackupFile(invalidMsg, VCSETUP_FILE, FLASH_WORKING);
-            invalidMsg = CheckBackupFile(invalidMsg, BACKUP_SWITCH_INFO_FILE);
-            invalidMsg = CheckBackupFile(invalidMsg, BACKUP_VLAN_CSV_FILE);
+            List<string> switchImgFiles = await Task.Run(() => restApiService.UnzipBackupSwitchFiles(5, selFilePath));
             string title = $"{Translate("i18n_restRunning")} {device.Name}{WAITING}";
             ShowInfoBox($"{title}\n{Translate("i18n_restUpLoading")}");
             ShowProgress(title);
+            string restoreFolder = Path.Combine(DataPath, BACKUP_DIR);
+            string invalidMsg = CheckImageFiles(switchImgFiles);
             if (string.IsNullOrEmpty(invalidMsg))
             {
-                string swName = string.Empty;
-                string swIp = string.Empty;
-                List<Dictionary<string, string>> serial = new List<Dictionary<string, string>>();
-                string swInfo = File.ReadAllText(swInfoFilePath);
-                if (!string.IsNullOrEmpty(swInfo))
-                {
-                    string[] lines = swInfo.Split('\n');
-                    if (lines.Length > 1)
-                    {
-                        foreach (string line in lines)
-                        {
-                            if (string.IsNullOrEmpty(line)) continue;
-                            if (line.Contains(':'))
-                            {
-                                string[] split = line.Split(':');
-                                if (split.Length > 1)
-                                {
-                                    if (split[0].Trim() == BACKUP_SWITCH_NAME) swName = split[1].Trim();
-                                    else if (split[0].Trim() == BACKUP_SWITCH_IP) swIp = split[1].Trim();
-                                    else if (split[0].Contains(BACKUP_SERIAL_NUMBER) && split[0].Contains(BACKUP_CHASSIS))
-                                    {
-                                        Dictionary<string, string> dict = new Dictionary<string, string>
-                                        {
-                                            [BACKUP_CHASSIS] = Regex.Split(split[0].Trim(), BACKUP_SERIAL_NUMBER)[0].Replace(BACKUP_CHASSIS, string.Empty).Trim(),
-                                            [BACKUP_SERIAL_NUMBER] = split[1].Trim()
-                                        };
-                                        serial.Add(dict);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    StringBuilder alert = CheckSerialNumber(swName, swIp, serial);
-                    if (alert.Length > 0)
-                    {
-                        MsgBoxResult choice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notMatchSerial")}\n{alert}", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
-                        if (choice == MsgBoxResult.Cancel) return false;
-                    }
-                    List<Dictionary<string, string>> dictList = CliParseUtils.ParseVlanConfig(File.ReadAllText(Path.Combine(Path.Combine(DataPath, BACKUP_DIR), BACKUP_VLAN_CSV_FILE)));
-                    ShowVlan($"{Translate("i18n_vlanBck")} {swName} ({swIp})", dictList);
-                }
-                string[] filesList = GetFilesInFolder(Path.Combine(restoreFolder, FLASH_DIR, FLASH_WORKING));
-                bool foundImg = false;
-                foreach (string file in filesList)
-                {
-                    if (file.EndsWith(".img"))
-                    {
-                        foundImg = true;
-                        break;
-                    }
-                }
-                bool restoreImg = false;
-                if (foundImg)
-                {
-                    restoreImg = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_restAskImg")}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes;
-                }
-                ShowInfoBox($"{title}\n{Translate("i18n_restUpLoading")}");
-                double maxDur = restoreImg ? 135 : 10;
-                await Task.Run(() => restApiService.UploadConfigurationFiles(maxDur, restoreImg));
+                invalidMsg = CheckMissingBackupFiles();
+                if (string.IsNullOrEmpty(invalidMsg)) return await ProceedToRestore();
             }
             if (!string.IsNullOrEmpty(invalidMsg))
             {
@@ -691,7 +627,103 @@ namespace PoEWizard
             return true;
         }
 
-        private static string CheckBackupFile(string invalidMsg, string file, string dir = null)
+        private async Task<bool> ProceedToRestore()
+        {
+            string restoreFolder = Path.Combine(DataPath, BACKUP_DIR);
+            string swName = string.Empty;
+            string swIp = string.Empty;
+            List<Dictionary<string, string>> serial = new List<Dictionary<string, string>>();
+            string swInfoFilePath = Path.Combine(restoreFolder, BACKUP_SWITCH_INFO_FILE);
+            string swInfo = File.ReadAllText(swInfoFilePath);
+            if (!string.IsNullOrEmpty(swInfo))
+            {
+                string[] lines = swInfo.Split('\n');
+                if (lines.Length > 1)
+                {
+                    foreach (string line in lines)
+                    {
+                        if (string.IsNullOrEmpty(line)) continue;
+                        if (line.Contains(':'))
+                        {
+                            string[] split = line.Split(':');
+                            if (split.Length > 1)
+                            {
+                                if (split[0].Trim() == BACKUP_SWITCH_NAME) swName = split[1].Trim();
+                                else if (split[0].Trim() == BACKUP_SWITCH_IP) swIp = split[1].Trim();
+                                else if (split[0].Contains(BACKUP_SERIAL_NUMBER) && split[0].Contains(BACKUP_CHASSIS))
+                                {
+                                    Dictionary<string, string> dict = new Dictionary<string, string>
+                                    {
+                                        [BACKUP_CHASSIS] = Regex.Split(split[0].Trim(), BACKUP_SERIAL_NUMBER)[0].Replace(BACKUP_CHASSIS, string.Empty).Trim(),
+                                        [BACKUP_SERIAL_NUMBER] = split[1].Trim()
+                                    };
+                                    serial.Add(dict);
+                                }
+                            }
+                        }
+                    }
+                }
+                StringBuilder alert = CheckSerialNumber(swName, swIp, serial);
+                if (alert.Length > 0)
+                {
+                    MsgBoxResult choice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notMatchSerial")}\n{alert}", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                    if (choice == MsgBoxResult.Cancel) return false;
+                }
+                List<Dictionary<string, string>> dictList = CliParseUtils.ParseVlanConfig(File.ReadAllText(Path.Combine(Path.Combine(DataPath, BACKUP_DIR), BACKUP_VLAN_CSV_FILE)));
+                ShowVlan($"{Translate("i18n_vlanBck")} {swName} ({swIp})", dictList);
+            }
+            string[] filesList = GetFilesInFolder(Path.Combine(restoreFolder, FLASH_DIR, FLASH_WORKING));
+            bool foundImg = false;
+            foreach (string file in filesList)
+            {
+                if (file.EndsWith(".img"))
+                {
+                    foundImg = true;
+                    break;
+                }
+            }
+            bool restoreImg = false;
+            if (foundImg)
+            {
+                restoreImg = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_restAskImg")}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes;
+            }
+            string title = $"{Translate("i18n_restRunning")} {device.Name}{WAITING}";
+            ShowInfoBox($"{title}\n{Translate("i18n_restUpLoading")}");
+            double maxDur = restoreImg ? 135 : 10;
+            await Task.Run(() => restApiService.UploadConfigurationFiles(maxDur, restoreImg));
+            return true;
+        }
+
+        private string CheckImageFiles(List<string> switchImgFiles)
+        {
+            List<string> backUpImageFiles = new List<string>();
+            string[] imgFiles = Directory.GetFiles(Path.Combine(Path.Combine(DataPath, BACKUP_DIR), FLASH, FLASH_WORKING), "*.img");
+            foreach (string imgFile in imgFiles)
+            {
+                backUpImageFiles.Add(Path.GetFileName(imgFile));
+            }
+            Dictionary<string, List<string>> diff = new Dictionary<string, List<string>>
+            {
+                [SWITCH_IMG] = switchImgFiles.Except(backUpImageFiles).ToList(),
+                [BACKUP_IMG] = backUpImageFiles.Except(switchImgFiles).ToList()
+            };
+            if (diff[BACKUP_IMG]?.Count == 0) return string.Empty;
+            return $"{Translate("i18n_imgMismatch")} {device.Name}:\n - {string.Join(", ", diff[BACKUP_IMG])}";
+        }
+
+        private string CheckMissingBackupFiles()
+        {
+            string invalidMsg = string.Empty;
+            invalidMsg = CheckMissingFile(invalidMsg, VCBOOT_FILE, FLASH_CERTIFIED);
+            invalidMsg = CheckMissingFile(invalidMsg, VCSETUP_FILE, FLASH_CERTIFIED);
+            invalidMsg = CheckMissingFile(invalidMsg, VCBOOT_FILE, FLASH_WORKING);
+            invalidMsg = CheckMissingFile(invalidMsg, VCSETUP_FILE, FLASH_WORKING);
+            invalidMsg = CheckMissingFile(invalidMsg, BACKUP_SWITCH_INFO_FILE);
+            invalidMsg = CheckMissingFile(invalidMsg, BACKUP_VLAN_CSV_FILE);
+            return invalidMsg;
+        }
+
+        private static string CheckMissingFile(string invalidMsg, string file, string dir = null)
         {
             string restoreFolder = Path.Combine(DataPath, BACKUP_DIR);
             string filePath = !string.IsNullOrEmpty(dir) ? Path.Combine(restoreFolder, FLASH_DIR, dir, file) : Path.Combine(restoreFolder, file);

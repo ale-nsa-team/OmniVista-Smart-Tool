@@ -201,7 +201,7 @@ namespace PoEWizard.Comm
                 if (file.IsRegularFile)
                 {
                     if (string.IsNullOrEmpty(suffix)) filesList.Add(file.Name);
-                    else if (file.Name.EndsWith(suffix)) filesList.Add(file.Name);
+                    else if (file.Name.EndsWith(suffix.Replace("*", string.Empty))) filesList.Add(file.Name);
                 }
             }
             return filesList;

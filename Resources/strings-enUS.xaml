@@ -244,6 +244,7 @@ Proceed with caution.</sys:String>
     <sys:String x:Key="i18n_restReboot" xml:space="preserve">The switch will need to be restarted to update restored configuration.
 Do you want to continue?</sys:String>
     <sys:String x:Key="i18n_missingFile">File $1 is missing</sys:String>
+    <sys:String x:Key="i18n_imgMismatch">There are backup image files that don't belong to the switch</sys:String>
 
     <!--VLAN Messages-->
     <sys:String x:Key="i18n_vlanReading">Reading VLAN information</sys:String>

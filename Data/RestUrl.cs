@@ -56,6 +56,7 @@ namespace PoEWizard.Data
             [Command.POWER_CLASS_DETECTION_ENABLE] = $"lanpower slot {DAT} class-detection enable",
             [Command.SHOW_SLOT_LAN_POWER_STATUS] = $"show lanpower slot {DAT} status",
             [Command.LLDP_SYSTEM_DESCRIPTION_ENABLE] = "lldp nearest-bridge chassis tlv management port-description enable system-name enable system-description enable",
+            [Command.LLDP_ADDRESS_ENABLE] = "lldp nearest-bridge chassis tlv management management-address enable",
             [Command.SHOW_HEALTH_CONFIG] = "show health configuration",
             [Command.SHOW_LLDP_INVENTORY] = "show lldp remote-system med inventory",
             [Command.SHOW_SYSTEM_RUNNING_DIR] = "urn=chasControlModuleTable&mibObject0=sysName&mibObject1=sysLocation&mibObject2=sysContact&mibObject3=sysUpTime&mibObject4=sysDescr&mibObject5=configChangeStatus&mibObject6=chasControlCurrentRunningVersion&mibObject7=chasControlCertifyStatus",
