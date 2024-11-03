@@ -321,7 +321,7 @@ namespace PoEWizard
                 HideInfoBox();
                 HideProgress();
                 RefreshSlotAndPortsView();
-                var sp = new SearchPort(device, lastMacAddress)
+                var sp = new SearchMac(device, lastMacAddress)
                 {
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner
@@ -926,7 +926,7 @@ namespace PoEWizard
                 }
                 else
                 {
-                    var ds = new TrafficAnalysis() { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
+                    var ds = new TrafficDurationSelection() { Owner = this, WindowStartupLocation = WindowStartupLocation.CenterOwner };
                     if (ds.ShowDialog() == true)
                     {
                         selectedTrafficDuration = ds.TrafficDurationSec;

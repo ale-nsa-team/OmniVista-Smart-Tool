@@ -6,9 +6,9 @@ using static PoEWizard.Data.Utils;
 namespace PoEWizard.Components
 {
     /// <summary>
-    /// Interaction logic for TrafficAnalysis.xaml
+    /// Interaction logic for TrafficDurationSelection.xaml
     /// </summary>
-    public partial class TrafficAnalysis : Window
+    public partial class TrafficDurationSelection : Window
     {
 
         private readonly string minute = "minute";
@@ -17,7 +17,7 @@ namespace PoEWizard.Components
         public List<string> TimeDurationList { get; set; }
         public string Duration {  get; set; }
         public int TrafficDurationSec { get; set; }
-        public TrafficAnalysis()
+        public TrafficDurationSelection()
         {
             InitializeComponent();
             if (MainWindow.Theme == ThemeType.Dark)

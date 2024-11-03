@@ -10,9 +10,9 @@ using static PoEWizard.Data.Utils;
 namespace PoEWizard.Components
 {
     /// <summary>
-    /// Interaction logic for SearchPort.xaml
+    /// Interaction logic for SearchMac.xaml
     /// </summary>
-    public partial class SearchPort : Window
+    public partial class SearchMac : Window
     {
         public class PortViewModel
         {
@@ -39,7 +39,7 @@ namespace PoEWizard.Components
         public int NbPortsFound { get; set; }
         public int NbTotalMacAddressesFound { get; set; }
 
-        public SearchPort(SwitchModel device, string macAddress)
+        public SearchMac(SwitchModel device, string macAddress)
         {
             this.SearchText = !string.IsNullOrEmpty(macAddress) ? macAddress.ToLower().Trim() : string.Empty;
             InitializeComponent();
@@ -74,7 +74,7 @@ namespace PoEWizard.Components
             this.IsMacAddress = IsValidMacSequence(this.SearchText);
             this.PortsFound = new ObservableCollection<PortViewModel>();
             this.NbTotalMacAddressesFound = 0;
-            deviceMacList = new List<string>();
+            this.deviceMacList = new List<string>();
             foreach (var chas in switchModel.ChassisList)
             {
                 foreach (var slot in chas.Slots)
