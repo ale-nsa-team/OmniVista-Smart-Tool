@@ -433,6 +433,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_lsnap">Reading configuration snapshot...</sys:String>
     <sys:String x:Key="i18n_tsnap">Configuration Shapshot</sys:String>
     <sys:String x:Key="i18n_sport">Search Port</sys:String>
+    <sys:String x:Key="i18n_updAlias">Update port description</sys:String>
     <sys:String x:Key="i18n_fmac">Could not find MAC Address</sys:String>
     <sys:String x:Key="i18n_fdev">Could not find device or vendor</sys:String>
     <sys:String x:Key="i18n_onsw">on switch</sys:String>

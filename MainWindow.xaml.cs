@@ -1247,15 +1247,16 @@ namespace PoEWizard
             {
                 if (sender is TextBox tb && tb.Text.Trim() != currAlias)
                 {
-                    string alias = tb.Text.Trim();
+                    string alias = tb.Text.Trim() == string.Empty ? BLANK_ALIAS : tb.Text.Trim();
                     currAlias = string.Empty;
                     restApiService.SendCommand(new CmdRequest(Command.SET_PORT_ALIAS, selectedPort.Index.ToString(), alias));
+                    Activity.Log(device, $"Port {selectedPort.Name} alias {(alias == BLANK_ALIAS ? "deleted" : "set to \"" + alias + "\"")}");
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                ShowMessageBox($"Modifying Alias on switch {device.Name}", ex.Message, MsgBoxIcons.Error);
+                ShowMessageBox($"{Translate("i18n_updAlias")} {device.Name}", ex.Message, MsgBoxIcons.Error);
             }
         }
 
