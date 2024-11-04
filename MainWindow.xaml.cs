@@ -146,7 +146,7 @@ namespace PoEWizard
             try
             {
                 string translatFolder = Path.Combine(DataPath, TRANSLATION_FOLDER);
-                //if (!Directory.Exists(translatFolder)) Directory.CreateDirectory(translatFolder);
+                if (!Directory.Exists(translatFolder)) Directory.CreateDirectory(translatFolder);
                 string localLangFile = Path.Combine(translatFolder, TRANSLATION_LOCAL_FILE);
                 if (File.Exists(localLangFile))
                 {
