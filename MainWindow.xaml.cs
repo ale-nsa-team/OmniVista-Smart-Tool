@@ -1243,11 +1243,19 @@ namespace PoEWizard
 
         private void OnPortAliasLostFocus(object sender, RoutedEventArgs e)
         {
-            if (sender is TextBox tb && tb.Text.Trim() != currAlias)
+            try
             {
-                string alias = tb.Text.Trim();
-                currAlias = string.Empty;
-                restApiService.RunSwitchCommand(new CmdRequest(Command.SET_PORT_ALIAS, selectedPort.Index.ToString(), alias));
+                if (sender is TextBox tb && tb.Text.Trim() != currAlias)
+                {
+                    string alias = tb.Text.Trim();
+                    currAlias = string.Empty;
+                    restApiService.SendCommand(new CmdRequest(Command.SET_PORT_ALIAS, selectedPort.Index.ToString(), alias));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                ShowMessageBox($"Modifying Alias on switch {device.Name}", ex.Message, MsgBoxIcons.Error);
             }
         }
 

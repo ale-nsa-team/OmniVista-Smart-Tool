@@ -319,32 +319,31 @@ namespace PoEWizard.Comm
             {
                 string xmlError = http_response.Result.Content.ReadAsStringAsync().Result;
                 var errorList = CliParseUtils.ParseXmlToDictionary(xmlError);
-                if (errorList.ContainsKey(API_ERROR) && !string.IsNullOrEmpty(errorList[API_ERROR]))
+                string error = null;
+                if (errorList.ContainsKey(API_ERROR)) error = !string.IsNullOrEmpty(errorList[API_ERROR]) ? errorList[API_ERROR].Trim() : null;
+                else if (errorList.ContainsKey(API_NODE_ERROR)) error = !string.IsNullOrEmpty(errorList[API_NODE_ERROR]) ? errorList[API_NODE_ERROR].Trim() : null;
+                if (!string.IsNullOrEmpty(error))
                 {
-                    string error = errorList[API_ERROR].Trim();
-                    if (!string.IsNullOrEmpty(error))
+                    error = ReplaceFirst(error, ":", "");
+                    string errMsg = error.ToLower();
+                    if (errorList.ContainsKey(HTTP_RESPONSE) && !string.IsNullOrEmpty(errorList[HTTP_RESPONSE]))
                     {
-                        error = ReplaceFirst(error, ":", "");
-                        string errMsg = error.ToLower();
-                        if (errorList.ContainsKey(HTTP_RESPONSE) && !string.IsNullOrEmpty(errorList[HTTP_RESPONSE]))
+                        HttpStatusCode code = ConvertToHttpStatusCode(errorList);
+                        string errorMsg = $"Requested URL: {url}\r\nHTTP Response: {code} ({errorList[HTTP_RESPONSE]})\r\nError: {error}";
+                        if (errMsg.Contains("lanpower") && (errMsg.Contains("not supported") || errMsg.Contains("invalid entry"))) return error;
+                        else if (errMsg.Contains("not supported") || errMsg.Contains("command in progress") || errMsg.Contains("power range supported"))
                         {
-                            HttpStatusCode code = ConvertToHttpStatusCode(errorList);
-                            string errorMsg = $"Requested URL: {url}\r\nHTTP Response: {code} ({errorList[HTTP_RESPONSE]})\r\nError: {error}";
-                            if (errMsg.Contains("lanpower") && (errMsg.Contains("not supported") || errMsg.Contains("invalid entry"))) return error;
-                            else if (errMsg.Contains("not supported") || errMsg.Contains("command in progress") || errMsg.Contains("power range supported"))
-                            {
-                                string[] split = url.Split('=');
-                                if (split.Length >= 2) error += $" ({WebUtility.UrlDecode(split[1])})";
-                                Logger.Warn(errorMsg);
-                            }
-                            else
-                            {
-                                Logger.Error(errorMsg);
-                            }
+                            string[] split = url.Split('=');
+                            if (split.Length >= 2) error += $" ({WebUtility.UrlDecode(split[1])})";
+                            Logger.Warn(errorMsg);
+                        }
+                        else
+                        {
+                            Logger.Error(errorMsg);
                         }
                     }
-                    return error;
                 }
+                return error;
             }
             catch { }
             return null;

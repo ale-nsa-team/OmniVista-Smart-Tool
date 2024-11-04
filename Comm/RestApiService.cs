@@ -359,7 +359,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        private object SendCommand(CmdRequest cmdReq)
+        public object SendCommand(CmdRequest cmdReq)
         {
             Dictionary<string, object> resp = SendRequest(GetRestUrlEntry(cmdReq));
             if (cmdReq.ParseType == ParseType.MibTable)

@@ -17,6 +17,7 @@ namespace PoEWizard.Data
         public const string RESPONSE = "RESPONSE";
         public const string DURATION = "DURATION";
         public const string API_ERROR = "error";
+        public const string API_NODE_ERROR = "node";
         public const string STRING = "string";
         public const string OUTPUT = "output";
         public const string DATA = "data";
