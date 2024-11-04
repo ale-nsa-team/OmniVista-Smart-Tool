@@ -215,7 +215,7 @@ namespace PoEWizard.Components
         {
             try
             {
-                restSrv.RunSwitchCommand(req);
+                restSrv.SendCommand(req);
                 return true;
             }
             catch (Exception ex)

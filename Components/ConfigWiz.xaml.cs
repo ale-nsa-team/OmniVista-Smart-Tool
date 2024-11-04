@@ -181,7 +181,7 @@ namespace PoEWizard.Components
                 try
                 {
                     Logger.Info($"Config wizard: applying command {cmd.Command} {(cmd.Data != null ? "With data: " + string.Join(", ", cmd.Data) : "")}");
-                    restSrv.RunSwitchCommand(cmd);
+                    restSrv.SendCommand(cmd);
                     res = true;
                 }
                 catch (Exception ex)
