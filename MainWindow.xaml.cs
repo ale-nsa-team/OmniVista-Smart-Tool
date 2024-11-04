@@ -92,6 +92,7 @@ namespace PoEWizard
             lightDict = Resources.MergedDictionaries[0];
             darkDict = Resources.MergedDictionaries[1];
             Strings = Resources.MergedDictionaries[2];
+            LoadLocalLanguageDictionary();
             currentDict = darkDict;
             Instance = this;
             Activity.DataPath = DataPath;
@@ -138,6 +139,44 @@ namespace PoEWizard
             }
 
             SetLanguageMenuOptions();
+        }
+
+        private void LoadLocalLanguageDictionary()
+        {
+            try
+            {
+                string translatFolder = Path.Combine(DataPath, TRANSLATION_FOLDER);
+                //if (!Directory.Exists(translatFolder)) Directory.CreateDirectory(translatFolder);
+                string localLangFile = Path.Combine(translatFolder, TRANSLATION_LOCAL_FILE);
+                if (File.Exists(localLangFile))
+                {
+                    string data = File.ReadAllText(localLangFile);
+                    Dictionary<string, string> dict = new Dictionary<string, string>();
+                    using (StringReader reader = new StringReader(data))
+                    {
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            if (line.Trim().Length == 0 || !(line.Contains("x:Key=\"") && line.Contains("</sys:String>"))) continue;
+                            string[] split = Regex.Split(line.Replace("</sys:String>", string.Empty), "x:Key=\"");
+                            string key = split[1];
+                            split = Regex.Split(key, "\">");
+                            key = split[0].Trim();
+                            dict[key] = split[1].Trim();
+                        }
+                    }
+                    foreach (string key in Strings.Keys)
+                    {
+                        if (dict.ContainsKey(key)) Strings[key] = dict[key];
+                    }
+                    Resources.MergedDictionaries.Remove(Strings);
+                    Resources.MergedDictionaries.Add(Strings);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
