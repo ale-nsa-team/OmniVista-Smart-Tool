@@ -235,7 +235,8 @@ namespace PoEWizard.Components
                 Img = isError ? MsgBoxIcons.Error : MsgBoxIcons.Question,
                 Buttons = isError ? MsgBoxButtons.Ok : MsgBoxButtons.OkCancel
             };
-            return box.ShowDialog() == true;
+            box.ShowDialog();
+            return box.Result == MsgBoxResult.Yes;
         }
     }
 }

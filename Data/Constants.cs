@@ -384,7 +384,7 @@ namespace PoEWizard.Data
         public const string MATCH_AOS_VERSION = @"(\d+)\.(\d+)([\.\d +]+)(\.R)(\d+)";
         public const string MATCH_POE_RUNNING = @"Lanpower chassis \d slot \d service running ...";
         public const string MATCH_USER = @"(User name)\s*=\s*(.+),";
-        public const string MATCH_LOCAL_PORT = @"(Local.+)(?<port>\d/\d/\d+)(.+)";
+        public const string MATCH_LOCAL_PORT = @"(Local.+)(?<port>\d/\d/\d+[A-Z]*)(.+)";
         public const string MATCH_PORT_ID = @"(Port ID)(\s+= )(?<id>\d+)(.+)";
         #endregion
 
