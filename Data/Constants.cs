@@ -106,6 +106,8 @@ namespace PoEWizard.Data
         {
             "EST", "CST", "PST", "MST", "AKST", "AST", "HST", "UTC", "GMT", "CET", "NST"
         };
+        public const string TRANSLATION_FOLDER = "translation";
+        public const string TRANSLATION_LOCAL_FILE = "local-language.xaml";
         public const string DEFAULT_APP_STATUS = "Idle";
         public const string DEFAULT_PASSWORD = "switch";
         public const string DEFAULT_USERNAME = "admin";
