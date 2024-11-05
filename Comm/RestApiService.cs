@@ -2034,7 +2034,7 @@ namespace PoEWizard.Comm
                 }
                 else
                 {
-                    error = $"{Translate("i18n_dev")} {SwitchModel.IpAddress} {Translate("i18n_unrch")}\n{error}";
+                    error = $"{Translate("i18n_switch")} {SwitchModel.IpAddress} {Translate("i18n_unrch")}\n{error}";
                     this.SwitchModel.Status = SwitchStatus.Unreachable;
                 }
             }

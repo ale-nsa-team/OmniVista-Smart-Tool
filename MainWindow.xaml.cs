@@ -150,26 +150,11 @@ namespace PoEWizard
                 string localLangFile = Path.Combine(translatFolder, TRANSLATION_LOCAL_FILE);
                 if (File.Exists(localLangFile))
                 {
-                    string data = File.ReadAllText(localLangFile);
-                    Dictionary<string, string> dict = new Dictionary<string, string>();
-                    using (StringReader reader = new StringReader(data))
-                    {
-                        string line;
-                        while ((line = reader.ReadLine()) != null)
-                        {
-                            if (line.Trim().Length == 0 || !(line.Contains("x:Key=\"") && line.Contains("</sys:String>"))) continue;
-                            string[] split = Regex.Split(line.Replace("</sys:String>", string.Empty), "x:Key=\"");
-                            string key = split[1];
-                            split = Regex.Split(key, "\">");
-                            key = split[0].Trim();
-                            dict[key] = split[1].Trim();
-                        }
-                    }
-                    foreach (string key in Strings.Keys)
-                    {
-                        if (dict.ContainsKey(key)) Strings[key] = dict[key];
-                    }
                     Resources.MergedDictionaries.Remove(Strings);
+                    Strings = new ResourceDictionary
+                    {
+                        Source = new Uri(localLangFile, UriKind.Absolute)
+                    };
                     Resources.MergedDictionaries.Add(Strings);
                 }
             }
