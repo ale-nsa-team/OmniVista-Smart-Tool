@@ -89,7 +89,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError(Translate("i18n_Conn"), ex);
+                SendSwitchError($"{Translate("i18n_rsCnx")} {PrintSwitchInfo()}", ex);
             }
             CloseProgressBar();
             DisconnectAosSsh();
@@ -291,7 +291,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError(Translate("i18n_rsGs"), ex);
+                SendSwitchError($"{Translate("i18n_rsGs")} {PrintSwitchInfo()}", ex);
             }
             return null;
         }
@@ -315,7 +315,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError(Translate("i18n_rsGs"), ex);
+                SendSwitchError($"{Translate("i18n_rsGs")} {PrintSwitchInfo()}", ex);
             }
         }
 
@@ -462,7 +462,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError(Translate("i18n_getLog"), ex);
+                SendSwitchError($"{Translate("i18n_getLog")} {PrintSwitchInfo()}", ex);
             }
             finally
             {
@@ -1105,7 +1105,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError($"{Translate("i18n_rebsw")} {SwitchModel.Name}", ex);
+                SendSwitchError($"{Translate("i18n_rebsw")} {PrintSwitchInfo()}", ex);
                 return null;
             }
             CloseProgressBar();
@@ -1197,7 +1197,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError($"{Translate("i18n_rebsw")} {SwitchModel.Name}", ex);
+                SendSwitchError($"{Translate("i18n_rebsw")} {PrintSwitchInfo()}", ex);
                 return null;
             }
             finally
@@ -1351,7 +1351,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError($"{Translate("i18n_taerr")} {SwitchModel.Name}", ex);
+                SendSwitchError($"{Translate("i18n_taerr")} {PrintSwitchInfo()}", ex);
                 return null;
             }
             finally
@@ -1387,7 +1387,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError($"{Translate("i18n_taerr")} {SwitchModel.Name}", ex);
+                SendSwitchError($"{Translate("i18n_taerr")} {PrintSwitchInfo()}", ex);
             }
         }
 
@@ -1499,7 +1499,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError(Translate("i18n_chprio"), ex);
+                SendSwitchError($"{Translate("i18n_chprio")} {PrintSwitchInfo()}", ex);
             }
             finally
             {
@@ -1545,7 +1545,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError(Translate("i18n_chprio"), ex);
+                SendSwitchError($"{Translate("i18n_chprio")} {PrintSwitchInfo()}", ex);
             }
             ResetWizardSlotPort();
         }
@@ -1666,7 +1666,7 @@ namespace PoEWizard.Comm
             }
             catch (Exception ex)
             {
-                SendSwitchError(Translate("i18n_pwiz"), ex);
+                SendSwitchError($"{Translate("i18n_pwiz")} {PrintSwitchInfo()}", ex);
             }
             finally
             {
@@ -2029,7 +2029,7 @@ namespace PoEWizard.Comm
             {
                 if (ex is SwitchLoginFailure || ex is SwitchAuthenticationFailure)
                 {
-                    error = $"{Translate("i18n_lifail")} {(string.IsNullOrEmpty(SwitchModel.Name) ? SwitchModel.IpAddress : SwitchModel.Name)} ({Translate("i18n_user")}:  {SwitchModel.Login})";
+                    error = $"{Translate("i18n_lifail")} {PrintSwitchInfo()} ({Translate("i18n_user")}:  {SwitchModel.Login})";
                     this.SwitchModel.Status = SwitchStatus.LoginFail;
                 }
                 else
@@ -2047,6 +2047,11 @@ namespace PoEWizard.Comm
                 Logger.Error(ex);
             }
             _progress?.Report(new ProgressReport(ReportType.Error, title, error));
+        }
+
+        private string PrintSwitchInfo()
+        {
+            return string.IsNullOrEmpty(SwitchModel.Name) ? SwitchModel.IpAddress : SwitchModel.Name;
         }
 
         private void ExecuteActionOnPort(string wizardAction, int waitSec, Command restoreCmd)
