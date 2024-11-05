@@ -194,7 +194,7 @@ Please confirm your action.
     <sys:String x:Key="i18n_afrst">Applying factory default...</sys:String>
     <sys:String x:Key="i18n_cfrst" xml:space="preserve">
  The switch configuration will be restored to factory default and 
- a basic template will be used to setup your management IP address, 
+ a basic template will be applied to setup its management IP address, 
  so you can reconnect to the switch after it reboots.
         
  Please confirm your action.</sys:String>
