@@ -150,11 +150,15 @@ namespace PoEWizard
                 string localLangFile = Path.Combine(translatFolder, TRANSLATION_LOCAL_FILE);
                 if (File.Exists(localLangFile))
                 {
-                    Resources.MergedDictionaries.Remove(Strings);
-                    Strings = new ResourceDictionary
+                    ResourceDictionary stringsDict = new ResourceDictionary
                     {
                         Source = new Uri(localLangFile, UriKind.Absolute)
                     };
+                    foreach (string key in Strings.Keys)
+                    {
+                        if (stringsDict.Contains(key)) Strings[key] = stringsDict[key];
+                    }
+                    Resources.MergedDictionaries.Remove(Strings);
                     Resources.MergedDictionaries.Add(Strings);
                 }
             }
@@ -358,7 +362,7 @@ namespace PoEWizard
                     JumpToSelectedPort(portSelected);
                     return;
                 }
-                string msg = sp.IsMacAddress ? $"{Translate("i18n_fmac")} {lastMacAddress} " : $"{Translate("i18n_fdev")} \"{lastMacAddress}\")}}";
+                string msg = sp.IsMacAddress ? $"{Translate("i18n_fmac")} \"{lastMacAddress}\"" : $"{Translate("i18n_fdev")} \"{lastMacAddress}\"";
                 ShowMessageBox(Translate("i18n_sport"), $"{msg} {Translate("i18n_onsw")} {device.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
             }
             catch (Exception ex)
@@ -2183,8 +2187,8 @@ namespace PoEWizard
             _infoBlock.Inlines.Clear();
             _infoBlock.Inlines.Add(message);
             int maxLen = MaxLineLen(message);
-            if (maxLen > 70) _infoBox.Width = 500;
-            else _infoBox.Width = 400;
+            if (maxLen > 70) _infoBox.Width = 520;
+            else _infoBox.Width = 430;
             _infoBox.Visibility = Visibility.Visible;
         }
 
