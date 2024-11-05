@@ -24,7 +24,9 @@
 
     <StackPanel Style="{DynamicResource cfgWindow}">
         <Label Content="{DynamicResource i18n_gwy}" />
-        <TextBox x:Name="_defaultGwy" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+        <TextBox x:Name="_defaultGwy" 
+                 Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                 TextChanged="OnTextChanged">
             <TextBox.Text>
                 <Binding Path="Gateway" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
@@ -35,12 +37,15 @@
         </TextBox>
         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
             <Label Content="{DynamicResource i18n_dns}" />
-            <CheckBox x:Name="_dns" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsDns}" />
+            <CheckBox x:Name="_dns" Style="{DynamicResource toggleSwitch}" 
+                      IsChecked="{Binding IsDns}"  Unchecked="OnCbUnchecked" />
         </StackPanel>
         <StackPanel x:Name="_dnsServers" Margin="90,0,0,0" Visibility="{Binding IsDns, Converter={StaticResource BoolToVisibilityConverter}}">
             <StackPanel Orientation="Horizontal">
                 <Label Content="{DynamicResource i18n_srv1}" />
-                <TextBox x:Name="_dnsSrv1" Width="250" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+                <TextBox x:Name="_dnsSrv1" Width="250" 
+                         Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                         TextChanged="OnTextChanged">
                     <TextBox.Text>
                         <Binding Path="Dns1" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -52,7 +57,9 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Content="{DynamicResource i18n_srv2}" />
-                <TextBox x:Name="_dnsSrv2" Width="250" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+                <TextBox x:Name="_dnsSrv2" Width="250" 
+                         Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                         TextChanged="OnTextChanged">
                     <TextBox.Text>
                         <Binding Path="Dns2" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -64,7 +71,9 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Content="{DynamicResource i18n_srv3}" />
-                <TextBox x:Name="_dnsSrv3" Width="250" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+                <TextBox x:Name="_dnsSrv3" Width="250" 
+                         Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                         TextChanged="OnTextChanged">
                     <TextBox.Text>
                         <Binding Path="Dns3" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -76,7 +85,9 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Content="{DynamicResource i18n_domain}" />
-                <TextBox x:Name="_dnsDomain" Width="216" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+                <TextBox x:Name="_dnsDomain" Width="216" 
+                         Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                         TextChanged="OnTextChanged">
                     <TextBox.Text>
                         <Binding Path="DnsDomain" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -89,12 +100,15 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="2,10,0,0">
             <Label Content="{DynamicResource i18n_ntp}" />
-            <CheckBox x:Name="_ntp" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsNtp}" />
+            <CheckBox x:Name="_ntp" Style="{DynamicResource toggleSwitch}" 
+                      IsChecked="{Binding IsNtp}" Unchecked="OnCbUnchecked" />
         </StackPanel>
         <StackPanel x:Name="_ntpServers"  Margin="90,0,0,0" Visibility="{Binding IsNtp, Converter={StaticResource BoolToVisibilityConverter}}">
             <StackPanel Orientation="Horizontal">
                 <Label Content="{DynamicResource i18n_srv1}" />
-                <TextBox x:Name="_ntpSrv1" Width="250" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+                <TextBox x:Name="_ntpSrv1" Width="250" 
+                         Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                         TextChanged="OnTextChanged">
                     <TextBox.Text>
                         <Binding Path="Ntp1" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -106,7 +120,9 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Content="{DynamicResource i18n_srv2}" />
-                <TextBox x:Name="_ntpSrv2" Width="250" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+                <TextBox x:Name="_ntpSrv2" Width="250" 
+                         Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                         TextChanged="OnTextChanged">
                     <TextBox.Text>
                         <Binding Path="Ntp2" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -118,7 +134,9 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Content="{DynamicResource i18n_srv3}" />
-                <TextBox x:Name="_ntpSrv3" Width="250" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+                <TextBox x:Name="_ntpSrv3" Width="250" 
+                         Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                         TextChanged="OnTextChanged">
                     <TextBox.Text>
                         <Binding Path="Ntp3" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -137,6 +155,7 @@
             <ComboBox x:Name="_timezone" Style="{DynamicResource defaultCombo}"
                       ItemsSource="{Binding Timezones}" 
                       SelectedItem="{Binding Timezone}" IsSynchronizedWithCurrentItem="True" 
+                      SelectionChanged="OnTZChanged"
                       Visibility="{Binding Path=IsNtp, Converter={StaticResource BoolToVisibilityConverter}}" />
         </StackPanel>
     </StackPanel>

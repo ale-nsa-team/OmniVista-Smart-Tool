@@ -36,6 +36,30 @@ namespace PoEWizard.Components
         {
             _defaultGwy.Focus();
         }
+
+        private void OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox tb && tb.IsKeyboardFocusWithin)
+            {
+                ConfigWiz.Instance.HasChanges = true;
+            }
+        }
+
+        private void OnCbUnchecked(object sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox cb && cb.IsKeyboardFocusWithin)
+            {
+                ConfigWiz.Instance.HasChanges = true;
+            }
+        }
+
+        private void OnTZChanged(object sender, RoutedEventArgs e)
+        {
+            if (sender is ComboBox cb && cb.IsKeyboardFocusWithin)
+            {
+                ConfigWiz.Instance.HasChanges = true;
+            }
+        }
     }
 }
 

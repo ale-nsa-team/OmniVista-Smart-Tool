@@ -34,5 +34,22 @@ namespace PoEWizard.Components
         {
             _vlans.ItemsSource = features.Vlans;
         }
+
+        private void OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox tb && tb.IsKeyboardFocusWithin)
+            {
+                ConfigWiz.Instance.HasChanges = true;
+            }
+        }
+
+        private void OnCbCheckChanged(object sender, RoutedEventArgs e)
+        {
+            if ((sender is CheckBox cb && cb.IsKeyboardFocusWithin) || 
+                (sender is DataGridCell dc && dc.IsKeyboardFocusWithin))
+            {
+                ConfigWiz.Instance.HasChanges = true;
+            }
+        }
     }
 }

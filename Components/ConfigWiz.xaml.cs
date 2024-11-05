@@ -34,6 +34,14 @@ namespace PoEWizard.Components
 
         public List<string> Errors { get; private set; }
 
+        public bool HasChanges
+        {
+            get => _btnSubmit.IsEnabled;
+            set => _btnSubmit.IsEnabled = value;
+        }
+
+        public static ConfigWiz Instance;
+
         #region Constructor
 
         public ConfigWiz(SwitchModel device)
@@ -50,6 +58,7 @@ namespace PoEWizard.Components
             Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             Resources.MergedDictionaries.Add(MainWindow.Strings);
 
+            Instance = this;
             DataContext = this;
             this.device = device;
             restSrv = MainWindow.restApiService;
@@ -108,7 +117,6 @@ namespace PoEWizard.Components
             if (pageNo == pageCount)
             {
                 _btnCfgNext.IsEnabled = false;
-                _btnSubmit.IsEnabled = true;
             }
             _btnCfgBack.IsEnabled = true;
             NavigateToPage();

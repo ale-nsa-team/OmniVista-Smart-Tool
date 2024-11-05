@@ -74,11 +74,20 @@ namespace PoEWizard.Components
             }
         }
 
+        private void OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox tb && tb.IsKeyboardFocusWithin)
+            {
+                ConfigWiz.Instance.HasChanges = true;
+            }
+        }
+
         private void MaskedPasswordChanged(object sender, RoutedEventArgs e)
         {
             if (sender is PasswordBox pb)
             {
                 _clearAdminPwd.Text = _maskedAdminPwd.Password;
+                ConfigWiz.Instance.HasChanges = true;
             }
 
         }
@@ -88,6 +97,7 @@ namespace PoEWizard.Components
             if (sender is TextBox tb)
             {
                 _maskedAdminPwd.Password = tb.Text;
+                ConfigWiz.Instance.HasChanges = true;
             }
         }
     }

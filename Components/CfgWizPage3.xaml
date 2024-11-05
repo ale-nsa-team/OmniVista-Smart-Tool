@@ -38,16 +38,29 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Label Grid.Row="0" Grid.Column="0" Content="{DynamicResource i18n_insProto}" />
-            <CheckBox Grid.Row="0" Grid.Column="1" x:Name="_disableFtp" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding NoInsecureProtos}" />
+            <CheckBox Grid.Row="0" Grid.Column="1" x:Name="_disableFtp" 
+                      Style="{DynamicResource toggleSwitch}" 
+                      IsChecked="{Binding NoInsecureProtos}" 
+                      Checked="OnCbCheckChanged"
+                      Unchecked="OnCbCheckChanged"/>
             <Label Grid.Row="1" Grid.Column="0" Content="{DynamicResource i18n_ssh}"/>
-            <CheckBox Grid.Row="1" Grid.Column="1" x:Name="_ssh" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsSsh}" />
+            <CheckBox Grid.Row="1" Grid.Column="1" x:Name="_ssh" 
+                      Style="{DynamicResource toggleSwitch}" 
+                      IsChecked="{Binding IsSsh}" 
+                      Checked="OnCbCheckChanged"
+                      Unchecked="OnCbCheckChanged"/>
             <Label Grid.Row="2" Grid.Column="0" Content="{DynamicResource i18n_relay}" />
-            <CheckBox Grid.Row="2" Grid.Column="1" x:Name="_dhcpRelay" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsDhcpRelay}" />
+            <CheckBox Grid.Row="2" Grid.Column="1" x:Name="_dhcpRelay" 
+                      Style="{DynamicResource toggleSwitch}" 
+                      IsChecked="{Binding IsDhcpRelay}" 
+                      Checked="OnCbCheckChanged"
+                      Unchecked="OnCbCheckChanged"/>
             <Label Grid.Row="3" Grid.Column="0" Content="{DynamicResource i18n_dhcp}" 
                    Visibility="{Binding IsDhcpRelay, Converter={StaticResource BoolToVisibilityConverter}}" />
             <TextBox Grid.Row="3" Grid.Column="1" x:Name="_srvAddr" Width="150" Margin="-50,10,0,5" 
                      Visibility="{Binding IsDhcpRelay, Converter={StaticResource BoolToVisibilityConverter}}"
-                     Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+                     Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                     TextChanged="OnTextChanged">
                 <TextBox.Text>
                     <Binding Path="DhcpSrv" UpdateSourceTrigger="PropertyChanged">
                         <Binding.ValidationRules>
@@ -57,7 +70,11 @@
                 </TextBox.Text>
             </TextBox>
             <Label Grid.Row="4" Grid.Column="0" Content="{DynamicResource i18n_multicast}" />
-            <CheckBox Grid.Row="4" Grid.Column="1" x:Name="_multicast" Style="{DynamicResource toggleSwitch}" IsChecked="{Binding IsMulticast}" />
+            <CheckBox Grid.Row="4" Grid.Column="1" x:Name="_multicast" 
+                      Style="{DynamicResource toggleSwitch}" 
+                      IsChecked="{Binding IsMulticast}" 
+                      Checked="OnCbCheckChanged"
+                      Unchecked="OnCbCheckChanged"/>
             <DataGrid x:Name="_vlans" Grid.Row="5" Grid.ColumnSpan="2"
                   Style="{DynamicResource defaultGrid}"
                   MaxHeight="200"
@@ -68,7 +85,14 @@
                   CellStyle="{DynamicResource gridCell}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="{StaticResource i18n_vlan}" Width="50" Binding="{Binding Path=Number, Mode=OneWay}" />
-                    <DataGridCheckBoxColumn Header="{StaticResource i18n_en}" Width="50" Binding="{Binding Path=Enable, Mode=TwoWay}" />
+                    <DataGridCheckBoxColumn Header="{StaticResource i18n_en}" Width="50" Binding="{Binding Path=Enable, Mode=TwoWay}">
+                        <DataGridCheckBoxColumn.CellStyle>
+                            <Style>
+                                <EventSetter Event="CheckBox.Checked" Handler="OnCbCheckChanged" />
+                                <EventSetter Event="CheckBox.Unchecked" Handler="OnCbCheckChanged" />
+                            </Style>
+                        </DataGridCheckBoxColumn.CellStyle>
+                    </DataGridCheckBoxColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

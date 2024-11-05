@@ -23,7 +23,9 @@
     </Page.Resources>
     <StackPanel Style="{DynamicResource cfgWindow}">
         <Label Content="{DynamicResource i18n_mngtIp}" />
-        <TextBox x:Name="_mgtIpAddress" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+        <TextBox x:Name="_mgtIpAddress" 
+                 Validation.ErrorTemplate="{DynamicResource validationTemplate}" 
+                 TextChanged="OnTextChanged">
             <TextBox.Text>
                 <Binding Path="MgtIpAddr" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
@@ -33,7 +35,9 @@
             </TextBox.Text>
         </TextBox>
         <Label Content="{DynamicResource i18n_mask}" />
-        <TextBox x:Name="_netMask" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+        <TextBox x:Name="_netMask" 
+                 Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                 TextChanged="OnTextChanged">
             <TextBox.Text>
                 <Binding Path="NetMask" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
@@ -82,7 +86,9 @@
             </Button>
         </Grid>
         <Label Content="{DynamicResource i18n_sysName}" />
-        <TextBox x:Name="_sysName" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+        <TextBox x:Name="_sysName" 
+                 Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                 TextChanged="OnTextChanged">
             <TextBox.Text>
                 <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
@@ -92,7 +98,9 @@
             </TextBox.Text>
         </TextBox>
         <Label Content="{DynamicResource i18n_sysCont}" />
-        <TextBox x:Name="_contact" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+        <TextBox x:Name="_contact" 
+                 Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                 TextChanged="OnTextChanged">
             <TextBox.Text>
                 <Binding Path="Contact" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
@@ -102,7 +110,9 @@
             </TextBox.Text>
         </TextBox>
         <Label Content="{DynamicResource i18n_sysLoc}" />
-        <TextBox x:Name="_location" Validation.ErrorTemplate="{DynamicResource validationTemplate}">
+        <TextBox x:Name="_location" 
+                 Validation.ErrorTemplate="{DynamicResource validationTemplate}"
+                 TextChanged="OnTextChanged">
             <TextBox.Text>
                 <Binding Path="Location" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>

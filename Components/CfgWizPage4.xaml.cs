@@ -72,7 +72,11 @@ namespace PoEWizard.Components
                 {
                     noErrors = RunCommand(new CmdRequest(Command.SNMP_USER, usr.Username, usr.Password, "md5+des", usr.Password));
                 });
-                if (noErrors) data.AddUser(usr.Username, usr.Password);
+                if (noErrors)
+                {
+                    data.AddUser(usr.Username, usr.Password);
+                    ConfigWiz.Instance.HasChanges = true;
+                }
             }
         }
 
@@ -110,7 +114,11 @@ namespace PoEWizard.Components
                     else return;
                 }
                 ok = ok && RunCommand((new CmdRequest(Command.DELETE_USER, user.Name)));
-                if (ok) data.DeleteUser(user);
+                if (ok)
+                {
+                    data.DeleteUser(user);
+                    ConfigWiz.Instance.HasChanges = true;
+                }
             }
         }
 
@@ -138,7 +146,11 @@ namespace PoEWizard.Components
                     }
                     ok = ok && RunCommand(new CmdRequest(Command.SNMP_COMMUNITY_MAP, cmy.CommunityName, cmy.SelectedUser));
                 });
-                if (ok) data.AddCommunity(cmy.CommunityName, cmy.SelectedUser);
+                if (ok) 
+                {
+                    data.AddCommunity(cmy.CommunityName, cmy.SelectedUser);
+                    ConfigWiz.Instance.HasChanges = true;
+                }
             }
         }
 
@@ -164,7 +176,11 @@ namespace PoEWizard.Components
                     else return;
                 }
                 ok = await Task.Run(() => RunCommand(new CmdRequest(Command.DELETE_COMMUNITY, cmy.Name)));
-                if (ok) data.DeleteCommunity(cmy);
+                if (ok)
+                {
+                    data.DeleteCommunity(cmy);
+                    ConfigWiz.Instance.HasChanges = true;
+                }
             }
         }
 
@@ -198,7 +214,10 @@ namespace PoEWizard.Components
                     version = "v3";
                 }
                 bool ok = await Task.Run(() => RunCommand(new CmdRequest(Command.SNMP_STATION, recv.IpAddress, user, version)));
-                if (ok) data.AddStation(recv.IpAddress, version, user, recv.SelectedCommunity);
+                if (ok) {
+                    data.AddStation(recv.IpAddress, version, user, recv.SelectedCommunity);
+                    ConfigWiz.Instance.HasChanges = true;
+                }
             }
         }
 
@@ -207,7 +226,10 @@ namespace PoEWizard.Components
             if (_stations.CurrentItem is SnmpStation station)
             {
                 bool ok = await Task.Run(() => RunCommand(new CmdRequest(Command.DELETE_STATION, station.IpAddress)));
-                if (ok) data.DeleteStation(station);
+                if (ok) {
+                    data.DeleteStation(station);
+                    ConfigWiz.Instance.HasChanges = true;
+                }
             }
         }
 
