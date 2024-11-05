@@ -330,6 +330,10 @@
         </Style.Resources>
     </Style>
 
+    <Style TargetType="TextBlock" x:Key="cellTootip" BasedOn="{StaticResource toolTip}">
+        <Setter Property="Foreground" Value="{StaticResource fontColor}" />
+    </Style>
+
     <Style TargetType="TextBlock" x:Key="devToolTip" BasedOn="{StaticResource toolTip}">
         <Style.Resources>
             <Style TargetType="ToolTip">

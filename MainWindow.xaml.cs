@@ -517,7 +517,7 @@ namespace PoEWizard
                     await GetSyncStatus(Translate("i18n_bckSync"));
                 }
                 Activity.Log(device, "Launching backup configuration");
-                MsgBoxResult backupChoice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_bckAskImg")}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
+                MsgBoxResult backupChoice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_bckAskImg")}", MsgBoxIcons.Warning, MsgBoxButtons.YesNoCancel);
                 bool backupImage = backupChoice == MsgBoxResult.Yes;
                 if (backupChoice == MsgBoxResult.Cancel) return;
                 string title = $"{Translate("i18n_bckRunning")} {device.Name}{WAITING}";

@@ -24,37 +24,36 @@
         </Grid.RowDefinitions>
         <TextBlock x:Name="_title" Grid.Row="0" Grid.Column="0" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_vlanTitle}" HorizontalAlignment="Center" >
         </TextBlock>
-        <Border Grid.Row="1" Style="{DynamicResource gridBorder}" Margin="5">
-            <DataGrid x:Name="_vlanView" 
+        <DataGrid x:Name="_vlanView"
+                  Grid.Row="1"
                   Style="{DynamicResource defaultGrid}"
                   ItemsSource="{Binding VlanList}"
                   ColumnHeaderStyle="{DynamicResource gridHeader}"
                   CellStyle="{DynamicResource gridCell}"
                   IsReadOnly="True">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Width="*" Binding="{Binding Path=Name}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_vlanName}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn Width="*" Binding="{Binding Path=IpAddress}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_vlanIp}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn Width="*" Binding="{Binding Path=SubnetMask}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_vlanMask}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn Width="1.2*" Binding="{Binding Path=Device}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_vlanDev}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Border>
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="*" Binding="{Binding Path=Name}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_vlanName}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="*" Binding="{Binding Path=IpAddress}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_vlanIp}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="*" Binding="{Binding Path=SubnetMask}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_vlanMask}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="1.2*" Binding="{Binding Path=Device}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_vlanDev}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
         <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal"  HorizontalAlignment="Center" >
             <Button Grid.Row="2" Grid.Column="0" Click="BtnOk_Click" Style="{DynamicResource defaultButton}" HorizontalAlignment="Center" Margin="0,0,0,5" Content="{DynamicResource i18n_vlanOk}"/>
         </StackPanel>

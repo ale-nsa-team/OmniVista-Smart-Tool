@@ -35,8 +35,7 @@
             <TextBlock Grid.Row="0" Grid.Column="4" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_npfound}"/>
             <TextBlock Grid.Row="0" Grid.Column="5" Margin="10,10,0,10" Text="{Binding NbPortsFound}" Style="{DynamicResource aboutParagraph}" />
         </StackPanel>
-        <Border Grid.Row="1" Grid.ColumnSpan="3" Style="{DynamicResource gridBorder}" Margin="5">
-            <DataGrid x:Name="_portsListView" 
+        <DataGrid x:Name="_portsListView" Grid.Row="1" Grid.ColumnSpan="3"
                 Style="{DynamicResource defaultGrid}"
                 MaxHeight="630"
                 ColumnHeaderStyle="{DynamicResource gridHeader}"
@@ -45,115 +44,114 @@
                 SelectionChanged="PortSelection_Changed"
                 MouseDoubleClick="Mouse_DoubleClick"
                 IsReadOnly="True">
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn Width="0.8*">
-                        <DataGridTemplateColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_port}" />
-                        </DataGridTemplateColumn.Header>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=Port.Name}" Style="{DynamicResource devToolTip}"
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Width="0.8*">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_port}" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Port.Name}" Style="{DynamicResource devToolTip}"
                                   Foreground="{DynamicResource fontColor}"
                                   ToolTip="{Binding Path=Port.DetailsInfo, Converter={StaticResource PortToTooltipConverter}}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Width="1.2*" IsReadOnly="True">
-                        <DataGridTemplateColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_alias}" />
-                        </DataGridTemplateColumn.Header>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=Port.Alias}" Style="{DynamicResource toolTip}"
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="1.2*" IsReadOnly="True">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_alias}" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Port.Alias}" Style="{DynamicResource toolTip}"
                                 Foreground="{DynamicResource fontColor}"
                                 ToolTip="{Binding Path=Port.Alias, Converter={StaticResource ToStringConverter}}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Width="0.8*" IsReadOnly="True">
-                        <DataGridTemplateColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_poeSt}" />
-                        </DataGridTemplateColumn.Header>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=Port.Poe}" Style="{DynamicResource toolTip}"
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="0.8*" IsReadOnly="True">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_poeSt}" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Port.Poe}" Style="{DynamicResource toolTip}"
                                 Foreground="{Binding Path=Port.Poe, 
                                     Converter={StaticResource ValueToColorConverter}, 
                                     ConverterParameter=Poe}" 
                                 ToolTip="{Binding Path=Port.Poe, Converter={StaticResource PoeToTooltipConverter}}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Width="0.9*" IsReadOnly="True">
-                        <DataGridTemplateColumn.HeaderTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{DynamicResource i18n_ptPwr}" Style="{DynamicResource toolTip}"
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="0.9*" IsReadOnly="True">
+                    <DataGridTemplateColumn.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{DynamicResource i18n_ptPwr}" Style="{DynamicResource toolTip}"
                                         ToolTip="{DynamicResource i18n_pwr_tt}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.HeaderTemplate>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=Port.Power}" Style="{DynamicResource toolTip}"
+                        </DataTemplate>
+                    </DataGridTemplateColumn.HeaderTemplate>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Port.Power}" Style="{DynamicResource toolTip}"
                                         ToolTip="{DynamicResource i18n_pwr_tt}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Width="1.1*" IsReadOnly="True">
-                        <DataGridTemplateColumn.HeaderTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{DynamicResource i18n_maxPwr}" Style="{DynamicResource toolTip}"
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="1.1*" IsReadOnly="True">
+                    <DataGridTemplateColumn.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{DynamicResource i18n_maxPwr}" Style="{DynamicResource toolTip}"
                                         ToolTip="{DynamicResource i18n_maxPwr_tt}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.HeaderTemplate>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=Port.MaxPower}" Style="{DynamicResource toolTip}"
+                        </DataTemplate>
+                    </DataGridTemplateColumn.HeaderTemplate>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Port.MaxPower}" Style="{DynamicResource toolTip}"
                                         ToolTip="{DynamicResource i18n_maxPwr_tt}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn Width="*" Binding="{Binding Path=Port.Class}" IsReadOnly="True">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_class}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                    <DataGridTemplateColumn Width="1.4*" IsReadOnly="True">
-                        <DataGridTemplateColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_devType}" />
-                        </DataGridTemplateColumn.Header>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=Port.EndPointDevice.Type}" Style="{DynamicResource devToolTip}" >
-                                    <TextBlock.ToolTip>
-                                        <MultiBinding Converter="{StaticResource DeviceFilterToTooltipConverter}">
-                                            <Binding Path="Port.EndPointDevicesList" />
-                                            <Binding Path="SearchText" Mode="OneWay" />
-                                        </MultiBinding>
-                                    </TextBlock.ToolTip>                                    
-                                </TextBlock>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Width="1.2*" IsReadOnly="True">
-                        <DataGridTemplateColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_devName}" />
-                        </DataGridTemplateColumn.Header>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=Port.EndPointDevice.Label}" Style="{DynamicResource devToolTip}" >
-                                    <TextBlock.ToolTip>
-                                            <MultiBinding Converter="{StaticResource DeviceFilterToTooltipConverter}">
-                                            <Binding Path="Port.EndPointDevicesList" />
-                                            <Binding Path="SearchText" Mode="OneWay" />
-                                        </MultiBinding>
-                                    </TextBlock.ToolTip>
-                                </TextBlock>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Border>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Width="*" Binding="{Binding Path=Port.Class}" IsReadOnly="True">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_class}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTemplateColumn Width="1.4*" IsReadOnly="True">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_devType}" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Port.EndPointDevice.Type}" Style="{DynamicResource devToolTip}" >
+                                <TextBlock.ToolTip>
+                                    <MultiBinding Converter="{StaticResource DeviceFilterToTooltipConverter}">
+                                        <Binding Path="Port.EndPointDevicesList" />
+                                        <Binding Path="SearchText" Mode="OneWay" />
+                                    </MultiBinding>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="1.2*" IsReadOnly="True">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_devName}" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Port.EndPointDevice.Label}" Style="{DynamicResource devToolTip}" >
+                                <TextBlock.ToolTip>
+                                    <MultiBinding Converter="{StaticResource DeviceFilterToTooltipConverter}">
+                                        <Binding Path="Port.EndPointDevicesList" />
+                                        <Binding Path="SearchText" Mode="OneWay" />
+                                    </MultiBinding>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
         <TextBlock Grid.Row="2" Grid.Column="0"
                 Style="{DynamicResource aboutParagraph}"
                 Text="{DynamicResource i18n_srcNote}"

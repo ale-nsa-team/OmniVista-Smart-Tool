@@ -24,75 +24,73 @@
         </Grid.RowDefinitions>
         <TextBlock x:Name="_title" Grid.Row="0" Grid.Column="0" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_ps}" HorizontalAlignment="Center" >
         </TextBlock>
-        <Border Grid.Row="1" Style="{DynamicResource gridBorder}" Margin="5">
-            <DataGrid x:Name="_psView" 
+        <DataGrid x:Name="_psView" Grid.Row="1"
                   Style="{DynamicResource defaultGrid}"
                   ItemsSource="{Binding PSList}"
                   ColumnHeaderStyle="{DynamicResource gridHeader}"
                   CellStyle="{DynamicResource gridCell}"
                   IsReadOnly="True">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Width="*" Binding="{Binding Path=Name}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_psCh}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn Width="*" Binding="{Binding Path=Model}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_psMod}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn Width="*" Binding="{Binding Path=Type}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_psType}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn Width="*" Binding="{Binding Path=Location}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_psLoc}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn Width="*" Binding="{Binding Path=Description}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_psDesc}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn Width="1.2*" Binding="{Binding Path=PowerProvision}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_psProv}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                    <DataGridTemplateColumn Width="0.8*">
-                        <DataGridTemplateColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_ptSt}" />
-                        </DataGridTemplateColumn.Header>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=Status}"
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="*" Binding="{Binding Path=Name}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_psCh}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="*" Binding="{Binding Path=Model}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_psMod}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="*" Binding="{Binding Path=Type}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_psType}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="*" Binding="{Binding Path=Location}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_psLoc}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="*" Binding="{Binding Path=Description}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_psDesc}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="1.2*" Binding="{Binding Path=PowerProvision}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_psProv}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTemplateColumn Width="0.8*">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_ptSt}" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Status}"
                                        Foreground="{Binding Path=Status, 
                                        Converter={StaticResource ValueToColorConverter}, 
                                        ConverterParameter=PowerSupply}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn Width="1.5*" Binding="{Binding Path=PartNumber}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_psPN}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn Width="1.6*" Binding="{Binding Path=HardwareRevision}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_psRev}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn Width="1.3*" Binding="{Binding Path=SerialNumber}">
-                        <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_psSN}" />
-                        </DataGridTextColumn.Header>
-                    </DataGridTextColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Border>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Width="1.5*" Binding="{Binding Path=PartNumber}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_psPN}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="1.6*" Binding="{Binding Path=HardwareRevision}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_psRev}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTextColumn Width="1.3*" Binding="{Binding Path=SerialNumber}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_psSN}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
         <Button Grid.Row="2" Click="BtnOk_Click" Style="{DynamicResource defaultButton}" 
                 Margin="5" Content="{DynamicResource i18n_closeBtn}"/>
     </Grid>
