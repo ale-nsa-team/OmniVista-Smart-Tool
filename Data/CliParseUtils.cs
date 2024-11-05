@@ -177,7 +177,8 @@ namespace PoEWizard.Data
             if (ports.Count != ids.Count) { return dict; }
             for (int i = 0; i < ports.Count; i++)
             {
-                dict.Add(ports[i].Groups["port"].Value, ids[i].Groups["id"].Value);
+                string key = ports[i].Groups["port"].Value.Trim();
+                if (!dict.ContainsKey(key)) dict[key] = ids[i].Groups["id"].Value.Trim();
             }
             return dict;
         }

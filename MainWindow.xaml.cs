@@ -150,24 +150,13 @@ namespace PoEWizard
                 string localLangFile = Path.Combine(translatFolder, TRANSLATION_LOCAL_FILE);
                 if (File.Exists(localLangFile))
                 {
-                    string data = File.ReadAllText(localLangFile);
-                    Dictionary<string, string> dict = new Dictionary<string, string>();
-                    using (StringReader reader = new StringReader(data))
+                    ResourceDictionary stringsDict = new ResourceDictionary
                     {
-                        string line;
-                        while ((line = reader.ReadLine()) != null)
-                        {
-                            if (line.Trim().Length == 0 || !(line.Contains("x:Key=\"") && line.Contains("</sys:String>"))) continue;
-                            string[] split = Regex.Split(line.Replace("</sys:String>", string.Empty), "x:Key=\"");
-                            string key = split[1];
-                            split = Regex.Split(key, "\">");
-                            key = split[0].Trim();
-                            dict[key] = split[1].Trim();
-                        }
-                    }
+                        Source = new Uri(localLangFile, UriKind.Absolute)
+                    };
                     foreach (string key in Strings.Keys)
                     {
-                        if (dict.ContainsKey(key)) Strings[key] = dict[key];
+                        if (stringsDict.Contains(key)) Strings[key] = stringsDict[key];
                     }
                     Resources.MergedDictionaries.Remove(Strings);
                     Resources.MergedDictionaries.Add(Strings);
@@ -373,7 +362,7 @@ namespace PoEWizard
                     JumpToSelectedPort(portSelected);
                     return;
                 }
-                string msg = sp.IsMacAddress ? $"{Translate("i18n_fmac")} {lastMacAddress} " : $"{Translate("i18n_fdev")} \"{lastMacAddress}\")}}";
+                string msg = sp.IsMacAddress ? $"{Translate("i18n_fmac")} \"{lastMacAddress}\"" : $"{Translate("i18n_fdev")} \"{lastMacAddress}\"";
                 ShowMessageBox(Translate("i18n_sport"), $"{msg} {Translate("i18n_onsw")} {device.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
             }
             catch (Exception ex)
@@ -2198,8 +2187,8 @@ namespace PoEWizard
             _infoBlock.Inlines.Clear();
             _infoBlock.Inlines.Add(message);
             int maxLen = MaxLineLen(message);
-            if (maxLen > 70) _infoBox.Width = 500;
-            else _infoBox.Width = 400;
+            if (maxLen > 70) _infoBox.Width = 520;
+            else _infoBox.Width = 430;
             _infoBox.Visibility = Visibility.Visible;
         }
 
