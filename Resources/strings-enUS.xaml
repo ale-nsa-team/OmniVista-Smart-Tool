@@ -438,7 +438,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_badPwd">Invalid password</sys:String>
     <sys:String x:Key="i18n_rebsw">Reboot Switch</sys:String>
     <sys:String x:Key="i18n_crebsw">Are you sure you want to reboot switch</sys:String>
-    <sys:String x:Key="i18n_frebsw1">Cannot rebot switch</sys:String>
+    <sys:String x:Key="i18n_frebsw1">Cannot reboot switch</sys:String>
     <sys:String x:Key="i18n_notCert">because it is not certified</sys:String>
     <sys:String x:Key="i18n_recsw">Do you want to reconnect to switch</sys:String>
     <sys:String x:Key="i18n_rstg">Restarting</sys:String>
