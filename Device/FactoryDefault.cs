@@ -108,16 +108,18 @@ namespace PoEWizard.Device
                     }
                     else if (vlan.Device.ToLower().Contains("vlan"))
                     {
+                        List<string> tagged = GetTaggedPorts(vlan.Device);
+                        if (tagged.Count == 0) vlan.Device = "vlan 1";
+                        content += $"{vlan.Device} admin-state enable\n";
+                        content += $"spantree {vlan.Device} admin-state enable\n";
                         content += $"ip interface \"IBMGT-1\" address {vlan.IpAddress} mask {vlan.SubnetMask} {vlan.Device}\n";
-                        string vlanNb = Regex.Split(vlan.Device, @"\s+")[1];
-                        List<string> tags = GetTaggedPorts(vlanNb);
-                        for (int i = 0; i < tags.Count; i++)
+                        for (int i = 0; i < tagged.Count; i++)
                         {
-                            if (tags[i].StartsWith("0")) //linkagg
+                            if (tagged[i].StartsWith("0")) //linkagg
                             {
-                                tags[i] = GetLinkAggPrimary(tags[i]);
+                                tagged[i] = GetLinkAggPrimary(tagged[i]);
                             }
-                            content += $"vlan {vlanNb} members port {tags[i]} tagged\n";
+                            if (tagged[i] != null) content += $"{vlan.Device} members port {tagged[i]} tagged\n";
                         }
                     }
                 }
@@ -152,8 +154,9 @@ namespace PoEWizard.Device
             }
         }
 
-        private static List<string> GetTaggedPorts(string vlan)
+        private static List<string> GetTaggedPorts(string device)
         {
+            string vlan = Regex.Split(device, @"\s+")[1];
             List<string> ports = new List<string>();
             List<Dictionary<string, string>> members = restSvc.RunSwitchCommand(new CmdRequest(Command.SHOW_VLAN_MEMBERS, ParseType.Htable, vlan)) as List<Dictionary<string, string>>;
             ports = members.Where(m => m["type"] == "tagged").Select(m => m["port"]).ToList();
