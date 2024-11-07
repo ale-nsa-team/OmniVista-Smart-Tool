@@ -3,7 +3,9 @@ using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.Utils;
 
@@ -58,6 +60,10 @@ namespace PoEWizard.Device
             restSvc = MainWindow.restApiService;
             Progress.Report(new ProgressReport(Translate("i18n_frPrep")));
             swModel = device;
+            SftpService sftp = new SftpService(device.IpAddress, "admin", device.Password);
+            sftp.Connect();
+            List<string> cmdList = GetCmdListFromVcboot(sftp);
+            LoadTemplate(cmdList);
             LinuxCommandSeq cmdSeq = new LinuxCommandSeq();
             List<LinuxCommand> cmds = new List<LinuxCommand>();
             foreach (string file in files)
@@ -78,16 +84,13 @@ namespace PoEWizard.Device
             }
             restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
             Progress.Report(new ProgressReport(Translate("i18n_frTmplt")));
-            LoadTemplate();
-            SftpService sftp = new SftpService(device.IpAddress, "admin", device.Password);
-            sftp.Connect();
             sftp.UploadFile(templateFilePath, VCBOOT_WORK);
             sftp.UploadFile(templateFilePath, VCBOOT_CERT);
             sftp.Disconnect();
             File.Delete(templateFilePath);
         }
 
-        private static void LoadTemplate()
+        private static void LoadTemplate(List<string> cmdList)
         {
             try
             {
@@ -103,7 +106,17 @@ namespace PoEWizard.Device
                     writer.NewLine = "\n";
                     foreach (string line in res.Split('\n'))
                     {
-                        writer.WriteLine(line);
+                        if (line.Contains(swModel.IpAddress) && cmdList.Count > 0)
+                        {
+                            foreach (string cmd in cmdList)
+                            {
+                                writer.WriteLine(cmd);
+                            }
+                        }
+                        else
+                        {
+                            writer.WriteLine(line);
+                        }
                     }
                 }
             }
@@ -111,7 +124,92 @@ namespace PoEWizard.Device
             {
                 Logger.Error($"Exception while writing config file {TEMPLATE}: {ex.Message}");
             }
+        }
 
+        private static List<string> GetCmdListFromVcboot(SftpService sftp)
+        {
+            RestApiService restSvc = MainWindow.restApiService;
+            List<string> cmdList = new List<string>();
+            VlanModel vlan = restSvc.VlanSettings.FirstOrDefault(v => v.IpAddress == restSvc.SwitchModel.IpAddress);
+            if (vlan != null)
+            {
+                string[] search = vlan.Device.Split(' ');
+                if (search.Length > 0)
+                {
+                    if (sftp.IsConnected)
+                    {
+                        string vcbootVfg = sftp.DownloadToMemory(VCBOOT_WORK);
+                        if (!string.IsNullOrEmpty(vcbootVfg))
+                        {
+                            List<string> linkAggId = new List<string>();
+                            using (StringReader reader = new StringReader(vcbootVfg))
+                            {
+                                string line;
+                                while ((line = reader.ReadLine()) != null)
+                                {
+                                    string sLine = line.Trim();
+                                    if (sLine.Length == 0 || line.Contains("=====")) continue;
+                                    if (line.StartsWith("ip interface") && line.Contains($"address {restSvc.SwitchModel.IpAddress} mask"))
+                                    {
+                                        cmdList.Add(line);
+                                        continue;
+                                    }
+                                    if (!line.StartsWith(search[0].Trim())) continue;
+                                    if (search.Length > 1 && !string.IsNullOrEmpty(search[1].Trim()) && !line.Contains(search[1].Trim())) continue;
+                                    cmdList.Add(line);
+                                    if (line.Contains("linkagg"))
+                                    {
+                                        string[] split = Regex.Split(line, "linkagg");
+                                        if (split.Length > 1)
+                                        {
+                                            split = split[1].Trim().Split(' ');
+                                            if (split[0].Contains("-"))
+                                            {
+                                                split = split[0].Split('-');
+                                                if (split.Length > 1)
+                                                {
+                                                    int startId = StringToInt(split[0]);
+                                                    int endId = StringToInt(split[1]);
+                                                    for (int idx = startId; idx <= endId; idx++)
+                                                    {
+                                                        linkAggId.Add(idx.ToString());
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                linkAggId.Add(split[0]);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            List<string> cmdLinkAggList = new List<string>();
+                            if (linkAggId.Count > 0)
+                            {
+                                using (StringReader reader = new StringReader(vcbootVfg))
+                                {
+                                    string line;
+                                    while ((line = reader.ReadLine()) != null)
+                                    {
+                                        string sLine = line.Trim();
+                                        if (sLine.Length == 0 || line.Contains("=====") || !line.StartsWith("linkagg")) continue;
+                                        string aggId = linkAggId.FirstOrDefault(agg => line.Contains(agg));
+                                        if (string.IsNullOrEmpty(aggId)) continue;
+                                        cmdLinkAggList.Add(line);
+                                    }
+                                }
+                            }
+                            if (cmdLinkAggList.Count > 0)
+                            {
+                                cmdLinkAggList.AddRange(cmdList);
+                                cmdList = cmdLinkAggList;
+                            }
+                        }
+                    }
+                }
+            }
+            return cmdList;
         }
 
         public static string ReadFromDisk()
