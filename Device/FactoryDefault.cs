@@ -3,7 +3,9 @@ using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.Utils;
 
@@ -65,26 +67,26 @@ namespace PoEWizard.Device
                 cmds.Add(new LinuxCommand($"rm -f {file}"));
             }
             cmdSeq.AddCommandSeq(cmds);
-            LinuxCommandSeq res = restSvc.SendSshLinuxCommandSeq(cmdSeq, Translate("i18n_frDelete"));
-            List<string> errs = new List<string>();
-            foreach(LinuxCommand cmd in cmds)
-            {
-                var resp = res.GetResponse(cmd.Command);
-                if (resp.ContainsKey(ERROR)) errs.Add(resp[ERROR]);
-            }
-            if (errs.Count > 0)
-            {
-                Progress.Report(new ProgressReport(ReportType.Error, string.Join("\n", errs), Translate("i18n_fctRst")));
-            }
-            restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
+            //LinuxCommandSeq res = restSvc.SendSshLinuxCommandSeq(cmdSeq, Translate("i18n_frDelete"));
+            //List<string> errs = new List<string>();
+            //foreach (LinuxCommand cmd in cmds)
+            //{
+            //    var resp = res.GetResponse(cmd.Command);
+            //    if (resp.ContainsKey(ERROR)) errs.Add(resp[ERROR]);
+            //}
+            //if (errs.Count > 0)
+            //{
+            //    Progress.Report(new ProgressReport(ReportType.Error, string.Join("\n", errs), Translate("i18n_fctRst")));
+            //}
+            //restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
             Progress.Report(new ProgressReport(Translate("i18n_frTmplt")));
             LoadTemplate();
-            SftpService sftp = new SftpService(device.IpAddress, "admin", device.Password);
-            sftp.Connect();
-            sftp.UploadFile(templateFilePath, VCBOOT_WORK);
-            sftp.UploadFile(templateFilePath, VCBOOT_CERT);
-            sftp.Disconnect();
-            File.Delete(templateFilePath);
+            //SftpService sftp = new SftpService(device.IpAddress, "admin", device.Password);
+            //sftp.Connect();
+            //sftp.UploadFile(templateFilePath, VCBOOT_WORK);
+            //sftp.UploadFile(templateFilePath, VCBOOT_CERT);
+            //sftp.Disconnect();
+            //File.Delete(templateFilePath);
         }
 
         private static void LoadTemplate()
@@ -92,26 +94,43 @@ namespace PoEWizard.Device
             try
             {
                 string content = ReadFromDisk();
-                string res = content.Replace("{IpAddress}", swModel.IpAddress).Replace("{SubnetMask}", swModel.NetMask);
                 if (!string.IsNullOrEmpty(swModel.DefaultGwy))
                 {
-                    res += $"ip static-route 0.0.0.0/0 gateway {swModel.DefaultGwy}";
+                    content += $"ip static-route 0.0.0.0/0 gateway {swModel.DefaultGwy}\n";
                 }
+                // get management vlan
+                VlanModel vlan = restSvc.VlanSettings.FirstOrDefault(v => v.IpAddress == swModel.IpAddress);
+                if (vlan != null)
+                {
+                    if (vlan.Device.Equals("EMP", StringComparison.OrdinalIgnoreCase))
+                    {
+                        content += $"ip interface master emp address {vlan.IpAddress} mask {vlan.SubnetMask}\n";
+                    }
+                    else if (vlan.Device.ToLower().Contains("vlan"))
+                    {
+                        content += $"ip interface \"IBMGT-1\" address {vlan.IpAddress} mask {vlan.SubnetMask} {vlan.Device}\n";
+                        string vlanNb = Regex.Split(vlan.Device, @"\s+")[1];
+                        List<string> tags = GetTaggedPorts(vlanNb);
+                        for (int i = 0; i < tags.Count; i++)
+                        {
+                            if (tags[i].StartsWith("0")) //linkagg
+                            {
+                                tags[i] = GetLinkAggPrimary(tags[i]);
+                            }
+                            content += $"vlan {vlanNb} members port {tags[i]} tagged\n";
+                        }
+                    }
+                } 
                 if (File.Exists(templateFilePath)) File.Delete(templateFilePath);
                 using (TextWriter writer = new StreamWriter(templateFilePath))
                 {
-                    writer.NewLine = "\n";
-                    foreach (string line in res.Split('\n'))
-                    {
-                        writer.WriteLine(line);
-                    }
+                    writer.Write(content);
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error($"Exception while writing config file {TEMPLATE}: {ex.Message}");
             }
-
         }
 
         public static string ReadFromDisk()
@@ -131,6 +150,23 @@ namespace PoEWizard.Device
                     return null;
                 }
             }
+        }
+
+        private static List<string> GetTaggedPorts(string vlan)
+        {
+            List<string> ports = new List<string>();
+            List<Dictionary<string, string>> members = restSvc.RunSwitchCommand(new CmdRequest(Command.SHOW_VLAN_MEMBERS, ParseType.Htable, vlan)) as List<Dictionary<string, string>>;
+            ports = members.Where(m => m["type"] == "tagged").Select(m => m["port"]).ToList();
+            return ports;
+        }
+
+        private static string GetLinkAggPrimary(string agg)
+        {
+            string id = agg.Split('/')[1];
+            List<Dictionary<string, string>> members = restSvc.RunSwitchCommand(new CmdRequest(Command.SHOW_LINKAGG_PORTS, ParseType.Htable, id)) as List<Dictionary<string, string>>;
+            Dictionary<string, string> prim = members.FirstOrDefault(m => m["Prim"] == "YES");
+            if (prim != null) return prim.ElementAt(0).Value;
+            return null;
         }
     }
 }

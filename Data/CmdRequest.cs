@@ -82,6 +82,7 @@ namespace PoEWizard.Data
         SHOW_INTERFACES,
         SHOW_DDM_INTERFACES,
         #endregion
+
         #region Virtual Meta commands
         CHECK_POWER_PRIORITY,
         RESET_POWER_PORT,
@@ -165,6 +166,8 @@ namespace PoEWizard.Data
         SHOW_AAA_AUTH,
         SHOW_USER,
         SHOW_VLAN,
+        SHOW_VLAN_MEMBERS,
+        SHOW_LINKAGG_PORTS,
         DELETE_USER,
         DELETE_COMMUNITY,
         DELETE_STATION,

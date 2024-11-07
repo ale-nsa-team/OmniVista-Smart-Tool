@@ -183,6 +183,8 @@ namespace PoEWizard.Data
             [Command.SHOW_SNMP_STATION] = "show snmp station",
             [Command.SHOW_SNMP_COMMUNITY] = "show snmp community-map",
             [Command.SHOW_VLAN] = "show vlan",
+            [Command.SHOW_VLAN_MEMBERS] = $"show vlan {DAT} members",
+            [Command.SHOW_LINKAGG_PORTS] = $"show linkagg agg {DAT} port",
             [Command.ENABLE_MGT_VLAN] = "vlan 1 admin-state enable",
             [Command.SET_MGT_INTERFACE] = $"ip interface \"IBMGT-1\" address {DAT} mask {DAT} vlan 1",
             [Command.SET_IP_INTERFACE] = $"ip interface \"{DAT}\" address {DAT} mask {DAT} {DAT}",

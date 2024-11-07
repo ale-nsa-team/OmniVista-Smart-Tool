@@ -72,7 +72,6 @@ namespace PoEWizard.Components
             _btnCfgBack.IsEnabled = false;
             _btnCfgNext.IsEnabled = false;
             _cfgFrame.Navigate(new CfgWizPage1(sysData));
-            //_btnSubmit.IsEnabled = false;
         }
         #endregion
 

@@ -39,7 +39,7 @@ namespace PoEWizard.Data
             SystemRunningDir, Chassis, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PortIdList, PowerSupply, LldpRemoteList,
             TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, ShowInterfacesList, None
         }
-        public enum ConfigType { Enable, Disable, Unavailable }
+        public enum ConfigType { Disable, Enable, Unavailable }
         public enum DeviceType
         {
             [Description("Camera")]
