@@ -106,7 +106,7 @@ namespace PoEWizard.Device
                     writer.NewLine = "\n";
                     foreach (string line in res.Split('\n'))
                     {
-                        if (line.Contains(swModel.IpAddress) && cmdList.Count > 0)
+                        if (line.StartsWith("ip interface") && line.Contains($"address {swModel.IpAddress} mask") && cmdList.Count > 0)
                         {
                             foreach (string cmd in cmdList)
                             {
