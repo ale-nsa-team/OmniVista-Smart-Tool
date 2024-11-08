@@ -1067,7 +1067,7 @@ namespace PoEWizard.Comm
                 SendRebootSwitchRequest();
                 if (waitSec <= 0) return string.Empty;
                 DateTime rebootTime = DateTime.Now;
-                msg = $"{Translate("i18n_rebooting").Replace("$1", SwitchModel.Name)}";
+                msg = $"{Translate("i18n_waitReboot").Replace("$1", SwitchModel.Name)}";
                 _progress.Report(new ProgressReport($"{msg}{WAITING}"));
                 double dur = 0;
                 while (dur <= 60)

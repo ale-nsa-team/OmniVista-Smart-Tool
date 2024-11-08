@@ -415,8 +415,11 @@ namespace PoEWizard
 
         private async void FactoryReset(object sender, RoutedEventArgs e)
         {
-            MsgBoxResult res = ShowMessageBox(Translate("i18n_fctRst"), Translate("i18n_cfrst"), MsgBoxIcons.Question, MsgBoxButtons.OkCancel);
-            if (res == MsgBoxResult.Cancel) return;
+
+            ResetSelection rs = new ResetSelection(this);
+            rs.ShowDialog();
+            if (rs.DialogResult == false) return;
+
             PassCode pc = new PassCode(this, config);
             if (pc.ShowDialog() == false) return;
             if (pc.Password != pc.SavedPassword)
@@ -424,11 +427,11 @@ namespace PoEWizard
                 ShowMessageBox(Translate("i18n_fctRst"), Translate("i18n_badPwd"), MsgBoxIcons.Error);
                 return;
             }
-            Logger.Warn($"Switch S/N {device.SerialNumber} Model {device.Model}: Factory reset applied!");
-            Activity.Log(device, "Factory reset applied");
+            Logger.Warn($"Switch S/N {device.SerialNumber} Model {device.Model}: {(rs.IsFullReset ? "Full" : "Partial")} Factory reset applied!");
+
             ShowProgress(Translate("i18n_afrst"));
             FactoryDefault.Progress = progress;
-            await Task.Run(() => FactoryDefault.Reset(device));
+            await Task.Run(() => FactoryDefault.Reset(device, rs.IsFullReset));
             ShowMessageBox(Translate("i18n_fctRst"), Translate("i18n_frReboot"));
             string snapFilepath = Path.Combine(DataPath, SNAPSHOT_FOLDER, $"{device.IpAddress}{SNAPSHOT_SUFFIX}");
             try
@@ -439,7 +442,20 @@ namespace PoEWizard
             {
                 Logger.Error($"Failed to delete file {snapFilepath}", ex);
             }
-            await RebootSwitch();
+            if (rs.IsFullReset)
+            {
+                restApiService.SendCommand(new CmdRequest(Command.REBOOT_SWITCH));
+                string textMsg = $"{Translate("i18n_taDisc")} {device.Name}";
+                ShowProgress($"{textMsg}{WAITING}");
+                restApiService.Close();
+                restApiService = null;
+                SetDisconnectedState();
+                HideProgress();
+            }
+            else
+            {
+                await RebootSwitch();
+            }
         }
 
         private void LaunchConfigWizard(object sender, RoutedEventArgs e)
@@ -911,7 +927,7 @@ namespace PoEWizard
             string switchName = device.Name;
             string lastIp = device.IpAddress;
             string lastPasswd = device.Password;
-            string title = $"{Translate("i18n_rebooting").Replace("$1", device.Name)}{WAITING}";
+            string title = $"{Translate("i18n_waitReboot").Replace("$1", device.Name)}{WAITING}";
             ShowInfoBox(title);
             ShowProgress(title);
             ClearMainWindowGui();

@@ -167,7 +167,7 @@ namespace PoEWizard.Data
         SHOW_USER,
         SHOW_VLAN,
         SHOW_VLAN_MEMBERS,
-        SHOW_LINKAGG_PORTS,
+        SHOW_LINKAGG,
         DELETE_USER,
         DELETE_COMMUNITY,
         DELETE_STATION,

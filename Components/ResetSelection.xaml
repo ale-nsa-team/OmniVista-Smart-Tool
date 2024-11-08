@@ -1,0 +1,40 @@
+﻿<Window x:Class="PoEWizard.Components.ResetSelection"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+       xmlns:local="clr-namespace:PoEWizard.Components"
+       mc:Ignorable="d"
+       Title="Login" Height="200" Width="430" WindowStyle="None" ShowInTaskbar="False">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
+                <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-enUS.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Style="{DynamicResource _mainGrid}" Margin="1,0,-1,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Style="{DynamicResource cfgTitle}" Height="Auto">
+            <TextBlock Style="{DynamicResource popupTitle}" HorizontalAlignment="Center" Text="{DynamicResource i18n_fctRst}" />
+        </Border>
+        <TextBlock Grid.Row="1" Style="{DynamicResource aboutParagraph}" Margin="15" Text="{DynamicResource i18n_rstsel}" />
+        <StackPanel Grid.Row="2">
+            <RadioButton Content="{DynamicResource i18n_fullrst}" Style="{DynamicResource radioButton}" IsChecked="{Binding IsFullReset}"/>
+            <RadioButton Content="{DynamicResource i18n_partrst}" Style="{DynamicResource radioButton}" IsChecked="{Binding IsPartialReset}"/>
+        </StackPanel>
+        <Border Grid.Row="3" Style="{DynamicResource propsBorder}">
+            <StackPanel Orientation="Horizontal">
+                <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="110,0,0,0">OK</Button>
+                <Button Click="BtnCancel_Click" Style="{DynamicResource defaultButton}" Margin="20,0,0,0">Cancel</Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

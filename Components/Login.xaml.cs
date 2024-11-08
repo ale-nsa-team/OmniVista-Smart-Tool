@@ -54,23 +54,6 @@ namespace PoEWizard.Components
             User = user;
         }
 
-        private void BtnOk_Click(object sender, RoutedEventArgs e)
-        {
-            if (HasErrors()) return;
-            if (!IpList.Contains(IpAddress))
-            {
-                if (IpList.Count >= MAX_LIST_SIZE)
-                {
-                    IpList.RemoveAt(IpList.Count - 1);
-                }
-                IpList.Add(IpAddress);
-                IpList.Sort();
-                cfg.Set("switches", string.Join(",", IpList));
-            }
-            this.DialogResult = true;
-            this.Close();
-        }
-
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(IpAddress))
@@ -125,6 +108,46 @@ namespace PoEWizard.Components
             }
         }
 
+        private void ClearIpList(object sender, RoutedEventArgs e)
+        {
+            _ipAddress.ItemsSource = null;
+            IpList.Clear();
+            cfg.Set("switches", "");
+            _ipAddress.ItemsSource = IpList;
+        }
+
+        private void DelSelectedIp(object sender, RoutedEventArgs e)
+        {
+            _ipAddress.ItemsSource = null;
+            IpList.Remove(IpAddress);
+            cfg.Set("switches", string.Join(",", IpList));
+            _ipAddress.ItemsSource = IpList;
+            _ipAddress.SelectedIndex = 0;
+        }
+
+        private void BtnOk_Click(object sender, RoutedEventArgs e)
+        {
+            if (HasErrors()) return;
+            if (!IpList.Contains(IpAddress))
+            {
+                if (IpList.Count >= MAX_LIST_SIZE)
+                {
+                    IpList.RemoveAt(IpList.Count - 1);
+                }
+                IpList.Add(IpAddress);
+                IpList.Sort();
+                cfg.Set("switches", string.Join(",", IpList));
+            }
+            this.DialogResult = true;
+            this.Close();
+        }
+
+        private void BtnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = false;
+            this.Close();
+        }
+
         private bool HasErrors()
         {
             bool ipErr = string.IsNullOrEmpty(_ipAddress.Text) || _ipAddress.GetBindingExpression(ComboBox.TextProperty).HasError;
@@ -132,12 +155,6 @@ namespace PoEWizard.Components
             bool pwdErr = string.IsNullOrEmpty(_clearPwd.Text.Trim());
 
             return ipErr || nameErr || pwdErr;
-        } 
-
-        private void BtnCancel_Click(object sender, RoutedEventArgs e)
-        {
-            this.DialogResult = false;
-            this.Close();
         }
     }
 }

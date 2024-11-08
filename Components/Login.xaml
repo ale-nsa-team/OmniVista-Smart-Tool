@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
-        Title="Login" Height="300" Width="220" WindowStyle="None" ShowInTaskbar="False">
+        Title="Login" Height="320" Width="220" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -20,6 +20,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="{DynamicResource i18n_cred}" Style="{DynamicResource popupTitle}" />
@@ -70,7 +71,17 @@
                 </Button>
             </Grid>
         </StackPanel>
-        <Border Grid.Row="2" Style="{DynamicResource propsBorder}">
+        <DockPanel Grid.Row="2" Margin="15,0,15,12">
+            <Button x:Name="_clearList" Style="{DynamicResource linkButton}" 
+                    Content="{DynamicResource i18n_clear}" 
+                    Click="ClearIpList"
+                    ToolTip="{DynamicResource i18n_clr_tt}"/>
+            <Button x:Name="_delSelected" Style="{DynamicResource linkButton}" HorizontalAlignment="Right" 
+                    Content="Delete Selected"
+                    Click="DelSelectedIp"
+                    ToolTip="{DynamicResource i18n_delsel_tt}"/>
+        </DockPanel>
+        <Border Grid.Row="3" Style="{DynamicResource propsBorder}">
             <StackPanel Orientation="Horizontal">
                 <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" 
                         Margin="2,0,0,0" Content="{DynamicResource i18n_cnxBtn}" />

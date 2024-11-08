@@ -55,7 +55,7 @@ namespace PoEWizard.Device
             $"{FLASH_DIR}/.bash_history"
         };
 
-        public static void Reset(SwitchModel device)
+        public static void Reset(SwitchModel device, bool isFullReset)
         {
             restSvc = MainWindow.restApiService;
             Progress.Report(new ProgressReport(Translate("i18n_frPrep")));
@@ -79,6 +79,7 @@ namespace PoEWizard.Device
                 Progress.Report(new ProgressReport(ReportType.Error, string.Join("\n", errs), Translate("i18n_fctRst")));
             }
             restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
+            if (isFullReset) return;
             Progress.Report(new ProgressReport(Translate("i18n_frTmplt")));
             LoadTemplate();
             SftpService sftp = new SftpService(device.IpAddress, device.Login, device.Password);
@@ -117,9 +118,10 @@ namespace PoEWizard.Device
                         {
                             if (tagged[i].StartsWith(LINKAGG_PFX)) //linkagg
                             {
-                                tagged[i] = GetLinkAggPrimary(tagged[i]);
+                                content += CreateLinkAgg(tagged[i], vlan.Device);
+                               
                             }
-                            if (tagged[i] != null) content += $"{vlan.Device} members port {tagged[i]} tagged\n";
+                            else if (tagged[i] != null) content += $"{vlan.Device} members port {tagged[i]} tagged\n";
                         }
                     }
                 }
@@ -161,13 +163,19 @@ namespace PoEWizard.Device
             return members.Where(m => m[MEMBER_TYPE] == TAGGED).Select(m => m[MEMBER]).ToList();
         }
 
-        private static string GetLinkAggPrimary(string agg)
+        private static string CreateLinkAgg(string agg, string vlan)
         {
             string id = agg.Split('/')[1];
-            List<Dictionary<string, string>> members = restSvc.RunSwitchCommand(new CmdRequest(Command.SHOW_LINKAGG_PORTS, ParseType.Htable, id)) as List<Dictionary<string, string>>;
-            Dictionary<string, string> prim = members.FirstOrDefault(m => m[PRIMARY] == YES);
-            if (prim != null) return prim.ElementAt(0).Value;
-            return null;
+            List<string> cmds = new List<string>();
+            Dictionary<string, string> linkagg = restSvc.RunSwitchCommand(new CmdRequest(Command.SHOW_LINKAGG, ParseType.Vtable, id)) as Dictionary<string, string>;
+            if (linkagg != null)
+            {
+                cmds.Add($"linkagg lacp agg {id} size {linkagg[LINKAGG_SIZE]} admin-state enable");
+                cmds.Add($"linkagg lacp agg {id} actor admin-key {linkagg[LINKAGG_KEY]}");
+                cmds.Add($"linkagg lacp port {linkagg[PRIMARY]} actor admin-key {linkagg[LINKAGG_KEY]}");
+                cmds.Add($"{vlan} members linkagg {id} tagged");
+            }
+            return string.Join("\n", cmds);
         }
     }
 }

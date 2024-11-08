@@ -22,7 +22,7 @@
     <sys:String x:Key="i18n_light">Light</sys:String>
     <sys:String x:Key="i18n_help">Help</sys:String>
     <sys:String x:Key="i18n_about">About</sys:String>
-    <sys:String x:Key="i18n_frst">Configuration Reset...</sys:String>
+    <sys:String x:Key="i18n_frst">Factory Reset...</sys:String>
     <sys:String x:Key="i18n_cfgWiz">Basic Configuration Wizard...</sys:String>
     <sys:String x:Key="i18n_backup">Backup</sys:String>
     <sys:String x:Key="i18n_restore">Restore</sys:String>
@@ -107,6 +107,8 @@
     <sys:String x:Key="i18n_user">Username</sys:String>
     <sys:String x:Key="i18n_pwd">Password</sys:String>
     <sys:String x:Key="i18n_lifail">Log in failed on switch</sys:String>
+    <sys:String x:Key="i18n_clear">Clear List</sys:String>
+    <sys:String x:Key="i18n_delsel">Delete Selected</sys:String>
 
     <!--Power Supply dialog-->
     <sys:String x:Key="i18n_psCh">Chassis/PS</sys:String>
@@ -190,14 +192,11 @@ Please confirm your action.
     <sys:String x:Key="i18n_newRec">New Trap Receiver</sys:String>
 
     <!--Configuration Reset Messages-->
-    <sys:String x:Key="i18n_fctRst">Configuration Reset</sys:String>
+    <sys:String x:Key="i18n_fctRst">Factory Reset</sys:String>
     <sys:String x:Key="i18n_afrst">Applying factory default...</sys:String>
-    <sys:String x:Key="i18n_cfrst" xml:space="preserve">
- The switch configuration will be restored to factory default and 
- a basic template will be applied to setup its management IP address, 
- so you can reconnect to the switch after it reboots.
-        
- Please confirm your action.</sys:String>
+    <sys:String x:Key="i18n_rstsel">Select type of reset:</sys:String>
+    <sys:String x:Key="i18n_fullrst">Full Factory Reset (you will have to reconnect to the switch via console)</sys:String>
+    <sys:String x:Key="i18n_partrst">Factory Reset + management interface (allows to reconnect to the switch via this app)</sys:String>
     <sys:String x:Key="i18n_frReboot">Configuration reset complete, switch will reboot now</sys:String>
     <sys:String x:Key="i18n_frPrep">Prepairing factory default...</sys:String>
     <sys:String x:Key="i18n_frDelete">Removing config files</sys:String>
@@ -418,7 +417,8 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_rsConn">Connection</sys:String>
     <sys:String x:Key="i18n_rsMem">Writing memory on switch</sys:String>
     <sys:String x:Key="i18n_rsMemc">Write memory completed</sys:String>
-    <sys:String x:Key="i18n_rebooting">Waiting for switch $1 reboot</sys:String>
+    <sys:String x:Key="i18n_waitReboot">Waiting for switch $1 reboot</sys:String>
+    <sys:String x:Key="i18n_rebooting">Switch $1 is rebooting, please connect to the console port when it's ready</sys:String>
     <sys:String x:Key="i18n_rsTout">did not come back within</sys:String>
     <sys:String x:Key="i18n_rsLldp">Enable LLDP description</sys:String>
     <sys:String x:Key="i18n_rsGs">Get Snapshot</sys:String>
@@ -543,4 +543,6 @@ It may take up to 30 sec to execute Write Memory
     <sys:String x:Key="i18n_dld_tt">Delayed start is enabled</sys:String>
     <sys:String x:Key="i18n_conf_tt">Two PoE ports have been connected and failed to disable PoE on one port</sys:String>
     <sys:String x:Key="i18n_nop_tt">Port does not support PoE</sys:String>
+    <sys:String x:Key="i18n_clr_tt">Clear IP address list</sys:String>
+    <sys:String x:Key="i18n_delsel_tt">Remove selected IP address from list</sys:String>
 </ResourceDictionary>

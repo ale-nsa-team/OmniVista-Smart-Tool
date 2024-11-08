@@ -183,6 +183,9 @@
     <Compile Include="Components\PowerSupply.xaml.cs">
       <DependentUpon>PowerSupply.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\ResetSelection.xaml.cs">
+      <DependentUpon>ResetSelection.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\SearchMac.xaml.cs">
       <DependentUpon>SearchMac.xaml</DependentUpon>
     </Compile>
@@ -332,6 +335,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\PowerSupply.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\ResetSelection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

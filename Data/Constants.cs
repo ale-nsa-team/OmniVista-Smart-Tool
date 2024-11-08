@@ -378,7 +378,9 @@ namespace PoEWizard.Data
         public const string MEMBER = "port";
         public const string MEMBER_TYPE = "type";
         public const string TAGGED = "tagged";
-        public const string PRIMARY = "Prim";
+        public const string LINKAGG_SIZE = "Aggregate Size";
+        public const string LINKAGG_KEY = "Actor Admin Key";
+        public const string PRIMARY = "Primary Port";
         public const string YES = "YES";
         public const string MGT_IF_NAME = "\"IBMGT-1\"";
         // Application config file
