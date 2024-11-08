@@ -12,6 +12,7 @@ namespace PoEWizard.Device
     {
         public int Number { get; set; }
         public string Name { get; set; }
+        public string Model { get; set; }
         public int NbPorts { get; set; }
         public int NbPoePorts { get; set; }
         public SlotPoeStatus PoeStatus { get; set; }
@@ -34,20 +35,22 @@ namespace PoEWizard.Device
 
         public SlotModel() { }
 
-        public SlotModel(ChassisSlotPort chassisSlot)
+        public SlotModel(ChassisSlotPort chassisSlot, string model)
         {
             this.Number = chassisSlot.SlotNr;
             this.Name = $"{chassisSlot.ChassisNr}/{chassisSlot.SlotNr}";
             this.Ports = new List<PortModel>();
             this.SupportsPoE = true;
             this.IsMaster = true;
+            this.Model = model;
         }
 
         public void LoadFromDictionary(Dictionary<string, string> dict)
         {
             if (dict.ContainsKey(MAX_POWER)) this.Budget = ParseDouble(GetDictValue(dict, MAX_POWER));
             if (dict.ContainsKey(INIT_STATUS)) this.IsInitialized = GetDictValue(dict, INIT_STATUS).ToLower() == "initialized";
-            if (dict.ContainsKey(BT_SUPPORT)) this.Is8023btSupport = GetDictValue(dict, BT_SUPPORT) == "Yes";
+            if (MODEL_WITH_8023BT.Contains(this.Model)) this.Is8023btSupport = true;
+            else if (dict.ContainsKey(BT_SUPPORT)) this.Is8023btSupport = GetDictValue(dict, BT_SUPPORT) == "Yes";
             this.IsPoeModeEnable = !this.Is8023btSupport;
             if (dict.ContainsKey(CLASS_DETECTION)) this.PowerClassDetection = ConvertToConfigType(dict, CLASS_DETECTION);
             if (dict.ContainsKey(HI_RES_DETECTION)) this.IsHiResDetection = ConvertToConfigType(dict, HI_RES_DETECTION) == ConfigType.Enable;

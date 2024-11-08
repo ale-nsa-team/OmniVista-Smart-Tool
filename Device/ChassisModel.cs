@@ -39,7 +39,7 @@ namespace PoEWizard.Device
         {
             string nb = GetDictValue(dict, ID);
             Number = int.TryParse(nb, out int n) ? n : 1;
-            Model =  GetDictValue(dict, MODEL_NAME);
+            Model = GetDictValue(dict, MODEL_NAME);
             Type = GetDictValue(dict, MODULE_TYPE);
             string role = GetDictValue(dict, ROLE);
             IsMaster = role == "Master";

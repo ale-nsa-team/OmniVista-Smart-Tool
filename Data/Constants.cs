@@ -95,6 +95,9 @@ namespace PoEWizard.Data
             {"8", "90-100 Watts" }
         };
 
+        public static readonly string[] MODEL_WITH_8023BT = new string[] {
+            "OS6560-P24X4" , "OS6560-P48X4"
+        };
 
         #endregion
 

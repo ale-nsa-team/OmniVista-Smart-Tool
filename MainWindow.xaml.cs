@@ -1778,9 +1778,9 @@ namespace PoEWizard
                     File.Copy(fname, saveas, true);
                     File.Delete(fname);
                     info = new FileInfo(saveas);
+                    debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, port);
                 }
                 UpdateSwitchLogBar(initialTime);
-                debugSwitchLog.CreateTacTextFile(selectedDeviceType, info.FullName, device, port);
                 StringBuilder txt = new StringBuilder("Log tar file \"").Append(SWLOG_PATH).Append("\" downloaded from the switch ").Append(device.IpAddress);
                 txt.Append("\n\tSaved file: \"").Append(info.FullName).Append("\"\n\tFile size: ").Append(PrintNumberBytes(info.Length));
                 txt.Append("\n\tDownload duration: ").Append(downloadDur).Append("\n\tTar file creation duration: ").Append(strDur);

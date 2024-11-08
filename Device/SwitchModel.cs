@@ -159,7 +159,7 @@ namespace PoEWizard.Device
                             SlotModel slot = chassis.GetSlot(chassisSlot.SlotNr);
                             if (slot == null)
                             {
-                                slot = new SlotModel(chassisSlot);
+                                slot = new SlotModel(chassisSlot, chassis.Model);
                                 chassis.Slots.Add(slot);
                             }
                             slot.IsMaster = chassis.IsMaster;
