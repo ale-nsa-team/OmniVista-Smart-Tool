@@ -81,7 +81,7 @@ namespace PoEWizard.Device
             restSvc.RunSwitchCommand(new CmdRequest(Command.CLEAR_SWLOG));
             Progress.Report(new ProgressReport(Translate("i18n_frTmplt")));
             LoadTemplate();
-            SftpService sftp = new SftpService(device.IpAddress, "admin", device.Password);
+            SftpService sftp = new SftpService(device.IpAddress, device.Login, device.Password);
             sftp.Connect();
             sftp.UploadFile(templateFilePath, VCBOOT_WORK);
             sftp.UploadFile(templateFilePath, VCBOOT_CERT);
@@ -102,7 +102,7 @@ namespace PoEWizard.Device
                 VlanModel vlan = restSvc.VlanSettings.FirstOrDefault(v => v.IpAddress == swModel.IpAddress);
                 if (vlan != null)
                 {
-                    if (vlan.Device.Equals("EMP", StringComparison.OrdinalIgnoreCase))
+                    if (vlan.Device.Equals(EMP, StringComparison.OrdinalIgnoreCase))
                     {
                         content += $"ip interface master emp address {vlan.IpAddress} mask {vlan.SubnetMask}\n";
                     }
@@ -112,10 +112,10 @@ namespace PoEWizard.Device
                         if (tagged.Count == 0) vlan.Device = "vlan 1";
                         content += $"{vlan.Device} admin-state enable\n";
                         content += $"spantree {vlan.Device} admin-state enable\n";
-                        content += $"ip interface \"IBMGT-1\" address {vlan.IpAddress} mask {vlan.SubnetMask} {vlan.Device}\n";
+                        content += $"ip interface {MGT_IF_NAME} address {vlan.IpAddress} mask {vlan.SubnetMask} {vlan.Device}\n";
                         for (int i = 0; i < tagged.Count; i++)
                         {
-                            if (tagged[i].StartsWith("0")) //linkagg
+                            if (tagged[i].StartsWith(LINKAGG_PFX)) //linkagg
                             {
                                 tagged[i] = GetLinkAggPrimary(tagged[i]);
                             }
@@ -157,17 +157,15 @@ namespace PoEWizard.Device
         private static List<string> GetTaggedPorts(string device)
         {
             string vlan = Regex.Split(device, @"\s+")[1];
-            List<string> ports = new List<string>();
             List<Dictionary<string, string>> members = restSvc.RunSwitchCommand(new CmdRequest(Command.SHOW_VLAN_MEMBERS, ParseType.Htable, vlan)) as List<Dictionary<string, string>>;
-            ports = members.Where(m => m["type"] == "tagged").Select(m => m["port"]).ToList();
-            return ports;
+            return members.Where(m => m[MEMBER_TYPE] == TAGGED).Select(m => m[MEMBER]).ToList();
         }
 
         private static string GetLinkAggPrimary(string agg)
         {
             string id = agg.Split('/')[1];
             List<Dictionary<string, string>> members = restSvc.RunSwitchCommand(new CmdRequest(Command.SHOW_LINKAGG_PORTS, ParseType.Htable, id)) as List<Dictionary<string, string>>;
-            Dictionary<string, string> prim = members.FirstOrDefault(m => m["Prim"] == "YES");
+            Dictionary<string, string> prim = members.FirstOrDefault(m => m[PRIMARY] == YES);
             if (prim != null) return prim.ElementAt(0).Value;
             return null;
         }

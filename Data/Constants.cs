@@ -372,6 +372,15 @@ namespace PoEWizard.Data
         public const string MASTER = "Master";
         public const string SLAVE = "Slave";
         public const string MAC_MATCH_MARK = " (*)";
+        // Used by Factory Reset
+        public const string EMP = "EMP";
+        public const string LINKAGG_PFX = "0/";
+        public const string MEMBER = "port";
+        public const string MEMBER_TYPE = "type";
+        public const string TAGGED = "tagged";
+        public const string PRIMARY = "Prim";
+        public const string YES = "YES";
+        public const string MGT_IF_NAME = "\"IBMGT-1\"";
         // Application config file
         public const string APP_CFG_FILENAME = "app.cfg";
         #endregion
