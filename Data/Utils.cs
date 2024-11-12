@@ -666,5 +666,29 @@ namespace PoEWizard.Data
             return s.Split('\n').Max(l => l.Length);
         }
 
+        public static List<string> GetCmdListFromFile(string filePath, string search)
+        {
+            List<string> cmdList = new List<string>();
+            if (File.Exists(filePath))
+            {
+                string input = File.ReadAllText(filePath);
+                if (!string.IsNullOrEmpty(input))
+                {
+                    using (StringReader reader = new StringReader(input))
+                    {
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            string sLine = line.Trim();
+                            if (sLine.Length == 0 || line.Contains("=====")) continue;
+                            if (!line.StartsWith(search)) continue;
+                            cmdList.Add(line);
+                        }
+                    }
+                }
+            }
+            return cmdList;
+        }
+
     }
 }

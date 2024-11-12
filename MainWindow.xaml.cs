@@ -651,22 +651,36 @@ namespace PoEWizard
 
         private async Task<bool> RestoreSwitchConfiguration(string selFilePath)
         {
-            List<string> switchImgFiles = await Task.Run(() => restApiService.UnzipBackupSwitchFiles(5, selFilePath));
+            Dictionary<MsgBoxIcons, string> dictInvalid = await Task.Run(() => restApiService.UnzipBackupSwitchFiles(5, selFilePath));
             string title = $"{Translate("i18n_restRunning")} {device.Name}{WAITING}";
             ShowInfoBox($"{title}\n{Translate("i18n_restUpLoading")}");
             ShowProgress(title);
-            string restoreFolder = Path.Combine(DataPath, BACKUP_DIR);
-            string invalidMsg = CheckImageFiles(switchImgFiles);
-            if (string.IsNullOrEmpty(invalidMsg))
+            if (dictInvalid.Count == 0)
             {
-                invalidMsg = CheckMissingBackupFiles();
-                if (string.IsNullOrEmpty(invalidMsg)) return await ProceedToRestore();
+                dictInvalid[MsgBoxIcons.Error] = CheckMissingBackupFiles();
+                if (dictInvalid.Count == 0) return await ProceedToRestore();
             }
-            if (!string.IsNullOrEmpty(invalidMsg))
+            if (dictInvalid.Count > 0)
             {
-                PurgeFilesInFolder(Path.Combine(DataPath, BACKUP_DIR));
-                ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restInv").Replace("$1", $"{Path.GetFileName(selFilePath)}")}!\n{invalidMsg}", MsgBoxIcons.Error);
-                return false;
+                string invalidMsg = string.Empty;
+                if (dictInvalid.ContainsKey(MsgBoxIcons.Error) && !string.IsNullOrEmpty(dictInvalid[MsgBoxIcons.Error]))
+                {
+                    PurgeFilesInFolder(Path.Combine(DataPath, BACKUP_DIR));
+                    invalidMsg = dictInvalid[MsgBoxIcons.Error];
+                    ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restInv").Replace("$1", $"{Path.GetFileName(selFilePath)}")}!\n{invalidMsg}", MsgBoxIcons.Error);
+                    return false;
+                }
+                else if (dictInvalid.ContainsKey(MsgBoxIcons.Warning) && !string.IsNullOrEmpty(dictInvalid[MsgBoxIcons.Warning]))
+                {
+                    invalidMsg = dictInvalid[MsgBoxIcons.Warning];
+                    MsgBoxResult choice = ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restInv").Replace("$1", $"{Path.GetFileName(selFilePath)}")}!\n{invalidMsg}", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                    if (choice == MsgBoxResult.Cancel)
+                    {
+                        PurgeFilesInFolder(Path.Combine(DataPath, BACKUP_DIR));
+                        return false;
+                    }
+                    return await ProceedToRestore();
+                }
             }
             return true;
         }
@@ -710,7 +724,7 @@ namespace PoEWizard
                 StringBuilder alert = CheckSerialNumber(swName, swIp, serial);
                 if (alert.Length > 0)
                 {
-                    MsgBoxResult choice = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_notMatchSerial")}\n{alert}", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                    MsgBoxResult choice = ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_notMatchSerial")}\n{alert}", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                     if (choice == MsgBoxResult.Cancel) return false;
                 }
                 List<Dictionary<string, string>> dictList = CliParseUtils.ParseVlanConfig(File.ReadAllText(Path.Combine(Path.Combine(DataPath, BACKUP_DIR), BACKUP_VLAN_CSV_FILE)));
@@ -729,30 +743,13 @@ namespace PoEWizard
             bool restoreImg = false;
             if (foundImg)
             {
-                restoreImg = ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_restAskImg")}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes;
+                restoreImg = ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restAskImg")}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes;
             }
             string title = $"{Translate("i18n_restRunning")} {device.Name}{WAITING}";
             ShowInfoBox($"{title}\n{Translate("i18n_restUpLoading")}");
             double maxDur = restoreImg ? 135 : 10;
             await Task.Run(() => restApiService.UploadConfigurationFiles(maxDur, restoreImg));
             return true;
-        }
-
-        private string CheckImageFiles(List<string> switchImgFiles)
-        {
-            List<string> backUpImageFiles = new List<string>();
-            string[] imgFiles = Directory.GetFiles(Path.Combine(Path.Combine(DataPath, BACKUP_DIR), FLASH, FLASH_WORKING), "*.img");
-            foreach (string imgFile in imgFiles)
-            {
-                backUpImageFiles.Add(Path.GetFileName(imgFile));
-            }
-            Dictionary<string, List<string>> diff = new Dictionary<string, List<string>>
-            {
-                [SWITCH_IMG] = switchImgFiles.Except(backUpImageFiles).ToList(),
-                [BACKUP_IMG] = backUpImageFiles.Except(switchImgFiles).ToList()
-            };
-            if (diff[BACKUP_IMG]?.Count == 0) return string.Empty;
-            return $"{Translate("i18n_imgMismatch")} {device.Name}:\n - {string.Join(", ", diff[BACKUP_IMG])}";
         }
 
         private string CheckMissingBackupFiles()

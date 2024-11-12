@@ -760,8 +760,9 @@ namespace PoEWizard.Comm
             }
         }
 
-        public List<string> UnzipBackupSwitchFiles(double maxDur, string selFilePath)
+        public Dictionary<MsgBoxIcons, string> UnzipBackupSwitchFiles(double maxDur, string selFilePath)
         {
+            Dictionary<MsgBoxIcons, string> invalidMsg = new Dictionary<MsgBoxIcons, string>();
             Thread th = null;
             try
             {
@@ -776,6 +777,11 @@ namespace PoEWizard.Comm
                 DateTime startTime = DateTime.Now;
                 _sftpService.UnzipBackupSwitchFiles(selFilePath);
                 List<string> imgFiles = _sftpService.GetFilesInRemoteDir(FLASH_WORKING_DIR, "*.img");
+                invalidMsg[MsgBoxIcons.Error] = CheckImageFiles(imgFiles);
+                if (invalidMsg.Count > 0)
+                {
+                    invalidMsg[MsgBoxIcons.Warning] = CheckVcsetupFile();
+                }
                 StringBuilder txt = new StringBuilder($"Unzipping backup configuration file of switch ");
                 txt.Append(SwitchModel.Name).Append(" (").Append(SwitchModel.IpAddress).Append(").");
                 txt.Append("\r\nSelected backup file: \"").Append(selFilePath).Append("\"\r\nBackup file size: ").Append(PrintNumberBytes(new FileInfo(selFilePath).Length));
@@ -783,13 +789,13 @@ namespace PoEWizard.Comm
                 txt.Append("\r\nImage files:\r\n\t").Append(string.Join(", ", imgFiles));
                 Logger.Activity(txt.ToString());
                 th.Abort();
-                return imgFiles;
+                return invalidMsg;
             }
             catch (Exception ex)
             {
                 th?.Abort();
                 Logger.Error(ex);
-                return new List<string>();
+                return invalidMsg;
             }
             finally
             {
@@ -797,6 +803,43 @@ namespace PoEWizard.Comm
                 _sftpService = null;
                 CloseProgressBar();
             }
+        }
+
+        private string CheckImageFiles(List<string> switchImgFiles)
+        {
+            List<string> backUpImageFiles = new List<string>();
+            string[] imgFiles = Directory.GetFiles(Path.Combine(Path.Combine(MainWindow.DataPath, BACKUP_DIR), FLASH, FLASH_WORKING), "*.img");
+            foreach (string imgFile in imgFiles)
+            {
+                backUpImageFiles.Add(Path.GetFileName(imgFile));
+            }
+            Dictionary<string, List<string>> diff = new Dictionary<string, List<string>>
+            {
+                [SWITCH_IMG] = switchImgFiles.Except(backUpImageFiles).ToList(),
+                [BACKUP_IMG] = backUpImageFiles.Except(switchImgFiles).ToList()
+            };
+            if (diff[BACKUP_IMG]?.Count == 0) return string.Empty;
+            return $"{Translate("i18n_imgMismatch")} {SwitchModel.Name}:\n - {string.Join(", ", diff[BACKUP_IMG])}";
+        }
+
+        private string CheckVcsetupFile()
+        {
+            List<string> vcSetupBck = GetCmdListFromFile(Path.Combine(Path.Combine(MainWindow.DataPath, BACKUP_DIR), FLASH, FLASH_WORKING, VCSETUP_FILE), "virtual-chassis");
+            string filePath = _sftpService.DownloadFile(VCSETUP_WORK);
+            if (File.Exists(filePath))
+            {
+                List<string> vcSetupCurr = GetCmdListFromFile(filePath, "virtual-chassis");
+                string firstLine = vcSetupCurr.FirstOrDefault(vc => vc.StartsWith("virtual-chassis chassis-id"));
+                File.Delete(filePath);
+                Dictionary<string, List<string>> diff = new Dictionary<string, List<string>>
+                {
+                    [SWITCH_IMG] = vcSetupCurr.Except(vcSetupBck).ToList(),
+                    [BACKUP_IMG] = vcSetupBck.Except(vcSetupCurr).ToList()
+                };
+                if (diff[BACKUP_IMG]?.Count == 0) return string.Empty;
+                return $"{Translate("i18n_vcMismatch")} {SwitchModel.Name}:\n - {firstLine}\n - {string.Join("\n - ", diff[BACKUP_IMG])}";
+            }
+            return string.Empty;
         }
 
         public void UploadConfigurationFiles(double maxDur, bool restoreImage)

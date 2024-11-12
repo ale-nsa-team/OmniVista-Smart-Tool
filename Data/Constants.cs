@@ -128,6 +128,7 @@ namespace PoEWizard.Data
         public const string FLASH_WORKING_DIR = "/" + FLASH_DIR + "/" + FLASH_WORKING;
         public const string FLASH_CERTIFIED_DIR = "/" + FLASH_DIR + "/" + FLASH_CERTIFIED;
         public const string VCBOOT_WORK = FLASH_WORKING_DIR + "/" + VCBOOT_FILE;
+        public const string VCSETUP_WORK = FLASH_WORKING_DIR + "/" + VCSETUP_FILE;
         public const string VCBOOT_CERT = FLASH_CERTIFIED_DIR + "/" + VCBOOT_FILE;
         public const string SWLOG_PATH = "/" + FLASH_DIR + "/tech_support_complete.tar";
         public const string WAITING = "  . . .";
