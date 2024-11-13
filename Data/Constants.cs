@@ -489,8 +489,8 @@ namespace PoEWizard.Data
         #endregion
 
         #region Reboot Switch Limits
-        public const int MAX_SWITCH_REBOOT_TIME_SEC = 420;
-        public const int SWITCH_REBOOT_EXPECTED_TIME_SEC = 320;
+        public const int MAX_SWITCH_REBOOT_TIME_SEC = 900;
+        public const int SWITCH_REBOOT_EXPECTED_TIME_SEC = 330;
         public const int MIN_WAIT_INIT_CPU_TIME_SEC = 15;
         public const int MAX_WAIT_INIT_CPU_TIME_SEC = 45;
         public const int WAIT_INIT_CPU_EXPECTED_TIME_SEC = 25;

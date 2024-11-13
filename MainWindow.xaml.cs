@@ -887,6 +887,14 @@ namespace PoEWizard
         {
             try
             {
+                if (restApiService.IsWaitingReboot())
+                {
+                    if (ShowMessageBox(Translate("i18n_rebsw"), Translate("i18n_waitRebootCancel"), MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
+                    {
+                        restApiService.StopWaitingReboot();
+                    }
+                    return;
+                }
                 string cfgChanges = await GetSyncStatus($"{Translate("i18n_swrst")} {device.Name}");
                 if (ShowMessageBox(Translate("i18n_rebsw"), $"{Translate("i18n_crebsw")} {device.Name}?", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
                 {
@@ -931,8 +939,14 @@ namespace PoEWizard
             _comImg.Visibility = Visibility.Collapsed;
             _btnConnect.Visibility = Visibility.Collapsed;
             _switchMenuItem.IsEnabled = false;
+            _reboot.IsEnabled = true;
+            _rebootLabel.Content = Translate("i18n_waitingReboot");
             string msg = await Task.Run(() => restApiService.RebootSwitch(MAX_SWITCH_REBOOT_TIME_SEC));
-            if (string.IsNullOrEmpty(msg)) return;
+            if (string.IsNullOrEmpty(msg))
+            {
+                DisconnectSwitch(lastIp, lastPasswd);
+                return;
+            }
             if (ShowMessageBox(Translate("i18n_rebsw"), $"{msg}\n{Translate("i18n_recsw")} {switchName}?", MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
             {
                 if (restApiService != null)
@@ -940,6 +954,11 @@ namespace PoEWizard
                     if (restApiService.SwitchModel == null) restApiService.SwitchModel = device;
                     reportResult = new WizardReport();
                     msg = await Task.Run(() => restApiService?.WaitInit(reportResult));
+                    if (string.IsNullOrEmpty(msg))
+                    {
+                        DisconnectSwitch(lastIp, lastPasswd);
+                        return;
+                    }
                     ShowMessageBox($"{Translate("i18n_rstwait")} {switchName}", $"{Translate("i18n_initEnd")} {switchName}.\n{msg}", MsgBoxIcons.Info, MsgBoxButtons.Ok);
                 }
                 SetDisconnectedState();
@@ -953,6 +972,15 @@ namespace PoEWizard
                 lastIpAddr = lastIp;
                 lastPwd = lastPasswd;
             }
+        }
+
+        private void DisconnectSwitch(string lastIp, string lastPasswd)
+        {
+            restApiService.Close();
+            restApiService = null;
+            SetDisconnectedState();
+            lastIpAddr = lastIp;
+            lastPwd = lastPasswd;
         }
 
         private async void CollectLogs_Click(object sender, RoutedEventArgs e)
@@ -2285,6 +2313,7 @@ namespace PoEWizard
         private void EnableButtons()
         {
             ChangeButtonVisibility(true);
+            _rebootLabel.Content = Translate("i18n_reboot");
             ReselectPort();
             ReselectSlot();
             if (selectedPort == null)
@@ -2326,6 +2355,7 @@ namespace PoEWizard
             lastIpAddr = device.IpAddress;
             lastPwd = device.Password;
             ClearMainWindowGui();
+            _rebootLabel.Content = Translate("i18n_reboot");
             _comImg.Visibility = Visibility.Visible;
             _btnConnect.Visibility = Visibility.Visible;
             _switchMenuItem.IsEnabled = true;

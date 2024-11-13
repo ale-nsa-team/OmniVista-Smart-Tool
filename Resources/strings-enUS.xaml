@@ -442,6 +442,8 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_frebsw1">Cannot reboot switch</sys:String>
     <sys:String x:Key="i18n_notCert">because it is not certified</sys:String>
     <sys:String x:Key="i18n_recsw">Do you want to reconnect to switch</sys:String>
+    <sys:String x:Key="i18n_waitingReboot">Rebooting...</sys:String>
+    <sys:String x:Key="i18n_waitRebootCancel">Are you sure you want to stop waiting reboot</sys:String>
     <sys:String x:Key="i18n_rstg">Restarting</sys:String>
     <sys:String x:Key="i18n_rstp">Restarting port</sys:String>
     <sys:String x:Key="i18n_rstpp">Restarting power on port</sys:String>

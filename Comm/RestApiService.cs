@@ -37,6 +37,7 @@ namespace PoEWizard.Comm
         private SftpService _sftpService = null;
         private DateTime _backupStartTime;
         private readonly string _backupFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
+        private bool _waitingReboot = false;
 
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
@@ -1097,34 +1098,45 @@ namespace PoEWizard.Comm
             else Directory.CreateDirectory(folder);
         }
 
+        public bool IsWaitingReboot()
+        {
+            return this._waitingReboot;
+        }
+
+        public void StopWaitingReboot()
+        {
+            this._waitingReboot = false;
+        }
+
         public string RebootSwitch(int waitSec)
         {
             string rebootDur;
             try
             {
+                this._waitingReboot = true;
                 ResetWizardSlotPort();
                 progressStartTime = DateTime.Now;
                 string msg = $"{Translate("i18n_swrst")} {SwitchModel.Name}";
                 Logger.Info(msg);
-                StartProgressBar($"{msg}{WAITING}", SWITCH_REBOOT_EXPECTED_TIME_SEC);
+                int expectedWaitTime = SwitchModel.ChassisList.Count < 2 ? SWITCH_REBOOT_EXPECTED_TIME_SEC : SWITCH_REBOOT_EXPECTED_TIME_SEC + SwitchModel.ChassisList.Count * 90;
+                StartProgressBar($"{msg}{WAITING}", expectedWaitTime);
                 SendRebootSwitchRequest();
                 if (waitSec <= 0) return string.Empty;
                 DateTime rebootTime = DateTime.Now;
                 msg = $"{Translate("i18n_waitReboot").Replace("$1", SwitchModel.Name)}";
                 _progress.Report(new ProgressReport($"{msg}{WAITING}"));
                 double dur = 0;
-                while (dur <= 60)
+                while (dur <= 180)
                 {
-                    if (dur >= waitSec)
-                    {
-                        throw new Exception($"{Translate("i18n_switch")} {SwitchModel.Name} {Translate("i18n_rsTout")} {CalcStringDurationTranslate(progressStartTime, true)}!");
-                    }
+                    if (!this._waitingReboot) return null;
                     Thread.Sleep(1000);
                     dur = GetTimeDuration(progressStartTime);
                     UpdateProgressBarMessage($"{msg} ({CalcStringDurationTranslate(progressStartTime, true)}){WAITING}", dur);
                 }
+                int waitCnt = 0;
                 while (dur < waitSec + 1)
                 {
+                    if (!this._waitingReboot) return null;
                     if (dur >= waitSec)
                     {
                         throw new Exception($"{Translate("i18n_switch") }{SwitchModel.Name} {Translate("i18n_rsTout")} {CalcStringDurationTranslate(progressStartTime, true)}!");
@@ -1138,10 +1150,17 @@ namespace PoEWizard.Comm
                         if (dur % 5 == 0)
                         {
                             RestApiClient.Login();
-                            if (RestApiClient.IsConnected()) break;
+                            if (RestApiClient.IsConnected())
+                            {
+                                waitCnt++;
+                                if (waitCnt >= 3) break;
+                            }
                         }
                     }
-                    catch { }
+                    catch
+                    {
+                        waitCnt = 0;
+                    }
                 }
                 rebootDur = CalcStringDurationTranslate(rebootTime, true);
                 LogActivity("Switch rebooted", $", duration: {rebootDur}");
@@ -1177,6 +1196,7 @@ namespace PoEWizard.Comm
                 double dur = 0;
                 while (dur <= MIN_WAIT_INIT_CPU_TIME_SEC)
                 {
+                    if (!this._waitingReboot) return null;
                     dur = GetTimeDuration(startTime);
                     if (dur >= MIN_WAIT_INIT_CPU_TIME_SEC) break;
                     UpdateProgressBarMessage($"{msg} ({CalcStringDurationTranslate(startTime, true)}){WAITING}", dur);
@@ -1186,6 +1206,7 @@ namespace PoEWizard.Comm
                 dur = 0;
                 while (dur < MAX_WAIT_INIT_CPU_TIME_SEC)
                 {
+                    if (!this._waitingReboot) return null;
                     Thread.Sleep(1000);
                     dur = (int)GetTimeDuration(progressStartTime);
                     UpdateProgressBarMessage($"{msg} ({CalcStringDurationTranslate(progressStartTime, true)}){WAITING}", dur);
@@ -1215,6 +1236,7 @@ namespace PoEWizard.Comm
                 int cntUp = 0;
                 while (dur < MAX_WAIT_PORTS_UP_SEC)
                 {
+                    if (!this._waitingReboot) return null;
                     Thread.Sleep(1000);
                     dur = (int)GetTimeDuration(progressStartTime);
                     UpdateProgressBarMessage($"{msg} ({CalcStringDurationTranslate(progressStartTime, true)}){WAITING}", dur);
@@ -1246,6 +1268,7 @@ namespace PoEWizard.Comm
             finally
             {
                 CloseProgressBar();
+                this._waitingReboot = false;
             }
         }
 
