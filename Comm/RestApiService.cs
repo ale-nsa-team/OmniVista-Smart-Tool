@@ -38,6 +38,7 @@ namespace PoEWizard.Comm
         private DateTime _backupStartTime;
         private readonly string _backupFolder = Path.Combine(MainWindow.DataPath, BACKUP_DIR);
         private bool _waitingReboot = false;
+        private bool _waitingInit = false;
 
         public bool IsReady { get; set; } = false;
         public int Timeout { get; set; }
@@ -1100,12 +1101,13 @@ namespace PoEWizard.Comm
 
         public bool IsWaitingReboot()
         {
-            return this._waitingReboot;
+            return this._waitingReboot || this._waitingInit;
         }
 
         public void StopWaitingReboot()
         {
             this._waitingReboot = false;
+            this._waitingInit = false;
         }
 
         public string RebootSwitch(int waitSec)
@@ -1164,16 +1166,20 @@ namespace PoEWizard.Comm
                 }
                 rebootDur = CalcStringDurationTranslate(rebootTime, true);
                 LogActivity("Switch rebooted", $", duration: {rebootDur}");
+                StringBuilder rebootMsg = new StringBuilder(Translate("i18n_switch")).Append(" ").Append(SwitchModel.Name).Append(" ").Append(Translate("i18n_swready"));
+                if (!string.IsNullOrEmpty(rebootDur)) rebootMsg.Append(" (").Append(Translate("i18n_rstdur")).Append(": ").Append(rebootDur).Append(").");
+                return rebootMsg.ToString();
             }
             catch (Exception ex)
             {
                 SendSwitchError($"{Translate("i18n_rebsw")} {PrintSwitchInfo()}", ex);
                 return null;
             }
-            CloseProgressBar();
-            StringBuilder rebootMsg = new StringBuilder(Translate("i18n_switch")).Append(" ").Append(SwitchModel.Name).Append(" ").Append(Translate("i18n_swready"));
-            if (!string.IsNullOrEmpty(rebootDur)) rebootMsg.Append(" (").Append(Translate("i18n_rstdur")).Append(": ").Append(rebootDur).Append(").");
-            return rebootMsg.ToString();
+            finally
+            {
+                StopWaitingReboot();
+                CloseProgressBar();
+            }
         }
 
         public string WaitInit(WizardReport reportResult)
@@ -1181,6 +1187,8 @@ namespace PoEWizard.Comm
             DateTime waitStartTime = DateTime.Now;
             try
             {
+                if (IsWaitingReboot()) return null;
+                this._waitingInit = true;
                 ResetWizardSlotPort();
                 progressStartTime = DateTime.Now;
                 string switchName = string.Empty;
@@ -1196,7 +1204,7 @@ namespace PoEWizard.Comm
                 double dur = 0;
                 while (dur <= MIN_WAIT_INIT_CPU_TIME_SEC)
                 {
-                    if (!this._waitingReboot) return null;
+                    if (!this._waitingInit) return null;
                     dur = GetTimeDuration(startTime);
                     if (dur >= MIN_WAIT_INIT_CPU_TIME_SEC) break;
                     UpdateProgressBarMessage($"{msg} ({CalcStringDurationTranslate(startTime, true)}){WAITING}", dur);
@@ -1206,7 +1214,7 @@ namespace PoEWizard.Comm
                 dur = 0;
                 while (dur < MAX_WAIT_INIT_CPU_TIME_SEC)
                 {
-                    if (!this._waitingReboot) return null;
+                    if (!this._waitingInit) return null;
                     Thread.Sleep(1000);
                     dur = (int)GetTimeDuration(progressStartTime);
                     UpdateProgressBarMessage($"{msg} ({CalcStringDurationTranslate(progressStartTime, true)}){WAITING}", dur);
@@ -1236,7 +1244,7 @@ namespace PoEWizard.Comm
                 int cntUp = 0;
                 while (dur < MAX_WAIT_PORTS_UP_SEC)
                 {
-                    if (!this._waitingReboot) return null;
+                    if (!this._waitingInit) return null;
                     Thread.Sleep(1000);
                     dur = (int)GetTimeDuration(progressStartTime);
                     UpdateProgressBarMessage($"{msg} ({CalcStringDurationTranslate(progressStartTime, true)}){WAITING}", dur);
@@ -1267,8 +1275,8 @@ namespace PoEWizard.Comm
             }
             finally
             {
+                StopWaitingReboot();
                 CloseProgressBar();
-                this._waitingReboot = false;
             }
         }
 
@@ -2778,7 +2786,7 @@ namespace PoEWizard.Comm
         private Dictionary<string, object> SendRequest(RestUrlEntry entry)
         {
             Dictionary<string, object> response = new Dictionary<string, object> { [STRING] = null, [DATA] = null };
-            Dictionary<string, string> respReq = this.RestApiClient.SendRequest(entry);
+            Dictionary<string, string> respReq = this.RestApiClient?.SendRequest(entry);
             if (respReq == null) return null;
             if (respReq.ContainsKey(ERROR) && !string.IsNullOrEmpty(respReq[ERROR]))
             {

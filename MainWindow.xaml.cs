@@ -624,8 +624,10 @@ namespace PoEWizard
                     };
                     if (ofd.ShowDialog() == true)
                     {
+                        DateTime startTime = DateTime.Now;
                         Activity.Log(device, "Launching restore configuration");
                         bool reboot = await RestoreSwitchConfiguration(ofd.FileName);
+                        Logger.Activity($"Restore configuration on switch {device.Name} ({device.IpAddress}) completed, duration: {Utils.CalcStringDuration(startTime)}");
                         if (reboot)
                         {
                             MsgBoxResult res = ShowMessageBox(TranslateRestoreRunning(), Translate("i18n_restReboot"), MsgBoxIcons.Question, MsgBoxButtons.YesNo);
@@ -891,7 +893,7 @@ namespace PoEWizard
                 {
                     if (ShowMessageBox(Translate("i18n_rebsw"), Translate("i18n_waitRebootCancel"), MsgBoxIcons.Info, MsgBoxButtons.YesNo) == MsgBoxResult.Yes)
                     {
-                        restApiService.StopWaitingReboot();
+                        await StopWaitingReboot();
                     }
                     return;
                 }
@@ -925,6 +927,24 @@ namespace PoEWizard
                 HideInfoBox();
                 HideProgress();
             }
+        }
+
+        private async Task StopWaitingReboot()
+        {
+            if (restApiService == null) return;
+            _reboot.IsEnabled = false;
+            string title = Translate("i18n_stoppingWaitReboot");
+            ShowInfoBox(title);
+            ShowProgress(title);
+            restApiService.StopWaitingReboot();
+            await Task.Run(() =>
+            {
+                while (restApiService.IsWaitingReboot())
+                {
+                    Thread.Sleep(250);
+                    restApiService.StopWaitingReboot();
+                }
+            });
         }
 
         private async Task RebootSwitch()
@@ -2228,8 +2248,8 @@ namespace PoEWizard
             _infoBlock.Inlines.Clear();
             _infoBlock.Inlines.Add(message);
             int maxLen = MaxLineLen(message);
-            if (maxLen > 70) _infoBox.Width = 520;
-            else _infoBox.Width = 430;
+            if (maxLen > 70) _infoBox.Width = 530;
+            else _infoBox.Width = 435;
             _infoBox.Visibility = Visibility.Visible;
         }
 
