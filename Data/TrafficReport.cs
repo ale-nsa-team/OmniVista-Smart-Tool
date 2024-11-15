@@ -130,7 +130,7 @@ namespace PoEWizard.Data
                 // Port,Alias
                 this.Data.Append("\r\n ").Append(this.trafficPort.Port).Append(",\"").Append(this.switchPorts[this.trafficPort.Port].Alias).Append("\"");
                 // Bandwitdh
-                this.Data.Append(",\"").Append(this.switchPorts[this.trafficPort.Port].Bandwidth).Append("\"");
+                this.Data.Append(",\"").Append(GetNetworkSpeed(this.trafficPort.BandWidth.ToString())).Append("\"");
                 // ,Rx Rate (Kbps)
                 double rxRate = ParseTrafficRate("Rx Rate", this.trafficPort.RxBytes);
                 // ,Tx Rate (Kbps)
@@ -345,9 +345,9 @@ namespace PoEWizard.Data
                 {
                     string txt1 = $"{origTraffRate} Kbps";
                     string txt2 = $"{this.trafficPort.BandWidth * 1000} Kbps";
-                    if (origTraffRate >= 1024)
+                    if (origTraffRate >= 1000)
                     {
-                        txt1 = $"{RoundUp(origTraffRate / 1024, 2)} Mbps";
+                        txt1 = $"{RoundUp(origTraffRate / 1000, 2)} Mbps";
                         txt2 = $"{this.trafficPort.BandWidth} Mbps";
                     }
                     AddPortAlert($"{title} ({txt1}) > {MAX_PERCENT_RATE}% of Bandwidth ({txt2}), Percentage: {percent}%");

@@ -309,14 +309,6 @@ namespace PoEWizard.Device
             else options.Add($"\n - {speed} {currDuplex}");
         }
 
-        private static string GetNetworkSpeed(string sVal)
-        {
-            int speed = StringToInt(sVal);
-            if (speed >= 1000) return $"{speed / 1000} Gbps";
-            else if (speed > 1 && speed < 1000) return $"{speed} Mbps";
-            else return string.Empty;
-        }
-
         public bool IsSwitchUplink()
         {
             return this.EndPointDevicesList?.Count > 0 && !string.IsNullOrEmpty(this.EndPointDevicesList[0].Type) && this.EndPointDevicesList[0].Type == MED_SWITCH;

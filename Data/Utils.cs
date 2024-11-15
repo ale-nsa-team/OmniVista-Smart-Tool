@@ -690,5 +690,13 @@ namespace PoEWizard.Data
             return cmdList;
         }
 
+        public static string GetNetworkSpeed(string sVal)
+        {
+            double speed = StringToDouble(sVal);
+            if (speed >= 1000) return $"{RoundUp(speed / 1000, 1)} Gbps";
+            else if (speed > 1 && speed < 1000) return $"{speed} Mbps";
+            else return string.Empty;
+        }
+
     }
 }
