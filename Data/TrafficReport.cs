@@ -135,7 +135,7 @@ namespace PoEWizard.Data
                 double rxRate = ParseTrafficRate("Rx Rate", this.trafficPort.RxBytes);
                 // ,Tx Rate (Kbps)
                 ParseTrafficRate("Tx Rate", this.trafficPort.TxBytes);
-                if (rxRate < 1) this.NbPortsNoData++;
+                if (rxRate == 0) this.NbPortsNoData++;
                 CalculateTrafficData();
 
                 #region RX Traffic data
