@@ -1072,6 +1072,7 @@ namespace PoEWizard
                 TrafficReport report = await Task.Run(() => restApiService.RunTrafficAnalysis(selectedTrafficDuration));
                 if (report != null)
                 {
+                    if (report.NbPortsNoData >= MAX_NB_PORTS_NO_DATA) ShowMessageBox(Translate("i18n_taIdle"), $"{Translate("i18n_tanodata")}", MsgBoxIcons.Info, MsgBoxButtons.Ok);
                     TextViewer tv = new TextViewer(Translate("i18n_taIdle"), report.Summary)
                     {
                         Owner = this,

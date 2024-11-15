@@ -10,7 +10,7 @@ namespace PoEWizard.Data
     public class TrafficReport
     {
 
-        const string HEADER = "Port,Alias,Rx Rate (Kbps),Tx Rate (Kbps),#Rx Broadcast Frames,#Rx Unicast Frames,Rx Broadcast/Unicast (%),#Rx Multicast Frames," +
+        const string HEADER = "Port,Alias,Bandwidth,Rx Rate (Kbps),Tx Rate (Kbps),#Rx Broadcast Frames,#Rx Unicast Frames,Rx Broadcast/Unicast (%),#Rx Multicast Frames," +
             "Rx Unicast+Multicast Rate (Kbps),#Rx Lost Frames,#Rx CRC Error,#Rx Alignments Error,#Tx Broadcast Frames,#Tx Unicast Frames,Tx Broadcast/Unicast (%)," +
             "#Tx Multicast Frames,Tx Unicast+Multicast Rate (Kbps),#Tx Lost Frames,#Tx Collided Frames,#Tx Collisions,#Tx Late Collisions,#Tx Excessive Collisions," +
             "Device Type,Vendor,MAC Address List";
@@ -50,6 +50,7 @@ namespace PoEWizard.Data
         public DateTime TrafficStartTime { get; set; }
         public SwitchTrafficModel SwitchTraffic { get; set; }
         public string SelectedDuration { get; set; }
+        public int NbPortsNoData { get; set; }
 
 
         public double TrafficDuration { get; set; }
@@ -114,6 +115,7 @@ namespace PoEWizard.Data
             this.Data.Append($"\r\nActual duration, ").Append(CalcStringDuration(TrafficStartTime, true));
             this.Data.Append("\r\n\r\n\r\n").Append(HEADER);
             this.alertReport = new Dictionary<string, string>();
+            this.NbPortsNoData = 0;
             foreach (KeyValuePair<string, PortTrafficModel> keyVal in this.SwitchTraffic.Ports)
             {
                 this.trafficPort = keyVal.Value;
@@ -127,10 +129,13 @@ namespace PoEWizard.Data
 
                 // Port,Alias
                 this.Data.Append("\r\n ").Append(this.trafficPort.Port).Append(",\"").Append(this.switchPorts[this.trafficPort.Port].Alias).Append("\"");
+                // Bandwitdh
+                this.Data.Append(",\"").Append(this.switchPorts[this.trafficPort.Port].Bandwidth).Append("\"");
                 // ,Rx Rate (Kbps)
-                ParseTrafficRate("Rx Rate", this.trafficPort.RxBytes);
+                double rxRate = ParseTrafficRate("Rx Rate", this.trafficPort.RxBytes);
                 // ,Tx Rate (Kbps)
                 ParseTrafficRate("Tx Rate", this.trafficPort.TxBytes);
+                if (rxRate < 1) this.NbPortsNoData++;
                 CalculateTrafficData();
 
                 #region RX Traffic data
@@ -327,13 +332,12 @@ namespace PoEWizard.Data
             return text;
         }
 
-        private void ParseTrafficRate(string title, List<double> samples)
+        private double ParseTrafficRate(string title, List<double> samples)
         {
             double traffRate = AddTrafficRate(samples);
-            this.Data.Append(",");
+            this.Data.Append(",").Append(traffRate);
             if (traffRate > 0)
             {
-                this.Data.Append(traffRate);
                 double origTraffRate = traffRate;
                 traffRate /= 1024;
                 double percent = CalcPercent(traffRate, this.trafficPort.BandWidth, 2);
@@ -349,6 +353,7 @@ namespace PoEWizard.Data
                     AddPortAlert($"{title} ({txt1}) > {MAX_PERCENT_RATE}% of Bandwidth ({txt2}), Percentage: {percent}%");
                 }
             }
+            return traffRate;
         }
 
         private void AddPortAlert(string alertMsg)
@@ -367,6 +372,7 @@ namespace PoEWizard.Data
         private double AddTrafficRate(List<double> nbBytes)
         {
             double dVal = (GetDiffTrafficSamples(nbBytes) * 8 / this.TrafficDuration) / 1024;
+            if (dVal < 0) dVal = 0;
             double avg = Math.Round(dVal, 2, MidpointRounding.ToEven);
             return avg;
         }

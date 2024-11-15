@@ -470,6 +470,10 @@ namespace PoEWizard.Data
         public const int SWITCH_CONNECT_TIMEOUT_SEC = 10;
         #endregion
 
+        #region Traffic Analysis Limits
+        public const int MAX_NB_PORTS_NO_DATA = 3;
+        #endregion
+
         #region Run Wizard Limits
         public const int WAIT_PORTS_UP_SEC = 30;
         public const double MAX_COLLECT_LOGS_WIZARD_DURATION = 65;
