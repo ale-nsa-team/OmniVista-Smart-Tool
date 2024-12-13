@@ -53,6 +53,11 @@
             <MenuItem Header="{DynamicResource i18n_cfg}">
                 <MenuItem Header="{DynamicResource i18n_frst}" x:Name="_factoryRst" IsEnabled="False" Click="FactoryReset" />
                 <MenuItem Header="{DynamicResource i18n_cfgWiz}" x:Name="_cfgMenuItem" IsEnabled="False" Click="LaunchConfigWizard"/>
+                <MenuItem Header="{DynamicResource i18n_upgrade}" x:Name="_upgradeMenuItem" IsEnabled="False">
+                    <MenuItem Header="{DynamicResource i18n_aos}" x:Name="_aosUpgrade" Click="UpgradeAos" />
+                    <MenuItem Header="{DynamicResource i18n_uboot}" x:Name="_ubootUpgrade" Click="UpgradeUboot" />
+                </MenuItem>
+                <Separator />
                 <MenuItem Header="{DynamicResource i18n_backup}" x:Name="_cfgBackup" IsEnabled="False" Click="LaunchBackupCfg"/>
                 <MenuItem Header="{DynamicResource i18n_restore}" x:Name="_cfgRestore" IsEnabled="False" Click="LaunchRestoreCfg"/>
             </MenuItem>
@@ -81,6 +86,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -206,10 +212,13 @@
                         </Image.Visibility>
                     </Image>
                 </StackPanel>
-                <Label Grid.Row="6" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_flash}" />
-                <TextBlock Grid.Row="6" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_flash" Text="{Binding FreeFlash}" />
-                <Label Grid.Row="7" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_cmmDbgLvl}" />
-                <TextBlock Grid.Row="7" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_lpcmm" Text="{Binding LpCmmLabelDebugLevel}"
+                <Label Grid.Row="6" Grid.Column="2" Style="{DynamicResource keyLabel}" x:Name="_ubootLbl" Content="{DynamicResource i18n_ubootv}" />
+                <Label Grid.Row="6" Grid.Column="2" Style="{DynamicResource keyLabel}" x:Name="_onieLbl" Visibility="Collapsed" Content="{DynamicResource i18n_oniev}" />
+                <TextBlock Grid.Row="6" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_uboot" Text="{Binding Uboot}" />
+                <Label Grid.Row="7" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_flash}" />
+                <TextBlock Grid.Row="7" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_flash" Text="{Binding FreeFlash}" />
+                <Label Grid.Row="8" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_cmmDbgLvl}" />
+                <TextBlock Grid.Row="8" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_lpcmm" Text="{Binding LpCmmLabelDebugLevel}"
                        Foreground="{Binding Path=LpCmmDebugLevel, Converter={StaticResource ValueToColorConverter}, ConverterParameter=LpCmmDebugLevel}"/>
             </Grid>
         </Border>

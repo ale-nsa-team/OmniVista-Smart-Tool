@@ -65,7 +65,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        public void UploadFile(string localPath, string remotePath, bool overWrite = false)
+        public bool UploadFile(string localPath, string remotePath, bool overWrite = false)
         {
             try
             {
@@ -74,11 +74,13 @@ namespace PoEWizard.Comm
                     _sftpClient.UploadFile(fs, remotePath, overWrite);
                 }
                 UpdateLastWriteTime(localPath, remotePath);
+                return true;
             }
             catch (Exception ex)
             {
                 Logger.Error($"Error uploading file {remotePath}", ex);
             }
+            return false;
         }
 
         private void UpdateLastWriteTime(string localPath, string remotePath)
@@ -195,13 +197,16 @@ namespace PoEWizard.Comm
         public List<string> GetFilesInRemoteDir(string remoteDir, string suffix = null)
         {
             List<string> filesList = new List<string>();
-            var files = _sftpClient.ListDirectory(remoteDir);
-            foreach (var file in files)
+            if (_sftpClient.IsConnected)
             {
-                if (file.IsRegularFile)
+                var files = _sftpClient.ListDirectory(remoteDir);
+                foreach (var file in files)
                 {
-                    if (string.IsNullOrEmpty(suffix)) filesList.Add(file.Name);
-                    else if (file.Name.EndsWith(suffix.Replace("*", string.Empty))) filesList.Add(file.Name);
+                    if (file.IsRegularFile)
+                    {
+                        if (string.IsNullOrEmpty(suffix)) filesList.Add(file.Name);
+                        else if (file.Name.EndsWith(suffix.Replace("*", string.Empty))) filesList.Add(file.Name);
+                    }
                 }
             }
             return filesList;

@@ -307,6 +307,11 @@ namespace PoEWizard
             }
         }
 
+        private void ViewHwInfo_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void ViewPS_Click(object sender, RoutedEventArgs e)
         {
             var ps = new PowerSupply(device)
@@ -511,6 +516,50 @@ namespace PoEWizard
             {
                 selectedDeviceType = ds.DeviceType;
                 LaunchPoeWizard();
+            }
+        }
+
+        private void UpgradeAos(object sender, RoutedEventArgs e)
+        {
+            LaunchUpgrade(true);
+        }
+
+        private void UpgradeUboot(object sender, RoutedEventArgs e)
+        {
+            LaunchUpgrade(false);
+        }
+
+        private async void LaunchUpgrade(bool isAos)
+        {
+            PassCode pc = new PassCode(this, config);
+            if (pc.ShowDialog() == false) return;
+            if (pc.Password != pc.SavedPassword)
+            {
+                ShowMessageBox(TranslateRestoreRunning(), Translate("i18n_badPwd"), MsgBoxIcons.Error);
+                return;
+            }
+            var ofd = new OpenFileDialog()
+            {
+                Filter = $"{Translate("i18n_zipFile")}|*.zip",
+                Title = Translate("i18n_upgSelFile"),
+                InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+            };
+            if (ofd.ShowDialog() == false) return;
+            DisableButtons();
+            AosUpgrade.Progress = progress;
+            string source = isAos ? Translate("i18n_aosUpg") : Translate("i18n_ubootUpg");
+            ShowProgress($"{source}...");
+            bool res;
+            if (isAos) res = await Task.Run(() => AosUpgrade.UpgradeAos(device, ofd.FileName));
+            else res = await Task.Run(() => AosUpgrade.UpgradeUboot(device, ofd.FileName));
+            HideProgress();
+            EnableButtons();
+            if (res)
+            {
+                MsgBoxResult reboot = ShowMessageBox(source, Translate("i18n_upgReboot"), MsgBoxIcons.Question, MsgBoxButtons.YesNo);
+                if (reboot == MsgBoxResult.No) return;
+                restApiService?.StopTrafficAnalysis(TrafficStatus.Abort, $"interrupted by {source} before rebooting the switch {device.Name}");
+                await RebootSwitch();
             }
         }
 
@@ -2313,6 +2362,11 @@ namespace PoEWizard
                 _portList.Visibility = Visibility.Visible;
                 _fpgaLbl.Visibility = string.IsNullOrEmpty(device.Fpga) ? Visibility.Collapsed : Visibility.Visible;
                 _cpldLbl.Visibility = string.IsNullOrEmpty(device.Cpld) ? Visibility.Collapsed : Visibility.Visible;
+                bool u = device.Uboot != "N/A";
+                bool o = device.Onie != "N/A";
+                _ubootLbl.Visibility = u | !o ? Visibility.Visible : Visibility.Collapsed;
+                _onieLbl.Visibility = !u & o ? Visibility.Visible : Visibility.Collapsed;
+                _uboot.Text = u | !o ? device.Uboot : device.Onie;
                 _btnConnect.IsEnabled = true;
                 _comImg.ToolTip = Translate("i18n_disc_tt");
                 if (device.TemperatureStatus == ThresholdType.Danger)
@@ -2380,6 +2434,9 @@ namespace PoEWizard
             _comImg.Visibility = Visibility.Visible;
             _btnConnect.Visibility = Visibility.Visible;
             _switchMenuItem.IsEnabled = true;
+            _uboot.Text = string.Empty;
+            _ubootLbl.Visibility = Visibility.Visible;
+            _onieLbl.Visibility = Visibility.Collapsed;
             _comImg.Source = (ImageSource)currentDict["disconnected"];
             _comImg.ToolTip = Translate("i18n_recon_tt");
             restApiService = null;
@@ -2397,6 +2454,7 @@ namespace PoEWizard
             _portList.Visibility = Visibility.Hidden;
             _fpgaLbl.Visibility = Visibility.Visible;
             _cpldLbl.Visibility = Visibility.Collapsed;
+            _uboot.Text = string.Empty;
             _switchAttributes.Text = null;
             selectedPort = null;
             selectedPortIndex = -1;
@@ -2425,6 +2483,7 @@ namespace PoEWizard
             _vlanMenuItem.IsEnabled = val;
             _factoryRst.IsEnabled = val;
             _cfgMenuItem.IsEnabled = val;
+            _upgradeMenuItem.IsEnabled = val;
             _cfgBackup.IsEnabled = val;
             _cfgRestore.IsEnabled = val;
         }

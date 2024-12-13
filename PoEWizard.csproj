@@ -219,6 +219,7 @@
     <Compile Include="Data\RestUrlEntry.cs" />
     <Compile Include="Data\SwitchTemperature.cs" />
     <Compile Include="Data\Utils.cs" />
+    <Compile Include="Device\AosUpgrade.cs" />
     <Compile Include="Device\ChassisModel.cs" />
     <Compile Include="Components\ValueConverters.cs" />
   </ItemGroup>

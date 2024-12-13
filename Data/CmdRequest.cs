@@ -75,7 +75,9 @@ namespace PoEWizard.Data
         #region General Switch commands
         WRITE_MEMORY,
         SHOW_CONFIGURATION,
+        SHOW_HW_INFO,
         REBOOT_SWITCH,
+        UPDATE_UBOOT,
         #endregion
 
         #region Traffic Analysis commands

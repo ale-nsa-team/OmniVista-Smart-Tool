@@ -26,6 +26,8 @@ namespace PoEWizard.Device
         public string Fpga { get; set; }
         public string Cpld { get; set; }
         public string FreeFlash { get; set; }
+        public string Uboot { get; set; }
+        public string Onie { get; set; }
         #endregion
 
         public string DefaultGwy { get; set; }
@@ -121,7 +123,6 @@ namespace PoEWizard.Device
                         ChassisList.Add(chassis);
                     }
                     break;
-
                 case DictionaryType.Cmm:
                     if (ChassisList?.Count > 0)
                     {
@@ -141,7 +142,23 @@ namespace PoEWizard.Device
                         }
                     }
                     break;
-
+                case DictionaryType.HwInfo:
+                    if (ChassisList?.Count > 0)
+                    {
+                        foreach(Dictionary<string, string> dict in dictList)
+                        {
+                            int chassisNr = StringToInt(GetDictValue(dict, CHASSIS)) - 1;
+                            if (chassisNr >= 0 && chassisNr < ChassisList.Count)
+                            {
+                                chassis = ChassisList[chassisNr];
+                                if (dict.ContainsKey(UBOOT)) chassis.Uboot = GetDictValue(dict, UBOOT);
+                                else chassis.Uboot = "N/A";
+                                if (dict.ContainsKey(ONIE)) chassis.Onie = GetDictValue(dict, ONIE);
+                                else chassis.Onie = "N/A";
+                            }
+                        }
+                    }
+                    break;
                 case DictionaryType.PortsList:
                     int nchas = dictList.GroupBy(d => GetChassisId(d)).Count();
                     for (int i = 1; i <= nchas; i++)
@@ -173,7 +190,6 @@ namespace PoEWizard.Device
                         }
                     }
                     break;
-
                 case DictionaryType.PowerSupply:
                     foreach (var dic in dictList)
                     {
@@ -186,7 +202,6 @@ namespace PoEWizard.Device
                         else psm = newPsm;
                     }
                     break;
-
                 case DictionaryType.TemperatureList:
                     SwitchTemperature temperature = new SwitchTemperature();
                     foreach (var dic in dictList)
@@ -198,7 +213,6 @@ namespace PoEWizard.Device
                     }
                     UpdateTemperatureSelectedSlot();
                     break;
-
                 case DictionaryType.CpuTrafficList:
                     foreach (var dic in dictList)
                     {
@@ -209,7 +223,6 @@ namespace PoEWizard.Device
                     }
                     UpdateCpuSelectedSlot();
                     break;
-
                 case DictionaryType.SwitchDebugAppList:
                     foreach (Dictionary<string, string> dict in dictList)
                     {
@@ -233,7 +246,6 @@ namespace PoEWizard.Device
                         }
                     }
                     break;
-
                 case DictionaryType.ShowInterfacesList:
                     foreach (Dictionary<string, string> dict in dictList)
                     {
@@ -314,6 +326,8 @@ namespace PoEWizard.Device
             Fpga = !string.IsNullOrEmpty(chassis.Fpga) ? chassis.Fpga : string.Empty;
             Cpld = !string.IsNullOrEmpty(chassis.Cpld) ? chassis.Cpld : string.Empty;
             FreeFlash = chassis.FreeFlash;
+            Uboot = chassis.Uboot;
+            Onie = chassis.Onie;
         }
 
         private void UpdateTemperatureSelectedSlot()

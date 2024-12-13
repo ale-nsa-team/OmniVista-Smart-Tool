@@ -95,4 +95,13 @@ namespace PoEWizard.Exceptions
         { }
     }
 
+    [Serializable]
+    public class UpgradeException : Exception
+    {
+        public UpgradeException(string source, string message) : base(message)
+        { 
+            Source = source;
+        }
+    }
+
 }

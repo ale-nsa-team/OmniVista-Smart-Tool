@@ -36,7 +36,7 @@ namespace PoEWizard.Data
         public enum ChassisStatus { Unknown, Up, Down }
         public enum DictionaryType
         {
-            SystemRunningDir, Chassis, Cmm, MicroCode, LanPower, LanPowerCfg, PortsList, PortIdList, PowerSupply, LldpRemoteList,
+            SystemRunningDir, Chassis, Cmm, MicroCode, HwInfo, LanPower, LanPowerCfg, PortsList, PortIdList, PowerSupply, LldpRemoteList,
             TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, ShowInterfacesList, None
         }
         public enum ConfigType { Disable, Enable, Unavailable }
@@ -186,6 +186,10 @@ namespace PoEWizard.Data
         // Used by "SHOW_CMM":
         public const string FPGA = "FPGA";
         public const string CPLD = "CPLD";
+        // Used by "SHOW_HW_INFO"
+        public const string CHASSIS = "Chassis";
+        public const string UBOOT = "U-Boot Version";
+        public const string ONIE = "ONIE Version";
         // Used by "SHOW_RUNNING_DIR"
         public const string RUNNING_CONFIGURATION = "Running configuration";
         public const string SYNCHRONIZATION_STATUS = "Running Configuration";
@@ -396,6 +400,7 @@ namespace PoEWizard.Data
         public const string MATCH_TABLE_SEP = @"(-+\++)+";
         public const string MATCH_CHASSIS = @"([Local|Remote] Chassis ID )(\d+) \((.+)\)";
         public const string MATCH_CMM = @"(Chassis ID )(\d+)";
+        public const string MATCH_HW_INFO = @"(Chassis )(\d+)";
         public const string MATCH_AOS_VERSION = @"(\d+)\.(\d+)([\.\d +]+)(\.R)(\d+)";
         public const string MATCH_POE_RUNNING = @"Lanpower chassis \d slot \d service running ...";
         public const string MATCH_USER = @"(User name)\s*=\s*(.+),";

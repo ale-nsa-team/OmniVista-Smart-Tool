@@ -16,6 +16,7 @@ namespace PoEWizard.Data
         private static readonly Regex chassisRegex = new Regex(MATCH_CHASSIS);
         private static readonly Regex cmmRegex = new Regex(MATCH_CMM);
         private static readonly Regex userRegex = new Regex(MATCH_USER);
+        private static readonly Regex hwInfoRegex = new Regex(MATCH_HW_INFO);
 
         public static List<Dictionary<string, string>> ParseListFromDictionary(Dictionary<string, string> inputDict, string match = null)
         {
@@ -125,13 +126,16 @@ namespace PoEWizard.Data
                     bodyRegex = vtableRegex;
                     headerKeys = new string[] { "ID", "Role" };
                     break;
-
+                case DictionaryType.HwInfo:
+                    headerRegex = hwInfoRegex;
+                    bodyRegex= vtableRegex;
+                    headerKeys = new string[] { "Chassis" };
+                    break;
                 case DictionaryType.User:
                     headerRegex = userRegex;
                     bodyRegex = etableRegex;
                     headerKeys = new string[] { "User name" };
                     break; ;
-
                 default:
                     return table;
             }

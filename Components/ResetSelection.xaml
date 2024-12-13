@@ -5,7 +5,7 @@
        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
        xmlns:local="clr-namespace:PoEWizard.Components"
        mc:Ignorable="d"
-       Title="Login" Height="200" Width="430" WindowStyle="None" ShowInTaskbar="False">
+       Title="Login" Height="200" Width="468" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -15,7 +15,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid Style="{DynamicResource _mainGrid}" Margin="1,0,-1,0">
+    <Grid Style="{DynamicResource _mainGrid}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -32,7 +32,7 @@
         </StackPanel>
         <Border Grid.Row="3" Style="{DynamicResource propsBorder}">
             <StackPanel Orientation="Horizontal">
-                <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="110,0,0,0">OK</Button>
+                <Button Click="BtnOk_Click" Style="{DynamicResource defaultButton}" Margin="125,0,0,0">OK</Button>
                 <Button Click="BtnCancel_Click" Style="{DynamicResource defaultButton}" Margin="20,0,0,0">Cancel</Button>
             </StackPanel>
         </Border>

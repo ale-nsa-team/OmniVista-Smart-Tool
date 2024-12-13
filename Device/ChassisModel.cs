@@ -28,6 +28,8 @@ namespace PoEWizard.Device
         public bool SupportsPoE { get; set; }
         public string Fpga { get; set; }
         public string Cpld { get; set; }
+        public string Uboot { get; set; }
+        public string Onie { get; set; }
         public int Cpu { get; set; }
         public string FlashSize { get; set; }
         public string FlashUsage { get; set; }

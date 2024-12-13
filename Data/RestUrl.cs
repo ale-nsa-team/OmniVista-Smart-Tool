@@ -100,7 +100,9 @@ namespace PoEWizard.Data
             #region General Switch commands
             [Command.WRITE_MEMORY] = "write memory flash-synchro",
             [Command.SHOW_CONFIGURATION] = "show configuration snapshot",
+            [Command.SHOW_HW_INFO] = "show hardware-info",
             [Command.REBOOT_SWITCH] = "reload from working no rollback-timeout",
+            [Command.UPDATE_UBOOT] = $"update uboot cmm all file {DAT}",
             #endregion
 
             #region Traffic Analysis commands

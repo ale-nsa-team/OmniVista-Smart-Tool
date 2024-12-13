@@ -24,6 +24,9 @@
     <sys:String x:Key="i18n_about">About</sys:String>
     <sys:String x:Key="i18n_frst">Factory Reset...</sys:String>
     <sys:String x:Key="i18n_cfgWiz">Basic Configuration Wizard...</sys:String>
+    <sys:String x:Key="i18n_upgrade">Upgrade</sys:String>
+    <sys:String x:Key="i18n_aos">AOS</sys:String>
+    <sys:String x:Key="i18n_uboot">U-Boot</sys:String>
     <sys:String x:Key="i18n_backup">Backup</sys:String>
     <sys:String x:Key="i18n_restore">Restore</sys:String>
     <sys:String x:Key="i18n_lang">Language</sys:String>
@@ -66,6 +69,8 @@
     <sys:String x:Key="i18n_temp">Temperature:</sys:String>
     <sys:String x:Key="i18n_cpu">CPU Usage:</sys:String>
     <sys:String x:Key="i18n_fpga">FPGA Version:</sys:String>
+    <sys:String x:Key="i18n_ubootv">U-Boot Version:</sys:String>
+    <sys:String x:Key="i18n_oniev">ONIE Version</sys:String>
     <sys:String x:Key="i18n_cpld">CPLD Version:</sys:String>
     <sys:String x:Key="i18n_flash">Free Flash Memory:</sys:String>
 
@@ -195,13 +200,28 @@ Please confirm your action.
     <sys:String x:Key="i18n_fctRst">Factory Reset</sys:String>
     <sys:String x:Key="i18n_afrst">Applying factory default...</sys:String>
     <sys:String x:Key="i18n_rstsel">Select type of reset:</sys:String>
-    <sys:String x:Key="i18n_fullrst">Full Factory Reset (you will have to reconnect to the switch via console)</sys:String>
+    <sys:String x:Key="i18n_fullrst">Full Factory Reset (you will have to reconnect to the switch via console or use lightning config)</sys:String>
     <sys:String x:Key="i18n_partrst">Factory Reset + management interface (allows to reconnect to the switch via this app)</sys:String>
     <sys:String x:Key="i18n_frReboot">Configuration reset complete, switch will reboot now</sys:String>
     <sys:String x:Key="i18n_frPrep">Prepairing factory default...</sys:String>
     <sys:String x:Key="i18n_frDelete">Removing config files</sys:String>
     <sys:String x:Key="i18n_frTmplt">Appying basic template...</sys:String>
     
+    <!--Upgrade Messages-->
+    <sys:String x:Key="i18n_aosUpg">AOS Upgrade</sys:String>
+    <sys:String x:Key="i18n_ubootUpg">U-Boot Upgrade</sys:String>
+    <sys:String x:Key="i18n_onieUpg">ONIE Upgrade</sys:String>
+    <sys:String x:Key="i18n_upgSelFile">Select zip archive with image files to upgrade</sys:String>
+    <sys:String x:Key="i18n_upgErr">Provided archive is missing required files</sys:String>
+    <sys:String x:Key="i18n_noUboot">U-Boot not supported by this switch</sys:String>
+    <sys:String x:Key="i18n_noUbootf">No U-Boot tar.gz file found in archive</sys:String>
+    <sys:String x:Key="i18n_noOnie">ONIE upgrades are not available yet for this switch</sys:String>
+    <sys:String x:Key="i18n_zipErr">Error opening archive</sys:String>
+    <sys:String x:Key="i18n_noImg">Could not find any *.img file in directory</sys:String>
+    <sys:String x:Key="i18n_uplErr">Could not upload file</sys:String>
+    <sys:String x:Key="i18n_upgReboot" xml:space="preserve">The switch needs to be restarted to complete the upgrade.
+Do you want to reboot now?</sys:String>
+
     <!--Backup Messages-->
     <sys:String x:Key="i18n_bckRunning">Backing up configuration of switch</sys:String>
     <sys:String x:Key="i18n_bckSync">Checking Sync Status before backup</sys:String>
@@ -533,7 +553,7 @@ It may take up to 30 sec to execute Write Memory
     <sys:String x:Key="i18n_temp_tt">Switch may reduce PoE output because temperature is too high</sys:String>
     <sys:String x:Key="i18n_fpga_tt">Switch FPGA version is too old.Please buy a support contract and upgrade your switch</sys:String>
     <sys:String x:Key="i18n_cpld_tt">Switch CPLD version is too old.Please buy a support contract and upgrade your switch</sys:String>
-    <sys:String x:Key="i18n_poe_tt">Turn PoE on/off on this port</sys:String>
+    <sys:String x:Key="i18n_poe_tt">Turn PoE on/off on this slot</sys:String>
     <sys:String x:Key="i18n_fpoe_tt">Fast PoE is disabled when PoE is turned off or 802.3bt is enabled</sys:String>
     <sys:String x:Key="i18n_ppoe_tt">Perpetual PoE is disabled when PoE is turned off or 802.3bt is enabled</sys:String>
     <sys:String x:Key="i18n_disc_tt">Click to disconnect</sys:String>
