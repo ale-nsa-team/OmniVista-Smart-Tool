@@ -170,9 +170,11 @@
                         </Image.ToolTip>
                     </Image>
                 </StackPanel>
-                <Label Grid.Row="5" Grid.Column="2" x:Name="_fpgaLbl" Style="{DynamicResource keyLabel}"
+                <Label Grid.Row="5" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_flash}" />
+                <TextBlock Grid.Row="5" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_flash" Text="{Binding FreeFlash}" />
+                <Label Grid.Row="6" Grid.Column="2" x:Name="_fpgaLbl" Style="{DynamicResource keyLabel}"
                        Visibility="Visible" Content="{DynamicResource i18n_fpga}" />
-                <StackPanel Grid.Row="5" Grid.Column="3" Orientation="Horizontal">
+                <StackPanel Grid.Row="6" Grid.Column="3" Orientation="Horizontal">
                     <TextBlock Style="{DynamicResource infoVal}" x:Name="_fpga" Text="{Binding Fpga}">
                         <TextBlock.Foreground>
                             <MultiBinding Converter="{StaticResource FpgaToColorConveter}" ConverterParameter="FPGA">
@@ -191,9 +193,9 @@
                         </Image.Visibility>
                     </Image>
                 </StackPanel>
-                <Label Grid.Row="5" Grid.Column="2" x:Name="_cpldLbl" Style="{DynamicResource keyLabel}"
+                <Label Grid.Row="6" Grid.Column="2" x:Name="_cpldLbl" Style="{DynamicResource keyLabel}"
                        Visibility="Hidden" Content="{DynamicResource i18n_cpld}" />
-                <StackPanel Grid.Row="5" Grid.Column="3" Orientation="Horizontal">
+                <StackPanel Grid.Row="6" Grid.Column="3" Orientation="Horizontal">
                     <TextBlock Style="{DynamicResource infoVal}" x:Name="_cpld" Text="{Binding Cpld}">
                         <TextBlock.Foreground>
                             <MultiBinding Converter="{StaticResource FpgaToColorConveter}" ConverterParameter="CPLD">
@@ -212,11 +214,9 @@
                         </Image.Visibility>
                     </Image>
                 </StackPanel>
-                <Label Grid.Row="6" Grid.Column="2" Style="{DynamicResource keyLabel}" x:Name="_ubootLbl" Content="{DynamicResource i18n_ubootv}" />
-                <Label Grid.Row="6" Grid.Column="2" Style="{DynamicResource keyLabel}" x:Name="_onieLbl" Visibility="Collapsed" Content="{DynamicResource i18n_oniev}" />
-                <TextBlock Grid.Row="6" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_uboot" Text="{Binding Uboot}" />
-                <Label Grid.Row="7" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_flash}" />
-                <TextBlock Grid.Row="7" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_flash" Text="{Binding FreeFlash}" />
+                <Label Grid.Row="7" Grid.Column="2" Style="{DynamicResource keyLabel}" x:Name="_ubootLbl" Content="{DynamicResource i18n_ubootv}" />
+                <Label Grid.Row="7" Grid.Column="2" Style="{DynamicResource keyLabel}" x:Name="_onieLbl" Visibility="Collapsed" Content="{DynamicResource i18n_oniev}" />
+                <TextBlock Grid.Row="7" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_uboot" Text="{Binding Uboot}" />
                 <Label Grid.Row="8" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_cmmDbgLvl}" />
                 <TextBlock Grid.Row="8" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_lpcmm" Text="{Binding LpCmmLabelDebugLevel}"
                        Foreground="{Binding Path=LpCmmDebugLevel, Converter={StaticResource ValueToColorConverter}, ConverterParameter=LpCmmDebugLevel}"/>

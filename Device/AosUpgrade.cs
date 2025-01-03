@@ -28,6 +28,7 @@ namespace PoEWizard.Device
         {
             try
             {
+                Progress.Report(new ProgressReport(ReportType.Status, Translate("i18n_aosUpg"), Translate("i18n_upgCheck")));
                 string err = OpenScp(model);
                 if (err != null) throw new UpgradeException(Translate("i18n_aosUpg"), err);
 
@@ -38,7 +39,7 @@ namespace PoEWizard.Device
                 List<string> files = CheckMissingFilesInArchive(archive) ??
                     throw new UpgradeException(Translate("i18n_aosUpg"), $"{Translate("i18n_zipErr")} {archive}");
                 if (files.Count > 0) throw new UpgradeException(Translate("i18n_aosUpg"), $"{Translate("i18n_upgErr")}: {string.Join(", ", files)}");
-
+                Progress.Report(new ProgressReport(ReportType.Status, Translate("i18n_aosUpg"), Translate("i18n_upgUpl")));
                 ExtractArchive(archive);
                 foreach (string file in reqFiles)
                 {
@@ -48,11 +49,13 @@ namespace PoEWizard.Device
                         throw new UpgradeException(Translate("i18n_aosUpg"), $"{Translate("i18n_uplErr")} {file}");
                 }
                 DeleteTempFiles();
+                Logger.Activity($"Switch {model.Name}, Model {model.Model}: AOS upgraded to {Path.GetFileNameWithoutExtension(archive)}");
                 return true;
             }
             catch (UpgradeException ex)
             {
                 Progress.Report(new ProgressReport(ReportType.Error, ex.Source, ex.Message));
+                Logger.Error($"Switch {model.Name}, Model {model.Model}: AOS upgrade failed - {ex.Message}");
                 return false;
             }
             finally
@@ -66,22 +69,27 @@ namespace PoEWizard.Device
             try
             {
                 if (model.Uboot == "N/A") throw new UpgradeException(Translate("i18n_ubootUpg"), Translate("i18n_noUboot"));
+                Progress.Report(new ProgressReport(ReportType.Status, Translate("i18n_ubootUpg"), Translate("i18n_upgCheck")));
                 string err = OpenScp(model);
                 if (err != null) throw new UpgradeException(Translate("i18n_ubootUpg"), err);
                 string ubootf = ExtractUbootFromArchive(archive) ?? 
                     throw new UpgradeException(Translate("i18n_ubootUpg"), Translate("i18n_noUbootf"));
                 string localFile = Path.Combine(Path.GetTempPath(), ubootf);
                 string remoteFile = $"/{FLASH_DIR}/{ubootf}";
+                Progress.Report(new ProgressReport(ReportType.Status, Translate("i18n_ubootUpg"), Translate("i18n_upgUpl")));
                 if (!sftpSrv.UploadFile(localFile, remoteFile, true)) 
                     throw new UpgradeException(Translate("i18n_ubootUpg"), $"{Translate("i18n_uplErr")} {ubootf} to switch");
                 if (sftpSrv.IsConnected) sftpSrv.Disconnect();
                 try { File.Delete(localFile); } catch { }
+                Progress.Report(new ProgressReport(ReportType.Status, Translate("i18n_ubootUpg"), Translate("i18n_ubootCmd")));
                 SendUpgradeCommand(remoteFile);
+                Logger.Activity($"Switch {model.Name}, Model {model.Model}: U-Boot upgraded to {Path.GetFileNameWithoutExtension(archive)}");
                 return true;
             }
             catch (UpgradeException ex)
             {
                 Progress.Report(new ProgressReport(ReportType.Error, ex.Source, ex.Message));
+                Logger.Error($"Switch {model.Name}, Model {model.Model}: U-Boot upgrade failed - {ex.Message}");
                 if (sftpSrv.IsConnected) sftpSrv.Disconnect();
                 return false;
             }
@@ -178,17 +186,28 @@ namespace PoEWizard.Device
 
         private static void SendUpgradeCommand(string filepath)
         {
-            AosSshService ssh = new AosSshService(swModel);
-            ssh.ConnectSshClient();
-            Dictionary<string, string> response = ssh.SendCommand(new RestUrlEntry(Command.UPDATE_UBOOT), new string[] { filepath });
-            if (response != null && response.ContainsKey("output") && !string.IsNullOrEmpty(response["output"]))
+            try
             {
-                if (response["output"].Contains("ERROR"))
+                AosSshService ssh = new AosSshService(swModel);
+                ssh.ConnectSshClient();
+                Dictionary<string, string> response = ssh.SendCommand(new RestUrlEntry(Command.UPDATE_UBOOT), new string[] { filepath });
+                ssh.DisconnectSshClient();
+                ssh.Dispose();
+
+                if (response != null && response.ContainsKey("output") && !string.IsNullOrEmpty(response["output"]))
                 {
-                    string err = Regex.Match(response["output"], "ERROR: (.+)$").Groups[1].Value;
-                    throw new UpgradeException(Translate("i18n_ubootUpg"), err);
+                    if (response["output"].Contains("ERROR"))
+                    {
+                        string err = Regex.Match(response["output"], "ERROR: (.+)$").Groups[1].Value;
+                        throw new Exception(err);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                throw new UpgradeException(Translate("i18n_ubootUpg"), ex.Message);
+            }
+
         }
     }
 }

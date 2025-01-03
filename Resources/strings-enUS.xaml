@@ -211,7 +211,9 @@ Please confirm your action.
     <sys:String x:Key="i18n_aosUpg">AOS Upgrade</sys:String>
     <sys:String x:Key="i18n_ubootUpg">U-Boot Upgrade</sys:String>
     <sys:String x:Key="i18n_onieUpg">ONIE Upgrade</sys:String>
+    <sys:String x:Key="i18n_upgCheck">Checking current binaries on the switch...</sys:String>
     <sys:String x:Key="i18n_upgSelFile">Select zip archive with image files to upgrade</sys:String>
+    <sys:String x:Key="i18n_upgUpl">Uploading new binaries to switch...</sys:String>
     <sys:String x:Key="i18n_upgErr">Provided archive is missing required files</sys:String>
     <sys:String x:Key="i18n_noUboot">U-Boot not supported by this switch</sys:String>
     <sys:String x:Key="i18n_noUbootf">No U-Boot tar.gz file found in archive</sys:String>
@@ -219,6 +221,7 @@ Please confirm your action.
     <sys:String x:Key="i18n_zipErr">Error opening archive</sys:String>
     <sys:String x:Key="i18n_noImg">Could not find any *.img file in directory</sys:String>
     <sys:String x:Key="i18n_uplErr">Could not upload file</sys:String>
+    <sys:String x:Key="i18n_ubootCmd">Running U-Boot upgrade command...</sys:String>
     <sys:String x:Key="i18n_upgReboot" xml:space="preserve">The switch needs to be restarted to complete the upgrade.
 Do you want to reboot now?</sys:String>
 

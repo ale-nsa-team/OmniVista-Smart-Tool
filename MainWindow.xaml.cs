@@ -432,8 +432,8 @@ namespace PoEWizard
                 ShowMessageBox(Translate("i18n_fctRst"), Translate("i18n_badPwd"), MsgBoxIcons.Error);
                 return;
             }
-            Logger.Warn($"Switch S/N {device.SerialNumber} Model {device.Model}: {(rs.IsFullReset ? "Full" : "Partial")} Factory reset applied!");
-
+            Logger.Warn($"Switch {device.Name}, Model {device.Model}: {(rs.IsFullReset ? "Full" : "Partial")} Factory reset applied!");
+            Activity.Log(device, rs.IsFullReset ? "Full " : "Partial " + "Factory reset applied.");
             ShowProgress(Translate("i18n_afrst"));
             FactoryDefault.Progress = progress;
             await Task.Run(() => FactoryDefault.Reset(device, rs.IsFullReset));
@@ -556,10 +556,15 @@ namespace PoEWizard
             EnableButtons();
             if (res)
             {
+                Activity.Log(device, isAos ? "AOS upgrade applied" : "U-Boot upgrade applied");
                 MsgBoxResult reboot = ShowMessageBox(source, Translate("i18n_upgReboot"), MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                 if (reboot == MsgBoxResult.No) return;
                 restApiService?.StopTrafficAnalysis(TrafficStatus.Abort, $"interrupted by {source} before rebooting the switch {device.Name}");
                 await RebootSwitch();
+            }
+            else
+            {
+                Activity.Log(device, isAos ? "AOS upgrade failed" : "U-Boot upgrade failed");
             }
         }
 
