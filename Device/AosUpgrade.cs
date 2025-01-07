@@ -28,25 +28,26 @@ namespace PoEWizard.Device
         {
             try
             {
-                Progress.Report(new ProgressReport(ReportType.Status, Translate("i18n_aosUpg"), Translate("i18n_upgCheck")));
+                string source = Translate("i18n_aosUpg");
+                Progress.Report(new ProgressReport(ReportType.Status, source, Translate("i18n_upgCheck")));
                 string err = OpenScp(model);
-                if (err != null) throw new UpgradeException(Translate("i18n_aosUpg"), err);
+                if (err != null) throw new UpgradeException(source, err);
 
                 imgFiles = sftpSrv.GetFilesInRemoteDir(FLASH_WORKING_DIR, "img");
-                if (imgFiles.Count == 0) throw new UpgradeException(Translate("i18n_aosUpg"), $"{Translate("i18n_noImg")} {FLASH_WORKING_DIR}");
+                if (imgFiles.Count == 0) throw new UpgradeException(source, $"{Translate("i18n_noImg")} {FLASH_WORKING_DIR}");
 
                 reqFiles = imgFiles.Concat(new List<string> { SHA_SUM, LSM }).ToList();
                 List<string> files = CheckMissingFilesInArchive(archive) ??
-                    throw new UpgradeException(Translate("i18n_aosUpg"), $"{Translate("i18n_zipErr")} {archive}");
-                if (files.Count > 0) throw new UpgradeException(Translate("i18n_aosUpg"), $"{Translate("i18n_upgErr")}: {string.Join(", ", files)}");
-                Progress.Report(new ProgressReport(ReportType.Status, Translate("i18n_aosUpg"), Translate("i18n_upgUpl")));
+                    throw new UpgradeException(source, $"{Translate("i18n_zipErr")} {archive}");
+                if (files.Count > 0) throw new UpgradeException(source, $"{Translate("i18n_upgErr")}: {string.Join(", ", files)}");
+                Progress.Report(new ProgressReport(ReportType.Status, source, Translate("i18n_upgUpl")));
                 ExtractArchive(archive);
                 foreach (string file in reqFiles)
                 {
                     string localFile = Path.Combine(Path.GetTempPath(), file);
                     string remoteFile = $"{FLASH_WORKING_DIR}/{file}";
                     if (!sftpSrv.UploadFile(localFile, remoteFile, true)) 
-                        throw new UpgradeException(Translate("i18n_aosUpg"), $"{Translate("i18n_uplErr")} {file}");
+                        throw new UpgradeException(source, $"{Translate("i18n_uplErr")} {file}");
                 }
                 DeleteTempFiles();
                 Logger.Activity($"Switch {model.Name}, Model {model.Model}: AOS upgraded to {Path.GetFileNameWithoutExtension(archive)}");
@@ -68,20 +69,20 @@ namespace PoEWizard.Device
         {
             try
             {
-                if (model.Uboot == "N/A") throw new UpgradeException(Translate("i18n_ubootUpg"), Translate("i18n_noUboot"));
-                Progress.Report(new ProgressReport(ReportType.Status, Translate("i18n_ubootUpg"), Translate("i18n_upgCheck")));
+                string source = Translate("i18n_ubootUpg");
+                if (model.Uboot == "N/A") throw new UpgradeException(source, Translate("i18n_noUboot"));
+                Progress.Report(new ProgressReport(ReportType.Status, source, Translate("i18n_upgCheck")));
                 string err = OpenScp(model);
-                if (err != null) throw new UpgradeException(Translate("i18n_ubootUpg"), err);
-                string ubootf = ExtractUbootFromArchive(archive) ?? 
-                    throw new UpgradeException(Translate("i18n_ubootUpg"), Translate("i18n_noUbootf"));
+                if (err != null) throw new UpgradeException(source, err);
+                string ubootf = ExtractUbootFromArchive(archive) ?? throw new UpgradeException(source, Translate("i18n_noUbootf"));
                 string localFile = Path.Combine(Path.GetTempPath(), ubootf);
                 string remoteFile = $"/{FLASH_DIR}/{ubootf}";
-                Progress.Report(new ProgressReport(ReportType.Status, Translate("i18n_ubootUpg"), Translate("i18n_upgUpl")));
+                Progress.Report(new ProgressReport(ReportType.Status, source, Translate("i18n_upgUpl")));
                 if (!sftpSrv.UploadFile(localFile, remoteFile, true)) 
-                    throw new UpgradeException(Translate("i18n_ubootUpg"), $"{Translate("i18n_uplErr")} {ubootf} to switch");
+                    throw new UpgradeException(source, $"{Translate("i18n_uplErr")} {ubootf} to switch");
                 if (sftpSrv.IsConnected) sftpSrv.Disconnect();
                 try { File.Delete(localFile); } catch { }
-                Progress.Report(new ProgressReport(ReportType.Status, Translate("i18n_ubootUpg"), Translate("i18n_ubootCmd")));
+                Progress.Report(new ProgressReport(ReportType.Status, source, Translate("i18n_ubootCmd")));
                 SendUpgradeCommand(remoteFile);
                 Logger.Activity($"Switch {model.Name}, Model {model.Model}: U-Boot upgraded to {Path.GetFileNameWithoutExtension(archive)}");
                 return true;
