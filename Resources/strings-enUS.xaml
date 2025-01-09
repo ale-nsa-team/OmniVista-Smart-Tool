@@ -220,6 +220,8 @@ Please confirm your action.
     <sys:String x:Key="i18n_noOnie">ONIE upgrades are not available yet for this switch</sys:String>
     <sys:String x:Key="i18n_zipErr">Error opening archive</sys:String>
     <sys:String x:Key="i18n_noImg">Could not find any *.img file in directory</sys:String>
+    <sys:String x:Key="i18n_nosha"  xml:space="preserve">File imgsha256sum is missing from the archive. 
+Do you still want to proceed with the upgrade?</sys:String>
     <sys:String x:Key="i18n_uplErr">Could not upload file</sys:String>
     <sys:String x:Key="i18n_ubootCmd">Running U-Boot upgrade command...</sys:String>
     <sys:String x:Key="i18n_upgReboot" xml:space="preserve">The switch needs to be restarted to complete the upgrade.
@@ -445,6 +447,8 @@ You may want to run the traffic analysis again for a longer period.</sys:String>
     <sys:String x:Key="i18n_rsMemc">Write memory completed</sys:String>
     <sys:String x:Key="i18n_waitReboot">Waiting for switch $1 reboot</sys:String>
     <sys:String x:Key="i18n_rebooting">Switch $1 is rebooting, please connect to the console port when it's ready</sys:String>
+    <sys:String x:Key="i18n_stopWaitReboot" xml:space="preserve">Stopped waiting for switch to reboot.
+Please reconnect to switch after it comes back up</sys:String>
     <sys:String x:Key="i18n_rsTout">did not come back within</sys:String>
     <sys:String x:Key="i18n_rsLldp">Enable LLDP description</sys:String>
     <sys:String x:Key="i18n_rsGs">Get Snapshot</sys:String>

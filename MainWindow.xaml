@@ -347,7 +347,13 @@
             </DataGrid.Columns>
         </DataGrid>
         <Border Grid.Row="2" x:Name="_infoBox" Style="{DynamicResource infoBorder}" Visibility="Collapsed">
-            <TextBlock x:Name="_infoBlock" />
+            <StackPanel>
+                <TextBlock x:Name="_infoBlock" Style="{DynamicResource msgBoxBody}"/>
+                <Button x:Name="_btnCancel" Margin="0,0,10,0"
+                        Visibility="Collapsed"
+                        Style="{DynamicResource defaultButton}" 
+                        Content="{DynamicResource i18n_canBtn}" Click="BtnCancel_Click" />
+            </StackPanel>
         </Border>
         <Border Grid.Row="3" x:Name="_portInfo" >
             <DataGrid x:Name="_portList"

@@ -69,7 +69,8 @@ namespace PoEWizard.Data
         }
         public enum SwitchDebugLogLevel { Off = 0, Alarm = 1, Error = 2, Alert = 3, Warn = 4, Event = 5, Info = 6, Debug1 = 7, Debug2 = 8, Debug3 = 9, Unknown = -1, Invalid = -2 }
         public enum TrafficStatus { Idle, Abort, CanceledByUser, Running, Completed }
-        #endregion
+        public enum OpType { Other, Connection, Refresh, Reboot, Backup, Restore, Upgrade, TrafficAnalysis }
+        #endregion`
 
         #region dictionaries
         public static readonly Dictionary<string, string> fpgaVersions = new Dictionary<string, string>()

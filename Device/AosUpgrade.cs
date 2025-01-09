@@ -9,6 +9,9 @@ using static PoEWizard.Data.Utils;
 using static PoEWizard.Data.Constants;
 using PoEWizard.Exceptions;
 using System.Text.RegularExpressions;
+using PoEWizard.Components;
+using System.Windows.Forms;
+using System.Windows.Threading;
 
 namespace PoEWizard.Device
 {
@@ -39,7 +42,37 @@ namespace PoEWizard.Device
                 reqFiles = imgFiles.Concat(new List<string> { SHA_SUM, LSM }).ToList();
                 List<string> files = CheckMissingFilesInArchive(archive) ??
                     throw new UpgradeException(source, $"{Translate("i18n_zipErr")} {archive}");
-                if (files.Count > 0) throw new UpgradeException(source, $"{Translate("i18n_upgErr")}: {string.Join(", ", files)}");
+                if (files.Count > 0)
+                {
+                    if (files.Count == 1 && files[0] == SHA_SUM)
+                    {
+                        bool res = true;
+                        MainWindow.Instance.Dispatcher.Invoke(new Action(() =>
+                        {
+                            CustomMsgBox cmb = new CustomMsgBox(MainWindow.Instance, MsgBoxButtons.YesNo)
+                            {
+                                Header = source,
+                                Message = Translate("i18n_nosha")
+                            };
+                            cmb.ShowDialog();
+                            if (cmb.Result == MsgBoxResult.No)
+                            {
+                                DeleteTempFiles();
+                                res = false;
+                            }
+                            else
+                            {
+                                reqFiles.Remove(SHA_SUM);
+                            }
+                        }));
+
+                        if (!res) return false;
+                    }
+                    else
+                    {
+                        throw new UpgradeException(source, $"{Translate("i18n_upgErr")}: {string.Join(", ", files)}");
+                    }
+                }
                 Progress.Report(new ProgressReport(ReportType.Status, source, Translate("i18n_upgUpl")));
                 ExtractArchive(archive);
                 foreach (string file in reqFiles)

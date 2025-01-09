@@ -4,6 +4,7 @@ using PoEWizard.Device;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -137,7 +138,8 @@ namespace PoEWizard.Components
             if (needRefresh && !MustDisconnect)
             {
                 ShowInfoBox(Translate("i18n_reloading"));
-                await Task.Run(() => restSrv.ScanSwitch(null));
+                CancellationTokenSource tokenSource = new CancellationTokenSource();
+                await Task.Run(() => restSrv.ScanSwitch(null, tokenSource.Token));
             }
             DialogResult = true;
             Close();

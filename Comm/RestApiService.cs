@@ -57,7 +57,7 @@ namespace PoEWizard.Comm
             _progress = progress;
         }
 
-        public void Connect(WizardReport reportResult)
+        public void Connect(WizardReport reportResult, CancellationToken token)
         {
             try
             {
@@ -69,23 +69,28 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport(progrMsg));
                 UpdateProgressBar(progressBarCnt);
                 LoginRestApi();
+                token.ThrowIfCancellationRequested();
                 UpdateProgressBar(++progressBarCnt); //  1
                 if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"{Translate("i18n_rsNocnx")} {SwitchModel.IpAddress}!");
                 SwitchModel.IsConnected = true;
                 _progress.Report(new ProgressReport($"{Translate("i18n_vinfo")} {Translate("i18n_onsw")} {SwitchModel.IpAddress}"));
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_MICROCODE, ParseType.Htable)) as List<Dictionary<string, string>>;
+                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromDictionary(_dictList[0], DictionaryType.MicroCode);
                 UpdateProgressBar(++progressBarCnt); //  2
                 _dictList = SendCommand(new CmdRequest(Command.DEBUG_SHOW_APP_LIST, ParseType.MibTable, DictionaryType.SwitchDebugAppList)) as List<Dictionary<string, string>>;
+                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromList(_dictList, DictionaryType.SwitchDebugAppList);
                 UpdateProgressBar(++progressBarCnt); //  3
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_CHASSIS, ParseType.MVTable, DictionaryType.Chassis)) as List<Dictionary<string, string>>;
+                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromList(_dictList, DictionaryType.Chassis);
                 UpdateProgressBar(++progressBarCnt); //  4
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_HW_INFO, ParseType.MVTable, DictionaryType.HwInfo)) as List<Dictionary<string, string>>;
+                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromList(_dictList, DictionaryType.HwInfo);
                 UpdateProgressBar(++progressBarCnt); // 5
-                ScanSwitch(progrMsg, reportResult);
+                ScanSwitch(progrMsg, token, reportResult);
                 UpdateFlashInfo(progrMsg);
                 UpdateProgressBar(++progressBarCnt); // 30
                 ShowInterfacesList();
@@ -124,15 +129,15 @@ namespace PoEWizard.Comm
             RestApiClient.Login();
         }
 
-        public void RefreshSwitch(string source, WizardReport reportResult = null)
+        public void RefreshSwitch(string source, CancellationToken token, WizardReport reportResult = null)
         {
             StartProgressBar($"S{Translate("i18n_scan")} {SwitchModel.Name}{WAITING}", 24);
-            ScanSwitch(source, reportResult);
+            ScanSwitch(source, token, reportResult);
             ShowInterfacesList();
             UpdateProgressBar(++progressBarCnt); // 24
         }
 
-        public void ScanSwitch(string source, WizardReport reportResult = null)
+        public void ScanSwitch(string source, CancellationToken token, WizardReport reportResult = null)
         {
             bool closeProgressBar = false;
             try
@@ -143,41 +148,52 @@ namespace PoEWizard.Comm
                     closeProgressBar = true;
                 }
                 GetCurrentSwitchDebugLevel();
+                token.ThrowIfCancellationRequested();
                 progressBarCnt += 2;
                 UpdateProgressBar(progressBarCnt); //  5 , 6
                 GetSnapshot();
+                token.ThrowIfCancellationRequested();
                 progressBarCnt += 2;
                 UpdateProgressBar(progressBarCnt); //  7, 8
                 if (reportResult != null) this._wizardReportResult = reportResult;
                 else this._wizardReportResult = new WizardReport();
                 GetSystemInfo();
+                token.ThrowIfCancellationRequested();
                 UpdateProgressBar(++progressBarCnt); //  9
                 SendProgressReport(Translate("i18n_chas"));
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_CMM, ParseType.MVTable, DictionaryType.Cmm)) as List<Dictionary<string, string>>;
+                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromList(_dictList, DictionaryType.Cmm);
                 UpdateProgressBar(++progressBarCnt); //  10
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_TEMPERATURE, ParseType.Htable)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.TemperatureList);
                 UpdateProgressBar(++progressBarCnt); // 11
                 _dict = SendCommand(new CmdRequest(Command.SHOW_HEALTH_CONFIG, ParseType.Etable)) as Dictionary<string, string>;
+                token.ThrowIfCancellationRequested();
                 SwitchModel.UpdateCpuThreshold(_dict);
                 UpdateProgressBar(++progressBarCnt); // 12
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_PORTS_LIST, ParseType.Htable3)) as List<Dictionary<string, string>>;
+                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromList(_dictList, DictionaryType.PortsList);
                 _dict = SendCommand(new CmdRequest(Command.SHOW_LLDP_LOCAL, ParseType.LldpLocalTable)) as Dictionary<string, string>;
+                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromDictionary(_dict, DictionaryType.PortIdList);
                 UpdateProgressBar(++progressBarCnt); // 13
                 SendProgressReport(Translate("i18n_psi"));
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_POWER_SUPPLIES, ParseType.Htable2)) as List<Dictionary<string, string>>;
+                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromList(_dictList, DictionaryType.PowerSupply);
                 UpdateProgressBar(++progressBarCnt); // 14
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
+                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromList(_dictList, DictionaryType.CpuTrafficList);
                 UpdateProgressBar(++progressBarCnt); // 15
                 GetLanPower();
+                token.ThrowIfCancellationRequested();
                 progressBarCnt += 3;
                 UpdateProgressBar(progressBarCnt); // 16, 17, 18
                 GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
+                token.ThrowIfCancellationRequested();
                 progressBarCnt += 3;
                 UpdateProgressBar(progressBarCnt); // 19, 20, 21
                 if (!File.Exists(Path.Combine(Path.Combine(MainWindow.DataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
@@ -1185,7 +1201,7 @@ namespace PoEWizard.Comm
             }
         }
 
-        public string WaitInit(WizardReport reportResult)
+        public string WaitInit(WizardReport reportResult, CancellationToken token)
         {
             DateTime waitStartTime = DateTime.Now;
             try
@@ -1237,7 +1253,7 @@ namespace PoEWizard.Comm
                     }
                     catch { }
                 }
-                Connect(reportResult);
+                Connect(reportResult, token);
                 progressStartTime = DateTime.Now;
                 msg = $"{Translate("i18n_rstwait")} {switchName}";
                 Logger.Info(msg);

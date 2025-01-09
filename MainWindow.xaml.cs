@@ -63,6 +63,8 @@ namespace PoEWizard
         private string lastMacAddress = string.Empty;
         private string currAlias = string.Empty;
         private readonly Config config;
+        private OpType opType;
+        private CancellationTokenSource tokenSource;
         #endregion
 
         #region public variables
@@ -128,6 +130,7 @@ namespace PoEWizard
                         break;
                 }
             });
+            tokenSource = new CancellationTokenSource();
             //check cli arguments
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 3 && !string.IsNullOrEmpty(args[1]) && IsValidIP(args[1]) && !string.IsNullOrEmpty(args[2]) && !string.IsNullOrEmpty(args[3]))
@@ -137,7 +140,6 @@ namespace PoEWizard
                 device.Password = args[3].Replace("\r\n", string.Empty);
                 Connect();
             }
-
             SetLanguageMenuOptions();
         }
 
@@ -564,6 +566,7 @@ namespace PoEWizard
             }
             else
             {
+                HideInfoBox();
                 Activity.Log(device, isAos ? "AOS upgrade failed" : "U-Boot upgrade failed");
             }
         }
@@ -1003,6 +1006,7 @@ namespace PoEWizard
 
         private async Task RebootSwitch()
         {
+            opType = OpType.Reboot;
             string switchName = device.Name;
             string lastIp = device.IpAddress;
             string lastPasswd = device.Password;
@@ -1015,6 +1019,7 @@ namespace PoEWizard
             _switchMenuItem.IsEnabled = false;
             _reboot.IsEnabled = true;
             _rebootLabel.Content = Translate("i18n_waitingReboot");
+            _btnCancel.Visibility = Visibility.Visible;
             string msg = await Task.Run(() => restApiService.RebootSwitch(MAX_SWITCH_REBOOT_TIME_SEC));
             if (string.IsNullOrEmpty(msg))
             {
@@ -1027,7 +1032,8 @@ namespace PoEWizard
                 {
                     if (restApiService.SwitchModel == null) restApiService.SwitchModel = device;
                     reportResult = new WizardReport();
-                    msg = await Task.Run(() => restApiService?.WaitInit(reportResult));
+                    opType = OpType.Connection;
+                    msg = await Task.Run(() => restApiService?.WaitInit(reportResult, tokenSource.Token));
                     if (string.IsNullOrEmpty(msg))
                     {
                         DisconnectSwitch(lastIp, lastPasswd);
@@ -1045,6 +1051,25 @@ namespace PoEWizard
                 SetDisconnectedState();
                 lastIpAddr = lastIp;
                 lastPwd = lastPasswd;
+            }
+        }
+
+        private async void BtnCancel_Click(object sender, EventArgs e)
+        {
+            _btnCancel.IsEnabled = false;
+            switch (opType) 
+            {
+                case OpType.Reboot:
+                    await StopWaitingReboot();
+                    ShowMessageBox(Translate("i18n_rbsw"), Translate("i18n_stopWaitReboot"));
+                    break;
+                case OpType.Connection:
+                    tokenSource.Cancel();
+                    ClearMainWindowGui();
+                    break;
+                case OpType.Refresh:
+                    tokenSource.Cancel();
+                    break;
             }
         }
 
@@ -1615,7 +1640,9 @@ namespace PoEWizard
                 isClosing = false;
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
-                await Task.Run(() => restApiService.Connect(reportResult));
+                opType = OpType.Connection;
+                _btnCancel.Visibility = Visibility.Visible;
+                await Task.Run(() => restApiService.Connect(reportResult, tokenSource.Token));
                 if (!device.IsConnected)
                 {
                     List<string> ips = config.Get("switches").Split(',').ToList();
@@ -1720,7 +1747,8 @@ namespace PoEWizard
                 string barText = $"{Translate("i18n_pwRun")} {Translate("i18n_onport")} {selectedPort.Name}{WAITING}";
                 ShowProgress(barText);
                 DateTime startTime = DateTime.Now;
-                await Task.Run(() => restApiService.ScanSwitch($"{Translate("i18n_pwRun")} {Translate("i18n_onport")} {selectedPort.Name}{WAITING}", reportResult));
+                string msg = $"{Translate("i18n_pwRun")} {Translate("i18n_onport")} {selectedPort.Name}{WAITING}";
+                await Task.Run(() => restApiService.ScanSwitch(msg, tokenSource.Token, reportResult));
                 ShowProgress(barText);
                 switch (selectedDeviceType)
                 {
@@ -1743,7 +1771,7 @@ namespace PoEWizard
                     await RunLastWizardActions();
                     result = reportResult.GetReportResult(selectedPort.Name);
                 }
-                string msg = $"{reportResult.Message}\n\n{Translate("i18n_pwDur")} {CalcStringDurationTranslate(startTime, true)}";
+                msg = $"{reportResult.Message}\n\n{Translate("i18n_pwDur")} {CalcStringDurationTranslate(startTime, true)}";
                 await Task.Run(() => restApiService.RefreshSwitchPorts());
                 if (!string.IsNullOrEmpty(reportResult.Message))
                 {
@@ -1956,7 +1984,9 @@ namespace PoEWizard
                 DisableButtons();
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
-                await Task.Run(() => restApiService.RefreshSwitch($"{Translate("i18n_refrsw")} {device.Name}", reportResult));
+                opType = OpType.Refresh;
+                _btnCancel.Visibility = Visibility.Visible;
+                await Task.Run(() => restApiService.RefreshSwitch($"{Translate("i18n_refrsw")} {device.Name}", tokenSource.Token, reportResult));
                 await CheckSwitchScanResult($"{Translate("i18n_refrsw")} {device.Name}", startTime);
                 RefreshSlotAndPortsView();
                 if (device.RunningDir == CERTIFIED_DIR)
@@ -2329,6 +2359,8 @@ namespace PoEWizard
         private void HideInfoBox()
         {
             _infoBox.Visibility = Visibility.Collapsed;
+            _btnCancel.Visibility = Visibility.Collapsed;
+            _btnCancel.IsEnabled = true;
         }
 
         private void UpdateConnectedState()
