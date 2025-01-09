@@ -130,7 +130,6 @@ namespace PoEWizard
                         break;
                 }
             });
-            tokenSource = new CancellationTokenSource();
             //check cli arguments
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 3 && !string.IsNullOrEmpty(args[1]) && IsValidIP(args[1]) && !string.IsNullOrEmpty(args[2]) && !string.IsNullOrEmpty(args[3]))
@@ -1033,6 +1032,7 @@ namespace PoEWizard
                     if (restApiService.SwitchModel == null) restApiService.SwitchModel = device;
                     reportResult = new WizardReport();
                     opType = OpType.Connection;
+                    tokenSource = new CancellationTokenSource();
                     msg = await Task.Run(() => restApiService?.WaitInit(reportResult, tokenSource.Token));
                     if (string.IsNullOrEmpty(msg))
                     {
@@ -1061,7 +1061,7 @@ namespace PoEWizard
             {
                 case OpType.Reboot:
                     await StopWaitingReboot();
-                    ShowMessageBox(Translate("i18n_rbsw"), Translate("i18n_stopWaitReboot"));
+                    ShowMessageBox(Translate("i18n_rebsw"), Translate("i18n_stopWaitReboot"));
                     break;
                 case OpType.Connection:
                     tokenSource.Cancel();
@@ -1642,6 +1642,7 @@ namespace PoEWizard
                 reportResult = new WizardReport();
                 opType = OpType.Connection;
                 _btnCancel.Visibility = Visibility.Visible;
+                tokenSource = new CancellationTokenSource();
                 await Task.Run(() => restApiService.Connect(reportResult, tokenSource.Token));
                 if (!device.IsConnected)
                 {
@@ -1747,6 +1748,7 @@ namespace PoEWizard
                 string barText = $"{Translate("i18n_pwRun")} {Translate("i18n_onport")} {selectedPort.Name}{WAITING}";
                 ShowProgress(barText);
                 DateTime startTime = DateTime.Now;
+                tokenSource = new CancellationTokenSource();
                 string msg = $"{Translate("i18n_pwRun")} {Translate("i18n_onport")} {selectedPort.Name}{WAITING}";
                 await Task.Run(() => restApiService.ScanSwitch(msg, tokenSource.Token, reportResult));
                 ShowProgress(barText);
@@ -1986,6 +1988,7 @@ namespace PoEWizard
                 reportResult = new WizardReport();
                 opType = OpType.Refresh;
                 _btnCancel.Visibility = Visibility.Visible;
+                tokenSource = new CancellationTokenSource();
                 await Task.Run(() => restApiService.RefreshSwitch($"{Translate("i18n_refrsw")} {device.Name}", tokenSource.Token, reportResult));
                 await CheckSwitchScanResult($"{Translate("i18n_refrsw")} {device.Name}", startTime);
                 RefreshSlotAndPortsView();
