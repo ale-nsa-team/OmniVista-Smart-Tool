@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
+using System.Windows.Navigation;
 using System.Xml;
 using System.Xml.Linq;
 using static PoEWizard.Data.Constants;
@@ -638,9 +639,15 @@ namespace PoEWizard.Data
             return ConfigType.Unavailable;
         }
 
-        public static string Translate(string key)
+        public static string Translate(string key, params string[] data)
         {
-            return (string)MainWindow.Strings[key] ?? key;
+            string str = (string)MainWindow.Strings[key];
+            if (str == null) return key;
+            for (int i = 0; i < data.Length; i++)
+            {
+                str = str.Replace($"${i+1}", data[i]);
+            }
+            return str;
         }
 
         public static string[] GetFilesInFolder(string folder)

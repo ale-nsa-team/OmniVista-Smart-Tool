@@ -1,17 +1,15 @@
-﻿using System;
+﻿using PoEWizard.Comm;
+using PoEWizard.Components;
+using PoEWizard.Data;
+using PoEWizard.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using PoEWizard.Comm;
-using PoEWizard.Data;
-using static PoEWizard.Data.Utils;
-using static PoEWizard.Data.Constants;
-using PoEWizard.Exceptions;
 using System.Text.RegularExpressions;
-using PoEWizard.Components;
-using System.Windows.Forms;
-using System.Windows.Threading;
+using static PoEWizard.Data.Constants;
+using static PoEWizard.Data.Utils;
 
 namespace PoEWizard.Device
 {
@@ -52,7 +50,7 @@ namespace PoEWizard.Device
                             CustomMsgBox cmb = new CustomMsgBox(MainWindow.Instance, MsgBoxButtons.YesNo)
                             {
                                 Header = source,
-                                Message = Translate("i18n_nosha")
+                                Message = Translate("i18n_noFile", SHA_SUM)
                             };
                             cmb.ShowDialog();
                             if (cmb.Result == MsgBoxResult.No)

@@ -220,7 +220,7 @@ Please confirm your action.
     <sys:String x:Key="i18n_noOnie">ONIE upgrades are not available yet for this switch</sys:String>
     <sys:String x:Key="i18n_zipErr">Error opening archive</sys:String>
     <sys:String x:Key="i18n_noImg">Could not find any *.img file in directory</sys:String>
-    <sys:String x:Key="i18n_nosha"  xml:space="preserve">File imgsha256sum is missing from the archive. 
+    <sys:String x:Key="i18n_noFile"  xml:space="preserve">File $1 is missing from the archive. 
 Do you still want to proceed with the upgrade?</sys:String>
     <sys:String x:Key="i18n_uplErr">Could not upload file</sys:String>
     <sys:String x:Key="i18n_ubootCmd">Running U-Boot upgrade command...</sys:String>
@@ -385,6 +385,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_rmac">Reading MAC address information</sys:String>
     <sys:String x:Key="i18n_rpdet">Reading ports detailed information</sys:String>
     <sys:String x:Key="i18n_enableRest">Enabling REST API on switch</sys:String>
+    <sys:String x:Key="i18n_opCancel">The operation has been canceled</sys:String>
 
     <!--Collect Logs-->
     <sys:String x:Key="i18n_getLog">Get Switch Log</sys:String>

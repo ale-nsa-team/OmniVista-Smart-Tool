@@ -69,33 +69,33 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport(progrMsg));
                 UpdateProgressBar(progressBarCnt);
                 LoginRestApi();
-                token.ThrowIfCancellationRequested();
                 UpdateProgressBar(++progressBarCnt); //  1
                 if (!RestApiClient.IsConnected()) throw new SwitchConnectionFailure($"{Translate("i18n_rsNocnx")} {SwitchModel.IpAddress}!");
                 SwitchModel.IsConnected = true;
                 _progress.Report(new ProgressReport($"{Translate("i18n_vinfo")} {Translate("i18n_onsw")} {SwitchModel.IpAddress}"));
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_MICROCODE, ParseType.Htable)) as List<Dictionary<string, string>>;
-                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromDictionary(_dictList[0], DictionaryType.MicroCode);
                 UpdateProgressBar(++progressBarCnt); //  2
                 _dictList = SendCommand(new CmdRequest(Command.DEBUG_SHOW_APP_LIST, ParseType.MibTable, DictionaryType.SwitchDebugAppList)) as List<Dictionary<string, string>>;
-                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromList(_dictList, DictionaryType.SwitchDebugAppList);
                 UpdateProgressBar(++progressBarCnt); //  3
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_CHASSIS, ParseType.MVTable, DictionaryType.Chassis)) as List<Dictionary<string, string>>;
-                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromList(_dictList, DictionaryType.Chassis);
                 UpdateProgressBar(++progressBarCnt); //  4
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_HW_INFO, ParseType.MVTable, DictionaryType.HwInfo)) as List<Dictionary<string, string>>;
-                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromList(_dictList, DictionaryType.HwInfo);
                 UpdateProgressBar(++progressBarCnt); // 5
+                token.ThrowIfCancellationRequested();
                 ScanSwitch(progrMsg, token, reportResult);
                 UpdateFlashInfo(progrMsg);
                 UpdateProgressBar(++progressBarCnt); // 30
                 ShowInterfacesList();
                 UpdateProgressBar(++progressBarCnt); // 31
                 LogActivity($"Switch connected", $", duration: {CalcStringDuration(startTime)}");
+            }
+            catch (OperationCanceledException)
+            {
+                _progress?.Report(new ProgressReport(ReportType.Warning, Translate("i18n_rsCnx"), Translate("i18n_opCancel")));
             }
             catch (Exception ex)
             {
@@ -131,10 +131,18 @@ namespace PoEWizard.Comm
 
         public void RefreshSwitch(string source, CancellationToken token, WizardReport reportResult = null)
         {
-            StartProgressBar($"S{Translate("i18n_scan")} {SwitchModel.Name}{WAITING}", 24);
-            ScanSwitch(source, token, reportResult);
-            ShowInterfacesList();
-            UpdateProgressBar(++progressBarCnt); // 24
+            try
+            {
+                StartProgressBar($"S{Translate("i18n_scan")} {SwitchModel.Name}{WAITING}", 24);
+                ScanSwitch(source, token, reportResult);
+                token.ThrowIfCancellationRequested();
+                ShowInterfacesList();
+                UpdateProgressBar(++progressBarCnt); // 24
+            }
+            catch (OperationCanceledException)
+            {
+                _progress?.Report(new ProgressReport(ReportType.Warning, Translate("i18n_refrsw"), Translate("i18n_opCancel")));
+            }
         }
 
         public void ScanSwitch(string source, CancellationToken token, WizardReport reportResult = null)
@@ -147,12 +155,10 @@ namespace PoEWizard.Comm
                     StartProgressBar($"{Translate("i18n_scan")} {SwitchModel.Name}{WAITING}", 23);
                     closeProgressBar = true;
                 }
-                GetCurrentSwitchDebugLevel();
-                token.ThrowIfCancellationRequested();
+                GetCurrentSwitchDebugLevel(token);
                 progressBarCnt += 2;
                 UpdateProgressBar(progressBarCnt); //  5 , 6
-                GetSnapshot();
-                token.ThrowIfCancellationRequested();
+                GetSnapshot(token);
                 progressBarCnt += 2;
                 UpdateProgressBar(progressBarCnt); //  7, 8
                 if (reportResult != null) this._wizardReportResult = reportResult;
@@ -162,38 +168,31 @@ namespace PoEWizard.Comm
                 UpdateProgressBar(++progressBarCnt); //  9
                 SendProgressReport(Translate("i18n_chas"));
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_CMM, ParseType.MVTable, DictionaryType.Cmm)) as List<Dictionary<string, string>>;
-                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromList(_dictList, DictionaryType.Cmm);
                 UpdateProgressBar(++progressBarCnt); //  10
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_TEMPERATURE, ParseType.Htable)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.TemperatureList);
                 UpdateProgressBar(++progressBarCnt); // 11
                 _dict = SendCommand(new CmdRequest(Command.SHOW_HEALTH_CONFIG, ParseType.Etable)) as Dictionary<string, string>;
-                token.ThrowIfCancellationRequested();
                 SwitchModel.UpdateCpuThreshold(_dict);
                 UpdateProgressBar(++progressBarCnt); // 12
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_PORTS_LIST, ParseType.Htable3)) as List<Dictionary<string, string>>;
-                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromList(_dictList, DictionaryType.PortsList);
                 _dict = SendCommand(new CmdRequest(Command.SHOW_LLDP_LOCAL, ParseType.LldpLocalTable)) as Dictionary<string, string>;
-                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromDictionary(_dict, DictionaryType.PortIdList);
                 UpdateProgressBar(++progressBarCnt); // 13
                 SendProgressReport(Translate("i18n_psi"));
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_POWER_SUPPLIES, ParseType.Htable2)) as List<Dictionary<string, string>>;
-                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromList(_dictList, DictionaryType.PowerSupply);
                 UpdateProgressBar(++progressBarCnt); // 14
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
-                token.ThrowIfCancellationRequested();
                 SwitchModel.LoadFromList(_dictList, DictionaryType.CpuTrafficList);
                 UpdateProgressBar(++progressBarCnt); // 15
-                GetLanPower();
+                GetLanPower(token);
                 token.ThrowIfCancellationRequested();
                 progressBarCnt += 3;
                 UpdateProgressBar(progressBarCnt); // 16, 17, 18
                 GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
-                token.ThrowIfCancellationRequested();
                 progressBarCnt += 3;
                 UpdateProgressBar(progressBarCnt); // 19, 20, 21
                 if (!File.Exists(Path.Combine(Path.Combine(MainWindow.DataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
@@ -206,6 +205,10 @@ namespace PoEWizard.Comm
                 }
                 UpdateProgressBar(++progressBarCnt); // 22
                 string title = string.IsNullOrEmpty(source) ? $"{Translate("i18n_refrsw")} {SwitchModel.Name}" : source;
+            }
+            catch (OperationCanceledException)
+            {
+                token.ThrowIfCancellationRequested();
             }
             catch (Exception ex)
             {
@@ -317,7 +320,7 @@ namespace PoEWizard.Comm
             return null;
         }
 
-        public void GetSnapshot()
+        public void GetSnapshot(CancellationToken token)
         {
             try
             {
@@ -333,6 +336,10 @@ namespace PoEWizard.Comm
                     SendProgressReport(Translate("i18n_rsLldp"));
                     SendCommand(new CmdRequest(Command.LLDP_ADDRESS_ENABLE));
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                token.ThrowIfCancellationRequested();
             }
             catch (Exception ex)
             {
@@ -386,7 +393,7 @@ namespace PoEWizard.Comm
             if (cmdReq.ParseType == ParseType.MibTable)
             {
                 if (!resp.ContainsKey(DATA) || resp[DATA] == null) return resp;
-                Dictionary<string, string>  xmlDict = resp[DATA] as Dictionary<string, string>;
+                Dictionary<string, string> xmlDict = resp[DATA] as Dictionary<string, string>;
                 switch (cmdReq.DictionaryType)
                 {
                     case DictionaryType.MibList:
@@ -454,7 +461,7 @@ namespace PoEWizard.Comm
                 // Getting current lan power status
                 GetCurrentLanPowerStatus();
                 // Getting current switch debug level
-                GetCurrentSwitchDebugLevel();
+                GetCurrentSwitchDebugLevel(new CancellationToken());
                 int prevLpNiDebug = SwitchModel.LpNiDebugLevel;
                 int prevLpCmmDebug = SwitchModel.LpCmmDebugLevel;
                 // Setting switch debug level
@@ -620,14 +627,16 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void GetCurrentSwitchDebugLevel()
+        private void GetCurrentSwitchDebugLevel(CancellationToken token)
         {
             SendProgressReport(Translate("i18n_clogl"));
             if (_debugSwitchLog == null) _debugSwitchLog = new SwitchDebugModel();
             GetAppDebugLevel(Command.DEBUG_SHOW_LPNI_LEVEL);
+            token.ThrowIfCancellationRequested();
             UpdateSwitchLogBar();
             SwitchModel.SetAppLogLevel(LPNI, _debugSwitchLog.LpNiLogLevel);
             GetAppDebugLevel(Command.DEBUG_SHOW_LPCMM_LEVEL);
+            token.ThrowIfCancellationRequested();
             SwitchModel.SetAppLogLevel(LPCMM, _debugSwitchLog.LpCmmLogLevel);
             UpdateSwitchLogBar();
         }
@@ -1142,9 +1151,10 @@ namespace PoEWizard.Comm
                 int expectedWaitTime = SwitchModel.ChassisList.Count < 2 ? SWITCH_REBOOT_EXPECTED_TIME_SEC : SWITCH_REBOOT_EXPECTED_TIME_SEC + SwitchModel.ChassisList.Count * 90;
                 StartProgressBar($"{msg}{WAITING}", expectedWaitTime);
                 SendRebootSwitchRequest();
+                Activity.Log(SwitchModel, "Reboot requested");
                 if (waitSec <= 0) return string.Empty;
                 DateTime rebootTime = DateTime.Now;
-                msg = $"{Translate("i18n_waitReboot").Replace("$1", SwitchModel.Name)}";
+                msg = Translate("i18n_waitReboot", SwitchModel.Name);
                 _progress.Report(new ProgressReport($"{msg}{WAITING}"));
                 double dur = 0;
                 while (dur <= 180)
@@ -1160,7 +1170,7 @@ namespace PoEWizard.Comm
                     if (!this._waitingReboot) return null;
                     if (dur >= waitSec)
                     {
-                        throw new Exception($"{Translate("i18n_switch") }{SwitchModel.Name} {Translate("i18n_rsTout")} {CalcStringDurationTranslate(progressStartTime, true)}!");
+                        throw new Exception($"{Translate("i18n_switch")}{SwitchModel.Name} {Translate("i18n_rsTout")} {CalcStringDurationTranslate(progressStartTime, true)}!");
                     }
                     Thread.Sleep(1000);
                     dur = (int)GetTimeDuration(progressStartTime);
@@ -1535,7 +1545,7 @@ namespace PoEWizard.Comm
         public bool SetPerpetualOrFastPoe(SlotModel slot, Command cmd)
         {
             bool enable = cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_FAST_ENABLE;
-            string poeType = (cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_PERPETUAL_DISABLE) 
+            string poeType = (cmd == Command.POE_PERPETUAL_ENABLE || cmd == Command.POE_PERPETUAL_DISABLE)
                 ? Translate("i18n_ppoe") : Translate("i18n_fpoe");
             string action = $"{(enable ? Translate("i18n_en") : Translate("i18n_dis"))} {poeType}";
             ProgressReport progressReport = new ProgressReport($"{action} {Translate("i18n_pRep")}")
@@ -1690,7 +1700,7 @@ namespace PoEWizard.Comm
                         if (port == _wizardSwitchPort.Name)
                         {
                             string sValStatus = FirstChToUpper(GetDictValue(dict, OPERATIONAL_STATUS));
-                            if (!string.IsNullOrEmpty(sValStatus) && Enum.TryParse(sValStatus, out PortStatus portStatus))return portStatus; else return PortStatus.Unknown;
+                            if (!string.IsNullOrEmpty(sValStatus) && Enum.TryParse(sValStatus, out PortStatus portStatus)) return portStatus; else return PortStatus.Unknown;
                         }
                     }
                 }
@@ -1701,7 +1711,7 @@ namespace PoEWizard.Comm
         public void RefreshSwitchPorts()
         {
             GetSystemInfo();
-            GetLanPower();
+            GetLanPower(new CancellationToken());
             RefreshPortsInformation();
             GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
         }
@@ -1792,7 +1802,7 @@ namespace PoEWizard.Comm
                 if (IsPoeOk())
                 {
                     WaitSec(msg, 5);
-                    GetSlotLanPower(_wizardSwitchSlot);
+                    GetSlotLanPower(_wizardSwitchSlot, new CancellationToken());
                 }
                 if (IsPoeOk()) NothingToDo(); else return false;
             }
@@ -1810,7 +1820,7 @@ namespace PoEWizard.Comm
             _progress.Report(new ProgressReport(wizardAction));
             _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
             WaitSec(wizardAction, 5);
-            GetSlotLanPower(_wizardSwitchSlot);
+            GetSlotLanPower(_wizardSwitchSlot, new CancellationToken());
             if (_wizardSwitchPort.Poe == PoeStatus.Conflict)
             {
                 PowerDevice(Command.POWER_DOWN_PORT);
@@ -1928,7 +1938,7 @@ namespace PoEWizard.Comm
                 string wizardAction = $"Checking capacitor detection on port {_wizardSwitchPort.Name}";
                 _progress.Report(new ProgressReport(wizardAction));
                 WaitSec(wizardAction, 5);
-                GetSlotLanPower(_wizardSwitchSlot);
+                GetSlotLanPower(_wizardSwitchSlot, new CancellationToken());
                 wizardAction = $"{Translate("i18n_capdet")} {_wizardSwitchPort.Name}";
                 _wizardReportResult.CreateReportResult(_wizardSwitchPort.Name, WizardResult.Starting, wizardAction);
                 if (_wizardSwitchPort.IsCapacitorDetection)
@@ -2003,12 +2013,12 @@ namespace PoEWizard.Comm
             if (_wizardSwitchPort.MaxPower < maxDefaultPower)
             {
                 _wizardReportResult.SetReturnParameter(_wizardSwitchPort.Name, maxDefaultPower);
-                info = Translate("i18n_bmxpw").Replace("$1", _wizardSwitchPort.Name).Replace("$2", $"{_wizardSwitchPort.MaxPower}").Replace("$3", $"{maxDefaultPower}");
+                info = Translate("i18n_bmxpw", _wizardSwitchPort.Name, $"{_wizardSwitchPort.MaxPower}", $"{maxDefaultPower}");
                 _wizardReportResult.UpdateAlert(_wizardSwitchPort.Name, WizardResult.Warning, info);
             }
             else
             {
-                 info = "\n    " + Translate("i18n_gmxpw").Replace("$1", _wizardSwitchPort.Name).Replace("$2", $"{_wizardSwitchPort.MaxPower}");
+                info = "\n    " + Translate("i18n_gmxpw", _wizardSwitchPort.Name, $"{_wizardSwitchPort.MaxPower}");
                 _wizardReportResult.UpdateResult(_wizardSwitchPort.Name, WizardResult.Proceed, info);
             }
             Logger.Info($"{wizardAction}\n{_wizardProgressReport.Message}");
@@ -2023,7 +2033,7 @@ namespace PoEWizard.Comm
                 return;
             }
             double maxDefaultPower = (double)obj;
-            string wizardAction = Translate("i18n_rstmxpw").Replace("$1", _wizardSwitchPort.Name).Replace("$2", $"{_wizardSwitchPort.MaxPower}").Replace("$3", $"{maxDefaultPower}");
+            string wizardAction = Translate("i18n_rstmxpw", _wizardSwitchPort.Name, $"{_wizardSwitchPort.MaxPower}", $"{maxDefaultPower}");
             _progress.Report(new ProgressReport(wizardAction));
             double prevMaxPower = _wizardSwitchPort.MaxPower;
             SetMaxPowerToDefault(maxDefaultPower);
@@ -2066,7 +2076,7 @@ namespace PoEWizard.Comm
         {
             _progress.Report(new ProgressReport($"{Translate("i18n_rfsw")} {SwitchModel.Name}"));
             GetSlotPowerStatus(_wizardSwitchSlot);
-            GetSlotPowerAndConfig(_wizardSwitchSlot);
+            GetSlotPowerAndConfig(_wizardSwitchSlot, new CancellationToken());
         }
 
         private void GetSwitchSlotPort(string port)
@@ -2419,14 +2429,14 @@ namespace PoEWizard.Comm
         private string PrintPortStatus()
         {
             if (_wizardSwitchPort == null) return string.Empty;
-            return $"\n{Translate("i18n_poeSt")}: {_wizardSwitchPort.Poe}, " + 
+            return $"\n{Translate("i18n_poeSt")}: {_wizardSwitchPort.Poe}, " +
                 $"{Translate("i18n_pwPst")} {_wizardSwitchPort.Status}, {Translate("i18n_power")} {_wizardSwitchPort.Power} Watts";
         }
 
         private void UpdatePortData()
         {
             if (_wizardSwitchPort == null) return;
-            GetSlotPowerAndConfig(_wizardSwitchSlot);
+            GetSlotPowerAndConfig(_wizardSwitchSlot, new CancellationToken());
             _dictList = SendCommand(new CmdRequest(Command.SHOW_PORT_STATUS, ParseType.Htable3, _wizardSwitchPort.Name)) as List<Dictionary<string, string>>;
             if (_dictList?.Count > 0) _wizardSwitchPort.UpdatePortStatus(_dictList[0]);
             _dictList = SendCommand(new CmdRequest(Command.SHOW_PORT_MAC_ADDRESS, ParseType.Htable, _wizardSwitchPort.Name)) as List<Dictionary<string, string>>;
@@ -2436,13 +2446,14 @@ namespace PoEWizard.Comm
             if (lldpList.ContainsKey(_wizardSwitchPort.Name)) _wizardSwitchPort.LoadLldpRemoteTable(lldpList[_wizardSwitchPort.Name]);
         }
 
-        private void GetLanPower()
+        private void GetLanPower(CancellationToken token)
         {
             SendProgressReport(Translate("i18n_rpoe"));
             int nbChassisPoE = SwitchModel.ChassisList.Count;
             foreach (var chassis in SwitchModel.ChassisList)
             {
                 GetLanPowerStatus(chassis);
+                token.ThrowIfCancellationRequested();
                 if (!chassis.SupportsPoE) nbChassisPoE--;
                 foreach (var slot in chassis.Slots)
                 {
@@ -2454,7 +2465,8 @@ namespace PoEWizard.Comm
                         slot.PoeStatus = SlotPoeStatus.NotSupported;
                         continue;
                     }
-                    GetSlotPowerAndConfig(slot);
+                    GetSlotPowerAndConfig(slot, token);
+                    token.ThrowIfCancellationRequested();
                     if (!slot.IsInitialized)
                     {
                         slot.IsPoeModeEnable = false;
@@ -2479,6 +2491,7 @@ namespace PoEWizard.Comm
                 {
                     string psId = chassis.Number > 0 ? $"{chassis.Number} {ps.Id}" : $"{ps.Id}";
                     _dict = SendCommand(new CmdRequest(Command.SHOW_POWER_SUPPLY, ParseType.Vtable, psId)) as Dictionary<string, string>;
+                    token.ThrowIfCancellationRequested();
                     ps.LoadFromDictionary(_dict);
                 }
             }
@@ -2520,10 +2533,11 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void GetSlotPowerAndConfig(SlotModel slot)
+        private void GetSlotPowerAndConfig(SlotModel slot, CancellationToken token)
         {
             GetSlotPowerConfig(slot);
-            GetSlotLanPower(slot);
+            token.ThrowIfCancellationRequested();
+            GetSlotLanPower(slot, token);
         }
 
         private void GetSlotPowerConfig(SlotModel slot)
@@ -2574,7 +2588,7 @@ namespace PoEWizard.Comm
             return string.Empty;
         }
 
-        private void GetSlotLanPower(SlotModel slot)
+        private void GetSlotLanPower(SlotModel slot, CancellationToken token)
         {
             try
             {
@@ -2602,6 +2616,10 @@ namespace PoEWizard.Comm
                     }
                 }
                 slot.LoadFromList(_dictList, DictionaryType.LanPower);
+            }
+            catch (OperationCanceledException)
+            {
+                token.ThrowIfCancellationRequested();
             }
             catch (Exception ex)
             {

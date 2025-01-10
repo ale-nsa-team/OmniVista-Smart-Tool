@@ -292,7 +292,7 @@ namespace PoEWizard
             try
             {
                 ShowProgress(Translate("i18n_lsnap"));
-                await Task.Run(() => restApiService.GetSnapshot());
+                await Task.Run(() => restApiService.GetSnapshot(new CancellationToken()));
                 HideInfoBox();
                 HideProgress();
                 TextViewer tv = new TextViewer(Translate("i18n_tsnap"), device.ConfigSnapshot)
@@ -481,7 +481,7 @@ namespace PoEWizard
             }
             if (wiz.Errors.Count > 0)
             {
-                string errMsg = wiz.Errors.Count > 1 ? Translate("i18n_cwErrs").Replace("$1", $"{wiz.Errors.Count}") : Translate("i18n_cwErr");
+                string errMsg = wiz.Errors.Count > 1 ? Translate("i18n_cwErrs", $"{wiz.Errors.Count}") : Translate("i18n_cwErr");
                 ShowMessageBox("Wizard", $"{errMsg}\n\n\u2022 {string.Join("\n\u2022 ", wiz.Errors)}", MsgBoxIcons.Error);
                 Logger.Warn($"Configuration from Wizard applyed with errors:\n\t{string.Join("\n\t", wiz.Errors)}");
                 Activity.Log(device, "Wizard applied with errors");
@@ -623,13 +623,13 @@ namespace PoEWizard
                 }
                 else
                 {
-                    ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!", MsgBoxIcons.Error);
+                    ShowMessageBox(TranslateBackupRunning(), Translate("i18n_bckFail", device.Name), MsgBoxIcons.Error);
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_bckFail").Replace("$1", device.Name)}!\n{ex.Message}", MsgBoxIcons.Error);
+                ShowMessageBox(TranslateBackupRunning(), $"{Translate("i18n_bckFail", device.Name)}\n{ex.Message}", MsgBoxIcons.Error);
             }
             finally
             {
@@ -660,13 +660,13 @@ namespace PoEWizard
                     else
                     {
                         string cfgChanges = await GetSyncStatus(Translate("i18n_restSync"));
-                        if (ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restConfirm").Replace("$1", device.Name)}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
+                        if (ShowMessageBox(TranslateRestoreRunning(), Translate("i18n_restConfirm", device.Name), MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
                         {
                             return;
                         }
                         if (device.RunningDir == CERTIFIED_DIR || (device.SyncStatus != SyncStatusType.Synchronized && device.SyncStatus != SyncStatusType.NotSynchronized))
                         {
-                            if (ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_bckNotCert")}", MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
+                            if (ShowMessageBox(TranslateRestoreRunning(), Translate("i18n_bckNotCert"), MsgBoxIcons.Warning, MsgBoxButtons.YesNo) == MsgBoxResult.No)
                             {
                                 return;
                             }
@@ -725,13 +725,13 @@ namespace PoEWizard
                 {
                     PurgeFilesInFolder(Path.Combine(DataPath, BACKUP_DIR));
                     invalidMsg = dictInvalid[MsgBoxIcons.Error];
-                    ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restInv").Replace("$1", $"{Path.GetFileName(selFilePath)}")}!\n{invalidMsg}", MsgBoxIcons.Error);
+                    ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restInv", Path.GetFileName(selFilePath))}\n{invalidMsg}", MsgBoxIcons.Error);
                     return false;
                 }
                 else if (dictInvalid.ContainsKey(MsgBoxIcons.Warning) && !string.IsNullOrEmpty(dictInvalid[MsgBoxIcons.Warning]))
                 {
                     invalidMsg = dictInvalid[MsgBoxIcons.Warning];
-                    MsgBoxResult choice = ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restInv").Replace("$1", $"{Path.GetFileName(selFilePath)}")}!\n{invalidMsg}", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
+                    MsgBoxResult choice = ShowMessageBox(TranslateRestoreRunning(), $"{Translate("i18n_restInv", Path.GetFileName(selFilePath))}\n{invalidMsg}", MsgBoxIcons.Warning, MsgBoxButtons.OkCancel);
                     if (choice == MsgBoxResult.Cancel)
                     {
                         PurgeFilesInFolder(Path.Combine(DataPath, BACKUP_DIR));
@@ -829,7 +829,7 @@ namespace PoEWizard
             if (!File.Exists(filePath))
             {
                 if (invalidMsg.Length > 0) invalidMsg += "\n";
-                invalidMsg += !string.IsNullOrEmpty(dir) ? $"{Translate("i18n_missingFile").Replace("$1", $"/{FLASH_DIR}/{dir}/{file}")}" : $"{Translate("i18n_missingFile").Replace("$1", file)}";
+                invalidMsg += !string.IsNullOrEmpty(dir) ? Translate("i18n_missingFile", $"/{FLASH_DIR}/{dir}/{file}") : Translate("i18n_missingFile", file);
             }
             return invalidMsg;
         }
@@ -854,14 +854,14 @@ namespace PoEWizard
                 {
                     if (alert.Length > 0) alert.Append("\n");
                     alert.Append(Translate("i18n_restChassis")).Append(" ").Append(chassisNr).Append(" ").Append(Translate("i18n_restSerial")).Append(":\n");
-                    alert.Append("    - ").Append(Translate("i18n_restNotMatch").Replace("$1", sn).Replace("$2", chassis.SerialNumber));
+                    alert.Append("    - ").Append(Translate("i18n_restNotMatch", sn, chassis.SerialNumber));
                 }
             }
             if (alert.Length > 0)
             {
                 if (swIp != device.IpAddress || swName != device.Name)
                 {
-                    alert.Append("\n").Append(Translate("i18n_restInvSw").Replace("$1", swName).Replace("$2", swIp)).Append(".");
+                    alert.Append("\n").Append(Translate("i18n_restInvSw", swName, swIp)).Append(".");
                 }
             }
             return alert;
@@ -1009,7 +1009,7 @@ namespace PoEWizard
             string switchName = device.Name;
             string lastIp = device.IpAddress;
             string lastPasswd = device.Password;
-            string title = $"{Translate("i18n_waitReboot").Replace("$1", device.Name)}{WAITING}";
+            string title = $"{Translate("i18n_waitReboot", device.Name)}{WAITING}";
             ShowInfoBox(title);
             ShowProgress(title);
             ClearMainWindowGui();
