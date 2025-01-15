@@ -536,6 +536,14 @@
                         <Image Source="{DynamicResource reboot}" Height="16" Width="16" />
                     </StackPanel>
                 </Button>
+                <Button x:Name="_btnTdr" Style="{DynamicResource largeButton}"
+                        IsEnabled="False"
+                        Click="RunTdr_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_ptTdr}" />
+                        <Image Source="{DynamicResource bolt}" Height="16" Width="16" />
+                    </StackPanel>
+                </Button>
                 <Button x:Name="_btnRunWiz" Style="{DynamicResource largeButton}"
                         IsEnabled="False"
                         Click="RunWiz_Click">

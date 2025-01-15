@@ -886,8 +886,8 @@ namespace PoEWizard
 
         private async void ResetPort_Click(object sender, RoutedEventArgs e)
         {
-            string title = $"{Translate("i18n_rstpp")} {selectedPort.Name}";
             if (selectedPort == null) return;
+            string title = $"{Translate("i18n_rstpp")} {selectedPort.Name}";
             try
             {
                 if (ShowMessageBox(title, $"{Translate("i18n_cprst")} {selectedPort.Name} {Translate("i18n_onsw")} {device.Name}?",
@@ -912,6 +912,33 @@ namespace PoEWizard
                 HideInfoBox();
                 Logger.Error(ex);
             }
+            EnableButtons();
+        }
+
+        private async void RunTdr_Click(object sender, RoutedEventArgs e)
+        {
+            if (selectedPort == null) return;
+            string title = $"{Translate("i18n_runTdr")} {selectedPort.Name}";
+
+            if (selectedPort.Poe == PoeStatus.NoPoe)
+            {
+                ShowMessageBox(title, $"{Translate("i18n_noTdr")} {selectedPort.Name}", MsgBoxIcons.Error);
+                return;
+            }
+
+            DisableButtons();
+            string barText = $"{title}{WAITING}";
+            ShowInfoBox(barText);
+            ShowProgress(barText);
+            TdrModel res = await Task.Run(() => restApiService.RunTdr(selectedPort.Name));
+            HideProgress();
+            HideInfoBox();
+            TdrView tdr = new TdrView(res)
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            tdr.ShowDialog();
             EnableButtons();
         }
 
@@ -1349,6 +1376,7 @@ namespace PoEWizard
                 _portList.ItemsSource = slot.Ports;
                 _btnResetPort.IsEnabled = false;
                 _btnRunWiz.IsEnabled = false;
+                _btnTdr.IsEnabled = false;
             }
         }
 
@@ -1360,6 +1388,7 @@ namespace PoEWizard
                 selectedPortIndex = _portList.SelectedIndex;
                 _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
                 _btnResetPort.IsEnabled = true;
+                _btnTdr.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
             }
         }
 
@@ -2435,6 +2464,7 @@ namespace PoEWizard
             {
                 _btnRunWiz.IsEnabled = false;
                 _btnResetPort.IsEnabled = false;
+                _btnTdr.IsEnabled = false;
             }
         }
 
@@ -2507,6 +2537,7 @@ namespace PoEWizard
             ChangeButtonVisibility(false);
             _btnRunWiz.IsEnabled = false;
             _btnResetPort.IsEnabled = false;
+            _btnTdr.IsEnabled = false;
         }
 
         private void ChangeButtonVisibility(bool val)
@@ -2537,6 +2568,7 @@ namespace PoEWizard
                 _portList.SelectionChanged += PortSelection_Changed;
                 _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
                 _btnResetPort.IsEnabled = true;
+                _btnTdr.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
             }
         }
 
@@ -2547,8 +2579,9 @@ namespace PoEWizard
                 _slotsView.SelectionChanged -= SlotSelection_Changed;
                 _slotsView.SelectedItem = _slotsView.Items[selectedSlotIndex];
                 _slotsView.SelectionChanged += SlotSelection_Changed;
-                if (selectedPort != null) _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe; else _btnRunWiz.IsEnabled = true;
+                _btnRunWiz.IsEnabled = selectedPort != null && selectedPort.Poe != PoeStatus.NoPoe;
                 _btnResetPort.IsEnabled = true;
+                _btnTdr.IsEnabled = selectedPort != null && selectedPort.Poe != PoeStatus.NoPoe;
             }
         }
 

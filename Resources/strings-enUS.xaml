@@ -34,6 +34,7 @@
 
     <!--Buttons-->
     <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>
+    <sys:String x:Key="i18n_ptTdr">TDR Test</sys:String>
     <sys:String x:Key="i18n_poeWiz">Run PoE Wizard</sys:String>
     <sys:String x:Key="i18n_rfrsh">Refresh</sys:String>
     <sys:String x:Key="i18n_save">Write Memory</sys:String>
@@ -440,6 +441,22 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_tahour">hour</sys:String>
     <sys:String x:Key="i18n_tanodata" xml:space="preserve">Some enabled ports received no data.
 You may want to run the traffic analysis again for a longer period.</sys:String>
+    
+    <!--TDR-->
+    <sys:String x:Key="i18n_tdr">TDR</sys:String>
+    <sys:String x:Key="i18n_runTdr">Running TDR test on port</sys:String>
+    <sys:String x:Key="i18n_getTdr">Retrieving TDR statistics</sys:String>
+    <sys:String x:Key="i18n_enTdr">Enabling TDR on port</sys:String>
+    <sys:String x:Key="i18n_noTdr">TDR is not supported on port</sys:String>
+    <sys:String x:Key="i18n_p1st">Pair1 State</sys:String>
+    <sys:String x:Key="i18n_p2st">Pair2 State</sys:String>
+    <sys:String x:Key="i18n_p3st">Pair3 State</sys:String>
+    <sys:String x:Key="i18n_p4st">Pair4 State</sys:String>
+    <sys:String x:Key="i18n_p1len">Pair1 Length (m)</sys:String>
+    <sys:String x:Key="i18n_p2len">Pair2 Length (m)</sys:String>
+    <sys:String x:Key="i18n_p3len">Pair3 Length (m)</sys:String>
+    <sys:String x:Key="i18n_p4len">Pair4 Length (m)</sys:String>
+    <sys:String x:Key="i18n_tdrRes">Test Result</sys:String>
 
     <!--Other Messages-->
     <sys:String x:Key="i18n_rsNocnx">Could not connect to switch</sys:String>

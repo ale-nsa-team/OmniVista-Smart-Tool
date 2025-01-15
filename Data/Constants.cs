@@ -70,7 +70,7 @@ namespace PoEWizard.Data
         public enum SwitchDebugLogLevel { Off = 0, Alarm = 1, Error = 2, Alert = 3, Warn = 4, Event = 5, Info = 6, Debug1 = 7, Debug2 = 8, Debug3 = 9, Unknown = -1, Invalid = -2 }
         public enum TrafficStatus { Idle, Abort, CanceledByUser, Running, Completed }
         public enum OpType { Other, Connection, Refresh, Reboot, Backup, Restore, Upgrade, TrafficAnalysis }
-        #endregion`
+        #endregion
 
         #region dictionaries
         public static readonly Dictionary<string, string> fpgaVersions = new Dictionary<string, string>()
@@ -389,6 +389,17 @@ namespace PoEWizard.Data
         public const string PRIMARY = "Primary Port";
         public const string YES = "YES";
         public const string MGT_IF_NAME = "\"IBMGT-1\"";
+        //Used by TDR
+        public const string CSP = "Ch/Slot/Port";
+        public const string PAIR1_STATE = "Pair1 State";
+        public const string PAIR2_STATE = "Pair2 State";
+        public const string PAIR3_STATE = "Pair3 State";
+        public const string PAIR4_STATE = "Pair4 State";
+        public const string PAIR1_LEN = "Pair1 Len (meters)";
+        public const string PAIR2_LEN = "Pair2 Len (meters)";
+        public const string PAIR3_LEN = "Pair3 Len (meters)";
+        public const string PAIR4_LEN = "Pair4 Len (meters)";
+        public const string TEST_RESULT = "Test Results";
         // Application config file
         public const string APP_CFG_FILENAME = "app.cfg";
         #endregion

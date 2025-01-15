@@ -192,6 +192,9 @@
     <Compile Include="Components\SelectMacAddress.xaml.cs">
       <DependentUpon>SelectMacAddress.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\TdrView.xaml.cs">
+      <DependentUpon>TdrView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\TextViewer.xaml.cs">
       <DependentUpon>TextViewer.xaml</DependentUpon>
     </Compile>
@@ -241,6 +244,7 @@
     <Compile Include="Device\PortModel.cs" />
     <Compile Include="Device\SwitchTrafficModel.cs" />
     <Compile Include="Device\SystemModel.cs" />
+    <Compile Include="Device\TdrModel.cs" />
     <Compile Include="Device\VlanModel.cs" />
     <Compile Include="Exceptions\CustomExceptions.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -348,6 +352,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\SelectMacAddress.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\TdrView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -527,6 +535,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Help\styles-dark.css" />
     <EmbeddedResource Include="Resources\Help\styles-light.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Img\bolt.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -110,6 +110,12 @@ namespace PoEWizard.Data
             [Command.SHOW_DDM_INTERFACES] = "show interfaces ddm",
             #endregion
 
+            #region TDR commands
+            [Command.ENABLE_TDR] = $"interfaces port {DAT} tdr enable",
+            [Command.SHOW_TDR_STATISTICS] = $"show interfaces port {DAT} tdr-statistics",
+            [Command.CLEAR_TDR_STATISTICS] = $"clear interfaces {DATA} tdr-statistics",
+            #endregion
+
             #region Switch Debug Log commands
             [Command.DEBUG_SHOW_LAN_POWER_STATUS] = $"debug show lanpower slot {DAT} status ni",
             [Command.DEBUG_CREATE_LOG] = "show tech-support eng complete",

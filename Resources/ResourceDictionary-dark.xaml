@@ -36,6 +36,7 @@
     <BitmapImage x:Key="refresh" UriSource="Img/refresh-dark.png" />
     <BitmapImage x:Key="write_memory" UriSource="Img/save-dark.png" />
     <BitmapImage x:Key="reboot" UriSource="Img/reboot-dark.png" />
+    <BitmapImage x:Key="bolt" UriSource="Img/bolt.png" />
 
     <SolidColorBrush x:Key="fontColor" Color="White" />
     <SolidColorBrush x:Key="linkColor" Color="#92caf4" />

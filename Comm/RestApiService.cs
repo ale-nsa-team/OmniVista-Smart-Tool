@@ -1653,6 +1653,18 @@ namespace PoEWizard.Comm
             ResetWizardSlotPort();
         }
 
+        public TdrModel RunTdr(string port)
+        {
+            _progress.Report(new ProgressReport($"{Translate("i18n_enTdr")} {port}"));
+            var res = RunSwitchCommand(new CmdRequest(Command.ENABLE_TDR, port));
+            Thread.Sleep(2000);
+            _progress.Report(new ProgressReport(Translate("i18n_getTdr")));
+            res = RunSwitchCommand(new CmdRequest(Command.SHOW_TDR_STATISTICS, ParseType.Htable3, port));
+            RunSwitchCommand(new CmdRequest(Command.CLEAR_TDR_STATISTICS, port));
+            List<Dictionary<string, string>> resList = (List<Dictionary<string, string>>)res;
+            return new TdrModel(resList[0]);
+        }
+
         private void RestartEthernetOnPort(string progressMessage, int waitTimeSec = 5)
         {
             string action = !string.IsNullOrEmpty(progressMessage) ? progressMessage : string.Empty;

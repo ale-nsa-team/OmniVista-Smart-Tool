@@ -179,9 +179,14 @@ namespace PoEWizard.Data
         FTP_AUTH_LOCAL,
         DISABLE_SSH,
         DISABLE_DHCP_RELAY,
-        CLEAR_SWLOG
+        CLEAR_SWLOG,
         #endregion
 
+        #region TDR commands
+        ENABLE_TDR,
+        SHOW_TDR_STATISTICS,
+        CLEAR_TDR_STATISTICS
+        #endregion
     }
 
     public class CmdRequest
