@@ -1655,14 +1655,29 @@ namespace PoEWizard.Comm
 
         public TdrModel RunTdr(string port)
         {
-            _progress.Report(new ProgressReport($"{Translate("i18n_enTdr")} {port}"));
-            var res = RunSwitchCommand(new CmdRequest(Command.ENABLE_TDR, port));
-            Thread.Sleep(2000);
-            _progress.Report(new ProgressReport(Translate("i18n_getTdr")));
-            res = RunSwitchCommand(new CmdRequest(Command.SHOW_TDR_STATISTICS, ParseType.Htable3, port));
-            RunSwitchCommand(new CmdRequest(Command.CLEAR_TDR_STATISTICS, port));
-            List<Dictionary<string, string>> resList = (List<Dictionary<string, string>>)res;
-            return new TdrModel(resList[0]);
+            try
+            {
+                _progress.Report(new ProgressReport($"{Translate("i18n_ptSpd")} {port}"));
+                var status = SendCommand(new CmdRequest(Command.SHOW_PORT_STATUS, ParseType.Htable3, port));
+                Thread.Sleep(1000);
+                _progress.Report(new ProgressReport($"{Translate("i18n_enTdr")} {port}"));
+                SendCommand(new CmdRequest(Command.ENABLE_TDR, port));
+                Thread.Sleep(2000);
+                _progress.Report(new ProgressReport(Translate("i18n_getTdr")));
+                var tdr = SendCommand(new CmdRequest(Command.SHOW_TDR_STATISTICS, ParseType.Htable3, port));
+                SendCommand(new CmdRequest(Command.CLEAR_TDR_STATISTICS, port));
+                List<Dictionary<string, string>> tdrList = (List<Dictionary<string, string>>)tdr;
+                List <Dictionary<string, string>> statList = (List<Dictionary<string, string>>)status;
+                var spd = from result in statList[0] where Regex.Match(result.Key, MATCH_SPEED, RegexOptions.Singleline).Success select result;
+                var bps = spd.FirstOrDefault().Value ?? "";
+                tdrList[0].Add(SPEED, bps);
+                return new TdrModel(tdrList[0]);
+            }
+            catch (Exception ex)
+            {
+                _progress.Report(new ProgressReport(ReportType.Error, Translate("i18n_tdr"), ex.Message));
+            }
+            return null;
         }
 
         private void RestartEthernetOnPort(string progressMessage, int waitTimeSec = 5)
@@ -2449,7 +2464,7 @@ namespace PoEWizard.Comm
         {
             if (_wizardSwitchPort == null) return;
             GetSlotPowerAndConfig(_wizardSwitchSlot, new CancellationToken());
-            _dictList = SendCommand(new CmdRequest(Command.SHOW_PORT_STATUS, ParseType.Htable3, _wizardSwitchPort.Name)) as List<Dictionary<string, string>>;
+            _dictList = SendCommand(new CmdRequest(Command.SHOW_PORT_ALIAS, ParseType.Htable3, _wizardSwitchPort.Name)) as List<Dictionary<string, string>>;
             if (_dictList?.Count > 0) _wizardSwitchPort.UpdatePortStatus(_dictList[0]);
             _dictList = SendCommand(new CmdRequest(Command.SHOW_PORT_MAC_ADDRESS, ParseType.Htable, _wizardSwitchPort.Name)) as List<Dictionary<string, string>>;
             _wizardSwitchPort.UpdateMacList(_dictList, MAX_SCAN_NB_MAC_PER_PORT);

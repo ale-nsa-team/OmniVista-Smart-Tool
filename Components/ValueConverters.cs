@@ -61,7 +61,7 @@ namespace PoEWizard.Components
         }
     }
 
-    public class BoolToVisibilityConvertter : IValueConverter
+    public class BoolToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -136,6 +136,8 @@ namespace PoEWizard.Components
                                level > SwitchDebugLogLevel.Off && level < SwitchDebugLogLevel.Warn ? Colors.Problem :
                                level >= SwitchDebugLogLevel.Warn && level < SwitchDebugLogLevel.Info ? Colors.Warn :
                                level >= SwitchDebugLogLevel.Debug1 ? Colors.Danger : Colors.Problem;
+                    case "PortSpeed":
+                        return val == "1000" ? Colors.Default : Colors.Warn;
                     default:
                         return Colors.Unknown;
                 }

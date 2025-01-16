@@ -6,7 +6,7 @@
     <converters:BoolToSymbolConverter x:Key="BoolToSymbolConverter" />
     <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
     <converters:SnmpVersionToVisibilityConverter x:Key="SnmpVersionToVisibilityConverter" />
-    <converters:BoolToVisibilityConvertter x:Key="BoolToVisibilityConverter" />
+    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     <converters:PoeToPriorityLevelConverter x:Key="PoeToPriorityLevelConverter" />
     <converters:AosVersionToVisibilityConverter x:Key="AosVersionToVisibilityConverter" />
     <converters:BadVersionToVisibilityConverter x:Key="BadVersionToVisibilityConverter" />

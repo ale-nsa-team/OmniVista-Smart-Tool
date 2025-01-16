@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PoEWizard.Components"
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
-        Title="TDR" MinHeight="120" Width="1000" WindowStyle="None" ShowInTaskbar="False">
+        Title="TDR" MinHeight="200" Width="1000" WindowStyle="None" ShowInTaskbar="False">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -21,8 +21,9 @@
             <RowDefinition Height="30" />
             <RowDefinition MinHeight="50" Height="*" MaxHeight="500" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock x:Name="_title" Grid.Row="0" Grid.Column="0" 
+        <TextBlock x:Name="_title" Grid.Row="0" 
                    Style="{DynamicResource aboutParagraph}" 
                    Text="{DynamicResource i18n_tdr}" 
                    HorizontalAlignment="Center" >
@@ -39,6 +40,19 @@
                         <TextBlock Text="{DynamicResource i18n_port}" />
                     </DataGridTextColumn.Header>
                 </DataGridTextColumn>
+                <DataGridTemplateColumn Width="*">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_spd}" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Speed}"
+                                    Foreground="{Binding Path=Speed, 
+                                    Converter={StaticResource ValueToColorConverter}, 
+                                    ConverterParameter=PortSpeed}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Width="*" Binding="{Binding Path=Pair1State}">
                     <DataGridTextColumn.Header>
                         <TextBlock Text="{DynamicResource i18n_p1st}" />
@@ -86,7 +100,8 @@
                 </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Button Grid.Row="2" Click="BtnOk_Click" Style="{DynamicResource defaultButton}" 
-                Margin="5" Content="{DynamicResource i18n_closeBtn}"/>
+        <TextBlock Grid.Row="2" Style="{DynamicResource infoVal}" Text="{DynamicResource i18n_tdrDesc}" />
+        <Button Grid.Row="3" Click="BtnOk_Click" Style="{DynamicResource defaultButton}" 
+                Margin="0,20,0,10" Content="{DynamicResource i18n_closeBtn}"/>
     </Grid>
 </Window>

@@ -330,7 +330,7 @@ namespace PoEWizard.Comm
                     {
                         HttpStatusCode code = ConvertToHttpStatusCode(errorList);
                         string errorMsg = $"Requested URL: {url}\r\nHTTP Response: {code} ({errorList[HTTP_RESPONSE]})\r\nError: {error}";
-                        if (errMsg.Contains("lanpower") && (errMsg.Contains("not supported") || errMsg.Contains("invalid entry"))) return error;
+                        if (errMsg.Contains("lanpower") && (errMsg.Contains("not supported")) || errMsg.Contains("invalid entry") || errMsg.Contains("tdr")) return error;
                         else if (errMsg.Contains("not supported") || errMsg.Contains("command in progress") || errMsg.Contains("power range supported"))
                         {
                             string[] split = url.Split('=');

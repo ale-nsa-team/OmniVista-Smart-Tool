@@ -6,6 +6,7 @@ namespace PoEWizard.Device
     public class TdrModel
     {
         public string Port { get; set; }
+        public string Speed { get; set; }
         public string Pair1State { get; set; }
         public string Pair1Len { get; set; }
         public string Pair2State { get; set; }
@@ -18,9 +19,10 @@ namespace PoEWizard.Device
 
         public TdrModel(Dictionary<string, string> data)
         {
-            if (data.Count == 10)
+            if (data.Count == 11)
             {
                 Port = GetValue(data, CSP).Split(' ')[0];
+                Speed = GetValue(data, SPEED);
                 Pair1State = GetValue(data, PAIR1_STATE);
                 Pair1Len = GetValue(data, PAIR1_LEN);
                 Pair2State = GetValue(data, PAIR2_STATE);
@@ -36,7 +38,7 @@ namespace PoEWizard.Device
 
         private string GetValue(Dictionary<string, string> data, string key)
         {
-            return data.TryGetValue(key, out string value) ? value : string.Empty;
+            return data.TryGetValue(key, out string value) ? value.Trim() : string.Empty;
         }
     }
 }

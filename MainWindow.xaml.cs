@@ -933,6 +933,7 @@ namespace PoEWizard
             TdrModel res = await Task.Run(() => restApiService.RunTdr(selectedPort.Name));
             HideProgress();
             HideInfoBox();
+            if (res == null) return;
             TdrView tdr = new TdrView(res)
             {
                 Owner = this,
@@ -2569,6 +2570,7 @@ namespace PoEWizard
                 _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
                 _btnResetPort.IsEnabled = true;
                 _btnTdr.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
+
             }
         }
 

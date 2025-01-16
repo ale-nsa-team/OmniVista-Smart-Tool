@@ -391,6 +391,7 @@ namespace PoEWizard.Data
         public const string MGT_IF_NAME = "\"IBMGT-1\"";
         //Used by TDR
         public const string CSP = "Ch/Slot/Port";
+        public const string SPEED = "Speed (Mbps)";
         public const string PAIR1_STATE = "Pair1 State";
         public const string PAIR2_STATE = "Pair2 State";
         public const string PAIR3_STATE = "Pair3 State";
@@ -418,6 +419,7 @@ namespace PoEWizard.Data
         public const string MATCH_USER = @"(User name)\s*=\s*(.+),";
         public const string MATCH_LOCAL_PORT = @"(Local.+)(?<port>\d/\d/\d+[A-Z]*)(.+)";
         public const string MATCH_PORT_ID = @"(Port ID)(\s+= )(?<id>\d+)(.+)";
+        public const string MATCH_SPEED = @"(.*)Speed \(Mbps\)(.*)";
         #endregion
 
         #region Backup/Restore Switch Configuration

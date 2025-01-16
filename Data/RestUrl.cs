@@ -84,7 +84,8 @@ namespace PoEWizard.Data
             [Command.POE_FAST_ENABLE] = $"lanpower slot {DAT} fpoe enable",
             [Command.POE_PERPETUAL_ENABLE] = $"lanpower slot {DAT} ppoe enable",
             [Command.SHOW_PORT_MAC_ADDRESS] = $"show mac-learning port {DAT}",
-            [Command.SHOW_PORT_STATUS] = $"show interfaces port {DAT} alias",
+            [Command.SHOW_PORT_ALIAS] = $"show interfaces port {DAT} alias",
+            [Command.SHOW_PORT_STATUS] = $"show interfaces port {DAT} status",
             [Command.SHOW_PORT_POWER] = $"show lanpower slot {DAT}|grep {DAT}",
             [Command.SHOW_PORT_LLDP_REMOTE] = $"show lldp port {DAT} remote-system",
             [Command.POE_FAST_DISABLE] = $"lanpower slot {DAT} fpoe disable",
@@ -113,7 +114,7 @@ namespace PoEWizard.Data
             #region TDR commands
             [Command.ENABLE_TDR] = $"interfaces port {DAT} tdr enable",
             [Command.SHOW_TDR_STATISTICS] = $"show interfaces port {DAT} tdr-statistics",
-            [Command.CLEAR_TDR_STATISTICS] = $"clear interfaces {DATA} tdr-statistics",
+            [Command.CLEAR_TDR_STATISTICS] = $"clear interfaces {DAT} tdr-statistics",
             #endregion
 
             #region Switch Debug Log commands

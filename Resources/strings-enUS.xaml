@@ -34,7 +34,7 @@
 
     <!--Buttons-->
     <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>
-    <sys:String x:Key="i18n_ptTdr">TDR Test</sys:String>
+    <sys:String x:Key="i18n_ptTdr">Cable Test</sys:String>
     <sys:String x:Key="i18n_poeWiz">Run PoE Wizard</sys:String>
     <sys:String x:Key="i18n_rfrsh">Refresh</sys:String>
     <sys:String x:Key="i18n_save">Write Memory</sys:String>
@@ -443,11 +443,13 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
 You may want to run the traffic analysis again for a longer period.</sys:String>
     
     <!--TDR-->
-    <sys:String x:Key="i18n_tdr">TDR</sys:String>
-    <sys:String x:Key="i18n_runTdr">Running TDR test on port</sys:String>
-    <sys:String x:Key="i18n_getTdr">Retrieving TDR statistics</sys:String>
+    <sys:String x:Key="i18n_tdr">Cable Test</sys:String>
+    <sys:String x:Key="i18n_runTdr">Running cable test on port</sys:String>
+    <sys:String x:Key="i18n_getTdr">Retrieving test statistics</sys:String>
     <sys:String x:Key="i18n_enTdr">Enabling TDR on port</sys:String>
+    <sys:String x:Key="i18n_ptSpd">Checking port speed</sys:String>
     <sys:String x:Key="i18n_noTdr">TDR is not supported on port</sys:String>
+    <sys:String x:Key="i18n_spd">Speed (Mbps)</sys:String>
     <sys:String x:Key="i18n_p1st">Pair1 State</sys:String>
     <sys:String x:Key="i18n_p2st">Pair2 State</sys:String>
     <sys:String x:Key="i18n_p3st">Pair3 State</sys:String>
@@ -457,6 +459,8 @@ You may want to run the traffic analysis again for a longer period.</sys:String>
     <sys:String x:Key="i18n_p3len">Pair3 Length (m)</sys:String>
     <sys:String x:Key="i18n_p4len">Pair4 Length (m)</sys:String>
     <sys:String x:Key="i18n_tdrRes">Test Result</sys:String>
+    <sys:String x:Key="i18n_tdrDesc" xml:space="preserve">Note: Cable lengths are estimates and short runs may result in * being displayed as unknown. 
+Devices running at 10 or 100 Mbps speed cannot provide results on pairs 3 and 4 as they are not used.</sys:String>
 
     <!--Other Messages-->
     <sys:String x:Key="i18n_rsNocnx">Could not connect to switch</sys:String>
