@@ -1343,7 +1343,7 @@ namespace PoEWizard
             }
             if (device.IsConnected)
             {
-                _switchAttributes.Text = $"{Translate("i18n_connTo")} {device.Name} ({Translate("i18n_upTime")} {device.UpTime})";
+                _switchAttributes.Text = $"{Translate("i18n_connTo")} {device.Name}";
             }
             //force tooltip converter to run
             if (selectedSlot != null)
@@ -1999,7 +1999,7 @@ namespace PoEWizard
             _slotsView.ItemsSource = null;
             _portList.ItemsSource = null;
             DataContext = device;
-            _switchAttributes.Text = $"{Translate("i18n_connTo")} {device.Name} ({Translate("i18n_upTime")} {device.UpTime})";
+            _switchAttributes.Text = $"{Translate("i18n_connTo")} {device.Name}";
             slotView = new SlotView(device);
             _slotsView.ItemsSource = slotView.Slots;
             if (selectedSlot != null)
@@ -2410,7 +2410,7 @@ namespace PoEWizard
                 DataContext = device;
                 Logger.Debug($"Data context set to {device.Name}");
                 _comImg.Source = (ImageSource)currentDict["connected"];
-                _switchAttributes.Text = $"{Translate("i18n_connTo")} {device.Name} ({Translate("i18n_upTime")} {device.UpTime})";
+                _switchAttributes.Text = $"{Translate("i18n_connTo")} {device.Name}";
                 _btnConnect.Cursor = Cursors.Hand;
                 _switchMenuItem.IsEnabled = false;
                 _disconnectMenuItem.Visibility = Visibility.Visible;
