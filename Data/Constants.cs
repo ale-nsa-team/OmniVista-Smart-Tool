@@ -486,7 +486,7 @@ namespace PoEWizard.Data
         #endregion
 
         #region Switch Scanner Limits
-        public const int SWITCH_CONNECT_TIMEOUT_SEC = 10;
+        public const int SWITCH_CONNECT_TIMEOUT_SEC = 30;
         #endregion
 
         #region Traffic Analysis Limits

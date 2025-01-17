@@ -80,7 +80,7 @@ namespace PoEWizard.Comm
             try
             {
                 string domain = "authv2";
-                string url = $"{this._httpClient.BaseAddress}?domain={domain}&username={this._login}&password={this._password}";
+                string url = $"{this._httpClient.BaseAddress}?domain={domain}&username={this._login}&password={Uri.EscapeDataString(this._password)}";
                 var response = this._httpClient.GetAsync(url);
                 while (!response.IsCompleted)
                 {
