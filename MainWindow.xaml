@@ -31,59 +31,63 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" x:Name="_mainMenu" Style="{DynamicResource _mainMenu}">
             <MenuItem Header="{DynamicResource i18n_cnx}">
-                <MenuItem Header="{DynamicResource i18n_msw}" x:Name="_switchMenuItem" Click="SwitchMenuItem_Click" />
+                <MenuItem Header="{DynamicResource i18n_msw}" x:Name="_switchMenuItem" Click="SwitchMenuItem_Click"/>
                 <MenuItem Header="{DynamicResource i18n_disc}" x:Name="_disconnectMenuItem" Click="DisconnectMenuItem_Click" Visibility="Collapsed"/>
                 <Separator/>
                 <MenuItem Header="{DynamicResource i18n_exit}" Click="Exit_Click"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource i18n_view}">
                 <MenuItem Header="{DynamicResource i18n_log}">
-                    <MenuItem Header="{DynamicResource i18n_appLog}" Click="ViewLog_Click" />
-                    <MenuItem Header="{DynamicResource i18n_activ}" Click="ViewActivities_Click" />
+                    <MenuItem Header="{DynamicResource i18n_appLog}" Click="ViewLog_Click"/>
+                    <MenuItem Header="{DynamicResource i18n_activ}" Click="ViewActivities_Click"/>
                 </MenuItem>
-                <MenuItem Header="{DynamicResource i18n_vcboot}" x:Name="_vcbootMenuItem" IsEnabled="False" Click="ViewVcBoot_Click" />
+                <MenuItem Header="{DynamicResource i18n_vcboot}" x:Name="_vcbootMenuItem" IsEnabled="False" Click="ViewVcBoot_Click"/>
                 <MenuItem Header="{DynamicResource i18n_sshot}" x:Name="_snapshotMenuItem" IsEnabled="False" Click="ViewSnapshot_Click"/>
-                <MenuItem Header="{DynamicResource i18n_ps}" x:Name="_psMenuItem" IsEnabled="False" Click="ViewPS_Click" />
-                <MenuItem Header="{DynamicResource i18n_src}" x:Name="_searchMacMenuItem" IsEnabled="False" Click="SearchMac_Click" />
-                <MenuItem Header="{DynamicResource i18n_vlanTitle}" x:Name="_vlanMenuItem" IsEnabled="False" Click="ViewVlan_Click" />
+                <MenuItem Header="{DynamicResource i18n_ps}" x:Name="_psMenuItem" IsEnabled="False" Click="ViewPS_Click"/>
+                <MenuItem Header="{DynamicResource i18n_src}" x:Name="_searchMacMenuItem" IsEnabled="False" Click="SearchMac_Click"/>
+                <MenuItem Header="{DynamicResource i18n_vlanTitle}" x:Name="_vlanMenuItem" IsEnabled="False" Click="ViewVlan_Click"/>
                 <Separator/>
                 <MenuItem Header="{DynamicResource i18n_help}" Click="Help_Click"/>
                 <MenuItem Header="{DynamicResource i18n_about}" Click="About_Click"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource i18n_cfg}">
-                <MenuItem Header="{DynamicResource i18n_frst}" x:Name="_factoryRst" IsEnabled="False" Click="FactoryReset" />
+                <MenuItem Header="{DynamicResource i18n_frst}" x:Name="_factoryRst" IsEnabled="False" Click="FactoryReset"/>
                 <MenuItem Header="{DynamicResource i18n_cfgWiz}" x:Name="_cfgMenuItem" IsEnabled="False" Click="LaunchConfigWizard"/>
                 <MenuItem Header="{DynamicResource i18n_upgrade}" x:Name="_upgradeMenuItem" IsEnabled="False">
-                    <MenuItem Header="{DynamicResource i18n_aos}" x:Name="_aosUpgrade" Click="UpgradeAos" />
-                    <MenuItem Header="{DynamicResource i18n_uboot}" x:Name="_ubootUpgrade" Click="UpgradeUboot" />
+                    <MenuItem Header="{DynamicResource i18n_aos}" x:Name="_aosUpgrade" Click="UpgradeAos"/>
+                    <MenuItem Header="{DynamicResource i18n_uboot}" x:Name="_ubootUpgrade" Click="UpgradeUboot"/>
                 </MenuItem>
-                <Separator />
+                <Separator/>
                 <MenuItem Header="{DynamicResource i18n_backup}" x:Name="_cfgBackup" IsEnabled="False" Click="LaunchBackupCfg"/>
                 <MenuItem Header="{DynamicResource i18n_restore}" x:Name="_cfgRestore" IsEnabled="False" Click="LaunchRestoreCfg"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource i18n_options}" HorizontalAlignment="Right">
                 <MenuItem Header="{DynamicResource i18n_level}" x:Name="_logLevels">
-                    <MenuItem Header="Error" Click="LogLevelItem_Click" />
-                    <MenuItem Header="Warn" Click="LogLevelItem_Click" />
-                    <MenuItem Header="Basic" Click="LogLevelItem_Click" IsChecked="True" />
-                    <MenuItem Header="Info" Click="LogLevelItem_Click" />
-                    <MenuItem Header="Debug" Click="LogLevelItem_Click" />
-                    <MenuItem Header="Trace" Click="LogLevelItem_Click" />
+                    <MenuItem Header="Error" Click="LogLevelItem_Click"/>
+                    <MenuItem Header="Warn" Click="LogLevelItem_Click"/>
+                    <MenuItem Header="Basic" Click="LogLevelItem_Click" IsChecked="True"/>
+                    <MenuItem Header="Info" Click="LogLevelItem_Click"/>
+                    <MenuItem Header="Debug" Click="LogLevelItem_Click"/>
+                    <MenuItem Header="Trace" Click="LogLevelItem_Click"/>
                 </MenuItem>
                 <MenuItem Header="{DynamicResource i18n_theme}">
                     <MenuItem Header="{DynamicResource i18n_dark}" x:Name="_darkMenuItem" IsChecked="True" Click="ThemeItem_Click"/>
                     <MenuItem Header="{DynamicResource i18n_light}" x:Name="_lightMenuItem" Click="ThemeItem_Click"/>
                 </MenuItem>
-                <MenuItem Header="{DynamicResource i18n_lang}" x:Name="_langMenu" />
+                <MenuItem Header="{DynamicResource i18n_lang}" x:Name="_langMenu">
+                    <MenuItem Header="{DynamicResource i18n_selLang}" x:Name="_langSel"/>
+                    <MenuItem Header="{DynamicResource i18n_expLang}" x:Name="_langExp" Click="LangExport_Click"/>
+                    <MenuItem Header="{DynamicResource i18n_impLang}" x:Name="_langImp" Click="LangImport_Click"/>
+                </MenuItem>
             </MenuItem>
         </Menu>
         <Border Grid.Row="1" x:Name="_switchInfo" Style="{DynamicResource gridBorder}" Padding="0,5,0,5">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="0.6*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="0.6*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -96,9 +100,9 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_swName}" />
-                <TextBlock Grid.Row="0" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_name" Text="{Binding Name}" />
-                <Label Grid.Row="1" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_ipAddr}" />
+                <Label Grid.Row="0" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_swName}"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_name" Text="{Binding Name}"/>
+                <Label Grid.Row="1" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_ipAddr}"/>
                 <TextBlock Grid.Row="1" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_ip" Text="{Binding IpAddress}"/>
                 <Label Grid.Row="2" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_release}"/>
                 <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
@@ -107,30 +111,30 @@
                        Foreground="{Binding Path=Version, Converter={StaticResource ValueToColorConverter}, ConverterParameter=AosVersion}"/>
                     <Image x:Name="_aosWarn" Style="{DynamicResource warnImg}"
                            ToolTip="{DynamicResource i18n_release_tt}"
-                           Visibility="{Binding Path=Version, Converter={StaticResource AosVersionToVisibilityConverter}}" />
+                           Visibility="{Binding Path=Version, Converter={StaticResource AosVersionToVisibilityConverter}}"/>
                 </StackPanel>
-                <Label Grid.Row="3" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_runningDir}" />
+                <Label Grid.Row="3" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_runningDir}"/>
                 <TextBlock Grid.Row="3" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_runningDir" Text="{Binding RunningDir}"
                        Foreground="{Binding Path=RunningDir, Converter={StaticResource ValueToColorConverter}, ConverterParameter=RunningDir}"/>
                 <Label Grid.Row="4" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_sync}"/>
                 <TextBlock Grid.Row="4" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_syncStatus" Text="{Binding SyncStatusLabel}"
                        Foreground="{Binding Path=SyncStatus, Converter={StaticResource ValueToColorConverter}, ConverterParameter=SyncStatus}"/>
-                <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_loc}" />
-                <TextBlock Grid.Row="5" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_location" Text="{Binding Location}" />
-                <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_contact}" />
-                <TextBlock Grid.Row="6" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_contact" Text="{Binding Contact}" />
-                <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_poeDbgLvl}" />
+                <Label Grid.Row="5" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_loc}"/>
+                <TextBlock Grid.Row="5" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_location" Text="{Binding Location}"/>
+                <Label Grid.Row="6" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_contact}"/>
+                <TextBlock Grid.Row="6" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_contact" Text="{Binding Contact}"/>
+                <Label Grid.Row="7" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_poeDbgLvl}"/>
                 <TextBlock Grid.Row="7" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_ilpni" Text="{Binding LpNiLabelDebugLevel}"
                        Foreground="{Binding Path=LpNiDebugLevel, Converter={StaticResource ValueToColorConverter}, ConverterParameter=LpNiDebugLevel}"/>
-                <Label Grid.Row="0" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_swModel}" />
+                <Label Grid.Row="0" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_swModel}"/>
                 <TextBlock Grid.Row="0" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_model" Text="{Binding Model}"/>
-                <Label Grid.Row="1" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_sn}" />
+                <Label Grid.Row="1" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_sn}"/>
                 <TextBlock Grid.Row="1" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_serialNo" Text="{Binding SerialNumber}"/>
-                <Label Grid.Row="2" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_mac}" />
+                <Label Grid.Row="2" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_mac}"/>
                 <TextBlock Grid.Row="2" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_mac" Text="{Binding MacAddress}"/>
-                <Label Grid.Row="3" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_upTime}" />
-                <TextBlock Grid.Row="3" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_upTime" Text="{Binding UpTime}" />
-                <Label Grid.Row="4" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_temp}" />
+                <Label Grid.Row="3" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_upTime}"/>
+                <TextBlock Grid.Row="3" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_upTime" Text="{Binding UpTime}"/>
+                <Label Grid.Row="4" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_temp}"/>
                 <StackPanel x:Name="_tempStatus" Grid.Row="4" Grid.Column="3" Orientation="Horizontal" Visibility="Hidden">
                     <TextBlock Style="{DynamicResource infoVal}" 
                            Text="{Binding CurrTemperature}" 
@@ -139,49 +143,49 @@
                            ToolTip="Switch may reduce PoE output because temperature is too high" 
                            Visibility="{Binding Path=TemperatureStatus, Converter={StaticResource TempStatusToVisibilityConveter}}"/>
                 </StackPanel>
-                <Label Grid.Row="5" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_cpu}" />
+                <Label Grid.Row="5" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_cpu}"/>
                 <StackPanel x:Name="_cpu" Grid.Row="5" Grid.Column="3" Orientation="Horizontal" Visibility="Hidden">
                     <TextBlock Style="{DynamicResource infoVal}" Text="{Binding Cpu}">
                         <TextBlock.Foreground>
                             <MultiBinding Converter="{StaticResource CpuUsageToColorConverter}">
-                                <Binding Path="Cpu" />
-                                <Binding Path="CpuThreshold" />
+                                <Binding Path="Cpu"/>
+                                <Binding Path="CpuThreshold"/>
                             </MultiBinding>
                         </TextBlock.Foreground>
                     </TextBlock>
                     <TextBlock Style="{DynamicResource infoVal}" Margin="-10,0,0,0" >
                         <TextBlock.Foreground>
                             <MultiBinding Converter="{StaticResource CpuUsageToColorConverter}">
-                                <Binding Path="Cpu" />
-                                <Binding Path="CpuThreshold" />
+                                <Binding Path="Cpu"/>
+                                <Binding Path="CpuThreshold"/>
                             </MultiBinding>
                         </TextBlock.Foreground>
                     </TextBlock>
                     <Image x:Name="_cpuWarn" Style="{DynamicResource warnImg}">
                         <Image.Visibility>
                             <MultiBinding Converter="{StaticResource CpuUsageToVisibilityConverter}">
-                                <Binding Path="Cpu" />
-                                <Binding Path="CpuThreshold" />
+                                <Binding Path="Cpu"/>
+                                <Binding Path="CpuThreshold"/>
                             </MultiBinding>
                         </Image.Visibility>
                         <Image.ToolTip>
                             <MultiBinding Converter="{StaticResource CpuUsageToToolTipConverter}">
-                                <Binding Path="Cpu" />
-                                <Binding Path="CpuThreshold" />
+                                <Binding Path="Cpu"/>
+                                <Binding Path="CpuThreshold"/>
                             </MultiBinding>
                         </Image.ToolTip>
                     </Image>
                 </StackPanel>
-                <Label Grid.Row="6" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_flash}" />
-                <TextBlock Grid.Row="6" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_flash" Text="{Binding FreeFlash}" />
+                <Label Grid.Row="6" Grid.Column="2" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_flash}"/>
+                <TextBlock Grid.Row="6" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_flash" Text="{Binding FreeFlash}"/>
                 <Label Grid.Row="7" Grid.Column="2" x:Name="_fpgaLbl" Style="{DynamicResource keyLabel}"
-                       Visibility="Visible" Content="{DynamicResource i18n_fpga}" />
+                       Visibility="Visible" Content="{DynamicResource i18n_fpga}"/>
                 <StackPanel Grid.Row="7" Grid.Column="3" Orientation="Horizontal">
                     <TextBlock Style="{DynamicResource infoVal}" x:Name="_fpga" Text="{Binding Fpga}">
                         <TextBlock.Foreground>
                             <MultiBinding Converter="{StaticResource FpgaToColorConveter}" ConverterParameter="FPGA">
-                                <Binding Path="Model" />
-                                <Binding Path="Fpga" />
+                                <Binding Path="Model"/>
+                                <Binding Path="Fpga"/>
                             </MultiBinding>
                         </TextBlock.Foreground>
                     </TextBlock>
@@ -189,20 +193,20 @@
                         ToolTip="Switch FPGA version is too old. Please buy a support contract and upgrade your switch">
                         <Image.Visibility>
                             <MultiBinding Converter="{StaticResource BadVersionToVisibilityConverter}" ConverterParameter="FPGA">
-                                <Binding Path="Model" />
-                                <Binding Path="Fpga" />
+                                <Binding Path="Model"/>
+                                <Binding Path="Fpga"/>
                             </MultiBinding>
                         </Image.Visibility>
                     </Image>
                 </StackPanel>
                 <Label Grid.Row="7" Grid.Column="2" x:Name="_cpldLbl" Style="{DynamicResource keyLabel}"
-                       Visibility="Hidden" Content="{DynamicResource i18n_cpld}" />
+                       Visibility="Hidden" Content="{DynamicResource i18n_cpld}"/>
                 <StackPanel Grid.Row="7" Grid.Column="3" Orientation="Horizontal">
                     <TextBlock Style="{DynamicResource infoVal}" x:Name="_cpld" Text="{Binding Cpld}">
                         <TextBlock.Foreground>
                             <MultiBinding Converter="{StaticResource FpgaToColorConveter}" ConverterParameter="CPLD">
-                                <Binding Path="Model" />
-                                <Binding Path="Cpld" />
+                                <Binding Path="Model"/>
+                                <Binding Path="Cpld"/>
                             </MultiBinding>
                         </TextBlock.Foreground>
                     </TextBlock>
@@ -210,16 +214,16 @@
 		                ToolTip="Switch CPLD version is too old. Please buy a support contract and upgrade your switch">
                         <Image.Visibility>
                             <MultiBinding Converter="{StaticResource BadVersionToVisibilityConverter}" ConverterParameter="CPLD">
-                                <Binding Path="Model" />
-                                <Binding Path="Cpld" />
+                                <Binding Path="Model"/>
+                                <Binding Path="Cpld"/>
                             </MultiBinding>
                         </Image.Visibility>
                     </Image>
                 </StackPanel>
-                <Label Grid.Row="8" Grid.Column="2" Style="{DynamicResource keyLabel}" x:Name="_ubootLbl" Content="{DynamicResource i18n_ubootv}" />
-                <Label Grid.Row="8" Grid.Column="2" Style="{DynamicResource keyLabel}" x:Name="_onieLbl" Visibility="Collapsed" Content="{DynamicResource i18n_oniev}" />
-                <TextBlock Grid.Row="8" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_uboot" Text="{Binding Uboot}" />
-                <Label Grid.Row="8" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_cmmDbgLvl}" />
+                <Label Grid.Row="8" Grid.Column="2" Style="{DynamicResource keyLabel}" x:Name="_ubootLbl" Content="{DynamicResource i18n_ubootv}"/>
+                <Label Grid.Row="8" Grid.Column="2" Style="{DynamicResource keyLabel}" x:Name="_onieLbl" Visibility="Collapsed" Content="{DynamicResource i18n_oniev}"/>
+                <TextBlock Grid.Row="8" Grid.Column="3" Style="{DynamicResource infoVal}" x:Name="_uboot" Text="{Binding Uboot}"/>
+                <Label Grid.Row="8" Grid.Column="0" Style="{DynamicResource keyLabel}" Content="{DynamicResource i18n_cmmDbgLvl}"/>
                 <TextBlock Grid.Row="8" Grid.Column="1" Style="{DynamicResource infoVal}" x:Name="_lpcmm" Text="{Binding LpCmmLabelDebugLevel}"
                        Foreground="{Binding Path=LpCmmDebugLevel, Converter={StaticResource ValueToColorConverter}, ConverterParameter=LpCmmDebugLevel}"/>
             </Grid>
@@ -236,32 +240,32 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Width="*" Binding="{Binding Path=Name}">
                     <DataGridTextColumn.Header>
-                        <TextBlock Text="{DynamicResource i18n_slot}" />
+                        <TextBlock Text="{DynamicResource i18n_slot}"/>
                     </DataGridTextColumn.Header>
                 </DataGridTextColumn>
                 <DataGridTextColumn Width="*" Binding="{Binding Path=NbPorts}">
                     <DataGridTextColumn.Header>
-                        <TextBlock Text="{DynamicResource i18n_nports}" />
+                        <TextBlock Text="{DynamicResource i18n_nports}"/>
                     </DataGridTextColumn.Header>
                 </DataGridTextColumn>
                 <DataGridTextColumn Width="*" Binding="{Binding Path=NbPoePorts}">
                     <DataGridTextColumn.Header>
-                        <TextBlock Text="{DynamicResource i18n_npoe}" />
+                        <TextBlock Text="{DynamicResource i18n_npoe}"/>
                     </DataGridTextColumn.Header>
                 </DataGridTextColumn>
                 <DataGridTextColumn Width="*" Binding="{Binding Path=Budget}">
                     <DataGridTextColumn.Header>
-                        <TextBlock Text="{DynamicResource i18n_buget}" />
+                        <TextBlock Text="{DynamicResource i18n_buget}"/>
                     </DataGridTextColumn.Header>
                 </DataGridTextColumn>
                 <DataGridTextColumn Width="1.1*" Binding="{Binding Path=Power}">
                     <DataGridTextColumn.Header>
-                        <TextBlock Text="{DynamicResource i18n_cons}" />
+                        <TextBlock Text="{DynamicResource i18n_cons}"/>
                     </DataGridTextColumn.Header>
                 </DataGridTextColumn>
                 <DataGridTemplateColumn Width="1.1*">
                     <DataGridTemplateColumn.Header>
-                        <TextBlock Text="{DynamicResource i18n_btSupp}" />
+                        <TextBlock Text="{DynamicResource i18n_btSupp}"/>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -274,14 +278,14 @@
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Width="*">
                     <DataGridTemplateColumn.Header>
-                        <TextBlock Text="{DynamicResource i18n_slPw}" />
+                        <TextBlock Text="{DynamicResource i18n_slPw}"/>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox Style="{DynamicResource toggleSwitch}" Margin="4,0"
                                           Checked="Power_Click" Unchecked="Power_Click"
                                           IsChecked="{Binding Path=IsInitialized}"
-                                          ToolTip="{DynamicResource i18n_poe_tt}" />
+                                          ToolTip="{DynamicResource i18n_poe_tt}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -289,7 +293,7 @@
                     <DataGridTemplateColumn.HeaderTemplate>
                         <DataTemplate>
                             <TextBlock Text="{DynamicResource i18n_fpoe}" Style="{DynamicResource toolTip}"
-                                           ToolTip="{DynamicResource i18n_fpoe_tt}" />
+                                           ToolTip="{DynamicResource i18n_fpoe_tt}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.HeaderTemplate>
                     <DataGridTemplateColumn.CellTemplate>
@@ -300,7 +304,7 @@
                                           Unchecked="FPoE_Click"
                                           IsEnabled="{Binding Path=IsPoeModeEnable}"
                                           IsChecked="{Binding Path=FPoE, Converter={StaticResource ConfigTypeToBoolConverter}, ConverterParameter=Enable}" 
-                                          ToolTip="{DynamicResource i18n_fpoe_tt}" />
+                                          ToolTip="{DynamicResource i18n_fpoe_tt}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -308,7 +312,7 @@
                     <DataGridTemplateColumn.HeaderTemplate>
                         <DataTemplate>
                             <TextBlock Text="{DynamicResource i18n_ppoe}" Style="{DynamicResource toolTip}"
-                                           ToolTip="{DynamicResource i18n_ppoe_tt}" />
+                                           ToolTip="{DynamicResource i18n_ppoe_tt}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.HeaderTemplate>
                     <DataGridTemplateColumn.CellTemplate>
@@ -325,7 +329,7 @@
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Width="*">
                     <DataGridTemplateColumn.Header>
-                        <TextBlock Text="{DynamicResource i18n_poeSt}" />
+                        <TextBlock Text="{DynamicResource i18n_poeSt}"/>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -338,7 +342,7 @@
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Width="1.1*">
                     <DataGridTemplateColumn.Header>
-                        <TextBlock Text="{DynamicResource i18n_vcRole}" />
+                        <TextBlock Text="{DynamicResource i18n_vcRole}"/>
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -354,7 +358,7 @@
                 <Button x:Name="_btnCancel" Margin="0,0,10,0"
                         Visibility="Collapsed"
                         Style="{DynamicResource defaultButton}" 
-                        Content="{DynamicResource i18n_canBtn}" Click="BtnCancel_Click" />
+                        Content="{DynamicResource i18n_canBtn}" Click="BtnCancel_Click"/>
             </StackPanel>
         </Border>
         <Border Grid.Row="3" x:Name="_portInfo" >
@@ -367,19 +371,19 @@
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Width="60" IsReadOnly="True">
                         <DataGridTemplateColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_port}" />
+                            <TextBlock Text="{DynamicResource i18n_port}"/>
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Name}" Style="{DynamicResource devToolTip}"
                                     Foreground="{DynamicResource fontColor}"
-                                    ToolTip="{Binding Path=DetailsInfo, Converter={StaticResource PortToTooltipConverter}}" />
+                                    ToolTip="{Binding Path=DetailsInfo, Converter={StaticResource PortToTooltipConverter}}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="1.2*" IsReadOnly="False">
                         <DataGridTemplateColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_alias}" />
+                            <TextBlock Text="{DynamicResource i18n_alias}"/>
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -387,13 +391,13 @@
                                     Style="{DynamicResource gridTextBox}"
                                     GotFocus="OnPortAliasGotFocus"
                                     LostFocus="OnPortAliasLostFocus"
-                                    ToolTip="{Binding Path=Alias, Converter={StaticResource ToStringConverter}}" />
+                                    ToolTip="{Binding Path=Alias, Converter={StaticResource ToStringConverter}}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="50" IsReadOnly="True">
                         <DataGridTemplateColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_ptSt}" />
+                            <TextBlock Text="{DynamicResource i18n_ptSt}"/>
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -407,7 +411,7 @@
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="0.9*" IsReadOnly="True">
                         <DataGridTemplateColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_poeSt}" />
+                            <TextBlock Text="{DynamicResource i18n_poeSt}"/>
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -415,29 +419,29 @@
                                     Foreground="{Binding Path=Poe, 
                                         Converter={StaticResource ValueToColorConverter}, 
                                         ConverterParameter=Poe}" 
-                                    ToolTip="{Binding Path=Poe, Converter={StaticResource PoeToTooltipConverter}}" />
+                                    ToolTip="{Binding Path=Poe, Converter={StaticResource PoeToTooltipConverter}}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridComboBoxColumn Width="Auto" IsReadOnly="False">
                         <DataGridComboBoxColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_prio}" />
+                            <TextBlock Text="{DynamicResource i18n_prio}"/>
                         </DataGridComboBoxColumn.Header>
                         <DataGridComboBoxColumn.SelectedItemBinding>
                             <MultiBinding Converter="{StaticResource PoeToPriorityLevelConverter}">
-                                <Binding Path="Poe" />
-                                <Binding Path="PriorityLevel" />
+                                <Binding Path="Poe"/>
+                                <Binding Path="PriorityLevel"/>
                             </MultiBinding>
                         </DataGridComboBoxColumn.SelectedItemBinding>
                         <DataGridComboBoxColumn.ElementStyle>
                             <Style TargetType="ComboBox">
-                                <Setter Property="ItemsSource" Value="{Binding Path=Priorities}" />
+                                <Setter Property="ItemsSource" Value="{Binding Path=Priorities}"/>
                             </Style>
                         </DataGridComboBoxColumn.ElementStyle>
                         <DataGridComboBoxColumn.EditingElementStyle>
                             <Style TargetType="ComboBox" BasedOn="{StaticResource defaultCombo}">
-                                <Setter Property="ItemsSource" Value="{Binding Path=Priorities}" />
-                                <EventSetter Event="SelectionChanged" Handler="Priority_Changed" />
+                                <Setter Property="ItemsSource" Value="{Binding Path=Priorities}"/>
+                                <EventSetter Event="SelectionChanged" Handler="Priority_Changed"/>
                             </Style>
                         </DataGridComboBoxColumn.EditingElementStyle>
                     </DataGridComboBoxColumn>
@@ -445,13 +449,13 @@
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{DynamicResource i18n_ptPwr}" Style="{DynamicResource toolTip}"
-                                           ToolTip="{DynamicResource i18n_pwr_tt}" />
+                                           ToolTip="{DynamicResource i18n_pwr_tt}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Power}" Style="{DynamicResource cellTootip}"
-                                           ToolTip="{DynamicResource i18n_pwr_tt}" />
+                                           ToolTip="{DynamicResource i18n_pwr_tt}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -459,70 +463,70 @@
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{DynamicResource i18n_maxPwr}" Style="{DynamicResource toolTip}"
-                                           ToolTip="{DynamicResource i18n_maxPwr_tt}" />
+                                           ToolTip="{DynamicResource i18n_maxPwr_tt}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=MaxPower}" Style="{DynamicResource cellTootip}"
-                                           ToolTip="{DynamicResource i18n_maxPwr_tt}" />
+                                           ToolTip="{DynamicResource i18n_maxPwr_tt}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTextColumn Width="*" Binding="{Binding Path=Class}" IsReadOnly="True">
                         <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_class}" />
+                            <TextBlock Text="{DynamicResource i18n_class}"/>
                         </DataGridTextColumn.Header>
                     </DataGridTextColumn>
                     <DataGridTextColumn Width="0.9*" IsReadOnly="True">
                         <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_mode}" />
+                            <TextBlock Text="{DynamicResource i18n_mode}"/>
                         </DataGridTextColumn.Header>
                         <DataGridTextColumn.Binding>
                             <MultiBinding Converter="{StaticResource BoolToPoEModeConverter}">
-                                <Binding Path="Poe" />
-                                <Binding Path="Is4Pair" />
+                                <Binding Path="Poe"/>
+                                <Binding Path="Is4Pair"/>
                             </MultiBinding>
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
                     <DataGridTextColumn Width="50" Binding="{Binding Path=Protocol8023bt, Converter={StaticResource ConfigTypeToSimbolConverter}}">
                         <DataGridTextColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_bt}" />
+                            <TextBlock Text="{DynamicResource i18n_bt}"/>
                         </DataGridTextColumn.Header>
                     </DataGridTextColumn>
                     <DataGridTemplateColumn Width="1.6*" IsReadOnly="True">
                         <DataGridTemplateColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_devModel}" />
+                            <TextBlock Text="{DynamicResource i18n_devModel}"/>
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Model}"
                                            ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
-                                           Style="{DynamicResource devToolTip}" />
+                                           Style="{DynamicResource devToolTip}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="1.5*" IsReadOnly="True">
                         <DataGridTemplateColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_devType}" />
+                            <TextBlock Text="{DynamicResource i18n_devType}"/>
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Type}"
                                            ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
-                                           Style="{DynamicResource devToolTip}" />
+                                           Style="{DynamicResource devToolTip}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="1.8*" IsReadOnly="True">
                         <DataGridTemplateColumn.Header>
-                            <TextBlock Text="{DynamicResource i18n_devName}" />
+                            <TextBlock Text="{DynamicResource i18n_devName}"/>
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Label}"
                                            ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
-                                           Style="{DynamicResource devToolTip}" />
+                                           Style="{DynamicResource devToolTip}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -535,23 +539,23 @@
                         IsEnabled="False"
                         Click="ResetPort_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_ptRst}" />
-                        <Image Source="{DynamicResource reboot}" Height="16" Width="16" />
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_ptRst}"/>
+                        <Image Source="{DynamicResource reboot}" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>
                 <Button x:Name="_btnTdr" Style="{DynamicResource largeButton}"
                         IsEnabled="False"
                         Click="RunTdr_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_ptTdr}" />
-                        <Image Source="{DynamicResource bolt}" Height="16" Width="16" />
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_ptTdr}"/>
+                        <Image Source="{DynamicResource bolt}" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>
                 <Button x:Name="_btnRunWiz" Style="{DynamicResource largeButton}"
                         IsEnabled="False"
                         Click="RunWiz_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_poeWiz}" />
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_poeWiz}"/>
                         <Image Source="Resources/Img/wand.png" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>
@@ -559,31 +563,31 @@
                         IsEnabled="False" 
                         Click="RefreshSwitch_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_rfrsh}" />
-                        <Image Source="{DynamicResource refresh}" Height="16" Width="16" />
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_rfrsh}"/>
+                        <Image Source="{DynamicResource refresh}" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>
                 <Button x:Name="_writeMemory" Style="{DynamicResource largeButton}" 
                         IsEnabled="False" 
                         Click="WriteMemory_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_save}" />
-                        <Image Source="{DynamicResource write_memory}" Height="16" Width="16" />
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_save}"/>
+                        <Image Source="{DynamicResource write_memory}" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>
                 <Button x:Name="_reboot" Style="{DynamicResource largeButton}" 
                         IsEnabled="False" 
                         Click="Reboot_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label x:Name="_rebootLabel"  Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_reboot}" />
-                        <Image Source="{DynamicResource reboot}" Height="16" Width="16" />
+                        <Label x:Name="_rebootLabel"  Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_reboot}"/>
+                        <Image Source="{DynamicResource reboot}" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>
                 <Button x:Name="_traffic" Style="{DynamicResource largeButton}" 
                         IsEnabled="False" 
                         Click="Traffic_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label x:Name="_trafficLabel" Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_trfAna}" />
+                        <Label x:Name="_trafficLabel" Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_trfAna}"/>
                         <Image Source="Resources/Img/traffic.png" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>
@@ -591,7 +595,7 @@
                         IsEnabled="False" 
                         Click="CollectLogs_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_logcol}" />
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_logcol}"/>
                         <Image Source="Resources/Img/collectlogs.png" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>
@@ -621,7 +625,7 @@
                 <ProgressBar x:Name="_progressBar" Style="{DynamicResource progressBar}" Visibility="Hidden"/>
             </StatusBarItem>
             <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Right">
-                <TextBlock x:Name="_switchAttributes" />
+                <TextBlock x:Name="_switchAttributes"/>
             </StatusBarItem>
             <StatusBarItem Grid.Column="3" x:Name="_btnConnect" HorizontalContentAlignment="Right" Margin="5,0,5,0"
                            MouseUp="ConnectBtn_Click">

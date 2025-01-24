@@ -29,8 +29,11 @@
     <sys:String x:Key="i18n_uboot">U-Boot</sys:String>
     <sys:String x:Key="i18n_backup">Backup</sys:String>
     <sys:String x:Key="i18n_restore">Restore</sys:String>
-    <sys:String x:Key="i18n_lang">Language</sys:String>
     <sys:String x:Key="i18n_options">Options</sys:String>
+    <sys:String x:Key="i18n_lang">Language</sys:String>
+    <sys:String x:Key="i18n_selLang">Select Language</sys:String>
+    <sys:String x:Key="i18n_expLang">Export Language File</sys:String>
+    <sys:String x:Key="i18n_impLang">Import New Language</sys:String>
 
     <!--Buttons-->
     <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>

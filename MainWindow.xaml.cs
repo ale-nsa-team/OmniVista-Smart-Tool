@@ -1596,6 +1596,7 @@ namespace PoEWizard
             List<string> langs = new List<string>();
             var assembly = Assembly.GetExecutingAssembly();
             var resourcesName = assembly.GetName().Name + ".g";
+
             var manager = new System.Resources.ResourceManager(resourcesName, assembly);
             var resourceSet = manager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
             var resDict = resourceSet.OfType<DictionaryEntry>();
@@ -1642,6 +1643,16 @@ namespace PoEWizard
                     found.IsChecked = true;
                 }
             }
+        }
+
+        private void LangExport_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void LangImport_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private async void Connect()
