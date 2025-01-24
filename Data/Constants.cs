@@ -14,7 +14,7 @@ namespace PoEWizard.Data
         public enum MsgBoxResult { Yes, No, Cancel };
         public enum GridBorderions { Dhcp, Edge, Core, Lps, Lldp, Security, MaxConfigs };
         public enum SwitchStatus { Unknown, Reachable, Unreachable, LoginFail }
-        public enum PortStatus { Unknown, Up, Down }
+        public enum PortStatus { Unknown, Up, Down, Blocked }
         public enum PoeStatus { On, Off, Searching, Fault, Deny, Conflict, PoweredOff, Test, Delayed, NoPoe }
         public enum SlotPoeStatus
         {
@@ -36,8 +36,8 @@ namespace PoEWizard.Data
         public enum ChassisStatus { Unknown, Up, Down }
         public enum DictionaryType
         {
-            SystemRunningDir, Chassis, Cmm, MicroCode, HwInfo, LanPower, LanPowerCfg, PortsList, PortIdList, PowerSupply, LldpRemoteList,
-            TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, ShowInterfacesList, None
+            SystemRunningDir, Chassis, Cmm, MicroCode, HwInfo, LanPower, LanPowerCfg, PortsList, PortIdList, BlockedPorts, PowerSupply, 
+            LldpRemoteList, TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, ShowInterfacesList, None
         }
         public enum ConfigType { Disable, Enable, Unavailable }
         public enum DeviceType
@@ -148,6 +148,7 @@ namespace PoEWizard.Data
         public const string USAGE_THRESHOLD = "Usage Threshold";
         public const string ADMIN_STATUS = "Admin Status";
         public const string OPERATIONAL_STATUS = "Operational Status";
+        public const string OPER_STATUS = "Oper Status";
         public const string LINK_STATUS = "Link Status";
         public const string STATUS = "Status";
         public const string BT_SUPPORT = "8023BT Support";

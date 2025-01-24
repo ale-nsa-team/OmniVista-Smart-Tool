@@ -178,23 +178,27 @@ namespace PoEWizard.Comm
                 UpdateProgressBar(++progressBarCnt); // 12
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_PORTS_LIST, ParseType.Htable3)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.PortsList);
+                UpdateProgressBar(++progressBarCnt); // 13
+                _dictList = SendCommand(new CmdRequest(Command.SHOW_BLOCKED_PORTS, ParseType.Htable)) as List<Dictionary<string, string>>;
+                SwitchModel.LoadFromList(_dictList, DictionaryType.BlockedPorts);
+                UpdateProgressBar(--progressBarCnt); // 14
                 _dict = SendCommand(new CmdRequest(Command.SHOW_LLDP_LOCAL, ParseType.LldpLocalTable)) as Dictionary<string, string>;
                 SwitchModel.LoadFromDictionary(_dict, DictionaryType.PortIdList);
-                UpdateProgressBar(++progressBarCnt); // 13
+                UpdateProgressBar(++progressBarCnt); // 15
                 SendProgressReport(Translate("i18n_psi"));
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_POWER_SUPPLIES, ParseType.Htable2)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.PowerSupply);
-                UpdateProgressBar(++progressBarCnt); // 14
+                UpdateProgressBar(++progressBarCnt); // 16
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.CpuTrafficList);
-                UpdateProgressBar(++progressBarCnt); // 15
+                UpdateProgressBar(++progressBarCnt); // 17
                 GetLanPower(token);
                 token.ThrowIfCancellationRequested();
                 progressBarCnt += 3;
-                UpdateProgressBar(progressBarCnt); // 16, 17, 18
+                UpdateProgressBar(progressBarCnt); // 18, 19, 20
                 GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
                 progressBarCnt += 3;
-                UpdateProgressBar(progressBarCnt); // 19, 20, 21
+                UpdateProgressBar(progressBarCnt); // 21, 22, 23
                 if (!File.Exists(Path.Combine(Path.Combine(MainWindow.DataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
                 {
                     SaveConfigSnapshot();
@@ -203,7 +207,7 @@ namespace PoEWizard.Comm
                 {
                     PurgeConfigSnapshotFiles();
                 }
-                UpdateProgressBar(++progressBarCnt); // 22
+                UpdateProgressBar(++progressBarCnt); // 24
                 string title = string.IsNullOrEmpty(source) ? $"{Translate("i18n_refrsw")} {SwitchModel.Name}" : source;
             }
             catch (OperationCanceledException)

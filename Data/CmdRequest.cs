@@ -18,6 +18,7 @@ namespace PoEWizard.Data
         SHOW_RUNNING_DIR,
         SHOW_CHASSIS,
         SHOW_PORTS_LIST,
+        SHOW_BLOCKED_PORTS,
         SHOW_POWER_SUPPLIES,
         SHOW_POWER_SUPPLY,
         SHOW_LAN_POWER,

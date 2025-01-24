@@ -397,10 +397,11 @@
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Status}"
+                                <TextBlock Text="{Binding Path=Status}"  Style="{DynamicResource toolTip}"
                                     Foreground="{Binding Path=Status,
                                         Converter={StaticResource ValueToColorConverter},
-                                        ConverterParameter=PortStatus}" />
+                                        ConverterParameter=PortStatus}" 
+                                    ToolTip="{Binding Path=Status, Converter={StaticResource StatusToTooltipConverter}}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

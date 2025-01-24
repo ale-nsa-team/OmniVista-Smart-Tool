@@ -214,9 +214,13 @@ namespace PoEWizard.Device
         public void UpdatePortStatus(Dictionary<string, string> dict)
         {
             IsEnabled = (GetDictValue(dict, ADMIN_STATUS)) == "enable";
-            string sValStatus = FirstChToUpper(GetDictValue(dict, LINK_STATUS));
+            string pstatus = GetDictValue(dict, LINK_STATUS);
+            string blk = string.IsNullOrEmpty(GetDictValue(dict, OPER_STATUS)) ? string.Empty : "blocked"; 
+            string status = string.IsNullOrEmpty(pstatus) ? blk : pstatus;
+            string sValStatus = FirstChToUpper(status);
             if (!string.IsNullOrEmpty(sValStatus) && Enum.TryParse(sValStatus, out PortStatus portStatus)) Status = portStatus; else Status = PortStatus.Unknown;
-            Alias = GetDictValue(dict, ALIAS).Replace("\"", string.Empty);
+            string alias = GetDictValue(dict, ALIAS).Replace("\"", string.Empty);
+            if (!string.IsNullOrEmpty(alias)) Alias = alias; 
         }
 
         public void UpdateMacList(List<Dictionary<string, string>> dictList, int maxNbMacPerPort)
@@ -347,6 +351,7 @@ namespace PoEWizard.Device
             if (!string.IsNullOrEmpty(this.Transceiver)) tip.Add($"Transceiver: {this.Transceiver}");
             if (!string.IsNullOrEmpty(this.EPP)) tip.Add($"EPP: {this.EPP}");
             if (!string.IsNullOrEmpty(this.LinkQuality)) tip.Add($"Link Quality: {this.LinkQuality}");
+            if (this.Status == PortStatus.Blocked) tip.Add(Translate("i18n_ptBlock"));
             return tip;
         }
 

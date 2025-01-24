@@ -101,6 +101,7 @@
     <sys:String x:Key="i18n_devModel">Device Model</sys:String>
     <sys:String x:Key="i18n_devType">Device Type</sys:String>
     <sys:String x:Key="i18n_devName">Device Name</sys:String>
+    <sys:String x:Key="i18n_ptBlock">Port blocked by Spanning Tree</sys:String>
 
     <!--Status Bar messages-->
     <sys:String x:Key="i18n_idle">Idle</sys:String>

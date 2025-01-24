@@ -160,19 +160,21 @@ namespace PoEWizard.Device
                     }
                     break;
                 case DictionaryType.PortsList:
-                    int nchas = dictList.GroupBy(d => GetChassisId(d)).Count();
+                case DictionaryType.BlockedPorts:
+                    string header = dt == DictionaryType.PortsList ? CHAS_SLOT_PORT : PORT;
+                    int nchas = dictList.GroupBy(d => GetChassisId(d, header)).Count();
                     for (int i = 1; i <= nchas; i++)
                     {
-                        List<Dictionary<string, string>> chasList = dictList.Where(d => GetChassisId(d) == i).ToList();
+                        List<Dictionary<string, string>> chasList = dictList.Where(d => GetChassisId(d, header) == i).ToList();
                         if (chasList?.Count == 0) continue;
-                        chassis = this.GetChassis(GetChassisId(chasList[0]));
+                        chassis = this.GetChassis(GetChassisId(chasList[0], header));
                         if (chassis == null) continue;
-                        int nslots = chasList.GroupBy(c => GetSlotId(c)).Count();
+                        int nslots = chasList.GroupBy(c => GetSlotId(c, header)).Count();
                         for (int j = 1; j <= nslots; j++)
                         {
-                            List<Dictionary<string, string>> slotList = chasList.Where(c => GetSlotId(c) == j).ToList();
+                            List<Dictionary<string, string>> slotList = chasList.Where(c => GetSlotId(c, header) == j).ToList();
                             if (slotList?.Count == 0) continue;
-                            ChassisSlotPort chassisSlot = new ChassisSlotPort(slotList[0][CHAS_SLOT_PORT]);
+                            ChassisSlotPort chassisSlot = new ChassisSlotPort(slotList[0][header]);
                             SlotModel slot = chassis.GetSlot(chassisSlot.SlotNr);
                             if (slot == null)
                             {
@@ -182,8 +184,8 @@ namespace PoEWizard.Device
                             slot.IsMaster = chassis.IsMaster;
                             foreach (var dict in slotList)
                             {
-                                chassisSlot = new ChassisSlotPort(dict[CHAS_SLOT_PORT]);
-                                PortModel port = slot.GetPort(dict[CHAS_SLOT_PORT]);
+                                chassisSlot = new ChassisSlotPort(dict[header]);
+                                PortModel port = slot.GetPort(dict[header]);
                                 if (port == null) slot.Ports.Add(new PortModel(dict)); else port.UpdatePortStatus(dict);
                             }
                             slot.NbPorts = slotList.Count;
@@ -445,18 +447,18 @@ namespace PoEWizard.Device
             return PowerSupplyState.Unknown;
         }
 
-        private int GetChassisId(Dictionary<string, string> chas)
+        private int GetChassisId(Dictionary<string, string> chas, string header)
         {
-            string[] parts = chas[CHAS_SLOT_PORT].Split('/');
+            string[] parts = chas[header].Split('/');
             if (parts.Length < 3) return 1;
-            return ParseId(chas[CHAS_SLOT_PORT], 0);
+            return ParseId(chas[header], 0);
         }
 
-        private int GetSlotId(Dictionary<string, string> chas)
+        private int GetSlotId(Dictionary<string, string> chas, string header)
         {
-            string[] parts = chas[CHAS_SLOT_PORT].Split('/');
+            string[] parts = chas[header].Split('/');
             int idx = (parts.Length > 2) ? 1 : 0;
-            return ParseId(chas[CHAS_SLOT_PORT], idx);
+            return ParseId(chas[header], idx);
         }
 
         private int GetPsId(string chId)

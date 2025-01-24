@@ -114,7 +114,9 @@ namespace PoEWizard.Components
                     case "PoeStatus":
                         return val == "UnderThreshold" ? Colors.Clear : val == "NearThreshold" ? Colors.Warn : Colors.Danger;
                     case "PortStatus":
-                        return val == "Up" ? Colors.Clear : val == "Down" ? Colors.Danger : Colors.Unknown;
+                        return val == "Up" ? Colors.Clear : 
+                               val == "Down" ? Colors.Danger : 
+                               val == "Blocked" ? Colors.Warn : Colors.Unknown;
                     case "PowerSupply":
                         return val == "Up" ? Colors.Clear : Colors.Danger;
                     case "RunningDir":
@@ -608,6 +610,30 @@ namespace PoEWizard.Components
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class StatusToTooltipConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                if (IsInvalid(value)) return DependencyProperty.UnsetValue;
+                PortStatus status = (PortStatus)value;
+                if (status == PortStatus.Blocked) return Translate("i18n_ptBlock");
+                return DependencyProperty.UnsetValue;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return DependencyProperty.UnsetValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 
