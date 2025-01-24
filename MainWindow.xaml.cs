@@ -5,11 +5,9 @@ using PoEWizard.Data;
 using PoEWizard.Device;
 using PoEWizard.Exceptions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -37,7 +35,6 @@ namespace PoEWizard
         private readonly ResourceDictionary darkDict;
         private readonly ResourceDictionary lightDict;
         private ResourceDictionary currentDict;
-        private IEnumerable<string> resourceDicts = null;
         private readonly IProgress<ProgressReport> progress;
         private bool reportAck;
         private SftpService sftpService;
@@ -94,7 +91,6 @@ namespace PoEWizard
             lightDict = Resources.MergedDictionaries[0];
             darkDict = Resources.MergedDictionaries[1];
             Strings = Resources.MergedDictionaries[2];
-            LoadLocalLanguageDictionary();
             currentDict = darkDict;
             Instance = this;
             Activity.DataPath = DataPath;
@@ -140,33 +136,6 @@ namespace PoEWizard
                 Connect();
             }
             SetLanguageMenuOptions();
-        }
-
-        private void LoadLocalLanguageDictionary()
-        {
-            try
-            {
-                string translatFolder = Path.Combine(DataPath, TRANSLATION_FOLDER);
-                if (!Directory.Exists(translatFolder)) Directory.CreateDirectory(translatFolder);
-                string localLangFile = Path.Combine(translatFolder, TRANSLATION_LOCAL_FILE);
-                if (File.Exists(localLangFile))
-                {
-                    ResourceDictionary stringsDict = new ResourceDictionary
-                    {
-                        Source = new Uri(localLangFile, UriKind.Absolute)
-                    };
-                    foreach (string key in Strings.Keys)
-                    {
-                        if (stringsDict.Contains(key)) Strings[key] = stringsDict[key];
-                    }
-                    Resources.MergedDictionaries.Remove(Strings);
-                    Resources.MergedDictionaries.Add(Strings);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
@@ -1327,17 +1296,28 @@ namespace PoEWizard
         {
             MenuItem mi = sender as MenuItem;
             if (mi.IsChecked) return;
-            string l = mi.Header.ToString().Replace("-", "").ToLower();
-            var dict = resourceDicts.FirstOrDefault(d => d.Contains(l));
-            Resources.MergedDictionaries.Remove(Strings);
-            Strings = new ResourceDictionary
+            string l = mi.Header.ToString().Replace("-", "");
+            string filename = Path.Combine(DataPath, LANGUAGE_FOLDER, $"strings-{l}.xaml");
+            if (l == "enUS")
             {
-                Source = new Uri(dict, UriKind.Relative)
-            };
-            Resources.MergedDictionaries.Add(Strings);
+                var uri = new Uri($"pack://application:,,,/Resources/strings-{l}.xaml", UriKind.RelativeOrAbsolute);
+                Resources.MergedDictionaries.Remove(Strings);
+                Strings = new ResourceDictionary
+                {
+                    Source = uri
+                };
+                Resources.MergedDictionaries.Add(Strings);
+            }
+            else if (!LoadLanguageFile(filename))
+            {
+                ShowMessageBox(Translate("i18n_lang"), Translate("i18n_badLang", $"strings-{l}.xaml"), MsgBoxIcons.Error);
+                try { File.Delete(filename); } catch { }
+                _langSel.Items.Remove(mi);
+                return;
+            }
             mi.IsChecked = true;
             config.Set("language", mi.Header.ToString());
-            foreach (MenuItem i in _langMenu.Items)
+            foreach (MenuItem i in _langSel.Items)
             {
                 if (i != mi) i.IsChecked = false;
             }
@@ -1592,31 +1572,13 @@ namespace PoEWizard
 
         private void SetLanguageMenuOptions()
         {
+            string langFolder = Path.Combine(DataPath, LANGUAGE_FOLDER);
             string pattern = @"(.*)(strings-)(.+)(.xaml)";
-            List<string> langs = new List<string>();
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourcesName = assembly.GetName().Name + ".g";
+            if (!Directory.Exists(langFolder)) return;
+            List<string> langs = Directory.GetFiles(langFolder, "*.xaml").ToList();
+            langs.Sort();
 
-            var manager = new System.Resources.ResourceManager(resourcesName, assembly);
-            var resourceSet = manager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
-            var resDict = resourceSet.OfType<DictionaryEntry>();
-            resourceDicts =
-              from entry in resourceSet.OfType<DictionaryEntry>()
-              let fileName = (string)entry.Key
-              where fileName.StartsWith("resources") && fileName.EndsWith(".baml")
-              select fileName.Substring(0, fileName.Length - 5) + ".xaml";
-
-            List<string> sorted = resourceDicts.ToList();
-            if (sorted.Count < 4)
-            {
-                _langMenu.Visibility = Visibility.Collapsed;
-                return;
-            }
-            sorted.Sort();
-            MenuItem found = null;
-            string fname = null;
-
-            foreach (var file in sorted)
+            foreach (var file in langs)
             {
                 Match match = Regex.Match(file, pattern);
                 if (match.Success)
@@ -1626,23 +1588,40 @@ namespace PoEWizard
                     MenuItem item = new MenuItem { Header = iheader };
                     if (iheader == config.Get("language"))
                     {
-                        found = item;
-                        fname = file;
+                        if (LoadLanguageFile(file)) 
+                        {
+                            MenuItem enUs = (MenuItem)_langSel.Items[0] as MenuItem;
+                            enUs.IsChecked = false;
+                            item.IsChecked = true;
+                        }
                     }
                     item.Click += new RoutedEventHandler(LangItem_Click);
-                    _langMenu.Items.Add(item);
-                }
-                if (found != null)
-                {
-                    Resources.MergedDictionaries.Remove(Strings);
-                    Strings = new ResourceDictionary
-                    {
-                        Source = new Uri(fname, UriKind.Relative)
-                    };
-                    Resources.MergedDictionaries.Add(Strings);
-                    found.IsChecked = true;
+                    _langSel.Items.Add(item);
                 }
             }
+        }
+
+        private bool LoadLanguageFile(string filename)
+        {
+            try
+            {
+                if (File.Exists(filename))
+                {
+                    ResourceDictionary stringsDict = new ResourceDictionary
+                    {
+                        Source = new Uri(filename, UriKind.Absolute)
+                    };
+                    Resources.MergedDictionaries.Remove(Strings);
+                    Strings = stringsDict;
+                    Resources.MergedDictionaries.Add(Strings);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return false;
         }
 
         private void LangExport_Click(object sender, RoutedEventArgs e)

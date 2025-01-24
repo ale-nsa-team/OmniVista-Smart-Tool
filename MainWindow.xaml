@@ -75,7 +75,9 @@
                     <MenuItem Header="{DynamicResource i18n_light}" x:Name="_lightMenuItem" Click="ThemeItem_Click"/>
                 </MenuItem>
                 <MenuItem Header="{DynamicResource i18n_lang}" x:Name="_langMenu">
-                    <MenuItem Header="{DynamicResource i18n_selLang}" x:Name="_langSel"/>
+                    <MenuItem Header="{DynamicResource i18n_selLang}" x:Name="_langSel">
+                        <MenuItem Header="en-US" IsChecked="True" Click="LangItem_Click"/>
+                    </MenuItem>
                     <MenuItem Header="{DynamicResource i18n_expLang}" x:Name="_langExp" Click="LangExport_Click"/>
                     <MenuItem Header="{DynamicResource i18n_impLang}" x:Name="_langImp" Click="LangImport_Click"/>
                 </MenuItem>
