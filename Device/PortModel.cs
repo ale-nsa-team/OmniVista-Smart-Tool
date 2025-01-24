@@ -213,14 +213,19 @@ namespace PoEWizard.Device
 
         public void UpdatePortStatus(Dictionary<string, string> dict)
         {
-            IsEnabled = (GetDictValue(dict, ADMIN_STATUS)) == "enable";
-            string pstatus = GetDictValue(dict, LINK_STATUS);
-            string blk = string.IsNullOrEmpty(GetDictValue(dict, OPER_STATUS)) ? string.Empty : "blocked"; 
-            string status = string.IsNullOrEmpty(pstatus) ? blk : pstatus;
-            string sValStatus = FirstChToUpper(status);
-            if (!string.IsNullOrEmpty(sValStatus) && Enum.TryParse(sValStatus, out PortStatus portStatus)) Status = portStatus; else Status = PortStatus.Unknown;
-            string alias = GetDictValue(dict, ALIAS).Replace("\"", string.Empty);
-            if (!string.IsNullOrEmpty(alias)) Alias = alias; 
+            if (dict.ContainsKey(OPER_STATUS)) 
+            {
+                if (GetDictValue(dict, OPER_STATUS) == BLOCKED) Status = PortStatus.Blocked;
+            }
+            else
+            {
+                IsEnabled = (GetDictValue(dict, ADMIN_STATUS)) == "enable";
+                string status = GetDictValue(dict, LINK_STATUS);
+                string statusVal = FirstChToUpper(status);
+                if (!string.IsNullOrEmpty(statusVal) && Enum.TryParse(statusVal, out PortStatus portStatus)) Status = portStatus; else Status = PortStatus.Unknown;
+                string alias = GetDictValue(dict, ALIAS).Replace("\"", string.Empty);
+                if (!string.IsNullOrEmpty(alias)) Alias = alias;
+            }
         }
 
         public void UpdateMacList(List<Dictionary<string, string>> dictList, int maxNbMacPerPort)

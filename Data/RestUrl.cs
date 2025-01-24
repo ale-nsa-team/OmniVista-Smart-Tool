@@ -43,7 +43,7 @@ namespace PoEWizard.Data
             [Command.SHOW_RUNNING_DIR] = "show running-directory",
             [Command.SHOW_CHASSIS] = "show chassis",
             [Command.SHOW_PORTS_LIST] = "show interfaces alias",
-            [Command.SHOW_BLOCKED_PORTS] = "show spantree ports blocking",
+            [Command.SHOW_BLOCKED_PORTS] = "show spantree ports",
             [Command.SHOW_POWER_SUPPLIES] = $"show powersupply",
             [Command.SHOW_POWER_SUPPLY] = $"show powersupply chassis-id {DAT}",
             [Command.SHOW_LAN_POWER] = $"show lanpower slot {DAT}",

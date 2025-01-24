@@ -149,6 +149,7 @@ namespace PoEWizard.Data
         public const string ADMIN_STATUS = "Admin Status";
         public const string OPERATIONAL_STATUS = "Operational Status";
         public const string OPER_STATUS = "Oper Status";
+        public const string BLOCKED = "BLK";
         public const string LINK_STATUS = "Link Status";
         public const string STATUS = "Status";
         public const string BT_SUPPORT = "8023BT Support";
