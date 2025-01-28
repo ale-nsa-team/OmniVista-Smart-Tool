@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static PoEWizard.Data.Constants;
@@ -136,6 +137,10 @@ namespace PoEWizard
                 Connect();
             }
             SetLanguageMenuOptions();
+            if (config.GetInt("wait_cpu_health", 0) == 0)
+            {
+                config.Set("wait_cpu_health", WAIT_CPU_HEALTH);
+            }
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
@@ -1054,7 +1059,7 @@ namespace PoEWizard
         private async void BtnCancel_Click(object sender, EventArgs e)
         {
             _btnCancel.IsEnabled = false;
-            switch (opType) 
+            switch (opType)
             {
                 case OpType.Reboot:
                     await StopWaitingReboot();
@@ -1588,7 +1593,7 @@ namespace PoEWizard
                     MenuItem item = new MenuItem { Header = iheader };
                     if (iheader == config.Get("language"))
                     {
-                        if (LoadLanguageFile(file)) 
+                        if (LoadLanguageFile(file))
                         {
                             MenuItem enUs = (MenuItem)_langSel.Items[0] as MenuItem;
                             enUs.IsChecked = false;
@@ -1626,12 +1631,87 @@ namespace PoEWizard
 
         private void LangExport_Click(object sender, RoutedEventArgs e)
         {
-
+            string fname = Path.GetFileName(Resources.MergedDictionaries[2].Source.ToString());
+            var sfd = new SaveFileDialog
+            {
+                Filter = $"{Translate("i18n_langf")}|*.xaml",
+                Title = Translate("i18n_langfe"),
+                FileName = fname,
+                InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+            };
+            if (sfd.ShowDialog() == true)
+            {
+                try
+                {
+                    using (StringWriter sw = new StringWriter())
+                    {
+                        XamlWriter.Save(Resources.MergedDictionaries[2], sw);
+                        string res = sw.GetStringBuilder().ToString();
+                        string formRes = res.Replace("<s:String", "\n<s:String");
+                        using (StreamWriter writer = new StreamWriter(sfd.FileName))
+                        {
+                            writer.Write(formRes);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ShowMessageBox(Translate("i18n_langf"), $"{Translate("i18n_expfail")}: {ex.Message}");
+                    Logger.Error("Failed to save language dictionary", ex);
+                }
+            }
         }
 
         private void LangImport_Click(object sender, RoutedEventArgs e)
         {
+            var ofd = new OpenFileDialog
+            {
+                Filter = $"{Translate("i18n_langf")}|*.xaml",
+                Title = Translate("i18n_langfi"),
+                InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+            };
+            if (ofd.ShowDialog() == true)
+            {
+                string fname = Path.GetFileName(ofd.FileName);
+                string target = Path.Combine(DataPath, LANGUAGE_FOLDER, fname);
+                bool exists = false;
+                try
+                {
+                    if (fname == DEFAULT_LANG_FILE) throw new Exception(Translate("i18n_defLang"));
+                    if (File.Exists(target))
+                    {
+                        var res = ShowMessageBox(Translate("i18n_langf"), Translate("i18n_dupLang", fname), MsgBoxIcons.Question, MsgBoxButtons.YesNo);
+                        if (res == MsgBoxResult.No) return;
+                        exists = true;
+                    }
+                    File.Copy(ofd.FileName, target, true);
+                    if (!LoadLanguageFile(target)) return;
+                    string lang = fname.Split(new char[] { '-', '.' })[1];
+                    string iheader = lang.Substring(0, 2) + "-" + lang.Substring(2).ToUpper();
+                    MenuItem item;
+                    if (exists)
+                    {
+                        item = _langSel.Items.OfType<MenuItem>().FirstOrDefault(m => m.Header.ToString() == iheader);
+                    }
+                    else
+                    {
+                        item = new MenuItem { Header = iheader };
+                        item.Click += new RoutedEventHandler(LangItem_Click);
+                        _langSel.Items.Add(item);
+                    }
+                    item.IsChecked = true;
 
+                    foreach (MenuItem i in _langSel.Items)
+                    {
+                        if (i != item) i.IsChecked = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ShowMessageBox(Translate("i18n_langf"), $"{Translate("i18n_impfail")}: {ex.Message}", MsgBoxIcons.Error);
+                    Logger.Error($"Failed to import language dictionary {ofd.FileName}", ex);
+                }
+            }
         }
 
         private async void Connect()
@@ -1656,7 +1736,10 @@ namespace PoEWizard
                     SetDisconnectedState();
                     return;
                 }
-                restApiService = new RestApiService(device, progress);
+                restApiService = new RestApiService(device, progress)
+                {
+                    Timeout = config.GetInt("wait_cpu_health", 0)
+                };
                 isClosing = false;
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();

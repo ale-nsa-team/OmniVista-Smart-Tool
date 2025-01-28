@@ -32,9 +32,8 @@
     <sys:String x:Key="i18n_options">Options</sys:String>
     <sys:String x:Key="i18n_lang">Language</sys:String>
     <sys:String x:Key="i18n_selLang">Select Language</sys:String>
-    <sys:String x:Key="i18n_expLang">Export Language File</sys:String>
+    <sys:String x:Key="i18n_expLang">Export Current Language File</sys:String>
     <sys:String x:Key="i18n_impLang">Import New Language</sys:String>
-    <sys:String x:Key="i18n_badLang">Language file "$1" is invalid and will be removed</sys:String>
 
     <!--Buttons-->
     <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>
@@ -58,6 +57,16 @@
     <sys:String x:Key="i18n_clrBtn">Clear Log</sys:String>
     <sys:String x:Key="i18n_svBtn">Save</sys:String>
 
+    <!--Localization-->
+    <sys:String x:Key="i18n_langf">Language file</sys:String>
+    <sys:String x:Key="i18n_langfe">Select folder to save language file</sys:String>
+    <sys:String x:Key="i18n_langfi">Select language file to import</sys:String>
+    <sys:String x:Key="i18n_badLang">Language file "$1" is invalid and will be removed</sys:String>
+    <sys:String x:Key="i18n_expfail">Failed to export language file</sys:String>
+    <sys:String x:Key="i18n_impfail">Failed to import language file</sys:String>
+    <sys:String x:Key="i18n_defLang">Cannot import default language</sys:String>
+    <sys:String x:Key="i18n_dupLang">Language file $1 already exists, do you want to replace it?</sys:String>
+    
     <!--System Information-->
     <sys:String x:Key="i18n_swName">Name:</sys:String>
     <sys:String x:Key="i18n_ipAddr">IP Address:</sys:String>
@@ -390,6 +399,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_rlldp">Reading LLDP remote information</sys:String>
     <sys:String x:Key="i18n_rmac">Reading MAC address information</sys:String>
     <sys:String x:Key="i18n_rpdet">Reading ports detailed information</sys:String>
+    <sys:String x:Key="i18n_shealth">Waiting to read CPU health</sys:String>
     <sys:String x:Key="i18n_enableRest">Enabling REST API on switch</sys:String>
     <sys:String x:Key="i18n_opCancel">The operation has been canceled</sys:String>
 

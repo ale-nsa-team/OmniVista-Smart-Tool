@@ -111,6 +111,7 @@ namespace PoEWizard.Data
             "EST", "CST", "PST", "MST", "AKST", "AST", "HST", "UTC", "GMT", "CET", "NST"
         };
         public const string LANGUAGE_FOLDER = "Language";
+        public const string DEFAULT_LANG_FILE = "strings-enUS.xaml";
         public const string DEFAULT_APP_STATUS = "Idle";
         public const string DEFAULT_PASSWORD = "switch";
         public const string DEFAULT_USERNAME = "admin";
@@ -259,6 +260,7 @@ namespace PoEWizard.Data
         public const string CPU_THRESHOLD = "CPU Threshold";
         public const string CPU = "CPU";
         public const string SWITCH = "Switch";
+        public const int WAIT_CPU_HEALTH =10;
         // Used by SwitchDebugModel class
         public const string DEBUG_SWITCH_LOG = "systemSwitchLogging";
         public const string DEBUG_APP_ID = "systemSwitchLoggingApplicationAppId";

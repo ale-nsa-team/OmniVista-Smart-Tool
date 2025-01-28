@@ -86,10 +86,10 @@ namespace PoEWizard.Comm
                 SwitchModel.LoadFromList(_dictList, DictionaryType.HwInfo);
                 UpdateProgressBar(++progressBarCnt); // 5
                 token.ThrowIfCancellationRequested();
-                ScanSwitch(progrMsg, token, reportResult);
                 UpdateFlashInfo(progrMsg);
                 UpdateProgressBar(++progressBarCnt); // 30
                 ShowInterfacesList();
+                ScanSwitch(progrMsg, token, reportResult);
                 UpdateProgressBar(++progressBarCnt); // 31
                 LogActivity($"Switch connected", $", duration: {CalcStringDuration(startTime)}");
             }
@@ -189,16 +189,13 @@ namespace PoEWizard.Comm
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_POWER_SUPPLIES, ParseType.Htable2)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.PowerSupply);
                 UpdateProgressBar(++progressBarCnt); // 16
-                _dictList = SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
-                SwitchModel.LoadFromList(_dictList, DictionaryType.CpuTrafficList);
-                UpdateProgressBar(++progressBarCnt); // 17
                 GetLanPower(token);
                 token.ThrowIfCancellationRequested();
                 progressBarCnt += 3;
-                UpdateProgressBar(progressBarCnt); // 18, 19, 20
+                UpdateProgressBar(progressBarCnt); // 17, 18, 19
                 GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
                 progressBarCnt += 3;
-                UpdateProgressBar(progressBarCnt); // 21, 22, 23
+                UpdateProgressBar(progressBarCnt); // 20, 21, 22
                 if (!File.Exists(Path.Combine(Path.Combine(MainWindow.DataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
                 {
                     SaveConfigSnapshot();
@@ -207,8 +204,14 @@ namespace PoEWizard.Comm
                 {
                     PurgeConfigSnapshotFiles();
                 }
-                UpdateProgressBar(++progressBarCnt); // 24
+                UpdateProgressBar(++progressBarCnt); // 23
                 string title = string.IsNullOrEmpty(source) ? $"{Translate("i18n_refrsw")} {SwitchModel.Name}" : source;
+                UpdateProgressBar(++progressBarCnt); // 24
+                int waitTO = Timeout > 0 ? Timeout : WAIT_CPU_HEALTH;
+                WaitSec(Translate("i18n_shealth"), waitTO, token: token);
+                token.ThrowIfCancellationRequested();
+                _dictList = SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
+                SwitchModel.LoadFromList(_dictList, DictionaryType.CpuTrafficList);
             }
             catch (OperationCanceledException)
             {
@@ -1671,7 +1674,7 @@ namespace PoEWizard.Comm
                 var tdr = SendCommand(new CmdRequest(Command.SHOW_TDR_STATISTICS, ParseType.Htable3, port));
                 SendCommand(new CmdRequest(Command.CLEAR_TDR_STATISTICS, port));
                 List<Dictionary<string, string>> tdrList = (List<Dictionary<string, string>>)tdr;
-                List <Dictionary<string, string>> statList = (List<Dictionary<string, string>>)status;
+                List<Dictionary<string, string>> statList = (List<Dictionary<string, string>>)status;
                 var spd = from result in statList[0] where Regex.Match(result.Key, MATCH_SPEED, RegexOptions.Singleline).Success select result;
                 var bps = spd.FirstOrDefault().Value ?? "";
                 tdrList[0].Add(SPEED, bps);
@@ -2399,7 +2402,7 @@ namespace PoEWizard.Comm
             return false;
         }
 
-        private void WaitSec(string msg1, int waitSec, string msg2 = null)
+        private void WaitSec(string msg1, int waitSec, string msg2 = null, CancellationToken token = new CancellationToken())
         {
             if (waitSec < 1) return;
             DateTime startTime = DateTime.Now;
@@ -2409,6 +2412,7 @@ namespace PoEWizard.Comm
                 if (dur >= waitSec) return;
                 SendWaitProgressReport(msg1, startTime, msg2);
                 Thread.Sleep(1000);
+                if (token.IsCancellationRequested) return;
                 dur = GetTimeDuration(startTime);
             }
         }
