@@ -206,12 +206,6 @@ namespace PoEWizard.Comm
                 }
                 UpdateProgressBar(++progressBarCnt); // 23
                 string title = string.IsNullOrEmpty(source) ? $"{Translate("i18n_refrsw")} {SwitchModel.Name}" : source;
-                UpdateProgressBar(++progressBarCnt); // 24
-                int waitTO = Timeout > 0 ? Timeout : WAIT_CPU_HEALTH;
-                WaitSec(Translate("i18n_shealth"), waitTO, token: token);
-                token.ThrowIfCancellationRequested();
-                _dictList = SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
-                SwitchModel.LoadFromList(_dictList, DictionaryType.CpuTrafficList);
             }
             catch (OperationCanceledException)
             {

@@ -345,8 +345,7 @@ namespace PoEWizard.Device
         {
             if (string.IsNullOrEmpty(SelectedSlot)) SelectedSlot = "1/1";
             ChassisModel chassis = GetChassis(SelectedSlot);
-            if (chassis == null) return;
-            Cpu = $"{chassis.Cpu}%";
+            Cpu = chassis?.Cpu > 0 ? $"{chassis.Cpu}%" : "-";
         }
 
         public void LoadFlashSizeFromList(string data, ChassisModel chassis)

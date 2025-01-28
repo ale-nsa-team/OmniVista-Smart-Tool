@@ -1736,10 +1736,7 @@ namespace PoEWizard
                     SetDisconnectedState();
                     return;
                 }
-                restApiService = new RestApiService(device, progress)
-                {
-                    Timeout = config.GetInt("wait_cpu_health", 0)
-                };
+                restApiService = new RestApiService(device, progress);
                 isClosing = false;
                 DateTime startTime = DateTime.Now;
                 reportResult = new WizardReport();
@@ -1754,6 +1751,8 @@ namespace PoEWizard
                     config.Set("switches", string.Join(",", ips));
                 }
                 UpdateConnectedState();
+                //delay to update cpu health
+                DelayGetCpuHealth();
                 await CheckSwitchScanResult($"{Translate("i18n_cnsw")} {device.Name}{WAITING}", startTime);
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
@@ -1769,6 +1768,20 @@ namespace PoEWizard
                 HideProgress();
                 HideInfoBox();
             }
+        }
+
+        private void DelayGetCpuHealth()
+        {
+            _ = Task.Delay(TimeSpan.FromSeconds(config.GetInt("wait_cpu_health", 1))).ContinueWith(t =>
+            {
+                var res = restApiService.SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
+                device.LoadFromList(res, DictionaryType.CpuTrafficList);
+                //this.DataContext = null;
+                Dispatcher.Invoke(() => {
+                    this.DataContext = null;
+                    this.DataContext = device;
+                });
+            });
         }
 
         private void AskRebootCertified()
@@ -2094,6 +2107,7 @@ namespace PoEWizard
                 tokenSource = new CancellationTokenSource();
                 await Task.Run(() => restApiService.RefreshSwitch($"{Translate("i18n_refrsw")} {device.Name}", tokenSource.Token, reportResult));
                 await CheckSwitchScanResult($"{Translate("i18n_refrsw")} {device.Name}", startTime);
+                DelayGetCpuHealth();
                 RefreshSlotAndPortsView();
                 if (device.RunningDir == CERTIFIED_DIR)
                 {
