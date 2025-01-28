@@ -526,7 +526,7 @@ Please reconnect to switch after it comes back up</sys:String>
     <sys:String x:Key="i18n_cpoeoff">Are you sure you want to turn PoE Off on all ports in slot</sys:String>
     <sys:String x:Key="i18n_spoeon">Slot PoE On</sys:String>
     <sys:String x:Key="i18n_poeon">Turning PoE On</sys:String>
-    <sys:String x:Key="i18n_poeoff">Truning PoE Off</sys:String>
+    <sys:String x:Key="i18n_poeoff">Turning PoE Off</sys:String>
     <sys:String x:Key="i18n_wpoeon">Please wait for slot</sys:String>
     <sys:String x:Key="i18n_waitup">to come up</sys:String>
     <sys:String x:Key="i18n_enable">Enabling</sys:String>

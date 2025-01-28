@@ -43,3 +43,6 @@ img {
 .no-space {
     margin-top: -1em;
 }
+.mt-0 {
+    margin-top: 0;
+}

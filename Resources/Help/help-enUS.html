@@ -22,6 +22,7 @@
         <li><a href="#tdr">Cable test</a></li>
         <li><a href="#view">View Menu</a></li>
         <li><a href="#cfg-wiz">Configuration Wizard</a></li>
+        <li><a href="#i18n">Locatization</a></li>
         <li><a href="#faq">Frequently Asked Questions</a></li>
         <li><a href="#support">Obtaining more support</a></li>
         <li><a href="#std">PoE Standards</a></li>
@@ -250,6 +251,78 @@
     <img src="save-prompt.png" />
     <br />
     <img src="save-progress.png" />
+    <p id="i18n" class="header">Localization</p>
+    <p>
+        Under the <b>Options</b> menu, you can select the language used in the application menus and messages. The application comes configured 
+        with the default language (en-US), but you can create a new language file, by following this procedure:</p>
+    <ul>
+        <li>Export the current language file.
+            <p class="mt-0">
+                The current selected application strings will be exported to an XML file, named <b>strings-&lt;language-id&gt;.xaml</b>,
+                where <b>&lt;language-id&gt;</b> is a 4-letter string in the following format: the first 2 lower-case letters denote the language 
+                and the last 2 upper-case letters denote the country. For example, the default language will be exported as <b>strings-enUS.xaml"</b>
+            </p>
+        </li>
+        <li>Translate the language file.
+            <p class="mt-0">
+                Open the file in a text editor and translate the strings to the desired language. Note that this is an xml file, so 
+                some rules must be observed. 
+            </p>
+            <ul>
+                <li>Translate only the strings between tags
+                    <p class="mt-0">
+                        For example, on the line <b>&lt;s:String x:Key="i18n_sys&gt;Reading system information&lt;/s:String&gt;</b> translate only
+                        the phrase <b>Reading system information</b>, keeping the rest intact.
+                    </p>
+                </li>
+                <li>Some strings are incomplete phrases
+                    <p class="mt-0">
+                        For example, on the line <b>&lt;s:String x:Key="i18n_enTdr"&gt;Enabling TDR on port&lt;/s:String&gt;</b>
+                        the phrase <b>Enabling TDR on port</b> will be followed by the port number (e.g. 1/1/10), so take that into
+                        consideration when doing the translation.
+                    </p>
+                </li>
+                <li>Some strings contain place-holders
+                    <p class="mt-0">
+                        In lines that contain <b>$1, $2, $3</b>, these are place-holders that will be replaced by variable values by the application,
+                        so they must not be removed. For example, the line 
+                    </p>
+                    <p class="no-space">
+                        <b>&lt;s:String x:Key="i18n_rstmxpw"&gt;Restoring max. power on port $1 from $2 Watts to maximum allowed $3 Watts&lt;/s:String&gt;</b>
+                    </p>
+                    <p class="no-space">
+                        The strings <b>$1, $2 and $3</b> will be replaced with the corresponding values, so the actual message will look like this:
+                    </p>
+                    <p class="no-space">
+                        <b>Restoring max. power on port 1/1/10 from 10 Watts to maximum allowed 90 Watts</b>
+                    </p>
+                </li>
+            </ul>
+        </li>
+        <li>Save the translated file with the name correspondig to the language
+            <p class="mt-0">
+                For example, if you translate the strings to Brazilian Portuguese, the new file name should be <b>strings-ptBR.xaml</b>
+            </p>
+        </li>
+        <li>Import the new language file into the application
+            <p class="mt-0">
+                Select menu option <b>Options/Language/Import New Language</b> and select the new file to be imported. If the file is a valid language
+                file, the application will change the language to the new file, and a new option corresponding this language will appear
+                under the <b>Select Language</b> menu option (pt-BR in this example) 
+            </p> 
+        </li>
+    </ul>
+    <p>
+        Note that if you are importing a file from a previous version of the application, it may be missing some phrases. In that case, the application
+        will display the phrase Key, instead of the phrase itself. For example, if your language file is missing this line:
+        <b>&lt;s:String x:Key="i18n_sprio"&gt;Priority on port&lt;/s:String&gt;</b>, the message shown on the application screen will be <b>i18n_sprio</b>. 
+        So, if that kind of message shows up, it is an indication that the translated file is outdated, and you should re-export the default language file 
+        and translate the missing phrases.
+    </p>
+    <p class="no-space">
+        Also note that white spaces in the phrases are preserved, meaning that any line breaks, tabs and additional spaces will show in the messages.
+        This is particularly important for long phrases like the copyright notice (phrase with key="i18n_descr").
+    </p>
     <p id="faq" class="header">Frequently Asked Questions</p>
     <p class="title">How do I know if my switch supports PoE?  </p>
     <p>ALE PoE capable switches will have a P in the model number.</p>
