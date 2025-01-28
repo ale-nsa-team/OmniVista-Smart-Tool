@@ -312,17 +312,25 @@
             </p> 
         </li>
     </ul>
-    <p>
-        Note that if you are importing a file from a previous version of the application, it may be missing some phrases. In that case, the application
-        will display the phrase Key, instead of the phrase itself. For example, if your language file is missing this line:
-        <b>&lt;s:String x:Key="i18n_sprio"&gt;Priority on port&lt;/s:String&gt;</b>, the message shown on the application screen will be <b>i18n_sprio</b>. 
-        So, if that kind of message shows up, it is an indication that the translated file is outdated, and you should re-export the default language file 
-        and translate the missing phrases.
-    </p>
-    <p class="no-space">
-        Also note that white spaces in the phrases are preserved, meaning that any line breaks, tabs and additional spaces will show in the messages.
-        This is particularly important for long phrases like the copyright notice (phrase with key="i18n_descr").
-    </p>
+    <p class="topic">Notes</p>
+    <ul>
+        <li>
+            if you are importing a file from a previous version of the application, it may be missing some phrases. In that case, the application
+            will display the phrase Key, instead of the phrase itself. For example, if your language file is missing this line:
+            <b>&lt;s:String x:Key="i18n_sprio"&gt;Priority on port&lt;/s:String&gt;</b>, the message shown on the application screen will be <b>i18n_sprio</b>.
+            So, if that kind of message shows up, it is an indication that the translated file is outdated, and you should re-export the default language file
+            and translate the missing phrases.
+        </li>
+        <li>
+            White spaces in the phrases are preserved, meaning that any line breaks, tabs and additional spaces will show in the messages.
+            This is particularly important for long phrases like the copyright notice (phrase with key="i18n_descr") that are formatted to
+            properly fit the screen.
+        </li>
+        <li>
+            Log files and the information inside the different tables shown on the application are not translated, since those are values coming from
+            the switch and are kept in their original format.
+        </li>
+    </ul>
     <p id="faq" class="header">Frequently Asked Questions</p>
     <p class="title">How do I know if my switch supports PoE?  </p>
     <p>ALE PoE capable switches will have a P in the model number.</p>

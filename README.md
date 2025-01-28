@@ -20,13 +20,6 @@ to be sent to the users. The following files should be added to the archive:
 
 The user will then unpack this archive in a folder on their PC and launch the ALE-InstallersToolkit.exe application.
 
-The application currently has 2 branches, the main branch only has english language, and the i18n branch, where we can have multiple languages, for localization. 
-When using an application built from the i18n branch, there is an additional menu option to select the language. Note that the language selection only affects the menu options 
-and the messages presented to the user, but they don't translate the table contents and messages coming from the switch (also log files are not translated).
-Language files are under Resources folder and must be called strings-<language_code>.xaml, where <language_code> is the code for the specific country and language.
-For example: strings-enUS.xaml, strings-frFR.xaml, etc. Once the language file is added to this folder, the application will add the corresponding language code to 
-the language menu option.
-
 Note that log files and some configuration options are saved in the user's %AppData% folder (normally c:\users\<username>\AppData\Roaming) under folder
 Alcatel-Lucent Enterprise/AOS Toolkit.
 Log files are under Log folder and configuration options are found in file app.cfg.
