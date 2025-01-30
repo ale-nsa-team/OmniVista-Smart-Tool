@@ -33,7 +33,7 @@ namespace PoEWizard.Components
             string ver = (string)Resources.MergedDictionaries[1]["i18n_ver"];
             string cr = (string)Resources.MergedDictionaries[1]["i18n_cpright"];
             string rsrv = (string)Resources.MergedDictionaries[1]["i18n_reserved"];
-            _version.Text = $"{ver} {string.Join(".", version.Split('.').ToList().Take(2))}";
+            _version.Text = $"{ver} {string.Join(".", version.Split('.').ToList().Take(3))}";
             _copyRight.Text = $"{cr} © {year} ALE USA Inc. {rsrv}.";
 
         }

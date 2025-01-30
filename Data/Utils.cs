@@ -15,7 +15,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Navigation;
 using System.Xml;
 using System.Xml.Linq;
 using static PoEWizard.Data.Constants;

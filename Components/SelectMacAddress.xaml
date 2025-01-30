@@ -22,7 +22,10 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" Style="{DynamicResource titleLabel}" Margin="0,25,0,5" Content="{DynamicResource i18n_srcText}"/>
+        <StackPanel Grid.Row="0" Margin="0,25,0,5">
+            <Label Style="{DynamicResource titleLabel}" Content="{DynamicResource i18n_srcText}"/>
+            <Label Style="{DynamicResource titleLabel}" Margin="0,-10,0,0" FontSize="10" Content="{DynamicResource i18n_srcMac}" />
+        </StackPanel>
         <TextBox Grid.Row="1" x:Name="_macAddr" x:FieldModifier="private" 
                      Validation.ErrorTemplate="{DynamicResource validationTemplate}"
                      Foreground="{DynamicResource fontColor}"

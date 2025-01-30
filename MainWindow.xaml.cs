@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -31,6 +32,8 @@ namespace PoEWizard
     /// </summary>
     public partial class MainWindow : Window
     {
+        [DllImport("Kernel32.dll")]
+        public static extern bool AttachConsole(int processId);
 
         #region Private Variables
         private readonly ResourceDictionary darkDict;
@@ -86,19 +89,11 @@ namespace PoEWizard
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             DataPath = Path.Combine(appData, fileVersionInfo.CompanyName, fileVersionInfo.ProductName);
             InitializeComponent();
-            this.Title += $" (V {string.Join(".", fileVersionInfo.ProductVersion.Split('.').ToList().Take(2))})";
-            this.Height = SystemParameters.PrimaryScreenHeight * 0.95;
-            this.Width = SystemParameters.PrimaryScreenWidth * 0.95;
             lightDict = Resources.MergedDictionaries[0];
             darkDict = Resources.MergedDictionaries[1];
             Strings = Resources.MergedDictionaries[2];
             currentDict = darkDict;
             Instance = this;
-            Activity.DataPath = DataPath;
-            config = new Config(Path.Combine(DataPath, "app.cfg"));
-            Theme = Enum.TryParse(config.Get("theme"), out ThemeType t) ? t : ThemeType.Dark;
-            if (Theme == ThemeType.Light) ThemeItem_Click(_lightMenuItem, null);
-            BuildOuiTable();
 
             // progress report handling
             progress = new Progress<ProgressReport>(report =>
@@ -127,19 +122,55 @@ namespace PoEWizard
                         break;
                 }
             });
-            //check cli arguments
-            string[] args = Environment.GetCommandLineArgs();
-            if (args.Length > 3 && !string.IsNullOrEmpty(args[1]) && IsValidIP(args[1]) && !string.IsNullOrEmpty(args[2]) && !string.IsNullOrEmpty(args[3]))
-            {
-                device.IpAddress = args[1];
-                device.Login = args[2];
-                device.Password = args[3].Replace("\r\n", string.Empty);
-                Connect();
-            }
+            this.Title += $" (V {string.Join(".", fileVersionInfo.ProductVersion.Split('.').ToList().Take(2))})";
+            this.Height = SystemParameters.PrimaryScreenHeight * 0.95;
+            this.Width = SystemParameters.PrimaryScreenWidth * 0.95;
+            Activity.DataPath = DataPath;
+            config = new Config(Path.Combine(DataPath, "app.cfg"));
+            Theme = Enum.TryParse(config.Get("theme"), out ThemeType t) ? t : ThemeType.Dark;
+            if (Theme == ThemeType.Light) ThemeItem_Click(_lightMenuItem, null);
+            BuildOuiTable();
             SetLanguageMenuOptions();
             if (config.GetInt("wait_cpu_health", 0) == 0)
             {
                 config.Set("wait_cpu_health", WAIT_CPU_HEALTH);
+            }
+
+            //check cli arguments
+            string[] args = Environment.GetCommandLineArgs();
+            switch (args.Length)
+            {
+                case 1:
+                    break;
+                case 4:
+                    if (IsValidIP(args[1]) && args[2] == "admin")
+                    {
+                        device.IpAddress = args[1];
+                        device.Login = args[2];
+                        device.Password = args[3].Replace("\r\n", string.Empty);
+                        Connect();
+                    }
+                    else goto default;
+                    break;
+                default:
+                    try
+                    {
+                        string appName = fileVersionInfo.InternalName;
+                        AttachConsole(-1);
+                        Console.WriteLine();
+                        Console.WriteLine(Translate("i18n_cliArgs"));
+                        Console.WriteLine($"\t{appName} /help: {Translate("i18n_cliHlp")}");
+                        Console.WriteLine($"\t{appName} {Translate("i18n_cliParams")}:");
+                        Console.WriteLine($"\t{Translate("i18n_cliSw")}");
+                        //System.Windows.Forms.SendKeys.SendWait("{ENTER}");
+                    }
+                    catch
+                    {
+                        Logger.Error("Could not attach console to the application to display cli help message");
+                    }
+                    this.Close();
+                    break;
+
             }
         }
 
@@ -1777,7 +1808,8 @@ namespace PoEWizard
                 var res = restApiService.SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
                 device.LoadFromList(res, DictionaryType.CpuTrafficList);
                 //this.DataContext = null;
-                Dispatcher.Invoke(() => {
+                Dispatcher.Invoke(() =>
+                {
                     this.DataContext = null;
                     this.DataContext = device;
                 });

@@ -478,6 +478,11 @@ You may want to run the traffic analysis again for a longer period.</sys:String>
 Devices running at 10 or 100 Mbps speed cannot provide results on pairs 3 and 4 as they are not used.</sys:String>
 
     <!--Other Messages-->
+    <sys:String x:Key="i18n_cliArgs">Command Line arguments:</sys:String>
+    <sys:String x:Key="i18n_cliHlp">display this message</sys:String>
+    <sys:String x:Key="i18n_cliParams">switch_ip_address admin password</sys:String>
+    <sys:String x:Key="i18n_cliSw">Opens the application and automatically connects to the switch using the 
+Ip address and credentials provided in the command line</sys:String>
     <sys:String x:Key="i18n_rsNocnx">Could not connect to switch</sys:String>
     <sys:String x:Key="i18n_rsConn">Connection</sys:String>
     <sys:String x:Key="i18n_rsMem">Writing memory on switch</sys:String>
@@ -577,6 +582,7 @@ It may take up to 30 sec to execute Write Memory
     <sys:String x:Key="i18n_srcNote">Note: You may double click on the port to close and select it on the main window.</sys:String>
     <sys:String x:Key="i18n_macNote">All matches are tagged with (*)</sys:String>
     <sys:String x:Key="i18n_srcText">Please enter the MAC address, Device or Vendor Name</sys:String>
+    <sys:String x:Key="i18n_srcMac">MAC search can be a full or partial MAC in the format 41:7a ...</sys:String>
     <sys:String x:Key="i18n_fload">Loading file, please wait...</sys:String>
     <sys:String x:Key="i18n_ftxt">Text File</sys:String>
     <sys:String x:Key="i18n_crit">Search:</sys:String>
