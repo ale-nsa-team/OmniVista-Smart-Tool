@@ -142,8 +142,28 @@ namespace PoEWizard
             {
                 case 1:
                     break;
+                case 2:
+                    if (IsValidIP(args[1]))
+                    {
+                        device.IpAddress = args[1];
+                        device.Login = DEFAULT_USERNAME;
+                        device.Password = DEFAULT_PASSWORD;
+                        Connect();
+                    }
+                    else goto default;
+                    break;
+                case 3:
+                    if (IsValidIP(args[1]))
+                    {
+                        device.IpAddress = args[1];
+                        device.Login = args[2];
+                        device.Password = DEFAULT_PASSWORD;
+                        Connect();
+                    }
+                    else goto default;
+                    break;
                 case 4:
-                    if (IsValidIP(args[1]) && args[2] == "admin")
+                    if (IsValidIP(args[1]))
                     {
                         device.IpAddress = args[1];
                         device.Login = args[2];
@@ -158,11 +178,20 @@ namespace PoEWizard
                         string appName = fileVersionInfo.InternalName;
                         AttachConsole(-1);
                         Console.WriteLine();
-                        Console.WriteLine(Translate("i18n_cliArgs"));
+                        if (args.Length > 1 && !args[1].ToLower().Contains("help"))
+                        {
+                            Console.WriteLine(Translate("i18n_cliInv"));
+                        }
+                        else
+                        {
+                            Console.WriteLine(Translate("i18n_cliArgs"));
+                        }
                         Console.WriteLine($"\t{appName} /help: {Translate("i18n_cliHlp")}");
                         Console.WriteLine($"\t{appName} {Translate("i18n_cliParams")}:");
                         Console.WriteLine($"\t{Translate("i18n_cliSw")}");
-                        //System.Windows.Forms.SendKeys.SendWait("{ENTER}");
+                        Console.WriteLine($"\t{Translate("i18n_noCred")}");
+                      
+                        System.Windows.Forms.SendKeys.SendWait("{ENTER}");
                     }
                     catch
                     {

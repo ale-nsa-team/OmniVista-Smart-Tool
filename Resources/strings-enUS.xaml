@@ -483,6 +483,8 @@ Devices running at 10 or 100 Mbps speed cannot provide results on pairs 3 and 4 
     <sys:String x:Key="i18n_cliParams">switch_ip_address admin password</sys:String>
     <sys:String x:Key="i18n_cliSw">Opens the application and automatically connects to the switch using the 
 Ip address and credentials provided in the command line</sys:String>
+    <sys:String x:Key="i18n_noCred">If only IP address is provided, default credentials will be used</sys:String>
+    <sys:String x:Key="i18n_cliInv">Invalid command line arguments. Valid options are:</sys:String>
     <sys:String x:Key="i18n_rsNocnx">Could not connect to switch</sys:String>
     <sys:String x:Key="i18n_rsConn">Connection</sys:String>
     <sys:String x:Key="i18n_rsMem">Writing memory on switch</sys:String>
