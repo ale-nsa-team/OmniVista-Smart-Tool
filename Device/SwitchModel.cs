@@ -363,7 +363,8 @@ namespace PoEWizard.Device
                     chassis.FlashSizeUsed = $"{GetDictValue(dict, SIZE_USED)}B";
                     chassis.FlashSizeFree = $"{GetDictValue(dict, SIZE_AVAILABLE)}B";
                     chassis.FlashUsage = GetDictValue(dict, DISK_USAGE);
-                    chassis.FreeFlash = $"{chassis.FlashUsage}, Total: {chassis.FlashSize}";
+                    int free = 100 - StringToInt(chassis.FlashUsage);
+                    chassis.FreeFlash = $"{free}%, Total: {chassis.FlashSize}";
                     break;
                 }
             }
