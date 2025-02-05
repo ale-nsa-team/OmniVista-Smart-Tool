@@ -276,6 +276,17 @@ namespace PoEWizard.Comm
             return cmdEntry.Response;
         }
 
+        public Dictionary<string, string> SendCommand(RestUrlEntry cmdEntry, int maxWaitSec)
+        {
+            string cmd = GetReqFromCmdTbl(cmdEntry.RestUrl, cmdEntry.Data);
+            if (cmd == null) return null;
+            cmdEntry.StartTime = DateTime.Now;
+            Dictionary<string, string> response = SendCliCommand(cmd, maxWaitSec);
+            cmdEntry.Duration = response[DURATION];
+            cmdEntry.Response = ParseResponse(response[RESPONSE], cmd);
+            return cmdEntry.Response;
+        }
+
         private Dictionary<string, string> SendCliCommand(string cmd, int maxWait, string expected = null)
         {
             if (cmd == null) throw new SwitchCommandError("Command line is empty!");

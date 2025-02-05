@@ -83,6 +83,21 @@ namespace PoEWizard.Comm
             return false;
         }
 
+        public bool UploadStream(Stream ms, string remotePath, bool overWrite = false)
+        {
+            try
+            {
+                _sftpClient.UploadFile(ms, remotePath, overWrite);
+                return true;
+            }
+
+            catch (Exception ex)
+            {
+                Logger.Error($"Error uploading file {remotePath}", ex);
+            }
+            return false;
+        }
+
         private void UpdateLastWriteTime(string localPath, string remotePath)
         {
             try

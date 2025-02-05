@@ -106,6 +106,7 @@
     <sys:String x:Key="i18n_alias">Description</sys:String>
     <sys:String x:Key="i18n_ptSt">Status</sys:String>
     <sys:String x:Key="i18n_prio">Priority</sys:String>
+    <sys:String x:Key="i18n_ptIp">IP Address</sys:String>
     <sys:String x:Key="i18n_ptPwr">Power (Watts)</sys:String>
     <sys:String x:Key="i18n_maxPwr">Max Power (Watts)</sys:String>
     <sys:String x:Key="i18n_class">PoE Class</sys:String>

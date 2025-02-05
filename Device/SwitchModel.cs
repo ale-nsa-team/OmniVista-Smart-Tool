@@ -287,6 +287,20 @@ namespace PoEWizard.Device
             }
         }
 
+        public void LoadIPAdrressFromList(List<Dictionary<string, string>> arpList)
+        {
+            if (arpList?.Count == 0) return;
+            foreach(Dictionary<string, string> entry in arpList)
+            {
+                string port = GetDictValue(entry, PORT);
+                PortModel pm = GetPort(port);
+                if (pm != null)
+                {
+                    pm.IpAddress = GetDictValue(entry, IP_ADDR);
+                }
+            }
+        }
+
         public void LoadLldpFromList(Dictionary<string, List<Dictionary<string, string>>> list, DictionaryType dt)
         {
             if (list == null || list.Count < 1) return;

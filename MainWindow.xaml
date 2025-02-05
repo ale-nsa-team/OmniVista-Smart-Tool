@@ -496,7 +496,12 @@
                             <TextBlock Text="{DynamicResource i18n_bt}"/>
                         </DataGridTextColumn.Header>
                     </DataGridTextColumn>
-                    <DataGridTemplateColumn Width="1.6*" IsReadOnly="True">
+                    <DataGridTextColumn IsReadOnly="True" Binding="{Binding Path=IpAddress}" Width="0.8*">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_ptIp}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Width="1.5*" IsReadOnly="True">
                         <DataGridTemplateColumn.Header>
                             <TextBlock Text="{DynamicResource i18n_devModel}"/>
                         </DataGridTemplateColumn.Header>
@@ -520,7 +525,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Width="1.8*" IsReadOnly="True">
+                    <DataGridTemplateColumn Width="1.6*" IsReadOnly="True">
                         <DataGridTemplateColumn.Header>
                             <TextBlock Text="{DynamicResource i18n_devName}"/>
                         </DataGridTemplateColumn.Header>

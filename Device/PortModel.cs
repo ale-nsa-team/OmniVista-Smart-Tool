@@ -29,6 +29,7 @@ namespace PoEWizard.Device
         public bool IsEnabled { get; set; } = false;
         public string Class { get; set; }
         public List<string> MacList { get; set; }
+        public string IpAddress { get; set; }
         public EndPointDeviceModel EndPointDevice { get; set; }
         public List<EndPointDeviceModel> EndPointDevicesList { get; set; }
         public string Alias { get; set; }

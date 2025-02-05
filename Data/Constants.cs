@@ -128,6 +128,7 @@ namespace PoEWizard.Data
         public const string FLASH_CERTIFIED = "certified";
         public const string FLASH_WORKING_DIR = "/" + FLASH_DIR + "/" + FLASH_WORKING;
         public const string FLASH_CERTIFIED_DIR = "/" + FLASH_DIR + "/" + FLASH_CERTIFIED;
+        public const string PYTHON_DIR = "/" + FLASH_DIR + "/python/";
         public const string VCBOOT_WORK = FLASH_WORKING_DIR + "/" + VCBOOT_FILE;
         public const string VCSETUP_WORK = FLASH_WORKING_DIR + "/" + VCSETUP_FILE;
         public const string VCBOOT_CERT = FLASH_CERTIFIED_DIR + "/" + VCBOOT_FILE;
@@ -135,6 +136,7 @@ namespace PoEWizard.Data
         public const string WAITING = "  . . .";
         public const string C = " \u2103";
         public const string F = " \u2109";
+        public const string IP_ADDR = "IP Addr";
         // Used by "Utils" class
         public const string P_CHASSIS = "CHASSIS_ID";
         public const string P_SLOT = "SLOT_ID";
@@ -343,7 +345,7 @@ namespace PoEWizard.Data
         // Used by BuildOuiTable method of MainWindow.xaml.cs class
         public const string OUI_FILE = "oui.csv";
         // Used by Config Wizard
-        public const string IP_ADDR = "IP Address";
+        public const string IP_ADDRESS = "IP Address";
         public const string SUBNET_MASK = "Subnet Mask";
         public const string DEVICE = "Device";
         public const string GATEWAY = "Gateway Addr";

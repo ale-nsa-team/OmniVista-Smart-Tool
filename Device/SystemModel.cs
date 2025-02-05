@@ -51,7 +51,7 @@ namespace PoEWizard.Device
                             new CmdRequest(Command.SHOW_IP_INTERFACE, Constants.ParseType.Htable)) 
                             is List<Dictionary<string, string>> dics)
                         {
-                            Dictionary<string, string> ifc = dics.FirstOrDefault(d => d[IP_ADDR] == orig.MgtIpAddr);
+                            Dictionary<string, string> ifc = dics.FirstOrDefault(d => d[IP_ADDRESS] == orig.MgtIpAddr);
                             if (ifc != null)
                             {
                                 cmdList.Add(new CmdRequest(Command.SET_IP_INTERFACE, ifc[NAME], MgtIpAddr, NetMask, ifc[DEVICE]));

@@ -295,7 +295,7 @@ namespace PoEWizard.Comm
             _dictList = SendCommand(new CmdRequest(Command.SHOW_IP_INTERFACE, ParseType.Htable)) as List<Dictionary<string, string>>;
             VlanSettings = new List<VlanModel>();
             foreach (Dictionary<string, string> dict in _dictList) { VlanSettings.Add(new VlanModel(dict)); }
-            _dict = _dictList.FirstOrDefault(d => d[IP_ADDR] == SwitchModel.IpAddress);
+            _dict = _dictList.FirstOrDefault(d => d[IP_ADDRESS] == SwitchModel.IpAddress);
             if (_dict != null) SwitchModel.NetMask = _dict[SUBNET_MASK];
             return _dictList;
         }

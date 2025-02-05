@@ -230,6 +230,7 @@
     <Compile Include="Device\EndPointDeviceModel.cs" />
     <Compile Include="Device\FactoryDefault.cs" />
     <Compile Include="Device\FeatureModel.cs" />
+    <Compile Include="Device\IpScan.cs" />
     <Compile Include="Device\PortTrafficModel.cs" />
     <Compile Include="Device\PowerSupplyModel.cs" />
     <Compile Include="Device\ServerModel.cs" />
@@ -538,6 +539,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Img\bolt.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ping.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

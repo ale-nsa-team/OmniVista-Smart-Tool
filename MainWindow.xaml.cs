@@ -1836,7 +1836,22 @@ namespace PoEWizard
             {
                 var res = restApiService.SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
                 device.LoadFromList(res, DictionaryType.CpuTrafficList);
-                //this.DataContext = null;
+                //launch ip scanner after this
+                DelayIpScan();
+                Dispatcher.Invoke(() =>
+                {
+                    this.DataContext = null;
+                    this.DataContext = device;
+                });
+            });
+        }
+
+        private void DelayIpScan()
+        {
+            _ = Task.Delay(TimeSpan.FromSeconds(1)).ContinueWith(async t => 
+            {
+                
+                await IpScan.LaunchScan(device);
                 Dispatcher.Invoke(() =>
                 {
                     this.DataContext = null;
@@ -2174,6 +2189,7 @@ namespace PoEWizard
                 {
                     AskRebootCertified();
                 }
+
             }
             catch (Exception ex)
             {

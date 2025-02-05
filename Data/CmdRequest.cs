@@ -78,8 +78,10 @@ namespace PoEWizard.Data
         WRITE_MEMORY,
         SHOW_CONFIGURATION,
         SHOW_HW_INFO,
+        SHOW_ARP,   
         REBOOT_SWITCH,
         UPDATE_UBOOT,
+        RUN_PYTHON_SCRIPT,
         #endregion
 
         #region Traffic Analysis commands
