@@ -35,7 +35,7 @@ namespace PoEWizard.Data
             #region Basic Connect Switch commands
             [Command.SHOW_MICROCODE] = "show microcode",
             [Command.SHOW_CMM] = "show cmm",
-            [Command.DEBUG_SHOW_APP_LIST] = "urn=systemSwitchLoggingApplicationTable&mibObject0=systemSwitchLoggingApplicationAppId&mibObject2=systemSwitchLoggingApplicationAppName&fllterDuplicateIndex=systemSwitchLoggingApplicationAppId&litmit=100&limit=200&ignoreError=true", // 130
+            [Command.DEBUG_SHOW_APP_LIST] = "urn=systemSwitchLoggingApplicationTable&mibObject0=systemSwitchLoggingApplicationAppId&mibObject2=systemSwitchLoggingApplicationAppName&fllterDuplicateIndex=systemSwitchLoggingApplicationAppId&litmit=100&limit=200&ignoreError=true",
             #endregion
 
             #region Refresh Switch commands

@@ -220,6 +220,7 @@ namespace PoEWizard
                 if (!close) return;
                 this.Closing -= OnWindowClosing;
                 await WaitCloseTrafficAnalysis();
+                tokenSource?.Cancel();
                 sftpService?.Disconnect();
                 sftpService = null;
                 await CloseRestApiService(FirstChToUpper(confirm));
@@ -1030,6 +1031,7 @@ namespace PoEWizard
                     string confirm = $"{Translate("i18n_swrst")} {device.Name}";
                     stopTrafficAnalysisReason = $"interrupted by the user before rebooting the switch {device.Name}";
                     string title = $"{Translate("i18n_swrst")} {device.Name}";
+                    tokenSource?.Cancel();
                     bool close = StopTrafficAnalysis(TrafficStatus.Abort, title, Translate("i18n_taSave"), confirm);
                     if (!close) return;
                     await WaitCloseTrafficAnalysis();
@@ -1792,6 +1794,7 @@ namespace PoEWizard
                     if (!close) return;
                     await WaitCloseTrafficAnalysis();
                     ShowProgress($"{textMsg}{WAITING}");
+                    tokenSource?.Cancel();
                     await CloseRestApiService(textMsg);
                     SetDisconnectedState();
                     return;
@@ -1832,7 +1835,7 @@ namespace PoEWizard
 
         private void DelayGetCpuHealth()
         {
-            _ = Task.Delay(TimeSpan.FromSeconds(config.GetInt("wait_cpu_health", 1))).ContinueWith(t =>
+            Task.Delay(TimeSpan.FromSeconds(config.GetInt("wait_cpu_health", 1))).ContinueWith(t =>
             {
                 var res = restApiService.SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
                 device.LoadFromList(res, DictionaryType.CpuTrafficList);
@@ -1848,15 +1851,26 @@ namespace PoEWizard
 
         private void DelayIpScan()
         {
-            _ = Task.Delay(TimeSpan.FromSeconds(1)).ContinueWith(async t => 
-            {
-                
-                await IpScan.LaunchScan(device);
-                Dispatcher.Invoke(() =>
+            tokenSource = new CancellationTokenSource();
+            Task.Delay(TimeSpan.FromSeconds(1), tokenSource.Token).ContinueWith(async t => 
+            {               
+                try
                 {
-                    this.DataContext = null;
-                    this.DataContext = device;
-                });
+                    await IpScan.LaunchScan(device);
+                    Dispatcher.Invoke(() =>
+                    {
+                        this.DataContext = null;
+                        this.DataContext = device;
+                    });
+                }
+                catch (OperationCanceledException)
+                {
+                    tokenSource.Token.ThrowIfCancellationRequested();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("Failed to execute ip scan", ex);
+                }
             });
         }
 

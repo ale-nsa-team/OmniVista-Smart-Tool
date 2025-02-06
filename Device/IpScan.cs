@@ -72,7 +72,7 @@ namespace PoEWizard.Device
             }
             catch (Exception ex) 
             {
-                Logger.Error($"Could not scan IP addresses on swithc {model.Name}", ex);
+                Logger.Error($"Could not scan IP addresses on switch {model.Name}", ex);
             }
         }
     }

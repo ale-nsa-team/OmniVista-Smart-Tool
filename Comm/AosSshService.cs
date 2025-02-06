@@ -561,7 +561,7 @@ namespace PoEWizard.Comm
                     string recStr = rec_buffer.Trim();
                     if (string.IsNullOrEmpty(expected))
                     {
-                        recAll = recStr.EndsWith(this.SessionPrompt) && rec_buffer.Contains(cmd);
+                        recAll = recStr.EndsWith(this.SessionPrompt) && (rec_buffer.Contains(cmd));
                     }
                     else if (expected.Contains("|"))
                     {
