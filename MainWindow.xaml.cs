@@ -1856,6 +1856,7 @@ namespace PoEWizard
             {               
                 try
                 {
+                    Logger.Debug($"Running ip scan on switch {device.Name}");
                     await IpScan.LaunchScan(device);
                     Dispatcher.Invoke(() =>
                     {

@@ -289,7 +289,12 @@ namespace PoEWizard.Device
 
         public void LoadIPAdrressFromList(List<Dictionary<string, string>> arpList)
         {
-            if (arpList?.Count == 0) return;
+            if (arpList?.Count == 0)
+            {
+                Logger.Debug("No IP addresses found in arp table");
+                return;
+            }
+            Logger.Debug($"Found {arpList.Count} ip addresses in arp table");
             foreach(Dictionary<string, string> entry in arpList)
             {
                 string port = GetDictValue(entry, PORT);
