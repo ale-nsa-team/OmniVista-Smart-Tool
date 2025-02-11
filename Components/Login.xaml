@@ -77,7 +77,7 @@
                     Click="ClearIpList"
                     ToolTip="{DynamicResource i18n_clr_tt}"/>
             <Button x:Name="_delSelected" Style="{DynamicResource linkButton}" HorizontalAlignment="Right" 
-                    Content="Delete Selected"
+                    Content="{DynamicResource i18n_delsel}"
                     Click="DelSelectedIp"
                     ToolTip="{DynamicResource i18n_delsel_tt}"/>
         </DockPanel>

@@ -1,5 +1,8 @@
 #!/bin/python3
 
+#Pushed by the toolkit to assist with IP discovery. This is a legit python script. 
+#do not panic, do not delete, aliens have not invaded Earth and you will be OK, mostly.
+
 #There is no good way to map MAC address to IP address in general.
 #
 #This script will first fetch valid IP interfaces on the switch and calculate the known subnets.

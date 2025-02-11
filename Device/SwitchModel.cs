@@ -299,7 +299,7 @@ namespace PoEWizard.Device
             {
                 string port = GetDictValue(entry, PORT);
                 PortModel pm = GetPort(port);
-                if (pm != null)
+                if (pm != null && string.IsNullOrEmpty(pm.EndPointDevice.IpAddress))
                 {
                     pm.IpAddress = GetDictValue(entry, IP_ADDR);
                 }
@@ -315,6 +315,7 @@ namespace PoEWizard.Device
                 if (port == null) continue;
                 List<Dictionary<string, string>> dictList = list[key];
                 if (dt == DictionaryType.LldpRemoteList) port.LoadLldpRemoteTable(dictList); else port.LoadLldpInventoryTable(dictList);
+                if (!string.IsNullOrEmpty(port.EndPointDevice.IpAddress)) port.IpAddress = port.EndPointDevice.IpAddress;
             }
         }
 

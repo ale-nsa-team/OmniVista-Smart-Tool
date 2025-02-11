@@ -541,7 +541,7 @@
     <Resource Include="Resources\Img\bolt.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\ping.py" />
+    <EmbeddedResource Include="Resources\installers_toolkit_helper.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

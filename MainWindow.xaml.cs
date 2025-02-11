@@ -1837,17 +1837,29 @@ namespace PoEWizard
 
         private void DelayGetCpuHealth()
         {
-            Task.Delay(TimeSpan.FromSeconds(config.GetInt("wait_cpu_health", 1))).ContinueWith(t =>
+            Task.Delay(TimeSpan.FromSeconds(config.GetInt("wait_cpu_health", 1)), tokenSource.Token).ContinueWith(t =>
             {
-                var res = restApiService.SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
-                device.LoadFromList(res, DictionaryType.CpuTrafficList);
-                //launch ip scanner after this
-                DelayIpScan();
-                Dispatcher.Invoke(() =>
+                try
                 {
-                    this.DataContext = null;
-                    this.DataContext = device;
-                });
+                    var res = restApiService.SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
+                    device.LoadFromList(res, DictionaryType.CpuTrafficList);
+                    //launch ip scanner after this
+                    DelayIpScan();
+                    Dispatcher.Invoke(() =>
+                    {
+                        this.DataContext = null;
+                        this.DataContext = device;
+                    });
+                }
+                catch (OperationCanceledException)
+                {
+                    tokenSource.Token.ThrowIfCancellationRequested();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+
             });
         }
 
