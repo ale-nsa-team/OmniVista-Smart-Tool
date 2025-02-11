@@ -1687,6 +1687,8 @@ namespace PoEWizard
             catch (Exception ex)
             {
                 Logger.Error(ex);
+                try { File.Delete(filename); } catch { }
+                ShowMessageBox("Import Language", $"Error importing language: {ex.Message}", MsgBoxIcons.Error);
             }
             return false;
         }
