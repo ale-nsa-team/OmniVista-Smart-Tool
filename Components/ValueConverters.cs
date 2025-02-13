@@ -513,6 +513,37 @@ namespace PoEWizard.Components
         }
     }
 
+    public class IpAddrListToTooltipConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                if (IsInvalid(value)) return null;
+                if (value is Dictionary<string, string> ipList)
+                {
+                    if (ipList.Count < 1) return null;
+                    List<string> tooltip = ipList.Select(kvp => $"{kvp.Key}  {kvp.Value}").ToList();
+                    int maxlen = tooltip.Max(t => MaxLineLen(t));
+                    tooltip.Insert(0, "MAC                IP");
+                    tooltip.Insert(1, new string('-', maxlen));
+                    return string.Join("\n", tooltip);
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return null;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
     public class DeviceFilterToTooltipConverter : IMultiValueConverter
     {
 

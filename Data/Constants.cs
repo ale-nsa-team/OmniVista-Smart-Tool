@@ -137,6 +137,7 @@ namespace PoEWizard.Data
         public const string C = " \u2103";
         public const string F = " \u2109";
         public const string IP_ADDR = "IP Addr";
+        public const string HW_ADDR = "Hardware Addr";
         // Used by "Utils" class
         public const string P_CHASSIS = "CHASSIS_ID";
         public const string P_SLOT = "SLOT_ID";

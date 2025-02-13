@@ -145,7 +145,7 @@ namespace PoEWizard.Device
                 case DictionaryType.HwInfo:
                     if (ChassisList?.Count > 0)
                     {
-                        foreach(Dictionary<string, string> dict in dictList)
+                        foreach (Dictionary<string, string> dict in dictList)
                         {
                             int chassisNr = StringToInt(GetDictValue(dict, CHASSIS)) - 1;
                             if (chassisNr >= 0 && chassisNr < ChassisList.Count)
@@ -295,13 +295,22 @@ namespace PoEWizard.Device
                 return;
             }
             Logger.Debug($"Found {arpList.Count} ip addresses in arp table");
-            foreach(Dictionary<string, string> entry in arpList)
+            foreach (Dictionary<string, string> entry in arpList)
             {
                 string port = GetDictValue(entry, PORT);
                 PortModel pm = GetPort(port);
-                if (pm != null && string.IsNullOrEmpty(pm.EndPointDevice.IpAddress))
+                if (pm == null) continue;
+                if (!string.IsNullOrEmpty(GetDictValue(entry, HW_ADDR)) && pm.IpAddrList.Count < MAX_LIST_SIZE)
+                {
+                    pm.IpAddrList[GetDictValue(entry, HW_ADDR)] = GetDictValue(entry, IP_ADDR);
+                }
+                if (string.IsNullOrEmpty(pm.IpAddress))
                 {
                     pm.IpAddress = GetDictValue(entry, IP_ADDR);
+                }
+                if (pm.IpAddrList.Count > 1 && !pm.IpAddress.Contains("..."))
+                {
+                    pm.IpAddress += " ...";
                 }
             }
         }
@@ -315,7 +324,11 @@ namespace PoEWizard.Device
                 if (port == null) continue;
                 List<Dictionary<string, string>> dictList = list[key];
                 if (dt == DictionaryType.LldpRemoteList) port.LoadLldpRemoteTable(dictList); else port.LoadLldpInventoryTable(dictList);
-                if (!string.IsNullOrEmpty(port.EndPointDevice.IpAddress)) port.IpAddress = port.EndPointDevice.IpAddress;
+                if (!string.IsNullOrEmpty(port.EndPointDevice.IpAddress))
+                {
+                    port.IpAddress = port.EndPointDevice.IpAddress;
+                    port.IpAddrList[port.EndPointDevice.MacAddress] = port.EndPointDevice.IpAddress;
+                }
             }
         }
 

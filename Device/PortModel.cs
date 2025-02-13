@@ -30,6 +30,7 @@ namespace PoEWizard.Device
         public string Class { get; set; }
         public List<string> MacList { get; set; }
         public string IpAddress { get; set; }
+        public Dictionary<string, string> IpAddrList { get; set; }
         public EndPointDeviceModel EndPointDevice { get; set; }
         public List<EndPointDeviceModel> EndPointDevicesList { get; set; }
         public string Alias { get; set; }
@@ -52,6 +53,7 @@ namespace PoEWizard.Device
         {
             EndPointDevice = new EndPointDeviceModel();
             EndPointDevicesList = new List<EndPointDeviceModel>();
+            IpAddrList = new Dictionary<string, string>();
             Name = GetDictValue(dict, CHAS_SLOT_PORT);
             Number = GetPortId(Name);
             UpdatePortStatus(dict);
