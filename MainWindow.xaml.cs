@@ -1841,7 +1841,7 @@ namespace PoEWizard
             {
                 try
                 {
-                    var res = restApiService.SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
+                    var res = restApiService?.SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
                     device.LoadFromList(res, DictionaryType.CpuTrafficList);
                     //launch ip scanner after this
                     DelayIpScan();
@@ -1874,8 +1874,7 @@ namespace PoEWizard
                     await IpScan.LaunchScan(device);
                     Dispatcher.Invoke(() =>
                     {
-                        this.DataContext = null;
-                        this.DataContext = device;
+                        RefreshSlotAndPortsView();
                     });
                 }
                 catch (OperationCanceledException)
