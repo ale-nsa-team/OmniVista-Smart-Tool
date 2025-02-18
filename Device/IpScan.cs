@@ -2,10 +2,10 @@
 using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 
 namespace PoEWizard.Device
 {
@@ -14,6 +14,7 @@ namespace PoEWizard.Device
         private const string PING_SCRIPT = "PoEWizard.Resources.installers_toolkit_helper.py";
         private const string REM_PATH = Constants.PYTHON_DIR + "installers_toolkit_helper.py";
         private const int SCAN_TIMEOUT = 4 * 60 * 1000;
+        private const int PORT_TIMEOUT = 5000;
         private static SwitchModel model;
         private static SftpService sftpSrv; 
 
@@ -46,6 +47,25 @@ namespace PoEWizard.Device
             catch (Exception ex)
             {
                 Logger.Error("Error running IP address scan", ex);
+            }
+        }
+
+        public static Task<bool> IsPortOpen(string host, int port)
+        {
+            try
+            {
+                using (var client = new TcpClient())
+                {
+                    var result = client.BeginConnect(host, port, null, null);
+                    var success = result.AsyncWaitHandle.WaitOne(PORT_TIMEOUT);
+                    client.EndConnect(result);
+                    return Task.FromResult(success);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error checking port open", ex);
+                return Task.FromResult(false);
             }
         }
 

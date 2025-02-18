@@ -502,13 +502,14 @@
                                 <TextBlock Text="{DynamicResource i18n_ptIp}" 
                                            Style="{DynamicResource toolTip}" Margin="0,0,5,0"
                                            ToolTip="{DynamicResource i18n_ptIp_tt}" />
-                                <TextBlock Text="*" Style="{DynamicResource toolTip}" 
+                                <TextBlock Text="*" x:Name="_ipscan" Style="{DynamicResource flashing}"
+                                           Focusable="False"
                                            ToolTip="{DynamicResource i18n_ptIp_tt}" />
                             </StackPanel>
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=IpAddress}"
+                                <TextBlock Text="{Binding Path=IpAddress}" PreviewMouseDown="IpAddress_Click" Cursor="Hand"
                                            ToolTip="{Binding Path=IpAddrList, Converter={StaticResource IpAddrListToTooltipConverter}}"
                                            Style="{DynamicResource devToolTip}"/>
                             </DataTemplate>

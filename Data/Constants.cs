@@ -110,6 +110,9 @@ namespace PoEWizard.Data
         {
             "EST", "CST", "PST", "MST", "AKST", "AST", "HST", "UTC", "GMT", "CET", "NST"
         };
+        //public static readonly List<int> portsToScan = new List<int> { 80, 443, 3389, 22, 23 };
+        public static readonly List<int> portsToScan = new List<int> { 22, 23, 80, 443, 3389 };
+        public const int PORT_IP_ADDR_COLUMN = 10;
         public const string LANGUAGE_FOLDER = "Language";
         public const string DEFAULT_LANG_FILE = "strings-enUS.xaml";
         public const string DEFAULT_APP_STATUS = "Idle";

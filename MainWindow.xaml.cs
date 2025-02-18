@@ -57,6 +57,7 @@ namespace PoEWizard
         private string lastPwd;
         private SwitchDebugModel debugSwitchLog;
         private static bool isTrafficRunning = false;
+        private bool portIpClicked = false;
         private string stopTrafficAnalysisReason = string.Empty;
         private int selectedTrafficDuration;
         private DateTime startTrafficAnalysisTime;
@@ -190,7 +191,7 @@ namespace PoEWizard
                         Console.WriteLine($"\t{appName} {Translate("i18n_cliParams")}:");
                         Console.WriteLine($"\t{Translate("i18n_cliSw")}");
                         Console.WriteLine($"\t{Translate("i18n_noCred")}");
-                      
+
                         System.Windows.Forms.SendKeys.SendWait("{ENTER}");
                     }
                     catch
@@ -1437,6 +1438,8 @@ namespace PoEWizard
                 _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
                 _btnResetPort.IsEnabled = true;
                 _btnTdr.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
+                int col = _portList.CurrentCell.Column.DisplayIndex;
+                if (col == PORT_IP_ADDR_COLUMN) ConnectDevice();
             }
         }
 
@@ -1595,6 +1598,76 @@ namespace PoEWizard
             Command cmd = (cb.IsChecked == true) ? Command.POE_PERPETUAL_ENABLE : Command.POE_PERPETUAL_DISABLE;
             bool res = await SetPerpetualOrFastPoe(cmd);
             if (!res) cb.IsChecked = !cb.IsChecked;
+        }
+
+        private void IpAddress_Click(object sender, EventArgs e)
+        {
+            portIpClicked = true;
+        }
+
+        private async void ConnectDevice()
+        {
+            if (!portIpClicked) return;
+            try
+            {
+                _portList.SelectionChanged -= PortSelection_Changed;
+                string ipAddr = selectedPort.IpAddress;
+                if (string.IsNullOrEmpty(ipAddr)) return;
+                ShowInfoBox(Translate("i18n_devCnx"));
+                ShowProgress($"Connecting to {ipAddr}");
+                int port = -1;
+                foreach (int ps in portsToScan)
+                {
+                    bool isOpen = await Task.Run(() => IpScan.IsPortOpen(ipAddr, ps));
+                    if (isOpen)
+                    {
+                        port = ps;
+                        break;
+                    }
+                }
+                switch (port)
+                {
+                    case 22:
+                    case 23:
+                        string putty = config.Get("putty");
+                        if (string.IsNullOrEmpty(putty))
+                        {
+                            var ofd = new OpenFileDialog()
+                            {
+                                Filter = $"{Translate("i18n_puttyFile")}|*.exe",
+                                Title = Translate("i18n_puttyLoc"),
+                                InitialDirectory = Environment.SpecialFolder.ProgramFiles.ToString()
+                            };
+                            if (ofd.ShowDialog() == false) return;
+                            putty = ofd.FileName;
+                            config.Set("putty", putty);
+                        }
+                        string cnx = port == 22 ? "ssh" : "telnet";
+                        Process.Start(putty, $"-{cnx} {ipAddr}");
+                        break;
+                    case 80:
+                        Process.Start("explorer.exe", $"http://{ipAddr}");
+                        break;
+                    case 443:
+                        Process.Start("explorer.exe", $"https://{ipAddr}");
+                        break;
+                    case 3389:
+                        Process.Start("mstsc", $"/v: {ipAddr}");
+                        break;
+                    default:
+                        ShowMessageBox("", Translate("i18n_noPtOpen"));
+                        break;
+                }
+            }
+            finally
+            {
+                HideInfoBox();
+                HideProgress();
+                portIpClicked = false;
+                _portList.SelectedIndex = selectedPortIndex;
+                _portList.SelectionChanged += PortSelection_Changed;
+            }
+
         }
 
         private async Task<bool> SetPerpetualOrFastPoe(Command cmd)
@@ -1866,10 +1939,11 @@ namespace PoEWizard
         private void DelayIpScan()
         {
             tokenSource = new CancellationTokenSource();
-            Task.Delay(TimeSpan.FromSeconds(1), tokenSource.Token).ContinueWith(async t => 
-            {               
+            Task.Delay(TimeSpan.FromSeconds(1), tokenSource.Token).ContinueWith(async t =>
+            {
                 try
                 {
+                    Dispatcher.Invoke(() => _ipscan.Focusable = true); //to trigger flashing
                     Logger.Debug($"Running ip scan on switch {device.Name}");
                     await IpScan.LaunchScan(device);
                     Dispatcher.Invoke(() =>
@@ -1884,6 +1958,10 @@ namespace PoEWizard
                 catch (Exception ex)
                 {
                     Logger.Error("Failed to execute ip scan", ex);
+                }
+                finally
+                {
+                    Dispatcher.Invoke(() => _ipscan.Focusable = false); //to stop flashing
                 }
             });
         }
