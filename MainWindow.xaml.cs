@@ -1603,7 +1603,7 @@ namespace PoEWizard
             //let portselection event run first
             Task.Delay(TimeSpan.FromMilliseconds(200)).ContinueWith(t => {
                 Dispatcher.Invoke(() => {
-                    string ipAddr = (sender as TextBlock).Text;
+                    string ipAddr = (sender as TextBlock).Text.Replace("...", "").Trim();
                     ConnectDevice(ipAddr);
                 });
             });
