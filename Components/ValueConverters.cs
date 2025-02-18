@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.Utils;
@@ -149,6 +150,21 @@ namespace PoEWizard.Components
                 Logger.Error(ex);
             }
             return Colors.Unknown;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class ValueToCursorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (IsInvalid(value)) return Cursors.Arrow;
+            string val = (string)value;
+            return string.IsNullOrEmpty(val) ? Cursors.Arrow : Cursors.Hand;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

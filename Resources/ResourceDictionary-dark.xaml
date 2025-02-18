@@ -24,6 +24,7 @@
     <converters:ToStringConverter x:Key="ToStringConverter" />
     <converters:DeviceFilterToTooltipConverter x:Key="DeviceFilterToTooltipConverter" />
     <converters:PortToTooltipConverter x:Key="PortToTooltipConverter" />
+    <converters:ValueToCursorConverter x:Key="ValueToCursorConverter" />
 
     <BitmapImage x:Key="connected" UriSource="Img/connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="Img/disconnected-dark.png" />

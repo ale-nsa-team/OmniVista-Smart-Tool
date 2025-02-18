@@ -1438,8 +1438,6 @@ namespace PoEWizard
                 _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
                 _btnResetPort.IsEnabled = true;
                 _btnTdr.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
-                int col = _portList.CurrentCell.Column.DisplayIndex;
-                if (col == PORT_IP_ADDR_COLUMN) ConnectDevice();
             }
         }
 
@@ -1602,17 +1600,21 @@ namespace PoEWizard
 
         private void IpAddress_Click(object sender, EventArgs e)
         {
-            portIpClicked = true;
+            //let portselection event run first
+            Task.Delay(TimeSpan.FromMilliseconds(200)).ContinueWith(t => {
+                Dispatcher.Invoke(() => {
+                    string ipAddr = (sender as TextBlock).Text;
+                    ConnectDevice(ipAddr);
+                });
+            });
         }
 
-        private async void ConnectDevice()
+        private async void ConnectDevice(string ipAddr)
         {
-            if (!portIpClicked) return;
             try
             {
                 _portList.SelectionChanged -= PortSelection_Changed;
-                _portList.SelectedIndex = selectedPortIndex;
-                string ipAddr = selectedPort.IpAddress;
+                _portList.SelectedIndex = selectedPortIndex; //fix issue with selection jumping 2 rows above
                 if (string.IsNullOrEmpty(ipAddr)) return;
                 ShowInfoBox(Translate("i18n_devCnx"));
                 ShowProgress($"Connecting to {ipAddr}");
@@ -1664,7 +1666,6 @@ namespace PoEWizard
             {
                 HideInfoBox();
                 HideProgress();
-                portIpClicked = false;
                 _portList.SelectionChanged += PortSelection_Changed;
             }
         }

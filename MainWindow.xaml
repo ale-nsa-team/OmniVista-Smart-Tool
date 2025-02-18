@@ -509,7 +509,8 @@
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=IpAddress}" PreviewMouseDown="IpAddress_Click" Cursor="Hand"
+                                <TextBlock Text="{Binding Path=IpAddress}" MouseDown="IpAddress_Click" 
+                                           Cursor="{Binding Path=IpAddress, Converter={StaticResource ValueToCursorConverter}}"
                                            ToolTip="{Binding Path=IpAddrList, Converter={StaticResource IpAddrListToTooltipConverter}}"
                                            Style="{DynamicResource devToolTip}"/>
                             </DataTemplate>
