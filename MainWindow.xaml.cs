@@ -1611,6 +1611,7 @@ namespace PoEWizard
             try
             {
                 _portList.SelectionChanged -= PortSelection_Changed;
+                _portList.SelectedIndex = selectedPortIndex;
                 string ipAddr = selectedPort.IpAddress;
                 if (string.IsNullOrEmpty(ipAddr)) return;
                 ShowInfoBox(Translate("i18n_devCnx"));
@@ -1664,10 +1665,8 @@ namespace PoEWizard
                 HideInfoBox();
                 HideProgress();
                 portIpClicked = false;
-                _portList.SelectedIndex = selectedPortIndex;
                 _portList.SelectionChanged += PortSelection_Changed;
             }
-
         }
 
         private async Task<bool> SetPerpetualOrFastPoe(Command cmd)

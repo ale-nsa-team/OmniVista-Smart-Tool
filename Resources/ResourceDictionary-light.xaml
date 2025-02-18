@@ -348,6 +348,27 @@
         </Style.Resources>
     </Style>
 
+    <Style TargetType="TextBlock" x:Key="flashing">
+        <Setter Property="Foreground" Value="{StaticResource linkColor}" />
+
+        <Style.Resources>
+            <Storyboard x:Key="flashAnimation" >
+                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" AutoReverse="True" Duration="0:0:0.5" RepeatBehavior="Forever" />
+            </Storyboard>
+        </Style.Resources>
+        <Style.Triggers>
+            <Trigger Property="Focusable" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard Name="flash" Storyboard="{StaticResource flashAnimation}" />
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <StopStoryboard BeginStoryboardName="flash"/>
+                </Trigger.ExitActions>
+            </Trigger>
+
+        </Style.Triggers>
+    </Style>
+
     <Style TargetType="TextBox" x:Key="gridTextBox">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
