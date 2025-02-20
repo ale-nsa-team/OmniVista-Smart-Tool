@@ -30,6 +30,7 @@ namespace PoEWizard.Device
         public string Class { get; set; }
         public List<string> MacList { get; set; }
         public string IpAddress { get; set; }
+        public int RemotePort { get; set; }
         public Dictionary<string, string> IpAddrList { get; set; }
         public EndPointDeviceModel EndPointDevice { get; set; }
         public List<EndPointDeviceModel> EndPointDevicesList { get; set; }
@@ -71,6 +72,7 @@ namespace PoEWizard.Device
             IsCapacitorDetection = true;
             Protocol8023bt = ConfigType.Unavailable;
             MacList = new List<string>();
+            RemotePort = 0;
         }
 
         public void LoadPoEData(Dictionary<string, string> dict)

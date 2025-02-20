@@ -14,9 +14,9 @@ namespace PoEWizard.Device
         private const string PING_SCRIPT = "PoEWizard.Resources.installers_toolkit_helper.py";
         private const string REM_PATH = Constants.PYTHON_DIR + "installers_toolkit_helper.py";
         private const int SCAN_TIMEOUT = 4 * 60 * 1000;
-        private const int PORT_TIMEOUT = 10000;
+        private const int PORT_TIMEOUT = 2500;
         private static SwitchModel model;
-        private static SftpService sftpSrv; 
+        private static SftpService sftpSrv;
 
         public async static Task LaunchScan(SwitchModel swModel)
         {
@@ -33,7 +33,7 @@ namespace PoEWizard.Device
                         int count = 0;
                         sftpSrv.UploadStream(resource, REM_PATH, true);
                         while (filesize < resource.Length && count < 3)
-                        {                          
+                        {
                             Thread.Sleep(2000);
                             filesize = sftpSrv.GetFileSize(REM_PATH);
                             count++;
@@ -50,22 +50,48 @@ namespace PoEWizard.Device
             }
         }
 
-        public static Task<bool> IsPortOpen(string host, int port)
+        public static int GetOpenPort(string host)
         {
+
+            foreach (int port in Constants.portsToScan)
+            {
+                Logger.Trace($"Begin checking host {host} port {port}");
+
+                if (IsPortOpen(host, port))
+                {
+                    Logger.Trace($"{host}:{port} is open");
+                    return port;
+                }
+                else
+                {
+                    Logger.Trace($"{host}:{port} is not open");
+                }
+            }
+            return 0;
+        }
+
+        public static bool IsPortOpen(string host, int port)
+        {
+            if (string.IsNullOrEmpty(host)) return false;
             try
             {
-                using (var client = new TcpClient())
+                using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { Blocking = true})
                 {
-                    var result = client.BeginConnect(host, port, null, null);
-                    var success = result.AsyncWaitHandle.WaitOne(PORT_TIMEOUT);
-                    client.EndConnect(result);
-                    return Task.FromResult(success);
+                    var result = socket.BeginConnect(host, port, null, null);
+                    bool success = result.AsyncWaitHandle.WaitOne(PORT_TIMEOUT, false);
+                    if (success) socket.EndConnect(result);
+                    socket.Close();
+                    return success;
                 }
+            }
+            catch (SocketException)
+            {
+                return false;
             }
             catch (Exception ex)
             {
                 Logger.Error("Error checking port open", ex);
-                return Task.FromResult(false);
+                return false;
             }
         }
 

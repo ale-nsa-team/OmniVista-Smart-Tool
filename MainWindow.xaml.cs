@@ -57,7 +57,6 @@ namespace PoEWizard
         private string lastPwd;
         private SwitchDebugModel debugSwitchLog;
         private static bool isTrafficRunning = false;
-        private bool portIpClicked = false;
         private string stopTrafficAnalysisReason = string.Empty;
         private int selectedTrafficDuration;
         private DateTime startTrafficAnalysisTime;
@@ -1601,33 +1600,27 @@ namespace PoEWizard
         private void IpAddress_Click(object sender, EventArgs e)
         {
             //let portselection event run first
-            Task.Delay(TimeSpan.FromMilliseconds(200)).ContinueWith(t => {
-                Dispatcher.Invoke(() => {
-                    string ipAddr = (sender as TextBlock).Text.Replace("...", "").Trim();
-                    ConnectDevice(ipAddr);
+            Task.Delay(TimeSpan.FromMilliseconds(250)).ContinueWith(t =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    //string ipAddr = (sender as TextBlock).Text.Replace("...", "").Trim();
+                    //ConnectDevice(ipAddr);
+                    ConnectCurrentDevice();
                 });
             });
         }
 
-        private async void ConnectDevice(string ipAddr)
+        private void ConnectCurrentDevice()
         {
             try
             {
                 _portList.SelectionChanged -= PortSelection_Changed;
                 _portList.SelectedIndex = selectedPortIndex; //fix issue with selection jumping 2 rows above
-                if (string.IsNullOrEmpty(ipAddr)) return;
+                string ipAddr = selectedPort.IpAddress.Replace("...", "").Trim();
+                int port = selectedPort.RemotePort;
                 ShowInfoBox(Translate("i18n_devCnx"));
                 ShowProgress($"Connecting to {ipAddr}");
-                int port = -1;
-                foreach (int ps in portsToScan)
-                {
-                    bool isOpen = await Task.Run(() => IpScan.IsPortOpen(ipAddr, ps));
-                    if (isOpen)
-                    {
-                        port = ps;
-                        break;
-                    }
-                }
                 switch (port)
                 {
                     case 22:
@@ -1658,7 +1651,7 @@ namespace PoEWizard
                         Process.Start("mstsc", $"/v: {ipAddr}");
                         break;
                     default:
-                        ShowMessageBox("", Translate("i18n_noPtOpen"));
+                        //ShowMessageBox("", Translate("i18n_noPtOpen"));
                         break;
                 }
             }
@@ -1932,7 +1925,6 @@ namespace PoEWizard
                 {
                     Logger.Error(ex);
                 }
-
             });
         }
 
@@ -1945,7 +1937,20 @@ namespace PoEWizard
                 {
                     Dispatcher.Invoke(() => _ipscan.Focusable = true); //to trigger flashing
                     Logger.Debug($"Running ip scan on switch {device.Name}");
+                    Stopwatch watch = new Stopwatch();
+                    watch.Start();
                     await IpScan.LaunchScan(device);
+                    watch.Stop();
+                    Logger.Debug($"Ip scan took {watch.Elapsed:mm\\:ss}");
+                    Dispatcher.Invoke(() =>
+                    {
+                        RefreshSlotAndPortsView();
+                    });
+                    Logger.Debug($"Running port scan on switch {device.Name}");
+                    watch.Restart();
+                    await Task.Run(() => CheckForOpenPorts());
+                    watch.Stop();
+                    Logger.Debug($"Port scan took {watch.Elapsed:mm\\:ss}");
                     Dispatcher.Invoke(() =>
                     {
                         RefreshSlotAndPortsView();
@@ -1964,6 +1969,29 @@ namespace PoEWizard
                     Dispatcher.Invoke(() => _ipscan.Focusable = false); //to stop flashing
                 }
             });
+        }
+
+        private void CheckForOpenPorts()
+        {
+            object lockObj = new object();
+
+            foreach (var chas in device.ChassisList)
+            {
+                foreach (var slot in chas.Slots)
+                {
+                    Parallel.ForEach(slot.Ports, port => 
+                    {
+                        if (!string.IsNullOrEmpty(port.IpAddress))
+                        {
+                            int ptNo = IpScan.GetOpenPort(port.IpAddress.Replace("...", "").Trim());
+                            lock (lockObj)
+                            {
+                                port.RemotePort = ptNo;
+                            }
+                        }
+                    });
+                }
+            }
         }
 
         private void AskRebootCertified()

@@ -25,7 +25,7 @@
     <converters:DeviceFilterToTooltipConverter x:Key="DeviceFilterToTooltipConverter" />
     <converters:PortToTooltipConverter x:Key="PortToTooltipConverter" />
     <converters:IpAddrListToTooltipConverter x:Key="IpAddrListToTooltipConverter" />
-    <converters:ValueToCursorConverter x:Key="ValueToCursorConverter" />
+    <converters:ValueToStyleConverter x:Key="ValueToStyleConverter" />
 
     <BitmapImage x:Key="connected" UriSource="Img/connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="Img/disconnected-light.png" />
@@ -347,6 +347,11 @@
                 <Setter Property="Background" Value="{StaticResource barBackground}" />
             </Style>
         </Style.Resources>
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="clickable" BasedOn="{StaticResource devToolTip}">
+        <Setter Property="Foreground" Value="{StaticResource linkColor}" />
+        <Setter Property="TextDecorations" Value="Underline" />
     </Style>
 
     <Style TargetType="TextBlock" x:Key="flashing">

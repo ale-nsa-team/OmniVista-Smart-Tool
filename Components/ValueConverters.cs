@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows.Media;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.Utils;
@@ -158,13 +157,21 @@ namespace PoEWizard.Components
         }
     }
 
-    public class ValueToCursorConverter : IValueConverter
+    public class ValueToStyleConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (IsInvalid(value)) return Cursors.Arrow;
-            string val = (string)value;
-            return string.IsNullOrEmpty(val) ? Cursors.Arrow : Cursors.Hand;
+            Style defStyle = MainWindow.Instance.FindResource("devToolTip") as Style;
+            if (IsInvalid(value)) return defStyle;
+            int val = int.TryParse(value.ToString(), out val) ? val : 0;
+            if (val > 0)
+            {
+                return MainWindow.Instance.FindResource("clickable") as Style;
+            }
+            else
+            {
+                return defStyle;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -510,9 +510,8 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=IpAddress}" MouseDown="IpAddress_Click" 
-                                           Cursor="{Binding Path=IpAddress, Converter={StaticResource ValueToCursorConverter}}"
-                                           ToolTip="{Binding Path=IpAddrList, Converter={StaticResource IpAddrListToTooltipConverter}}"
-                                           Style="{DynamicResource devToolTip}"/>
+                                           Style="{Binding Path=RemotePort, Converter={StaticResource ValueToStyleConverter}}"
+                                           ToolTip="{Binding Path=IpAddrList, Converter={StaticResource IpAddrListToTooltipConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
