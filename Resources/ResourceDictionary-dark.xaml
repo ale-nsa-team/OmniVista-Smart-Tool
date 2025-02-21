@@ -20,10 +20,12 @@
     <converters:CpuUsageToVisibilityConverter x:Key="CpuUsageToVisibilityConverter" />
     <converters:DeviceToTooltipConverter x:Key="DeviceToTooltipConverter" />
     <converters:StatusToTooltipConverter x:Key="StatusToTooltipConverter" />
+    <converters:PortToTooltipConverter x:Key="PortToTooltipConverter" />
     <converters:PoeToTooltipConverter x:Key="PoeToTooltipConverter" />
     <converters:ToStringConverter x:Key="ToStringConverter" />
     <converters:DeviceFilterToTooltipConverter x:Key="DeviceFilterToTooltipConverter" />
-    <converters:PortToTooltipConverter x:Key="PortToTooltipConverter" />
+    <converters:IpAddrListToTooltipConverter x:Key="IpAddrListToTooltipConverter" />
+    <converters:IpAddrListFilterToTooltipConverter x:Key="IpAddrListFilterToTooltipConverter" />
     <converters:ValueToStyleConverter x:Key="ValueToStyleConverter" />
 
     <BitmapImage x:Key="connected" UriSource="Img/connected.png" />

@@ -16,7 +16,7 @@
     <sys:String x:Key="i18n_vcboot">vcboot.cfg</sys:String>
     <sys:String x:Key="i18n_sshot">Snapshot</sys:String>
     <sys:String x:Key="i18n_ps">Power Supplies</sys:String>
-    <sys:String x:Key="i18n_src">Search MAC</sys:String>
+    <sys:String x:Key="i18n_src">Search Device</sys:String>
     <sys:String x:Key="i18n_theme">Theme</sys:String>
     <sys:String x:Key="i18n_dark">Dark</sys:String>
     <sys:String x:Key="i18n_light">Light</sys:String>
@@ -589,8 +589,10 @@ It may take up to 30 sec to execute Write Memory
     <sys:String x:Key="i18n_codeErr">Could not change password</sys:String>
     <sys:String x:Key="i18n_srcNote">Note: You may double click on the port to close and select it on the main window.</sys:String>
     <sys:String x:Key="i18n_macNote">All matches are tagged with (*)</sys:String>
-    <sys:String x:Key="i18n_srcText">Please enter the MAC address, Device or Vendor Name</sys:String>
+    <sys:String x:Key="i18n_srcText">Please enter the IP address, MAC address, Device or Vendor Name</sys:String>
+    <sys:String x:Key="i18n_srcIp">IP search can be a full or partial IP in the format 192.168 ...</sys:String>
     <sys:String x:Key="i18n_srcMac">MAC search can be a full or partial MAC in the format 41:7a ...</sys:String>
+    <sys:String x:Key="i18n_noIpSrc">IP scan still running, please try again later or search by MAC address</sys:String>
     <sys:String x:Key="i18n_fload">Loading file, please wait...</sys:String>
     <sys:String x:Key="i18n_ftxt">Text File</sys:String>
     <sys:String x:Key="i18n_crit">Search:</sys:String>

@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using static PoEWizard.Data.Constants;
 
@@ -8,10 +7,10 @@ namespace PoEWizard.Components
     /// <summary>
     /// Interaction logic for SelectMacAddress.xaml
     /// </summary>
-    public partial class SelectMacAddress : Window
+    public partial class SearchParams : Window
     {
-        public string SearchMacAddress { get; set; }
-        public SelectMacAddress(Window owner)
+        public string SearchParam { get; set; }
+        public SearchParams(Window owner)
         {
             InitializeComponent();
             if (MainWindow.Theme == ThemeType.Dark)
@@ -28,34 +27,32 @@ namespace PoEWizard.Components
             DataContext = this;
             this.Owner = owner;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            _macAddr.Focus();
-            SearchMacAddress = string.Empty;
+            _srcText.Focus();
+            SearchParam = string.Empty;
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
             this.MouseDown += delegate { this.DragMove(); };
+            _btnOk.IsEnabled = SearchParam.Length > 0;
         }
 
-        private void SelectMac_KeyUp(object sender, KeyEventArgs e)
+        private void SelectDev_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter && !HasErrors()) BtnOk_Click(sender, e);
-        }
-
-        private bool HasErrors()
-        {
-            return _macAddr.GetBindingExpression(TextBox.TextProperty).HasError;
+            if (e.Key == Key.Enter) BtnOk_Click(sender, e);
+            else if (e.Key == Key.Escape) BtnCancel_Click(sender, e);
+            else _btnOk.IsEnabled = !string.IsNullOrEmpty(_srcText.Text);
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
-            if (HasErrors()) return;
+            if (string.IsNullOrEmpty(_srcText.Text)) return;
             this.Close();
         }
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
-            SearchMacAddress = null;
+            SearchParam = null;
             this.Close();
         }
     }

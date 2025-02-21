@@ -334,6 +334,19 @@ namespace PoEWizard.Data
             return false;
         }
 
+        public static bool IsValidPartialIp(string ipAddr)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(ipAddr))
+                {
+                    return Regex.IsMatch(ipAddr, "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){1,3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+                }
+            }
+            catch { }
+            return false;
+        }
+
         public static bool IsValidMacSequence(string mac)
         {
             string[] splitMac = mac.Split(':');

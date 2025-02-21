@@ -12,36 +12,22 @@ namespace PoEWizard.Components
     /// <summary>
     /// Interaction logic for SearchMac.xaml
     /// </summary>
-    public partial class SearchMac : Window
+    public partial class SearchDevice : Window
     {
-        public class PortViewModel
-        {
-            public PortModel Port { get; set; }
-            public string SearchText { get; set; }
-
-            public PortViewModel(PortModel port, string searchText)
-            {
-                this.Port = port;
-                this.SearchText = searchText;
-            }
-        }
-
+        private enum SearchType {Ip, Mac, Name, None };
         private List<string> deviceMacList = new List<string>();
         private PortModel currPort = null;
-        private readonly string any;
+        private readonly SearchType searchType;
 
         public string SearchText { get; set; }
-        public string DeviceMac => $"{(!string.IsNullOrEmpty(this.SearchText) ? $"\"{this.SearchText}\"" : any)}";
-        public ObservableCollection<PortViewModel> PortsFound { get; set; }
+        public List<PortViewModel> PortsFound { get; set; }
         public PortModel SelectedPort { get; set; }
-        public bool IsMacAddress { get; set; }
-        public int NbMacAddressesFound => !string.IsNullOrEmpty(this.SearchText) ? deviceMacList.Count : this.NbTotalMacAddressesFound;
-        public int NbPortsFound { get; set; }
-        public int NbTotalMacAddressesFound { get; set; }
+        public bool IsMacAddress => searchType == SearchType.Mac;
+        public int NbPortsFound => PortsFound?.Count ?? 0;
 
-        public SearchMac(SwitchModel device, string macAddress)
+        public SearchDevice(SwitchModel model, string srcParam)
         {
-            this.SearchText = !string.IsNullOrEmpty(macAddress) ? macAddress.ToLower().Trim() : string.Empty;
+            this.SearchText = !string.IsNullOrEmpty(srcParam) ? srcParam.ToLower().Trim() : string.Empty;
             InitializeComponent();
             DataContext = this;
             if (MainWindow.Theme == ThemeType.Dark)
@@ -55,9 +41,28 @@ namespace PoEWizard.Components
             Resources.MergedDictionaries.Remove(Resources.MergedDictionaries[1]);
             Resources.MergedDictionaries.Add(MainWindow.Strings);
 
-            any = Translate("i18n_any");
             this.SelectedPort = null;
-            SearchMacAddress(device, macAddress);
+            if (string.IsNullOrEmpty(this.SearchText)) searchType = SearchType.None;
+            if (IsValidPartialIp(srcParam))
+            {
+                searchType = SearchType.Ip;
+                if (MainWindow.IsIpScanRunning)
+                {
+                    CustomMsgBox cmb = new CustomMsgBox(MainWindow.Instance)
+                    {
+                        Title = Translate("i18n_src"),
+                        Message = Translate("i18n_noIpSrc"),
+                        Img = MsgBoxIcons.Warning,
+                        Buttons = MsgBoxButtons.Ok
+                    };
+                    cmb.ShowDialog();
+                    SearchText = string.Empty;
+                    return;
+                }
+            }
+            else if (IsValidMacSequence(srcParam)) searchType = SearchType.Mac;
+            else searchType = SearchType.Name;
+            FindDevice(model);
             if (this.PortsFound.Count == 1) this.SelectedPort = this.PortsFound[0].Port;
         }
 
@@ -69,11 +74,33 @@ namespace PoEWizard.Components
             this.Top = this.Owner.Height > this.Height ? this.Owner.Top + (this.Owner.Height - this.Height) / 2 : this.Top;
         }
 
-        private void SearchMacAddress(SwitchModel switchModel, string macAddr)
+        private void IpAddress_Click(object sender, RoutedEventArgs e)
         {
-            this.IsMacAddress = IsValidMacSequence(this.SearchText);
-            this.PortsFound = new ObservableCollection<PortViewModel>();
-            this.NbTotalMacAddressesFound = 0;
+
+        }
+
+        private void FindDevice(SwitchModel model)
+        {
+            this.PortsFound = new List<PortViewModel>();
+
+            switch (searchType)
+            {
+                case SearchType.Ip:
+                    SearchIpAddress(model);
+                    break;
+                case SearchType.Mac:
+                    SearchMacAddress(model);
+                    break;
+                case SearchType.Name:
+                    break;
+                default:
+                    break;
+
+            }
+        }
+
+        private void SearchMacAddress(SwitchModel switchModel)
+        {
             this.deviceMacList = new List<string>();
             foreach (var chas in switchModel.ChassisList)
             {
@@ -104,13 +131,26 @@ namespace PoEWizard.Components
                             if (foundCnt > 0 && this.PortsFound.FirstOrDefault(p => p.Port == port) == null)
                             {
                                 this.PortsFound.Add(new PortViewModel(port, SearchText));
-                                this.NbTotalMacAddressesFound += port.MacList.Count;
                             }
                         }
                     }
                 }
             }
-            this.NbPortsFound = this.PortsFound.Count;
+        }
+
+        private void SearchIpAddress(SwitchModel model)
+        {
+            foreach (var chas in model.ChassisList)
+            {
+                foreach (var slot in chas.Slots)
+                {
+                    var ports = slot.Ports.FindAll(p => p.IpAddrList.Any(kvp => kvp.Value.Contains(SearchText)));
+                    foreach (var port in ports)
+                    {
+                        if (!PortsFound.Any(p => p.Port == port)) PortsFound.Add(new PortViewModel(port, SearchText));
+                    }
+                }
+            }
         }
 
         private bool AddMacFound(List<string> macList)
@@ -165,9 +205,9 @@ namespace PoEWizard.Components
 
         private void Mouse_DoubleClick(Object sender, RoutedEventArgs e)
         {
-            if (_portsListView.SelectedItem is PortViewModel port)
+            if (_portsListView.SelectedItem is PortModel port)
             {
-                SelectedPort = port.Port;
+                SelectedPort = port;
                 this.Close();
             }
         }
@@ -175,6 +215,18 @@ namespace PoEWizard.Components
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+    }
+
+    public class PortViewModel
+    {
+        public PortModel Port { get; set; }
+        public string SearchText { get; set; }
+
+        public PortViewModel(PortModel port, string searchText)
+        {
+            this.Port = port;
+            this.SearchText = searchText;
         }
     }
 }

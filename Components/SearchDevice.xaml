@@ -1,4 +1,4 @@
-﻿<Window x:Class="PoEWizard.Components.SearchMac"
+﻿<Window x:Class="PoEWizard.Components.SearchDevice"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -29,9 +29,7 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="5,0,0,0" >
             <TextBlock Grid.Row="0" Grid.Column="0" Margin="10,10,0,10" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_crit}"/>
-            <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,10,0,10" Text="{Binding DeviceMac}" Style="{DynamicResource aboutParagraph}" />
-            <TextBlock Grid.Row="0" Grid.Column="2" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_nmfound}"/>
-            <TextBlock Grid.Row="0" Grid.Column="3" Margin="10,10,0,10" Text="{Binding NbMacAddressesFound}" Style="{DynamicResource aboutParagraph}" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,10,0,10" Text="{Binding SearchText}" Style="{DynamicResource aboutParagraph}" />
             <TextBlock Grid.Row="0" Grid.Column="4" Margin="20,10,0,10" Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_npfound}"/>
             <TextBlock Grid.Row="0" Grid.Column="5" Margin="10,10,0,10" Text="{Binding NbPortsFound}" Style="{DynamicResource aboutParagraph}" />
         </StackPanel>
@@ -116,6 +114,24 @@
                         <TextBlock Text="{DynamicResource i18n_class}" />
                     </DataGridTextColumn.Header>
                 </DataGridTextColumn>
+                <DataGridTemplateColumn Width="0.8*" IsReadOnly="True" >
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="{DynamicResource i18n_ptIp}" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Port.IpAddress}" MouseDown="IpAddress_Click" 
+                                       Style="{Binding Path=Port.RemotePort, Converter={StaticResource ValueToStyleConverter}}">
+                                <TextBlock.ToolTip>
+                                    <MultiBinding Converter="{StaticResource IpAddrListFilterToTooltipConverter}">
+                                        <Binding Path="Port.IpAddrList" />
+                                        <Binding Path="SearchText" Mode="OneWay" />
+                                    </MultiBinding>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTemplateColumn Width="1.4*" IsReadOnly="True">
                     <DataGridTemplateColumn.Header>
                         <TextBlock Text="{DynamicResource i18n_devType}" />

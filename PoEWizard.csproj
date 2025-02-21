@@ -186,11 +186,11 @@
     <Compile Include="Components\ResetSelection.xaml.cs">
       <DependentUpon>ResetSelection.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\SearchMac.xaml.cs">
-      <DependentUpon>SearchMac.xaml</DependentUpon>
+    <Compile Include="Components\SearchDevice.xaml.cs">
+      <DependentUpon>SearchDevice.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\SelectMacAddress.xaml.cs">
-      <DependentUpon>SelectMacAddress.xaml</DependentUpon>
+    <Compile Include="Components\SearchParams.xaml.cs">
+      <DependentUpon>SearchParams.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\TdrView.xaml.cs">
       <DependentUpon>TdrView.xaml</DependentUpon>
@@ -348,11 +348,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\SearchMac.xaml">
+    <Page Include="Components\SearchDevice.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\SelectMacAddress.xaml">
+    <Page Include="Components\SearchParams.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
