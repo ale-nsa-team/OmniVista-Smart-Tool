@@ -633,5 +633,5 @@ It may take up to 30 sec to execute Write Memory
     <sys:String x:Key="i18n_delsel_tt">Remove selected IP address from list</sys:String>
     <sys:String x:Key="i18n_ptIp_tt" xml:space="preserve">May take up to 5 minutes to fully update.
 Uses best effort to scan IP addresses, may not get all addresses.
-List is limited to 20 IP Addresses per port.</sys:String>
+List is limited to 50 IP Addresses per port.</sys:String>
 </ResourceDictionary>

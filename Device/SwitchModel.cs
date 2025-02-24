@@ -300,7 +300,7 @@ namespace PoEWizard.Device
                 string port = GetDictValue(entry, PORT);
                 PortModel pm = GetPort(port);
                 if (pm == null) continue;
-                if (!string.IsNullOrEmpty(GetDictValue(entry, HW_ADDR)) && pm.IpAddrList.Count < MAX_LIST_SIZE)
+                if (!string.IsNullOrEmpty(GetDictValue(entry, HW_ADDR)) && pm.IpAddrList.Count < MAX_NB_IP_PER_PORT)
                 {
                     pm.IpAddrList[GetDictValue(entry, HW_ADDR)] = GetDictValue(entry, IP_ADDR);
                 }

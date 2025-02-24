@@ -130,7 +130,7 @@ namespace PoEWizard.Components
             if (HasErrors()) return;
             if (!IpList.Contains(IpAddress))
             {
-                if (IpList.Count >= MAX_LIST_SIZE)
+                if (IpList.Count >= MAX_SW_LIST_SIZE)
                 {
                     IpList.RemoveAt(IpList.Count - 1);
                 }

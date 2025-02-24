@@ -347,7 +347,7 @@ namespace PoEWizard.Data
             return false;
         }
 
-        public static bool IsValidMacSequence(string mac)
+        public static bool IsValidPartialMac(string mac)
         {
             string[] splitMac = mac.Split(':');
             if (splitMac.Length > 6) return false;
@@ -530,6 +530,16 @@ namespace PoEWizard.Data
             return 0;
         }
 
+        public static List<string> GetVendorNames(string macList)
+        {
+            List<string> names = new List<string>();
+            foreach (string mac in macList.Split(','))
+            {
+                names.Add(GetVendorName(mac));
+            }
+            return names;
+        }
+
         public static string GetVendorName(string mac)
         {
             string vendorName = mac.Trim();
@@ -538,7 +548,6 @@ namespace PoEWizard.Data
             if (MainWindow.ouiTable.ContainsKey(macMask)) vendorName = MainWindow.ouiTable[macMask];
             return vendorName;
         }
-
 
         public static void StartProgressBar(IProgress<ProgressReport> progress, string barText)
         {

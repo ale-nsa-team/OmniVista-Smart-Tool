@@ -70,6 +70,7 @@ namespace PoEWizard.Data
         public enum SwitchDebugLogLevel { Off = 0, Alarm = 1, Error = 2, Alert = 3, Warn = 4, Event = 5, Info = 6, Debug1 = 7, Debug2 = 8, Debug3 = 9, Unknown = -1, Invalid = -2 }
         public enum TrafficStatus { Idle, Abort, CanceledByUser, Running, Completed }
         public enum OpType { Other, Connection, Refresh, Reboot, Backup, Restore, Upgrade, TrafficAnalysis }
+        public enum SearchType { Ip, Mac, Name, None };
         #endregion
 
         #region dictionaries
@@ -490,6 +491,7 @@ namespace PoEWizard.Data
         public const int MAX_NB_MAC_TOOL_TIP = 50;
         public const int MAX_NB_DEVICES_TOOL_TIP = 10;
         public const int MIN_NB_MAC_UPLINK = 2;
+        public const int MAX_NB_IP_PER_PORT = 50;
         #endregion
 
         #region Switch Scanner Limits
@@ -515,7 +517,7 @@ namespace PoEWizard.Data
         #endregion
 
         #region Login Credentials Limits
-        public const int MAX_LIST_SIZE = 20;
+        public const int MAX_SW_LIST_SIZE = 20;
         #endregion
 
         #region Reboot Switch Limits

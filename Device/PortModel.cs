@@ -33,7 +33,7 @@ namespace PoEWizard.Device
         public int RemotePort { get; set; }
         public Dictionary<string, string> IpAddrList { get; set; }
         public EndPointDeviceModel EndPointDevice { get; set; }
-        public List<EndPointDeviceModel> EndPointDevicesList { get; set; }
+        public List<EndPointDeviceModel> EndPointDeviceList { get; set; }
         public string Alias { get; set; }
         public List<PriorityLevelType> Priorities => Enum.GetValues(typeof(PriorityLevelType)).Cast<PriorityLevelType>().ToList();
 
@@ -53,7 +53,7 @@ namespace PoEWizard.Device
         public PortModel(Dictionary<string, string> dict)
         {
             EndPointDevice = new EndPointDeviceModel();
-            EndPointDevicesList = new List<EndPointDeviceModel>();
+            EndPointDeviceList = new List<EndPointDeviceModel>();
             IpAddrList = new Dictionary<string, string>();
             Name = GetDictValue(dict, CHAS_SLOT_PORT);
             Number = GetPortId(Name);
@@ -160,8 +160,8 @@ namespace PoEWizard.Device
         private void UpdateEndPointParameters(Dictionary<string, string> dict, DictionaryType dictType)
         {
             if (!dict.ContainsKey(MED_MAC_ADDRESS)) return;
-            EndPointDeviceModel device = this.EndPointDevicesList.FirstOrDefault(ep => ep.MacAddress == dict[MED_MAC_ADDRESS]);
-            if (device == null) this.EndPointDevicesList.Add(new EndPointDeviceModel(dict));
+            EndPointDeviceModel device = this.EndPointDeviceList.FirstOrDefault(ep => ep.MacAddress == dict[MED_MAC_ADDRESS]);
+            if (device == null) this.EndPointDeviceList.Add(new EndPointDeviceModel(dict));
             else if (dictType == DictionaryType.LldpRemoteList) device.LoadLldpRemoteTable(dict);
             else if (dictType == DictionaryType.LldpInventoryList) device.LoadLldpInventoryTable(dict);
         }
@@ -170,7 +170,7 @@ namespace PoEWizard.Device
         {
             List<string> macList = new List<string>(this.MacList);
             EndPointDeviceModel deviceFound = null;
-            foreach (EndPointDeviceModel dev in this.EndPointDevicesList)
+            foreach (EndPointDeviceModel dev in this.EndPointDeviceList)
             {
                 if (dev.Type == NO_LLDP && !string.IsNullOrEmpty(dev.MacAddress))
                 {
@@ -192,17 +192,17 @@ namespace PoEWizard.Device
                 [CAPABILITIES_SUPPORTED] = NO_LLDP,
                 [MED_MAC_ADDRESS] = string.Join(",", macList)
             };
-            this.EndPointDevicesList.Add(new EndPointDeviceModel(dict));
+            this.EndPointDeviceList.Add(new EndPointDeviceModel(dict));
             UpdateEndPointDevice(NO_LLDP);
         }
 
         private void UpdateEndPointDevice(string type)
         {
-            if (string.IsNullOrEmpty(this.EndPointDevicesList[0].Type)) this.EndPointDevicesList[0].Type = type;
-            this.EndPointDevice = this.EndPointDevicesList[0].Clone();
+            if (string.IsNullOrEmpty(this.EndPointDeviceList[0].Type)) this.EndPointDeviceList[0].Type = type;
+            this.EndPointDevice = this.EndPointDeviceList[0].Clone();
             if (this.EndPointDevice.Type == MED_SWITCH) return;
             int nbDevices = 0;
-            foreach (EndPointDeviceModel dev in this.EndPointDevicesList)
+            foreach (EndPointDeviceModel dev in this.EndPointDeviceList)
             {
                 if (dev.Type == NO_LLDP) break;
                 nbDevices++;
@@ -325,7 +325,7 @@ namespace PoEWizard.Device
 
         public bool IsSwitchUplink()
         {
-            return this.EndPointDevicesList?.Count > 0 && !string.IsNullOrEmpty(this.EndPointDevicesList[0].Type) && this.EndPointDevicesList[0].Type == MED_SWITCH;
+            return this.EndPointDeviceList?.Count > 0 && !string.IsNullOrEmpty(this.EndPointDeviceList[0].Type) && this.EndPointDeviceList[0].Type == MED_SWITCH;
         }
 
         private string GetPortId(string chas)

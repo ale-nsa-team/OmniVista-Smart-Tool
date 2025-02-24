@@ -76,7 +76,7 @@ namespace PoEWizard
         public static RestApiService restApiService;
         public static Dictionary<string, string> ouiTable = new Dictionary<string, string>();
         public static bool IsIpScanRunning { get; set; } = false;
-
+        public static Config Config => Config;
         #endregion
 
         #region constructor and initialization
@@ -1932,7 +1932,7 @@ namespace PoEWizard
                 {
                     Dispatcher.Invoke(() => _ipscan.Focusable = true); //to trigger flashing
                     IsIpScanRunning = true;
-                    Logger.Debug($"Running ip scan on switch {swModel.Name}");
+                    Logger.Debug($"Running ip scan on switch {swModel.Name} ({swModel.IpAddress})");
                     Stopwatch watch = new Stopwatch();
                     watch.Start();
                     await IpScan.LaunchScan(swModel);
@@ -1972,6 +1972,7 @@ namespace PoEWizard
         {
             object lockObj = new object();
 
+            if (swModel?.ChassisList == null) return;
             foreach (var chas in swModel.ChassisList)
             {
                 foreach (var slot in chas.Slots)

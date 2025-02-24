@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Windows.Forms;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.Utils;
 
@@ -121,9 +123,10 @@ namespace PoEWizard.Device
             return valueDict;
         }
 
-        public string ToFilterTooltip(bool isMacAddress, string searchText)
+        public string ToFilterTooltip(SearchType searchType, string searchText)
         {
-            List<string> tip = ToMainTooltip(isMacAddress ? null : searchText);
+            List<string> tip = ToMainTooltip(searchText);
+
             if (this.Label.Contains(","))
             {
                 string[] split = this.Label.Split(',');
@@ -133,20 +136,32 @@ namespace PoEWizard.Device
                 {
                     string vendor = GetVendorName(macAddr);
                     if (IsValidMacAddress(vendor)) vendor = string.Empty;
-                    string mac = macAddr;
-                    bool found = (isMacAddress && mac.ToLower().StartsWith(searchText)) || (!string.IsNullOrEmpty(vendor) && vendor.ToLower().Contains(searchText));
                     cntMac++;
+                    switch (searchType)
+                    {
+                        case SearchType.Mac:
+                            if (!macAddr.ToLower().StartsWith(searchText)) break;
+                            if (IsValidMacAddress(vendor)) vendor = string.Empty;
+                            if (!string.IsNullOrEmpty(vendor)) tip.Add($" {macAddr} ({vendor})");
+                            else tip.Add($" {macAddr}");
+                            break;
+                        case SearchType.Name:
+                            if (vendor.ToLower().Contains(searchText))
+                            {
+                                tip.Add($" {macAddr} ({vendor})");
+                            }
+                            break;
+                        default:
+                            if (!string.IsNullOrEmpty(vendor)) tip.Add($" {macAddr} ({vendor})");
+                            else tip.Add($" {macAddr}");
+                            break;
+                    }
+
                     if (cntMac > MAX_NB_MAC_TOOL_TIP)
                     {
                         tip.Add("          . . .");
                         break;
                     }
-                    if (!string.IsNullOrEmpty(vendor)) mac = $" {mac} ({vendor})";
-                    if (found)
-                    {
-                        mac += MAC_MATCH_MARK; ;
-                    }
-                    tip.Add($" {mac}");
                 }
             }
             else if (!string.IsNullOrEmpty(this.MacAddress))
@@ -156,26 +171,11 @@ namespace PoEWizard.Device
                 if (!string.IsNullOrEmpty(this.Vendor))
                 {
                     mac += $" ({vendor})";
-                    if ((!isMacAddress && vendor.ToLower().Contains(searchText)) || (isMacAddress && this.MacAddress.StartsWith(searchText)))
-                    {
-                        mac = AddSearchMark(tip, mac);
-                    }
+                    tip.Add($"MAC: {mac}");
                 }
-                else if (isMacAddress && this.MacAddress.StartsWith(searchText))
-                {
-                    mac = AddSearchMark(tip, mac);
-                }
-                tip.Add($"MAC: {mac}");
             }
             if (this.Capabilities.Count > 0) tip.Add($"Capabilities: {string.Join(",", this.Capabilities)}");
             return tip.Count > 0 ? string.Join("\n", tip) : null;
-        }
-
-        private string AddSearchMark(List<string> tip, string mac)
-        {
-            bool found = tip.Any(s => s.Contains(MAC_MATCH_MARK));
-            if (!found) mac += MAC_MATCH_MARK;
-            return mac;
         }
 
         public string ToTooltip()
@@ -208,18 +208,13 @@ namespace PoEWizard.Device
             List<string> tip = new List<string>();
             if (!string.IsNullOrEmpty(this.Type)) tip.Add($"Type: {this.Type}");
             string nameVendor;
-            bool addedMark = false;
             if (!string.IsNullOrEmpty(this.Label))
             {
                 if (!IsMacName)
                 {
                     nameVendor = this.Label;
                     if (!string.IsNullOrEmpty(searchText) && this.Label.ToLower().Contains(searchText))
-                    {
-                        nameVendor += MAC_MATCH_MARK;
-                        addedMark = true;
-                    }
-                    if (!this.Label.Contains("Remote port")) tip.Add($"Name: {nameVendor}");
+                        if (!this.Label.Contains("Remote port")) tip.Add($"Name: {nameVendor}");
                 }
                 else if (string.IsNullOrEmpty(this.Vendor) && !this.Label.Contains(","))
                 {
@@ -229,10 +224,6 @@ namespace PoEWizard.Device
             if (!string.IsNullOrEmpty(this.Vendor))
             {
                 nameVendor = this.Vendor;
-                if (!string.IsNullOrEmpty(searchText) && this.Vendor.ToLower().Contains(searchText) && !addedMark)
-                {
-                    nameVendor += MAC_MATCH_MARK;
-                }
                 tip.Add($"Vendor: {nameVendor}");
             }
             if (!string.IsNullOrEmpty(this.Description)) tip.Add($"Description: {this.Description}");

@@ -522,7 +522,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Model}"
-                                           ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
+                                           ToolTip="{Binding Path=EndPointDeviceList, Converter={StaticResource DeviceToTooltipConverter}}"
                                            Style="{DynamicResource devToolTip}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -534,7 +534,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Type}"
-                                           ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
+                                           ToolTip="{Binding Path=EndPointDeviceList, Converter={StaticResource DeviceToTooltipConverter}}"
                                            Style="{DynamicResource devToolTip}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -546,7 +546,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=EndPointDevice.Label}"
-                                           ToolTip="{Binding Path=EndPointDevicesList, Converter={StaticResource DeviceToTooltipConverter}}"
+                                           ToolTip="{Binding Path=EndPointDeviceList, Converter={StaticResource DeviceToTooltipConverter}}"
                                            Style="{DynamicResource devToolTip}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>

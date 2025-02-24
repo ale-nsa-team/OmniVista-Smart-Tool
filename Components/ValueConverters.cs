@@ -2,6 +2,7 @@
 using PoEWizard.Device;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
@@ -114,8 +115,8 @@ namespace PoEWizard.Components
                     case "PoeStatus":
                         return val == "UnderThreshold" ? Colors.Clear : val == "NearThreshold" ? Colors.Warn : Colors.Danger;
                     case "PortStatus":
-                        return val == "Up" ? Colors.Clear : 
-                               val == "Down" ? Colors.Danger : 
+                        return val == "Up" ? Colors.Clear :
+                               val == "Down" ? Colors.Danger :
                                val == "Blocked" ? Colors.Warn : Colors.Unknown;
                     case "PowerSupply":
                         return val == "Up" ? Colors.Clear : Colors.Danger;
@@ -577,7 +578,20 @@ namespace PoEWizard.Components
                 string srcText = IsInvalid(values[1]) ? string.Empty : values[1].ToString();
                 if (values[0] is Dictionary<string, string> ipList)
                 {
-                    List<string> tooltip = ipList.Where(kvp => kvp.Value.Contains(srcText)).Select(kvp => $"{kvp.Key}  {kvp.Value}").ToList();
+                    List<string> tooltip;
+                    if (IsValidPartialIp(srcText))
+                    {
+                        tooltip = ipList.Where(kvp => kvp.Value.StartsWith(srcText)).Select(kvp => $"{kvp.Key}  {kvp.Value}").ToList();
+                    }
+                    else if (IsValidPartialMac(srcText))
+                    {
+                        tooltip = ipList.Where(kvp => kvp.Key.StartsWith(srcText)).Select(kvp => $"{kvp.Key}  {kvp.Value}").ToList();
+                    }
+                    else
+                    {
+                        tooltip = ipList.Select(kvp => $"{kvp.Key}:{kvp.Value}").ToList();
+                    }
+
                     int maxlen = tooltip.Max(t => MaxLineLen(t));
                     tooltip.Insert(0, "MAC                IP");
                     tooltip.Insert(1, new string('-', maxlen));
@@ -601,7 +615,6 @@ namespace PoEWizard.Components
     public class DeviceFilterToTooltipConverter : IMultiValueConverter
     {
 
-        private bool isMacAddress = false;
         private string searchText = string.Empty;
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
@@ -609,27 +622,33 @@ namespace PoEWizard.Components
             try
             {
                 if (IsInvalid(values[0])) return null;
-                List<EndPointDeviceModel> edmList = values[0] as List<EndPointDeviceModel>;
-                if (edmList.Count < 1) return DependencyProperty.UnsetValue;
+                List<EndPointDeviceModel> epdList = values[0] as List<EndPointDeviceModel>;
+                if (epdList.Count < 1) return DependencyProperty.UnsetValue;
                 searchText = IsInvalid(values[1]) ? string.Empty : values[1].ToString();
-                isMacAddress = IsValidMacSequence(searchText);
-                bool hasmore = edmList.Count > MAX_NB_DEVICES_TOOL_TIP;
-                List<EndPointDeviceModel> displayList = hasmore ? edmList.GetRange(0, MAX_NB_DEVICES_TOOL_TIP) : edmList;
-                List<string> tooltip = new List<string>() { $"\n{Translate("i18n_macNote")}" };
-                if (!string.IsNullOrEmpty(searchText))
+                SearchType searchType = IsValidPartialMac(searchText) ? SearchType.Mac : IsValidPartialIp(searchText) ? SearchType.Ip : SearchType.Name;
+                List<EndPointDeviceModel> foundList = new List<EndPointDeviceModel>();
+                switch (searchType)
                 {
-                    foreach (EndPointDeviceModel dev in displayList)
-                    {
-                        string tip = dev.ToFilterTooltip(isMacAddress, searchText);
-                        if (!string.IsNullOrEmpty(tip)) tooltip.Add(tip);
-                    }
+                    case SearchType.Mac:
+                        foundList = epdList.FindAll(epd => epd.MacAddress.Split(',').Any(ma => ma.StartsWith(searchText, StringComparison.CurrentCultureIgnoreCase)));
+                        break;
+                    case SearchType.Name:
+                        foundList = epdList.FindAll(epd =>
+                            epd.Name.IndexOf(searchText, StringComparison.CurrentCultureIgnoreCase) >= 0 ||
+                            epd.Vendor.IndexOf(searchText, StringComparison.CurrentCultureIgnoreCase) >= 0 ||
+                            GetVendorNames(epd.MacAddress).Any(s => s.IndexOf(searchText, StringComparison.CurrentCultureIgnoreCase) >= 0));
+                        break;
+                    default:
+                        foundList = epdList;
+                        break;
                 }
-                else
+                List<string> tooltip = new List<string>();
+                foreach (EndPointDeviceModel dev in foundList)
                 {
-                    tooltip = displayList.Select(x => x.ToTooltip()).ToList();
+                    string tip = dev.ToFilterTooltip(searchType, searchText);
+                    if (!string.IsNullOrEmpty(tip)) tooltip.Add(tip);
                 }
                 int maxlen = tooltip.Max(t => MaxLineLen(t));
-                if (hasmore) tooltip.Add($"{new string(' ', maxlen / 2 - 6)}({edmList.Count - MAX_NB_DEVICES_TOOL_TIP} more...)");
                 string separator = $"\n{new string(UNDERLINE, maxlen)}\n\n";
                 return string.Join(separator, tooltip);
             }

@@ -1,8 +1,11 @@
-﻿using PoEWizard.Device;
+﻿using Microsoft.Win32;
+using PoEWizard.Data;
+using PoEWizard.Device;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.Utils;
@@ -14,9 +17,6 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class SearchDevice : Window
     {
-        private enum SearchType {Ip, Mac, Name, None };
-        private List<string> deviceMacList = new List<string>();
-        private PortModel currPort = null;
         private readonly SearchType searchType;
 
         public string SearchText { get; set; }
@@ -60,7 +60,7 @@ namespace PoEWizard.Components
                     return;
                 }
             }
-            else if (IsValidMacSequence(srcParam)) searchType = SearchType.Mac;
+            else if (IsValidPartialMac(srcParam)) searchType = SearchType.Mac;
             else searchType = SearchType.Name;
             FindDevice(model);
             if (this.PortsFound.Count == 1) this.SelectedPort = this.PortsFound[0].Port;
@@ -76,7 +76,14 @@ namespace PoEWizard.Components
 
         private void IpAddress_Click(object sender, RoutedEventArgs e)
         {
-
+            //let portselection event run first
+            Task.Delay(TimeSpan.FromMilliseconds(250)).ContinueWith(t =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    ConnectSelectedPort();
+                });
+            });
         }
 
         private void FindDevice(SwitchModel model)
@@ -92,49 +99,10 @@ namespace PoEWizard.Components
                     SearchMacAddress(model);
                     break;
                 case SearchType.Name:
+                    SearchNameOrVendor(model);
                     break;
                 default:
                     break;
-
-            }
-        }
-
-        private void SearchMacAddress(SwitchModel switchModel)
-        {
-            this.deviceMacList = new List<string>();
-            foreach (var chas in switchModel.ChassisList)
-            {
-                foreach (var slot in chas.Slots)
-                {
-                    foreach (var port in slot.Ports)
-                    {
-                        this.currPort = port;
-                        int foundCnt = 0;
-                        if (port.EndPointDevicesList?.Count > 0)
-                        {
-                            foreach (EndPointDeviceModel device in port.EndPointDevicesList)
-                            {
-                                if (string.IsNullOrEmpty(device.MacAddress)) continue;
-                                if (!device.MacAddress.Contains(","))
-                                {
-                                    if (IsDevicePortFound(device.MacAddress, device))
-                                    {
-                                        AddToDevicesList(device.MacAddress);
-                                        foundCnt++;
-                                    }
-                                }
-                                else
-                                {
-                                    if (AddMacFound(new List<string>(device.MacAddress.Split(',')))) foundCnt++;
-                                }
-                            }
-                            if (foundCnt > 0 && this.PortsFound.FirstOrDefault(p => p.Port == port) == null)
-                            {
-                                this.PortsFound.Add(new PortViewModel(port, SearchText));
-                            }
-                        }
-                    }
-                }
             }
         }
 
@@ -144,62 +112,53 @@ namespace PoEWizard.Components
             {
                 foreach (var slot in chas.Slots)
                 {
-                    var ports = slot.Ports.FindAll(p => p.IpAddrList.Any(kvp => kvp.Value.Contains(SearchText)));
-                    foreach (var port in ports)
-                    {
-                        if (!PortsFound.Any(p => p.Port == port)) PortsFound.Add(new PortViewModel(port, SearchText));
-                    }
+                    var ports = slot.Ports.FindAll(p => p.IpAddrList.Any(kvp => kvp.Value.StartsWith(SearchText)));
+                    AddPorstToList(ports);
                 }
             }
         }
 
-        private bool AddMacFound(List<string> macList)
+        private void SearchMacAddress(SwitchModel switchModel)
         {
-            if (macList.Count == 0) return false;
-            if (string.IsNullOrEmpty(this.SearchText)) return true;
-            bool found = false;
-            foreach (string macAddr in macList)
+            foreach (var chas in switchModel.ChassisList)
             {
-                if (IsDevicePortFound(macAddr))
+                foreach (var slot in chas.Slots)
                 {
-                    found = true;
-                    AddToDevicesList(macAddr);
+                    var ports = slot.Ports.FindAll(p => p.EndPointDeviceList.Any(epd =>
+                        epd.MacAddress.Split(',').Any(ma => ma.StartsWith(SearchText, StringComparison.CurrentCultureIgnoreCase))));
+                    AddPorstToList(ports);
                 }
             }
-            return found;
         }
 
-        private void AddToDevicesList(string macAddr)
+        private void SearchNameOrVendor(SwitchModel model)
         {
-            if (!this.deviceMacList.Contains($"{this.currPort.Name}-{macAddr}")) this.deviceMacList.Add($"{this.currPort.Name}-{macAddr}");
-        }
-
-        private bool IsDevicePortFound(string macAddr, EndPointDeviceModel device = null)
-        {
-            if (string.IsNullOrEmpty(macAddr)) return false;
-            if (string.IsNullOrEmpty(this.SearchText)) return true;
-            if (this.IsMacAddress)
+            foreach (var chas in model.ChassisList)
             {
-                return macAddr.StartsWith(this.SearchText);
-            }
-            else
-            {
-                if (device != null)
+                foreach (var slot in chas.Slots)
                 {
-                    string nameVendor = device.Name.ToLower();
-                    if (nameVendor.Contains(this.SearchText)) return true;
-                    nameVendor = device.Vendor.ToLower();
-                    if (nameVendor.Contains(this.SearchText)) return true;
+                    var ports = slot.Ports.FindAll(p => p.EndPointDeviceList.Any(epd => 
+                            epd.Name.IndexOf(SearchText, StringComparison.CurrentCultureIgnoreCase) >= 0 ||
+                            epd.Vendor.IndexOf(SearchText, StringComparison.CurrentCultureIgnoreCase) >= 0 ||
+                            GetVendorNames(epd.MacAddress).Any(s => s.IndexOf(SearchText, StringComparison.CurrentCultureIgnoreCase) >= 0)));
+                    AddPorstToList(ports);
                 }
-                return GetVendorName(macAddr).ToLower().Contains(this.SearchText);
+            }
+        }
+
+        private void AddPorstToList(List<PortModel> ports)
+        {
+            foreach (var port in ports)
+            {
+                if (!PortsFound.Any(p => p.Port == port)) PortsFound.Add(new PortViewModel(port, SearchText));
             }
         }
 
         private void PortSelection_Changed(Object sender, RoutedEventArgs e)
         {
-            if (_portsListView.SelectedItem is PortModel port)
+            if (_portsListView.SelectedItem is PortViewModel model)
             {
-                SelectedPort = port;
+                SelectedPort = model.Port;
             }
         }
 
@@ -215,6 +174,45 @@ namespace PoEWizard.Components
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void ConnectSelectedPort()
+        {
+            int port = SelectedPort?.RemotePort ?? 0;
+            string ipAddr = SelectedPort?.IpAddress.Replace("...","").Trim();
+            switch (port)
+            {
+                case 22:
+                case 23:
+                    string putty = MainWindow.Config.Get("putty");
+                    if (string.IsNullOrEmpty(putty))
+                    {
+                        var ofd = new OpenFileDialog()
+                        {
+                            Filter = $"{Translate("i18n_puttyFile")}|*.exe",
+                            Title = Translate("i18n_puttyLoc"),
+                            InitialDirectory = Environment.SpecialFolder.ProgramFiles.ToString()
+                        };
+                        if (ofd.ShowDialog() == false) return;
+                        putty = ofd.FileName;
+                        MainWindow.Config.Set("putty", putty);
+                    }
+                    string cnx = port == 22 ? "ssh" : "telnet";
+                    Process.Start(putty, $"-{cnx} {ipAddr}");
+                    break;
+                case 80:
+                    Process.Start("explorer.exe", $"http://{ipAddr}");
+                    break;
+                case 443:
+                    Process.Start("explorer.exe", $"https://{ipAddr}");
+                    break;
+                case 3389:
+                    Process.Start("mstsc", $"/v: {ipAddr}");
+                    break;
+                default:
+                    //ShowMessageBox("", Translate("i18n_noPtOpen"));
+                    break;
+            }
         }
     }
 
