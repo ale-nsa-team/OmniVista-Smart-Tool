@@ -18,6 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
@@ -1606,16 +1607,69 @@ namespace PoEWizard
             });
         }
 
+        private void ShowTooltip(object sender, EventArgs e)
+        {
+            if (sender is StackPanel sp)
+            {
+                string ip = string.Empty;
+                int count = VisualTreeHelper.GetChildrenCount(sp);
+                for (int i = 0; i < count; i++)
+                {
+                    UIElement child = (UIElement)VisualTreeHelper.GetChild(sp, i);
+                    if (child is TextBlock tb)
+                    {
+                        ip = tb.Text.Replace("...", "");
+                    }
+                    else if (child is Popup pp)
+                    {
+                        pp.IsOpen = ip != string.Empty;
+                    }
+                }
+            }
+        }
+
+        private void HideTooltip(object sender, EventArgs e)
+        {
+            if (sender is StackPanel sp)
+            {
+                int count = VisualTreeHelper.GetChildrenCount(sp);
+                for (int i = 0; i < count; i++)
+                {
+                    UIElement child = (UIElement)VisualTreeHelper.GetChild(sp, i);
+                    if (child is Popup pp)
+                    {
+                        pp.IsOpen = false;
+                    }
+                }
+            }
+        }
+
+        private async void Tooltip_Click(object sender, EventArgs e)
+        {
+            if (sender is TextBlock tb)
+            {
+                string ipAddr = tb.Text;
+                ShowInfoBox(Translate("i18n_devCnx"));
+                ShowProgress($"Connecting to {ipAddr}");
+                int port = await Task.Run(() => IpScan.GetOpenPort(ipAddr));
+                ConnectToPort(ipAddr, port);
+            }
+        }
+
         private void ConnectCurrentDevice()
+        {
+            _portList.SelectionChanged -= PortSelection_Changed;
+            _portList.SelectedIndex = selectedPortIndex; //fix issue with selection jumping 2 rows above
+            string ipAddr = selectedPort.IpAddress?.Replace("...", "").Trim();
+            int port = selectedPort.RemotePort;
+            ConnectToPort(ipAddr, port);
+            _portList.SelectionChanged += PortSelection_Changed;
+        }
+
+        private void ConnectToPort(string ipAddr, int port)
         {
             try
             {
-                _portList.SelectionChanged -= PortSelection_Changed;
-                _portList.SelectedIndex = selectedPortIndex; //fix issue with selection jumping 2 rows above
-                string ipAddr = selectedPort.IpAddress.Replace("...", "").Trim();
-                int port = selectedPort.RemotePort;
-                ShowInfoBox(Translate("i18n_devCnx"));
-                ShowProgress($"Connecting to {ipAddr}");
                 switch (port)
                 {
                     case 22:
@@ -1646,15 +1700,23 @@ namespace PoEWizard
                         Process.Start("mstsc", $"/v: {ipAddr}");
                         break;
                     default:
-                        //ShowMessageBox("", Translate("i18n_noPtOpen"));
+                        ShowMessageBox("", Translate("i18n_noPtOpen", ipAddr));
                         break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                if (!string.IsNullOrEmpty(ipAddr))
+                {
+                    if (port != 0) ShowMessageBox("", Translate("i18n_cnxFail", ipAddr, port.ToString()));
+                    else ShowMessageBox("", Translate("i18n_noPtOpen", ipAddr));
                 }
             }
             finally
             {
                 HideInfoBox();
                 HideProgress();
-                _portList.SelectionChanged += PortSelection_Changed;
             }
         }
 
@@ -1977,7 +2039,7 @@ namespace PoEWizard
             {
                 foreach (var slot in chas.Slots)
                 {
-                    Parallel.ForEach(slot.Ports, port => 
+                    Parallel.ForEach(slot.Ports, port =>
                     {
                         if (!string.IsNullOrEmpty(port.IpAddress))
                         {

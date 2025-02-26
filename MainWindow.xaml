@@ -509,9 +509,28 @@
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=IpAddress}" MouseDown="IpAddress_Click" 
-                                           Style="{Binding Path=RemotePort, Converter={StaticResource ValueToStyleConverter}}"
-                                           ToolTip="{Binding Path=IpAddrList, Converter={StaticResource IpAddrListToTooltipConverter}}" />
+                                <StackPanel MouseEnter="ShowTooltip" MouseLeave="HideTooltip">
+                                    <TextBlock Text="{Binding Path=IpAddress}" MouseDown="IpAddress_Click"
+                                           Style="{Binding Path=RemotePort, Converter={StaticResource ValueToStyleConverter}}" />
+                                    <Popup Style="{DynamicResource tooltipPopup}">
+                                        <DataGrid Style="{DynamicResource defaultGrid}" MaxHeight="300"
+                                                  ItemsSource="{Binding Path=IpAddrList}">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn IsReadOnly="True" Header="MAC" Binding="{Binding Key}" />
+                                                <DataGridTemplateColumn IsReadOnly="True">
+                                                    <DataGridTemplateColumn.Header>
+                                                        <TextBlock Text="IP" />
+                                                    </DataGridTemplateColumn.Header>
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Value}" Style="{DynamicResource clickable}" MouseDown="Tooltip_Click"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Popup>
+                                </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

@@ -503,6 +503,21 @@ namespace PoEWizard.Components
         }
     }
 
+    public class StringToTooltipEnableConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (IsInvalid(value)) return false;
+            string item = value as string;
+            return !string.IsNullOrEmpty(item);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
     public class DeviceToTooltipConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

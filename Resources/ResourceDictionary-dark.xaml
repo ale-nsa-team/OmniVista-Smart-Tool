@@ -18,6 +18,7 @@
     <converters:CpuUsageToColorConverter x:Key="CpuUsageToColorConverter" />
     <converters:CpuUsageToToolTipConverter x:Key="CpuUsageToToolTipConverter" />
     <converters:CpuUsageToVisibilityConverter x:Key="CpuUsageToVisibilityConverter" />
+    <converters:StringToTooltipEnableConverter x:Key=":StringToTooltipEnableConverter" />
     <converters:DeviceToTooltipConverter x:Key="DeviceToTooltipConverter" />
     <converters:StatusToTooltipConverter x:Key="StatusToTooltipConverter" />
     <converters:PortToTooltipConverter x:Key="PortToTooltipConverter" />
@@ -1275,6 +1276,14 @@
                 <Setter Property="Background" Value="{StaticResource barBackground}" />
             </Style>
         </Style.Resources>
+    </Style>
+    
+    <!--popu style-->
+    <Style TargetType="Popup" x:Key="tooltipPopup">
+        <Setter Property="PopupAnimation" Value="Fade" />
+        <Setter Property="Placement" Value="Mouse" />
+        <Setter Property="AllowsTransparency" Value="True" />
+        <Setter Property="StaysOpen" Value="False" />
     </Style>
 
 </ResourceDictionary>
