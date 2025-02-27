@@ -356,7 +356,7 @@
         </DataGrid>
         <Border Grid.Row="2" x:Name="_infoBox" Style="{DynamicResource infoBorder}" Visibility="Collapsed">
             <StackPanel>
-                <TextBlock x:Name="_infoBlock" Style="{DynamicResource msgBoxBody}"/>
+                <TextBlock x:Name="_infoBlock" Style="{DynamicResource msgBoxBody}" Margin="0,20,0,20"/>
                 <Button x:Name="_btnCancel" Margin="0,0,10,0"
                         Visibility="Collapsed"
                         Style="{DynamicResource defaultButton}" 

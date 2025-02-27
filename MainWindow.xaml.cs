@@ -2718,8 +2718,8 @@ namespace PoEWizard
             _infoBlock.Inlines.Clear();
             _infoBlock.Inlines.Add(message);
             int maxLen = MaxLineLen(message);
-            if (maxLen > 70) _infoBox.Width = 530;
-            else _infoBox.Width = 435;
+            if (maxLen > 60) _infoBox.Width = 450 + maxLen - 60;
+            else _infoBox.Width = 400;
             _infoBox.Visibility = Visibility.Visible;
         }
 
