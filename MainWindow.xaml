@@ -4,7 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PoEWizard"
+        xmlns:local="clr-namespace:PoEWizard" xmlns:properties="clr-namespace:PoEWizard.Properties"
         mc:Ignorable="d"
         Loaded="OnWindowLoaded"
         Closing="OnWindowClosing"
@@ -29,6 +29,23 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <Popup x:Name="_ipPopup" Style="{DynamicResource tooltipPopup}">
+            <DataGrid x:Name="_ipList" Style="{DynamicResource defaultGrid}" MaxHeight="300" MouseLeave="HidePopup">
+                <DataGrid.Columns>
+                    <DataGridTextColumn IsReadOnly="True" Header="MAC" Binding="{Binding Key}" />
+                    <DataGridTemplateColumn IsReadOnly="True">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="IP" />
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Value}" Style="{DynamicResource clickable}" MouseDown="Tooltip_Click"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Popup>
         <Menu Grid.Row="0" x:Name="_mainMenu" Style="{DynamicResource _mainMenu}">
             <MenuItem Header="{DynamicResource i18n_cnx}">
                 <MenuItem Header="{DynamicResource i18n_msw}" x:Name="_switchMenuItem" Click="SwitchMenuItem_Click"/>
@@ -502,35 +519,13 @@
                                 <TextBlock Text="{DynamicResource i18n_ptIp}" 
                                            Style="{DynamicResource toolTip}" Margin="0,0,5,0"
                                            ToolTip="{DynamicResource i18n_ptIp_tt}" />
-                                <TextBlock Text="*" x:Name="_ipscan" Style="{DynamicResource flashing}"
-                                           Focusable="False"
-                                           ToolTip="{DynamicResource i18n_ptIp_tt}" />
+                                <TextBlock Text="*" x:Name="_ipscan" Style="{DynamicResource flashing}" Focusable="False" />
                             </StackPanel>
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel MouseEnter="ShowTooltip" MouseLeave="HideTooltip">
-                                    <TextBlock Text="{Binding Path=IpAddress}" MouseDown="IpAddress_Click"
+                                <TextBlock Text="{Binding Path=IpAddress}" MouseDown="IpAddress_Click" MouseEnter="ShowPopup"
                                            Style="{Binding Path=RemotePort, Converter={StaticResource ValueToStyleConverter}}" />
-                                    <Popup Style="{DynamicResource tooltipPopup}">
-                                        <DataGrid Style="{DynamicResource defaultGrid}" MaxHeight="300"
-                                                  ItemsSource="{Binding Path=IpAddrList}">
-                                            <DataGrid.Columns>
-                                                <DataGridTextColumn IsReadOnly="True" Header="MAC" Binding="{Binding Key}" />
-                                                <DataGridTemplateColumn IsReadOnly="True">
-                                                    <DataGridTemplateColumn.Header>
-                                                        <TextBlock Text="IP" />
-                                                    </DataGridTemplateColumn.Header>
-                                                    <DataGridTemplateColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <TextBlock Text="{Binding Value}" Style="{DynamicResource clickable}" MouseDown="Tooltip_Click"/>
-                                                        </DataTemplate>
-                                                    </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>
-                                            </DataGrid.Columns>
-                                        </DataGrid>
-                                    </Popup>
-                                </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

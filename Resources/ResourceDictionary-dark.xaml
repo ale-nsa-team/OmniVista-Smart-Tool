@@ -1278,10 +1278,10 @@
         </Style.Resources>
     </Style>
     
-    <!--popu style-->
+    <!--popup style-->
     <Style TargetType="Popup" x:Key="tooltipPopup">
         <Setter Property="PopupAnimation" Value="Fade" />
-        <Setter Property="Placement" Value="Mouse" />
+        <!--<Setter Property="Placement" Value="MousePoint" />-->
         <Setter Property="AllowsTransparency" Value="True" />
         <Setter Property="StaysOpen" Value="False" />
     </Style>

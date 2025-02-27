@@ -64,6 +64,7 @@ namespace PoEWizard
         private double maxCollectLogsDur = 0;
         private string lastSearch = string.Empty;
         private string currAlias = string.Empty;
+        private int prevIdx = -1;
         private readonly Config config;
         private OpType opType;
         private CancellationTokenSource tokenSource;
@@ -1607,41 +1608,47 @@ namespace PoEWizard
             });
         }
 
-        private void ShowTooltip(object sender, EventArgs e)
+        private void ShowPopup(object sender, MouseEventArgs e)
         {
-            if (sender is StackPanel sp)
+            if (sender is TextBlock tb)
             {
-                string ip = string.Empty;
-                int count = VisualTreeHelper.GetChildrenCount(sp);
-                for (int i = 0; i < count; i++)
+                try
                 {
-                    UIElement child = (UIElement)VisualTreeHelper.GetChild(sp, i);
-                    if (child is TextBlock tb)
+                    _ipPopup.IsOpen = false;
+                    _ipPopup.PlacementTarget = null;
+                    _ipList.ItemsSource = null;
+                    DataGridRow row = DataGridRow.GetRowContainingElement(tb);
+                    int idx = row?.GetIndex() ?? -1;
+                    if (idx == -1 || idx == prevIdx) return;
+                    prevIdx = idx;
+                    if (string.IsNullOrEmpty(tb.Text)) return;
+                        Task.Delay(1000).ContinueWith(t =>
                     {
-                        ip = tb.Text.Replace("...", "");
-                    }
-                    else if (child is Popup pp)
-                    {
-                        pp.IsOpen = ip != string.Empty;
-                    }
+                        Dispatcher.Invoke(() =>
+                        {
+                            Trace.WriteLine($"idx = {idx}");
+                            PortModel port = _portList.Items[idx] as PortModel;
+                            _ipList.ItemsSource = port.IpAddrList;
+                            _ipPopup.PlacementTarget = tb;
+                            _ipPopup.Placement = PlacementMode.Relative;
+                            var pos = e.GetPosition(tb);
+                            Trace.WriteLine($"pos: ({pos.X},{pos.Y})");
+                            _ipPopup.VerticalOffset = pos.Y - 5;
+                            _ipPopup.HorizontalOffset = pos.X - 5;
+                            _ipPopup.IsOpen = true;
+                        });
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
                 }
             }
         }
 
-        private void HideTooltip(object sender, EventArgs e)
+        private void HidePopup(object sender, EventArgs e)
         {
-            if (sender is StackPanel sp)
-            {
-                int count = VisualTreeHelper.GetChildrenCount(sp);
-                for (int i = 0; i < count; i++)
-                {
-                    UIElement child = (UIElement)VisualTreeHelper.GetChild(sp, i);
-                    if (child is Popup pp)
-                    {
-                        pp.IsOpen = false;
-                    }
-                }
-            }
+            _ipPopup.IsOpen = false;
         }
 
         private async void Tooltip_Click(object sender, EventArgs e)
@@ -1649,6 +1656,7 @@ namespace PoEWizard
             if (sender is TextBlock tb)
             {
                 string ipAddr = tb.Text;
+                if (string.IsNullOrEmpty(ipAddr)) return;
                 ShowInfoBox(Translate("i18n_devCnx"));
                 ShowProgress($"Connecting to {ipAddr}");
                 int port = await Task.Run(() => IpScan.GetOpenPort(ipAddr));
@@ -1661,6 +1669,7 @@ namespace PoEWizard
             _portList.SelectionChanged -= PortSelection_Changed;
             _portList.SelectedIndex = selectedPortIndex; //fix issue with selection jumping 2 rows above
             string ipAddr = selectedPort.IpAddress?.Replace("...", "").Trim();
+            if (string.IsNullOrEmpty(ipAddr)) return;
             int port = selectedPort.RemotePort;
             ConnectToPort(ipAddr, port);
             _portList.SelectionChanged += PortSelection_Changed;
