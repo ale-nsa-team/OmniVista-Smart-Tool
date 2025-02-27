@@ -29,23 +29,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Popup x:Name="_ipPopup" Style="{DynamicResource tooltipPopup}">
-            <DataGrid x:Name="_ipList" Style="{DynamicResource defaultGrid}" MaxHeight="300" MouseLeave="HidePopup">
-                <DataGrid.Columns>
-                    <DataGridTextColumn IsReadOnly="True" Header="MAC" Binding="{Binding Key}" />
-                    <DataGridTemplateColumn IsReadOnly="True">
-                        <DataGridTemplateColumn.Header>
-                            <TextBlock Text="IP" />
-                        </DataGridTemplateColumn.Header>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Value}" Style="{DynamicResource clickable}" MouseDown="Tooltip_Click"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Popup>
         <Menu Grid.Row="0" x:Name="_mainMenu" Style="{DynamicResource _mainMenu}">
             <MenuItem Header="{DynamicResource i18n_cnx}">
                 <MenuItem Header="{DynamicResource i18n_msw}" x:Name="_switchMenuItem" Click="SwitchMenuItem_Click"/>

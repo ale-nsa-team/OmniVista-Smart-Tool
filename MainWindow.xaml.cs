@@ -65,7 +65,6 @@ namespace PoEWizard
         private string lastSearch = string.Empty;
         private string currAlias = string.Empty;
         private int prevIdx = -1;
-        private readonly Config config;
         private OpType opType;
         private CancellationTokenSource tokenSource;
         #endregion
@@ -78,7 +77,7 @@ namespace PoEWizard
         public static RestApiService restApiService;
         public static Dictionary<string, string> ouiTable = new Dictionary<string, string>();
         public static bool IsIpScanRunning { get; set; } = false;
-        public static Config Config => Config;
+        public static Config Config { get; set; }
         #endregion
 
         #region constructor and initialization
@@ -104,7 +103,8 @@ namespace PoEWizard
                 switch (report.Type)
                 {
                     case ReportType.Status:
-                        ShowInfoBox(report.Message);
+                        if (report.Message == null) HideInfoBox();
+                        else ShowInfoBox(report.Message);
                         break;
                     case ReportType.Error:
                         reportAck = ShowMessageBox(report.Title, report.Message, MsgBoxIcons.Error) == MsgBoxResult.Yes;
@@ -128,14 +128,14 @@ namespace PoEWizard
             this.Height = SystemParameters.PrimaryScreenHeight * 0.95;
             this.Width = SystemParameters.PrimaryScreenWidth * 0.95;
             Activity.DataPath = DataPath;
-            config = new Config(Path.Combine(DataPath, "app.cfg"));
-            Theme = Enum.TryParse(config.Get("theme"), out ThemeType t) ? t : ThemeType.Dark;
+            Config = new Config(Path.Combine(DataPath, "app.cfg"));
+            Theme = Enum.TryParse(Config.Get("theme"), out ThemeType t) ? t : ThemeType.Dark;
             if (Theme == ThemeType.Light) ThemeItem_Click(_lightMenuItem, null);
             BuildOuiTable();
             SetLanguageMenuOptions();
-            if (config.GetInt("wait_cpu_health", 0) == 0)
+            if (Config.GetInt("wait_cpu_health", 0) == 0)
             {
-                config.Set("wait_cpu_health", WAIT_CPU_HEALTH);
+                Config.Set("wait_cpu_health", WAIT_CPU_HEALTH);
             }
 
             //check cli arguments
@@ -226,7 +226,7 @@ namespace PoEWizard
                 sftpService?.Disconnect();
                 sftpService = null;
                 await CloseRestApiService(FirstChToUpper(confirm));
-                await Task.Run(() => config.Save());
+                await Task.Run(() => Config.Save());
                 this.Close();
             }
             catch (Exception ex)
@@ -240,7 +240,7 @@ namespace PoEWizard
         #region event handlers
         private void SwitchMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Login login = new Login(swModel.Login, config)
+            Login login = new Login(swModel.Login)
             {
                 Password = swModel.Password,
                 IpAddress = string.IsNullOrEmpty(swModel.IpAddress) ? lastIpAddr : swModel.IpAddress,
@@ -391,7 +391,8 @@ namespace PoEWizard
                 var sd = new SearchDevice(swModel, lastSearch)
                 {
                     Owner = this,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Progress = progress
                 };
                 if (string.IsNullOrEmpty(sd.SearchText)) return;
                 if (sd.PortsFound?.Count > 0)
@@ -460,7 +461,7 @@ namespace PoEWizard
             rs.ShowDialog();
             if (rs.DialogResult == false) return;
 
-            PassCode pc = new PassCode(this, config);
+            PassCode pc = new PassCode(this);
             if (pc.ShowDialog() == false) return;
             if (pc.Password != pc.SavedPassword)
             {
@@ -566,7 +567,7 @@ namespace PoEWizard
 
         private async void LaunchUpgrade(bool isAos)
         {
-            PassCode pc = new PassCode(this, config);
+            PassCode pc = new PassCode(this);
             if (pc.ShowDialog() == false) return;
             if (pc.Password != pc.SavedPassword)
             {
@@ -683,7 +684,7 @@ namespace PoEWizard
             try
             {
                 DisableButtons();
-                PassCode pc = new PassCode(this, config);
+                PassCode pc = new PassCode(this);
                 if (pc.ShowDialog() == true)
                 {
                     if (pc.Password != pc.SavedPassword)
@@ -989,7 +990,7 @@ namespace PoEWizard
 
         private void Reboot_Click(object sender, RoutedEventArgs e)
         {
-            PassCode pc = new PassCode(this, config);
+            PassCode pc = new PassCode(this);
             if (pc.ShowDialog() == true)
             {
                 if (pc.Password != pc.SavedPassword)
@@ -1351,7 +1352,7 @@ namespace PoEWizard
             {
                 _slotsView.CellStyle = currentDict["gridCellNoHilite"] as Style;
             }
-            config.Set("theme", t);
+            Config.Set("theme", t);
             SetTitleColor(this);
             //force color converters to run
             DataContext = null;
@@ -1382,7 +1383,7 @@ namespace PoEWizard
                 return;
             }
             mi.IsChecked = true;
-            config.Set("language", mi.Header.ToString());
+            Config.Set("language", mi.Header.ToString());
             foreach (MenuItem i in _langSel.Items)
             {
                 if (i != mi) i.IsChecked = false;
@@ -1523,7 +1524,7 @@ namespace PoEWizard
                 MsgBoxResult poweroff = ShowMessageBox(Translate("i18n_spoeOff"), msg, MsgBoxIcons.Question, MsgBoxButtons.YesNo);
                 if (poweroff == MsgBoxResult.Yes)
                 {
-                    PassCode pc = new PassCode(this, config);
+                    PassCode pc = new PassCode(this);
                     if (pc.ShowDialog() == false)
                     {
                         cb.IsChecked = true;
@@ -1614,28 +1615,30 @@ namespace PoEWizard
             {
                 try
                 {
-                    _ipPopup.IsOpen = false;
-                    _ipPopup.PlacementTarget = null;
-                    _ipList.ItemsSource = null;
                     DataGridRow row = DataGridRow.GetRowContainingElement(tb);
                     int idx = row?.GetIndex() ?? -1;
                     if (idx == -1 || idx == prevIdx) return;
                     prevIdx = idx;
                     if (string.IsNullOrEmpty(tb.Text)) return;
-                        Task.Delay(1000).ContinueWith(t =>
+                    Task.Delay(IP_LIST_POPUP_DELAY).ContinueWith(t =>
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            Trace.WriteLine($"idx = {idx}");
                             PortModel port = _portList.Items[idx] as PortModel;
-                            _ipList.ItemsSource = port.IpAddrList;
-                            _ipPopup.PlacementTarget = tb;
-                            _ipPopup.Placement = PlacementMode.Relative;
                             var pos = e.GetPosition(tb);
-                            Trace.WriteLine($"pos: ({pos.X},{pos.Y})");
-                            _ipPopup.VerticalOffset = pos.Y - 5;
-                            _ipPopup.HorizontalOffset = pos.X - 5;
-                            _ipPopup.IsOpen = true;
+                            if (Math.Abs(pos.Y) > 100 || Math.Abs(pos.X) > 100) return; //moue is too far away.
+                            PopupUserControl popup = new PopupUserControl
+                            {
+                                Progress = progress,
+                                KVP = port.IpAddrList,
+                                KeyHeader = "MAC",
+                                ValueHeader = "IP",
+                                Target = tb,
+                                Placement = PlacementMode.Relative,
+                                OffsetX = pos.X - 5,
+                                OffsetY = pos.Y - 5
+                            };
+                            popup.Show();
                         });
                     });
                 }
@@ -1643,24 +1646,6 @@ namespace PoEWizard
                 {
                     Logger.Error(ex);
                 }
-            }
-        }
-
-        private void HidePopup(object sender, EventArgs e)
-        {
-            _ipPopup.IsOpen = false;
-        }
-
-        private async void Tooltip_Click(object sender, EventArgs e)
-        {
-            if (sender is TextBlock tb)
-            {
-                string ipAddr = tb.Text;
-                if (string.IsNullOrEmpty(ipAddr)) return;
-                ShowInfoBox(Translate("i18n_devCnx"));
-                ShowProgress($"Connecting to {ipAddr}");
-                int port = await Task.Run(() => IpScan.GetOpenPort(ipAddr));
-                ConnectToPort(ipAddr, port);
             }
         }
 
@@ -1683,7 +1668,7 @@ namespace PoEWizard
                 {
                     case 22:
                     case 23:
-                        string putty = config.Get("putty");
+                        string putty = Config.Get("putty");
                         if (string.IsNullOrEmpty(putty))
                         {
                             var ofd = new OpenFileDialog()
@@ -1694,7 +1679,7 @@ namespace PoEWizard
                             };
                             if (ofd.ShowDialog() == false) return;
                             putty = ofd.FileName;
-                            config.Set("putty", putty);
+                            Config.Set("putty", putty);
                         }
                         string cnx = port == 22 ? "ssh" : "telnet";
                         Process.Start(putty, $"-{cnx} {ipAddr}");
@@ -1785,7 +1770,7 @@ namespace PoEWizard
                     string name = match.Groups[match.Groups.Count - 2].Value;
                     string iheader = name.Substring(0, name.Length - 2) + "-" + name.Substring(name.Length - 2).ToUpper();
                     MenuItem item = new MenuItem { Header = iheader };
-                    if (iheader == config.Get("language"))
+                    if (iheader == Config.Get("language"))
                     {
                         if (LoadLanguageFile(file))
                         {
@@ -1943,9 +1928,9 @@ namespace PoEWizard
                 await Task.Run(() => restApiService.Connect(reportResult, tokenSource.Token));
                 if (!swModel.IsConnected)
                 {
-                    List<string> ips = config.Get("switches").Split(',').ToList();
+                    List<string> ips = Config.Get("switches").Split(',').ToList();
                     ips.RemoveAll(ip => ip == swModel.IpAddress);
-                    config.Set("switches", string.Join(",", ips));
+                    Config.Set("switches", string.Join(",", ips));
                 }
                 UpdateConnectedState();
                 //delay to update cpu health
@@ -1969,7 +1954,7 @@ namespace PoEWizard
 
         private void DelayGetCpuHealth()
         {
-            Task.Delay(TimeSpan.FromSeconds(config.GetInt("wait_cpu_health", 1)), tokenSource.Token).ContinueWith(t =>
+            Task.Delay(TimeSpan.FromSeconds(Config.GetInt("wait_cpu_health", 1)), tokenSource.Token).ContinueWith(t =>
             {
                 try
                 {

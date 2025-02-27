@@ -180,6 +180,9 @@
       <DependentUpon>PassCode.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\PasswordBoxAssistant.cs" />
+    <Compile Include="Components\PopupUserControl.xaml.cs">
+      <DependentUpon>PopupUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\PowerSupply.xaml.cs">
       <DependentUpon>PowerSupply.xaml</DependentUpon>
     </Compile>
@@ -337,6 +340,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\PassCode.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\PopupUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -14,9 +14,8 @@ namespace PoEWizard.Components
     {
         public string SavedPassword;
         public string Password { get; set; }
-        private readonly Config cfg;
         
-        public PassCode(Window owner, Config config)
+        public PassCode(Window owner)
         {
             InitializeComponent();
             if (MainWindow.Theme == ThemeType.Dark)
@@ -33,8 +32,7 @@ namespace PoEWizard.Components
             DataContext = this;
             this.Owner = owner;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            cfg = config;
-            string pwd = cfg.Get("hash");
+            string pwd = MainWindow.Config.Get("hash");
             SavedPassword = pwd != null ? DecryptString(pwd) : Constants.DEFAULT_PASS_CODE;
         }
 
@@ -74,7 +72,7 @@ namespace PoEWizard.Components
                 if (newpwd != null)
                 {                 
                     string np = EncryptString(newpwd);
-                    cfg.Set("hash", np);
+                    MainWindow.Config.Set("hash", np);
                     SavedPassword = newpwd;
                     this.DataContext = null;
                     Password = newpwd;

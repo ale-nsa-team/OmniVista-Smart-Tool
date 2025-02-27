@@ -120,14 +120,8 @@
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Path=Port.IpAddress}" MouseDown="IpAddress_Click" 
+                            <TextBlock Text="{Binding Path=Port.IpAddress}" MouseDown="IpAddress_Click" MouseEnter="ShowPopup"
                                        Style="{Binding Path=Port.RemotePort, Converter={StaticResource ValueToStyleConverter}}">
-                                <TextBlock.ToolTip>
-                                    <MultiBinding Converter="{StaticResource IpAddrListFilterToTooltipConverter}">
-                                        <Binding Path="Port.IpAddrList" />
-                                        <Binding Path="SearchText" Mode="OneWay" />
-                                    </MultiBinding>
-                                </TextBlock.ToolTip>
                             </TextBlock>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

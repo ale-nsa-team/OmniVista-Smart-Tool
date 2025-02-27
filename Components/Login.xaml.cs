@@ -17,14 +17,13 @@ namespace PoEWizard.Components
     {
         private readonly ImageSource eye_open;
         private readonly ImageSource eye_closed;
-        private readonly Config cfg;
 
         public string IpAddress { get; set; }
         public List<string> IpList { get; set; }
         public string User { get; set; }
         public string Password { get; set; }
 
-        public Login(String user, Config config)
+        public Login(String user)
         {
             InitializeComponent();
             if (MainWindow.Theme == ThemeType.Dark)
@@ -42,8 +41,7 @@ namespace PoEWizard.Components
             eye_closed = (ImageSource)Resources.MergedDictionaries[0]["eye_closed"];
 
             IpList = new List<string>();
-            cfg = config;
-            string swList = cfg.Get("switches");
+            string swList = MainWindow.Config.Get("switches");
             if ( swList != null)
             {
                 IpList = swList.Split(',').ToList();
@@ -112,7 +110,7 @@ namespace PoEWizard.Components
         {
             _ipAddress.ItemsSource = null;
             IpList.Clear();
-            cfg.Set("switches", "");
+            MainWindow.Config.Set("switches", "");
             _ipAddress.ItemsSource = IpList;
         }
 
@@ -120,7 +118,7 @@ namespace PoEWizard.Components
         {
             _ipAddress.ItemsSource = null;
             IpList.Remove(IpAddress);
-            cfg.Set("switches", string.Join(",", IpList));
+            MainWindow.Config.Set("switches", string.Join(",", IpList));
             _ipAddress.ItemsSource = IpList;
             _ipAddress.SelectedIndex = 0;
         }
@@ -136,7 +134,7 @@ namespace PoEWizard.Components
                 }
                 IpList.Add(IpAddress);
                 IpList.Sort();
-                cfg.Set("switches", string.Join(",", IpList));
+                MainWindow.Config.Set("switches", string.Join(",", IpList));
             }
             this.DialogResult = true;
             this.Close();

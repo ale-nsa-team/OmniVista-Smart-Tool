@@ -7,6 +7,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.Utils;
 
@@ -18,7 +21,9 @@ namespace PoEWizard.Components
     public partial class SearchDevice : Window
     {
         private readonly SearchType searchType;
+        private int prevIdx = -1;
 
+        public IProgress<ProgressReport> Progress { get; set; }
         public string SearchText { get; set; }
         public List<PortViewModel> PortsFound { get; set; }
         public PortModel SelectedPort { get; set; }
@@ -72,6 +77,39 @@ namespace PoEWizard.Components
 
             this.Height = this._portsListView.ActualHeight + 115;
             this.Top = this.Owner.Height > this.Height ? this.Owner.Top + (this.Owner.Height - this.Height) / 2 : this.Top;
+        }
+
+        private void ShowPopup(object sender, MouseEventArgs e)
+        {
+            if (sender is TextBlock tb)
+            {
+                DataGridRow row = DataGridRow.GetRowContainingElement(tb);
+                int idx = row?.GetIndex() ?? -1;
+                if (idx == -1 || idx == prevIdx) return;
+                prevIdx = PortsFound.Count > 1 ? idx: -1;
+                if (string.IsNullOrEmpty(tb.Text)) return;
+                Task.Delay(IP_LIST_POPUP_DELAY).ContinueWith(t => 
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        PortModel port = PortsFound[idx].Port;
+                        var pos = e.GetPosition(tb);
+                        if (Math.Abs(pos.Y) > 100 || Math.Abs(pos.X) > 100) return; //moue is too far away.
+                        PopupUserControl popup = new PopupUserControl
+                        {
+                            Progress = Progress,
+                            KVP = port.IpAddrList,
+                            KeyHeader = "MAC",
+                            ValueHeader = "IP",
+                            Target = tb,
+                            Placement = PlacementMode.Relative,
+                            OffsetX = pos.X - 5,
+                            OffsetY = pos.Y - 5
+                        };
+                        popup.Show();
+                    });
+                });
+            }
         }
 
         private void IpAddress_Click(object sender, RoutedEventArgs e)
@@ -137,7 +175,7 @@ namespace PoEWizard.Components
             {
                 foreach (var slot in chas.Slots)
                 {
-                    var ports = slot.Ports.FindAll(p => p.EndPointDeviceList.Any(epd => 
+                    var ports = slot.Ports.FindAll(p => p.EndPointDeviceList.Any(epd =>
                             epd.Name.IndexOf(SearchText, StringComparison.CurrentCultureIgnoreCase) >= 0 ||
                             epd.Vendor.IndexOf(SearchText, StringComparison.CurrentCultureIgnoreCase) >= 0 ||
                             GetVendorNames(epd.MacAddress).Any(s => s.IndexOf(SearchText, StringComparison.CurrentCultureIgnoreCase) >= 0)));
@@ -179,7 +217,7 @@ namespace PoEWizard.Components
         private void ConnectSelectedPort()
         {
             int port = SelectedPort?.RemotePort ?? 0;
-            string ipAddr = SelectedPort?.IpAddress.Replace("...","").Trim();
+            string ipAddr = SelectedPort?.IpAddress.Replace("...", "").Trim();
             switch (port)
             {
                 case 22:

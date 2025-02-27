@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="PoEWizard.Components.PopupUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PoEWizard.Components"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="200">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml"/>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml"/>
+                <ResourceDictionary Source="../Resources/strings-enUS.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Popup x:Name="_popup" Style="{DynamicResource tooltipPopup}">
+        <DataGrid x:Name="_dictGrid" Style="{DynamicResource defaultGrid}" MaxHeight="300" MouseLeave="HidePopup">
+            <DataGrid.Columns>
+                <DataGridTextColumn IsReadOnly="True" Binding="{Binding Key}">
+                    <DataGridTextColumn.Header>
+                        <TextBlock Text="{Binding DataContext.KeyHeader, RelativeSource={RelativeSource AncestorType={x:Type local:PopupUserControl}}}" />
+                    </DataGridTextColumn.Header>
+                </DataGridTextColumn>
+                <DataGridTemplateColumn IsReadOnly="True">
+                    <DataGridTemplateColumn.Header>
+                        <TextBlock Text="{Binding DataContext.ValueHeader, RelativeSource={RelativeSource AncestorType={x:Type local:PopupUserControl}}}" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Value}" Style="{DynamicResource clickable}" MouseDown="Value_Click"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Popup>
+</UserControl>

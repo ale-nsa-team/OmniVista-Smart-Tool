@@ -117,7 +117,7 @@
     <sys:String x:Key="i18n_devName">Device Name</sys:String>
     <sys:String x:Key="i18n_ptBlock">Port blocked by Spanning Tree</sys:String>
     <sys:String x:Key="i18n_devCnx">Please wait while we connect to the device...</sys:String>
-    <sys:String x:Key="i18n_cnxDev">Connecting to</sys:String>
+    <sys:String x:Key="i18n_cnxDev">Connecting to $1</sys:String>
     <sys:String x:Key="i18n_noPtOpen">Could not determine how to connect to device on $1</sys:String>
     <sys:String x:Key="i18n_cnxFail">Failed to connect to device $1 on port $2</sys:String>
     <sys:String x:Key="i18n_puttyLoc">Plase select the location of the putty.exe application so we can connect to this device</sys:String>

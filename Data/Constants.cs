@@ -485,13 +485,14 @@ namespace PoEWizard.Data
         public const long GIGA = 1073741824;
         #endregion
 
-        #region Number of Mac Addresses Limits
+        #region Number of Mac & Ip Addresses Limits
         public const int MAX_SEARCH_NB_MAC_PER_PORT = 1500;
         public const int MAX_SCAN_NB_MAC_PER_PORT = 52;
         public const int MAX_NB_MAC_TOOL_TIP = 50;
         public const int MAX_NB_DEVICES_TOOL_TIP = 10;
         public const int MIN_NB_MAC_UPLINK = 2;
         public const int MAX_NB_IP_PER_PORT = 50;
+        public const int IP_LIST_POPUP_DELAY = 500;
         #endregion
 
         #region Switch Scanner Limits
