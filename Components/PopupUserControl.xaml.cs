@@ -19,7 +19,7 @@ namespace PoEWizard.Components
     public partial class PopupUserControl : UserControl
     {
         public IProgress<ProgressReport> Progress { get; set; }
-        public Dictionary<string, string> KVP { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> Data { get; set; } = new Dictionary<string, string>();
         public string KeyHeader { get; set; }
         public string ValueHeader { get; set; }
         public UIElement Target { 
@@ -58,7 +58,7 @@ namespace PoEWizard.Components
 
         public void Show()
         {
-            _dictGrid.ItemsSource = KVP;
+            _dictGrid.ItemsSource = Data;
             _popup.IsOpen = true;
         }
 
@@ -121,9 +121,7 @@ namespace PoEWizard.Components
                     if (port != 0) 
                         Progress?.Report(new ProgressReport(ReportType.Error, null, Translate("i18n_cnxFail", ipAddr, port.ToString())));
                     else
-                    {
                         Progress?.Report(new ProgressReport(ReportType.Warning, null, Translate("i18n_noPtOpen", ipAddr)));
-                    }
                 }
             }
             finally

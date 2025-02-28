@@ -403,8 +403,20 @@ namespace PoEWizard
                     JumpToSelectedPort(portSelected);
                     return;
                 }
-                string msg = sd.IsMacAddress ? $"{Translate("i18n_fmac")} \"{lastSearch}\"" : $"{Translate("i18n_fdev")} \"{lastSearch}\"";
-                ShowMessageBox(Translate("i18n_sport"), $"{msg} {Translate("i18n_onsw")} {swModel.Name}!", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
+                switch (sd.SearchType)
+                {
+                    case SearchType.Mac:
+                        ShowMessageBox(Translate("i18n_sport"), Translate("i18n_fmac", lastSearch), MsgBoxIcons.Warning);
+                        break;
+                    case SearchType.Name:
+                        ShowMessageBox(Translate("i18n_sport"), Translate("i18n_fdev", lastSearch), MsgBoxIcons.Warning);
+                        break;
+                    case SearchType.Ip:
+                        ShowMessageBox(Translate("i18n_sport"), Translate("i18n_fip", lastSearch), MsgBoxIcons.Warning);
+                        break;
+                    default:
+                        break;
+                }
             }
             catch (Exception ex)
             {
@@ -1626,11 +1638,11 @@ namespace PoEWizard
                         {
                             PortModel port = _portList.Items[idx] as PortModel;
                             var pos = e.GetPosition(tb);
-                            if (Math.Abs(pos.Y) > 100 || Math.Abs(pos.X) > 100) return; //moue is too far away.
+                            if (Math.Abs(pos.Y) > 100 || Math.Abs(pos.X) > 100) return; //mouse is too far away.
                             PopupUserControl popup = new PopupUserControl
                             {
                                 Progress = progress,
-                                KVP = port.IpAddrList,
+                                Data = port.IpAddrList,
                                 KeyHeader = "MAC",
                                 ValueHeader = "IP",
                                 Target = tb,
@@ -1988,21 +2000,21 @@ namespace PoEWizard
                 {
                     Dispatcher.Invoke(() => _ipscan.Focusable = true); //to trigger flashing
                     IsIpScanRunning = true;
-                    Logger.Debug($"Running ip scan on switch {swModel.Name} ({swModel.IpAddress})");
+                    Logger.Activity($"Running ip scan on switch {swModel.Name} ({swModel.IpAddress})");
                     Stopwatch watch = new Stopwatch();
                     watch.Start();
                     await IpScan.LaunchScan(swModel);
                     watch.Stop();
-                    Logger.Debug($"Ip scan took {watch.Elapsed:mm\\:ss}");
+                    Logger.Activity($"Ip scan took {watch.Elapsed:mm\\:ss}");
                     Dispatcher.Invoke(() =>
                     {
                         RefreshSlotAndPortsView();
                     });
-                    Logger.Debug($"Running port scan on switch {swModel.Name}");
+                    Logger.Activity($"Running port scan on switch {swModel.Name}");
                     watch.Restart();
                     await Task.Run(() => CheckForOpenPorts());
                     watch.Stop();
-                    Logger.Debug($"Port scan took {watch.Elapsed:mm\\:ss}");
+                    Logger.Activity($"Port scan took {watch.Elapsed:mm\\:ss}");
                     Dispatcher.Invoke(() =>
                     {
                         RefreshSlotAndPortsView();

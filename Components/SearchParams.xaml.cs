@@ -34,19 +34,19 @@ namespace PoEWizard.Components
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
             this.MouseDown += delegate { this.DragMove(); };
-            _btnOk.IsEnabled = SearchParam.Length > 0;
+            _btnOk.IsEnabled = SearchParam.Length > 1;
         }
 
         private void SelectDev_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter) BtnOk_Click(sender, e);
             else if (e.Key == Key.Escape) BtnCancel_Click(sender, e);
-            else _btnOk.IsEnabled = !string.IsNullOrEmpty(_srcText.Text);
+            else _btnOk.IsEnabled = _srcText.Text.Length > 1;
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(_srcText.Text)) return;
+            if (_srcText.Text.Length < 2) return;
             this.Close();
         }
 

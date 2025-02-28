@@ -20,20 +20,20 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class SearchDevice : Window
     {
-        private readonly SearchType searchType;
         private int prevIdx = -1;
 
         public IProgress<ProgressReport> Progress { get; set; }
         public string SearchText { get; set; }
         public List<PortViewModel> PortsFound { get; set; }
         public PortModel SelectedPort { get; set; }
-        public bool IsMacAddress => searchType == SearchType.Mac;
+        public SearchType SearchType { get; set; }
         public int NbPortsFound => PortsFound?.Count ?? 0;
 
         public SearchDevice(SwitchModel model, string srcParam)
         {
             this.SearchText = !string.IsNullOrEmpty(srcParam) ? srcParam.ToLower().Trim() : string.Empty;
             InitializeComponent();
+            PreviewKeyDown += (s,e) => { if (e.Key == Key.Escape) Close(); };
             DataContext = this;
             if (MainWindow.Theme == ThemeType.Dark)
             {
@@ -47,10 +47,10 @@ namespace PoEWizard.Components
             Resources.MergedDictionaries.Add(MainWindow.Strings);
 
             this.SelectedPort = null;
-            if (string.IsNullOrEmpty(this.SearchText)) searchType = SearchType.None;
+            if (string.IsNullOrEmpty(this.SearchText)) SearchType = SearchType.None;
             if (IsValidPartialIp(srcParam))
             {
-                searchType = SearchType.Ip;
+                SearchType = SearchType.Ip;
                 if (MainWindow.IsIpScanRunning)
                 {
                     CustomMsgBox cmb = new CustomMsgBox(MainWindow.Instance)
@@ -65,8 +65,8 @@ namespace PoEWizard.Components
                     return;
                 }
             }
-            else if (IsValidPartialMac(srcParam)) searchType = SearchType.Mac;
-            else searchType = SearchType.Name;
+            else if (IsValidPartialMac(srcParam)) SearchType = SearchType.Mac;
+            else SearchType = SearchType.Name;
             FindDevice(model);
             if (this.PortsFound.Count == 1) this.SelectedPort = this.PortsFound[0].Port;
         }
@@ -75,8 +75,15 @@ namespace PoEWizard.Components
         {
             this.MouseDown += delegate { this.DragMove(); };
 
-            this.Height = this._portsListView.ActualHeight + 115;
-            this.Top = this.Owner.Height > this.Height ? this.Owner.Top + (this.Owner.Height - this.Height) / 2 : this.Top;
+            this.Height = this._portsListView.ActualHeight + 100;
+            double maxh = this.Owner.ActualHeight - 400;
+            if (maxh > 120 && maxh < 400)
+            {
+                this._portsListView.MaxHeight = maxh - 100;
+                this.MaxHeight = maxh;
+            }
+            //this.Top = this.Owner.Height > this.Height ? this.Owner.Top + (this.Owner.Height - this.Height) / 2 : this.Top;
+            this.Top = this.Owner.Top + 350; //leave room for the infobox
         }
 
         private void ShowPopup(object sender, MouseEventArgs e)
@@ -98,7 +105,7 @@ namespace PoEWizard.Components
                         PopupUserControl popup = new PopupUserControl
                         {
                             Progress = Progress,
-                            KVP = port.IpAddrList,
+                            Data = port.IpAddrList,
                             KeyHeader = "MAC",
                             ValueHeader = "IP",
                             Target = tb,
@@ -128,7 +135,7 @@ namespace PoEWizard.Components
         {
             this.PortsFound = new List<PortViewModel>();
 
-            switch (searchType)
+            switch (SearchType)
             {
                 case SearchType.Ip:
                     SearchIpAddress(model);
@@ -202,9 +209,9 @@ namespace PoEWizard.Components
 
         private void Mouse_DoubleClick(Object sender, RoutedEventArgs e)
         {
-            if (_portsListView.SelectedItem is PortModel port)
+            if (_portsListView.SelectedItem is PortViewModel pvm)
             {
-                SelectedPort = port;
+                SelectedPort = pvm.Port;
                 this.Close();
             }
         }

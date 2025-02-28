@@ -35,7 +35,7 @@
         </StackPanel>
         <DataGrid x:Name="_portsListView" Grid.Row="1" Grid.ColumnSpan="3"
                 Style="{DynamicResource defaultGrid}"
-                MaxHeight="630"
+                MaxHeight="400"
                 ColumnHeaderStyle="{DynamicResource gridHeader}"
                 CellStyle="{DynamicResource gridCell}"
                 ItemsSource="{Binding PortsFound}"
@@ -43,7 +43,7 @@
                 MouseDoubleClick="Mouse_DoubleClick"
                 IsReadOnly="True">
             <DataGrid.Columns>
-                <DataGridTemplateColumn Width="0.8*">
+                <DataGridTemplateColumn Width="0.6*">
                     <DataGridTemplateColumn.Header>
                         <TextBlock Text="{DynamicResource i18n_port}" />
                     </DataGridTemplateColumn.Header>
@@ -126,7 +126,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Width="1.4*" IsReadOnly="True">
+                <DataGridTemplateColumn Width="1.3*" IsReadOnly="True">
                     <DataGridTemplateColumn.Header>
                         <TextBlock Text="{DynamicResource i18n_devType}" />
                     </DataGridTemplateColumn.Header>
@@ -143,7 +143,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Width="1.2*" IsReadOnly="True">
+                <DataGridTemplateColumn Width="1.3*" IsReadOnly="True">
                     <DataGridTemplateColumn.Header>
                         <TextBlock Text="{DynamicResource i18n_devName}" />
                     </DataGridTemplateColumn.Header>

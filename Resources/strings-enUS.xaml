@@ -511,10 +511,11 @@ Please reconnect to switch after it comes back up</sys:String>
     <sys:String x:Key="i18n_noSftp">Cannot connect secure FTP on switch</sys:String>
     <sys:String x:Key="i18n_lsnap">Reading configuration snapshot...</sys:String>
     <sys:String x:Key="i18n_tsnap">Configuration Shapshot</sys:String>
-    <sys:String x:Key="i18n_sport">Search MAC</sys:String>
+    <sys:String x:Key="i18n_sport">Device Search</sys:String>
     <sys:String x:Key="i18n_updAlias">Update port description</sys:String>
-    <sys:String x:Key="i18n_fmac">Could not find MAC Address</sys:String>
-    <sys:String x:Key="i18n_fdev">Could not find device or vendor</sys:String>
+    <sys:String x:Key="i18n_fmac">Could not find MAC Address $1</sys:String>
+    <sys:String x:Key="i18n_fdev">Could not find device or vendor name $1</sys:String>
+    <sys:String x:Key="i18n_fip">Could not find IP Address $1</sys:String>
     <sys:String x:Key="i18n_onsw">on switch</sys:String>
     <sys:String x:Key="i18n_badPwd">Invalid password</sys:String>
     <sys:String x:Key="i18n_rebsw">Reboot Switch</sys:String>
