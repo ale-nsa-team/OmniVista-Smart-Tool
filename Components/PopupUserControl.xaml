@@ -16,7 +16,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Popup x:Name="_popup" Style="{DynamicResource tooltipPopup}">
-        <DataGrid x:Name="_dictGrid" Style="{DynamicResource defaultGrid}" MaxHeight="300" MouseLeave="HidePopup">
+        <DataGrid x:Name="_dictGrid" Style="{DynamicResource defaultGrid}" MaxHeight="300" MouseEnter="OnMouseEnter" MouseLeave="HidePopup">
             <DataGrid.Columns>
                 <DataGridTextColumn IsReadOnly="True" Binding="{Binding Key}">
                     <DataGridTextColumn.Header>

@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using static PoEWizard.Data.Utils;
 using static PoEWizard.Data.Constants;
+using System.Threading;
 
 namespace PoEWizard.Components
 {
@@ -18,6 +19,8 @@ namespace PoEWizard.Components
     /// </summary>
     public partial class PopupUserControl : UserControl
     {
+        private CancellationTokenSource _cts;
+
         public IProgress<ProgressReport> Progress { get; set; }
         public Dictionary<string, string> Data { get; set; } = new Dictionary<string, string>();
         public string KeyHeader { get; set; }
@@ -60,6 +63,28 @@ namespace PoEWizard.Components
         {
             _dictGrid.ItemsSource = Data;
             _popup.IsOpen = true;
+            _cts = new CancellationTokenSource();
+            Task.Delay(1000, _cts.Token).ContinueWith(t =>
+            {
+                try
+                {
+                    if (!_cts.Token.IsCancellationRequested)
+                        _popup.Dispatcher.Invoke(() => _popup.IsOpen = false);
+                }
+                catch (OperationCanceledException)
+                {
+                    _cts.Token.ThrowIfCancellationRequested();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            });
+        }
+
+        private void OnMouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            _cts.Cancel();
         }
 
         private async void Value_Click(object sender, RoutedEventArgs e)
