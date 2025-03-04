@@ -137,7 +137,7 @@ namespace PoEWizard.Comm
                 ScanSwitch(source, token, reportResult);
                 token.ThrowIfCancellationRequested();
                 ShowInterfacesList();
-                UpdateProgressBar(++progressBarCnt); // 24
+                UpdateProgressBar(++progressBarCnt); // 25
             }
             catch (OperationCanceledException)
             {
@@ -177,25 +177,28 @@ namespace PoEWizard.Comm
                 SwitchModel.UpdateCpuThreshold(_dict);
                 UpdateProgressBar(++progressBarCnt); // 12
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_PORTS_LIST, ParseType.Htable3)) as List<Dictionary<string, string>>;
-                SwitchModel.LoadFromList(_dictList, DictionaryType.PortsList);
+                SwitchModel.LoadFromList(_dictList, DictionaryType.PortList);
                 UpdateProgressBar(++progressBarCnt); // 13
+                _dictList = SendCommand(new CmdRequest(Command.SHOW_LINKAGG_PORT, ParseType.Htable)) as List<Dictionary<string, string>>;
+                SwitchModel.LoadFromList(_dictList, DictionaryType.LinkAgg);
+                UpdateProgressBar(++progressBarCnt); // 14
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_BLOCKED_PORTS, ParseType.Htable)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.BlockedPorts);
-                UpdateProgressBar(--progressBarCnt); // 14
+                UpdateProgressBar(--progressBarCnt); // 15
                 _dict = SendCommand(new CmdRequest(Command.SHOW_LLDP_LOCAL, ParseType.LldpLocalTable)) as Dictionary<string, string>;
                 SwitchModel.LoadFromDictionary(_dict, DictionaryType.PortIdList);
-                UpdateProgressBar(++progressBarCnt); // 15
+                UpdateProgressBar(++progressBarCnt); // 16
                 SendProgressReport(Translate("i18n_psi"));
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_POWER_SUPPLIES, ParseType.Htable2)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.PowerSupply);
-                UpdateProgressBar(++progressBarCnt); // 16
+                UpdateProgressBar(++progressBarCnt); // 17
                 GetLanPower(token);
                 token.ThrowIfCancellationRequested();
                 progressBarCnt += 3;
-                UpdateProgressBar(progressBarCnt); // 17, 18, 19
+                UpdateProgressBar(progressBarCnt); // 18, 19, 20
                 GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
                 progressBarCnt += 3;
-                UpdateProgressBar(progressBarCnt); // 20, 21, 22
+                UpdateProgressBar(progressBarCnt); // 21, 22, 23
                 if (!File.Exists(Path.Combine(Path.Combine(MainWindow.DataPath, SNAPSHOT_FOLDER), $"{SwitchModel.IpAddress}{SNAPSHOT_SUFFIX}")))
                 {
                     SaveConfigSnapshot();
@@ -204,7 +207,7 @@ namespace PoEWizard.Comm
                 {
                     PurgeConfigSnapshotFiles();
                 }
-                UpdateProgressBar(++progressBarCnt); // 23
+                UpdateProgressBar(++progressBarCnt); // 24
                 string title = string.IsNullOrEmpty(source) ? $"{Translate("i18n_refrsw")} {SwitchModel.Name}" : source;
             }
             catch (OperationCanceledException)
@@ -1314,7 +1317,7 @@ namespace PoEWizard.Comm
         {
             int nbPortsMac = 0;
             _dictList = SendCommand(new CmdRequest(Command.SHOW_PORTS_LIST, ParseType.Htable3)) as List<Dictionary<string, string>>;
-            SwitchModel.LoadFromList(_dictList, DictionaryType.PortsList);
+            SwitchModel.LoadFromList(_dictList, DictionaryType.PortList);
             _dictList = SendCommand(new CmdRequest(Command.SHOW_MAC_LEARNING, ParseType.Htable)) as List<Dictionary<string, string>>;
             SwitchModel.LoadMacAddressFromList(_dictList, MAX_SCAN_NB_MAC_PER_PORT);
             foreach (ChassisModel chassis in SwitchModel.ChassisList)
@@ -1467,14 +1470,14 @@ namespace PoEWizard.Comm
 
         private void GetMacAndLldpInfo(int maxNbMacPerPort)
         {
+            SendProgressReport(Translate("i18n_rmac"));
+            _dictList = SendCommand(new CmdRequest(Command.SHOW_MAC_LEARNING, ParseType.Htable)) as List<Dictionary<string, string>>;
+            SwitchModel.LoadMacAddressFromList(_dictList, maxNbMacPerPort);
             SendProgressReport(Translate("i18n_rlldp"));
             object lldpList = SendCommand(new CmdRequest(Command.SHOW_LLDP_REMOTE, ParseType.LldpRemoteTable));
             SwitchModel.LoadLldpFromList(lldpList as Dictionary<string, List<Dictionary<string, string>>>, DictionaryType.LldpRemoteList);
             lldpList = SendCommand(new CmdRequest(Command.SHOW_LLDP_INVENTORY, ParseType.LldpRemoteTable));
             SwitchModel.LoadLldpFromList(lldpList as Dictionary<string, List<Dictionary<string, string>>>, DictionaryType.LldpInventoryList);
-            SendProgressReport(Translate("i18n_rmac"));
-            _dictList = SendCommand(new CmdRequest(Command.SHOW_MAC_LEARNING, ParseType.Htable)) as List<Dictionary<string, string>>;
-            SwitchModel.LoadMacAddressFromList(_dictList, maxNbMacPerPort);
         }
 
         private void GetPortsTrafficInformation()
@@ -1484,7 +1487,7 @@ namespace PoEWizard.Comm
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_INTERFACES, ParseType.TrafficTable)) as List<Dictionary<string, string>>;
                 if (_dictList?.Count > 0)
                 {
-                    SwitchModel.LoadFromList(_dictList, DictionaryType.ShowInterfacesList);
+                    SwitchModel.LoadFromList(_dictList, DictionaryType.InterfaceList);
                     if (_switchTraffic == null) _switchTraffic = new SwitchTrafficModel(SwitchModel, _dictList);
                     else _switchTraffic.UpdateTraffic(_dictList);
                 }
@@ -1501,10 +1504,7 @@ namespace PoEWizard.Comm
             {
                 SendProgressReport(Translate("i18n_rpdet"));
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_INTERFACES, ParseType.TrafficTable)) as List<Dictionary<string, string>>;
-                if (_dictList?.Count > 0)
-                {
-                    SwitchModel.LoadFromList(_dictList, DictionaryType.ShowInterfacesList);
-                }
+                SwitchModel.LoadFromList(_dictList, DictionaryType.InterfaceList);
             }
             catch (Exception ex)
             {
@@ -1753,7 +1753,7 @@ namespace PoEWizard.Comm
         {
             _progress.Report(new ProgressReport($"{Translate("i18n_rsPrfsh")} {SwitchModel.Name}"));
             _dictList = SendCommand(new CmdRequest(Command.SHOW_PORTS_LIST, ParseType.Htable3)) as List<Dictionary<string, string>>;
-            SwitchModel.LoadFromList(_dictList, DictionaryType.PortsList);
+            SwitchModel.LoadFromList(_dictList, DictionaryType.PortList);
         }
 
         public void PowerSlotUpOrDown(Command cmd, string slotNr)

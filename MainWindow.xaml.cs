@@ -992,6 +992,7 @@ namespace PoEWizard
 
         private void RefreshSwitch_Click(object sender, RoutedEventArgs e)
         {
+            tokenSource.Cancel();
             RefreshSwitch();
         }
 
@@ -1993,6 +1994,7 @@ namespace PoEWizard
 
         private void DelayIpScan()
         {
+            if (string.IsNullOrEmpty(swModel.IpAddress) || IsIpScanRunning) return;
             tokenSource = new CancellationTokenSource();
             Task.Delay(TimeSpan.FromSeconds(1), tokenSource.Token).ContinueWith(async t =>
             {

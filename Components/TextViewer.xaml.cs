@@ -106,6 +106,7 @@ namespace PoEWizard.Components
             if (Filename == Logger.LogPath) Logger.Clear();
             else if (Filename == Activity.FilePath) Activity.Clear(); 
             _content.Document.Blocks.Clear();
+            Task.Delay(TimeSpan.FromSeconds(1)).ContinueWith(t => Dispatcher.Invoke(() => Close()));
         }
 
         private void Close_Click(object sender, RoutedEventArgs e)

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.Utils;
 
@@ -159,9 +160,9 @@ namespace PoEWizard.Device
                         }
                     }
                     break;
-                case DictionaryType.PortsList:
+                case DictionaryType.PortList:
                 case DictionaryType.BlockedPorts:
-                    string header = dt == DictionaryType.PortsList ? CHAS_SLOT_PORT : PORT;
+                    string header = dt == DictionaryType.PortList ? CHAS_SLOT_PORT : PORT;
                     int nchas = dictList.GroupBy(d => GetChassisId(d, header)).Count();
                     for (int i = 1; i <= nchas; i++)
                     {
@@ -190,6 +191,20 @@ namespace PoEWizard.Device
                             }
                             slot.NbPorts = slotList.Count;
                         }
+                    }
+                    break;
+                case DictionaryType.LinkAgg:
+                    foreach (Dictionary<string, string> dict in dictList)
+                    {
+                        string csp = dict.First().Value;
+                        string[] split = csp.Split('/');
+                        if (split.Length < 3) continue;
+                        int chasId = int.Parse(split[0]);
+                        int slotId = int.Parse(split[1]);
+                        SlotModel slot = GetSlot($"{chasId}/{slotId}");
+                        PortModel port = slot?.GetPort(csp);
+                        if (port == null) continue;
+                        port.LinkAggId = StringToInt(GetDictValue(dict, LINK_AGG));
                     }
                     break;
                 case DictionaryType.PowerSupply:
@@ -248,7 +263,7 @@ namespace PoEWizard.Device
                         }
                     }
                     break;
-                case DictionaryType.ShowInterfacesList:
+                case DictionaryType.InterfaceList:
                     foreach (Dictionary<string, string> dict in dictList)
                     {
                         string slotPortNr = GetDictValue(dict, PORT);
@@ -321,7 +336,7 @@ namespace PoEWizard.Device
             foreach (string key in list.Keys.ToList())
             {
                 PortModel port = GetPort(key);
-                if (port == null) continue;
+                if (port == null || (port.MacList.Count == 0 && port.LinkAggId == -1)) continue;
                 List<Dictionary<string, string>> dictList = list[key];
                 if (dt == DictionaryType.LldpRemoteList) port.LoadLldpRemoteTable(dictList); else port.LoadLldpInventoryTable(dictList);
                 if (!string.IsNullOrEmpty(port.EndPointDevice.IpAddress))

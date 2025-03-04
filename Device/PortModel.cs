@@ -31,6 +31,7 @@ namespace PoEWizard.Device
         public List<string> MacList { get; set; }
         public string IpAddress { get; set; }
         public int RemotePort { get; set; }
+        public int LinkAggId { get; set; }
         public Dictionary<string, string> IpAddrList { get; set; }
         public EndPointDeviceModel EndPointDevice { get; set; }
         public List<EndPointDeviceModel> EndPointDeviceList { get; set; }
@@ -73,6 +74,7 @@ namespace PoEWizard.Device
             Protocol8023bt = ConfigType.Unavailable;
             MacList = new List<string>();
             RemotePort = 0;
+            LinkAggId = -1;
         }
 
         public void LoadPoEData(Dictionary<string, string> dict)
@@ -354,6 +356,7 @@ namespace PoEWizard.Device
                 }
                 tip.Add($"Interface Type: {sInterface}");
             }
+            if (this.LinkAggId >= 0) tip.Add($"Linkagg: {this.LinkAggId}");
             if (!string.IsNullOrEmpty(this.Bandwidth)) tip.Add($"Bandwidth: {this.Bandwidth}");
             if (!string.IsNullOrEmpty(this.Duplex)) tip.Add($"Duplex: {this.Duplex}");
             if (!string.IsNullOrEmpty(this.AutoNegotiation)) tip.Add($"Auto Negotiation: {this.AutoNegotiation}");

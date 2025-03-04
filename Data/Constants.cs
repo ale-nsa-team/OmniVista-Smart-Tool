@@ -36,8 +36,8 @@ namespace PoEWizard.Data
         public enum ChassisStatus { Unknown, Up, Down }
         public enum DictionaryType
         {
-            SystemRunningDir, Chassis, Cmm, MicroCode, HwInfo, LanPower, LanPowerCfg, PortsList, PortIdList, BlockedPorts, PowerSupply, 
-            LldpRemoteList, TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, ShowInterfacesList, None
+            SystemRunningDir, Chassis, Cmm, MicroCode, HwInfo, LanPower, LanPowerCfg, PortList, PortIdList, BlockedPorts, LinkAgg, PowerSupply, 
+            LldpRemoteList, TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, InterfaceList, None
         }
         public enum ConfigType { Disable, Enable, Unavailable }
         public enum DeviceType
@@ -156,6 +156,7 @@ namespace PoEWizard.Data
         public const string OPER_STATUS = "Oper Status";
         public const string BLOCKED = "BLK";
         public const string LINK_STATUS = "Link Status";
+        public const string LINK_AGG = "Agg";
         public const string STATUS = "Status";
         public const string BT_SUPPORT = "8023BT Support";
         public const string CLASS_DETECTION = "Class Detection";
