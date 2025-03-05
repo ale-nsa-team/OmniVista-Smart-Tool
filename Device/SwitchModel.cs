@@ -199,8 +199,8 @@ namespace PoEWizard.Device
                         string csp = dict.First().Value;
                         string[] split = csp.Split('/');
                         if (split.Length < 3) continue;
-                        int chasId = int.Parse(split[0]);
-                        int slotId = int.Parse(split[1]);
+                        int chasId = StringToInt(split[0]);
+                        int slotId = StringToInt(split[1]);
                         SlotModel slot = GetSlot($"{chasId}/{slotId}");
                         PortModel port = slot?.GetPort(csp);
                         if (port == null) continue;
