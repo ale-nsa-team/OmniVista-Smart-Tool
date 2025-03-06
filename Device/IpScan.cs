@@ -31,6 +31,7 @@ namespace PoEWizard.Device
                     {
                         long filesize = 0L;
                         int count = 0;
+                        Logger.Activity($"Uploading python script to {REM_PATH} on {model.Name}");
                         sftpSrv.UploadStream(resource, REM_PATH, true);
                         while (filesize < resource.Length && count < 3)
                         {
@@ -38,6 +39,10 @@ namespace PoEWizard.Device
                             filesize = sftpSrv.GetFileSize(REM_PATH);
                             count++;
                         }
+                        if (filesize == resource.Length)
+                            Logger.Activity($"Uploading complete, filesize: {filesize / 1024} KB");
+                        else
+                            Logger.Error("Failed to upload python script to switch: timeout");
 
                         sftpSrv.Disconnect();
                         await RunScript();
@@ -109,6 +114,7 @@ namespace PoEWizard.Device
             AosSshService ssh = new AosSshService(model);
             try
             {
+                Logger.Activity($"Launching python script on {model.Name}");
                 Task<List<Dictionary<string, string>>> task = Task<List<Dictionary<string, string>>>.Factory.StartNew(() =>
                 {
                     ssh.ConnectSshClient();

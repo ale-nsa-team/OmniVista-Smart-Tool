@@ -2012,11 +2012,11 @@ namespace PoEWizard
                     {
                         RefreshSlotAndPortsView();
                     });
-                    Logger.Activity($"Running port scan on switch {swModel.Name}");
+                    Logger.Activity($"Running TCP port scan on switch {swModel.Name}");
                     watch.Restart();
                     await Task.Run(() => CheckForOpenPorts());
                     watch.Stop();
-                    Logger.Activity($"Port scan took {watch.Elapsed:mm\\:ss}");
+                    Logger.Activity($"TCP port scan took {watch.Elapsed:mm\\:ss}");
                     Dispatcher.Invoke(() =>
                     {
                         RefreshSlotAndPortsView();
