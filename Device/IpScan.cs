@@ -13,7 +13,7 @@ namespace PoEWizard.Device
     {
         private const string PING_SCRIPT = "PoEWizard.Resources.installers_toolkit_helper.py";
         private const string REM_PATH = Constants.PYTHON_DIR + "installers_toolkit_helper.py";
-        private const int SCAN_TIMEOUT = 4 * 60 * 1000;
+        private const int SCAN_TIMEOUT = 290 * 1000;
         private const int PORT_TIMEOUT = 2500;
         private static SwitchModel model;
         private static SftpService sftpSrv;

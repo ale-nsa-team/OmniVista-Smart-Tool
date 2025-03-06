@@ -1996,7 +1996,7 @@ namespace PoEWizard
         {
             if (string.IsNullOrEmpty(swModel.IpAddress) || IsIpScanRunning) return;
             tokenSource = new CancellationTokenSource();
-            Task.Delay(TimeSpan.FromSeconds(1), tokenSource.Token).ContinueWith(async t =>
+            Task.Delay(TimeSpan.FromSeconds(1), tokenSource.Token).ContinueWith(async task =>
             {
                 try
                 {
@@ -2016,7 +2016,11 @@ namespace PoEWizard
                     watch.Restart();
                     await Task.Run(() => CheckForOpenPorts());
                     watch.Stop();
-                    Logger.Activity($"TCP port scan took {watch.Elapsed:mm\\:ss}");
+                    var t = watch.Elapsed;
+                    if (t.TotalMilliseconds >= 1000)
+                        Logger.Activity($"TCP port scan took {t:mm\\:ss}");
+                    else
+                        Logger.Activity($"TCP port scan took {Math.Round(t.TotalMilliseconds)} ms");
                     Dispatcher.Invoke(() =>
                     {
                         RefreshSlotAndPortsView();
