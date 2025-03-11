@@ -1470,14 +1470,14 @@ namespace PoEWizard.Comm
 
         private void GetMacAndLldpInfo(int maxNbMacPerPort)
         {
-            SendProgressReport(Translate("i18n_rmac"));
-            _dictList = SendCommand(new CmdRequest(Command.SHOW_MAC_LEARNING, ParseType.Htable)) as List<Dictionary<string, string>>;
-            SwitchModel.LoadMacAddressFromList(_dictList, maxNbMacPerPort);
             SendProgressReport(Translate("i18n_rlldp"));
             object lldpList = SendCommand(new CmdRequest(Command.SHOW_LLDP_REMOTE, ParseType.LldpRemoteTable));
             SwitchModel.LoadLldpFromList(lldpList as Dictionary<string, List<Dictionary<string, string>>>, DictionaryType.LldpRemoteList);
             lldpList = SendCommand(new CmdRequest(Command.SHOW_LLDP_INVENTORY, ParseType.LldpRemoteTable));
             SwitchModel.LoadLldpFromList(lldpList as Dictionary<string, List<Dictionary<string, string>>>, DictionaryType.LldpInventoryList);
+            SendProgressReport(Translate("i18n_rmac"));
+            _dictList = SendCommand(new CmdRequest(Command.SHOW_MAC_LEARNING, ParseType.Htable)) as List<Dictionary<string, string>>;
+            SwitchModel.LoadMacAddressFromList(_dictList, maxNbMacPerPort);
         }
 
         private void GetPortsTrafficInformation()

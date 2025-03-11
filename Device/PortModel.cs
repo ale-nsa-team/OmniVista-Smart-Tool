@@ -134,19 +134,11 @@ namespace PoEWizard.Device
         public void LoadLldpRemoteTable(List<Dictionary<string, string>> dictList)
         {
             if (dictList == null || dictList.Count == 0) return;
-            if (dictList.Count > 1)
+            foreach (Dictionary<string, string> dict in dictList)
             {
-                foreach (Dictionary<string, string> dict in dictList)
-                {
-                    UpdateEndPointParameters(dict, DictionaryType.LldpRemoteList);
-                }
-                UpdateEndPointDevice(MED_MULTIPLE_DEVICES);
+                UpdateEndPointParameters(dict, DictionaryType.LldpRemoteList);
             }
-            else
-            {
-                UpdateEndPointParameters(dictList[0], DictionaryType.LldpRemoteList);
-                UpdateEndPointDevice(MED_MULTIPLE_DEVICES);
-            }
+            UpdateEndPointDevice(MED_MULTIPLE_DEVICES);           
         }
 
         public void LoadLldpInventoryTable(List<Dictionary<string, string>> dictList)

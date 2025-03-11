@@ -145,7 +145,7 @@ namespace PoEWizard.Data
             [Command.SHOW_LINKAGG_PORT] = "show linkagg port",
             [Command.SHOW_LLDP_INVENTORY] = "show lldp remote-system med inventory",
             [Command.SHOW_LLDP_LOCAL] = "show lldp local-port",
-            [Command.SHOW_LLDP_REMOTE] = "show lldp remote-system",
+            [Command.SHOW_LLDP_REMOTE] = "show lldp nearest-bridge remote-system",
             [Command.SHOW_MAC_LEARNING] = $"show mac-learning domain vlan",
             [Command.SHOW_MICROCODE] = "show microcode",
             [Command.SHOW_MULTICAST_GLOBAL] = "show ip multicast",

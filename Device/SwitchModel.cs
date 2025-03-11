@@ -336,7 +336,7 @@ namespace PoEWizard.Device
             foreach (string key in list.Keys.ToList())
             {
                 PortModel port = GetPort(key);
-                if (port == null || (port.MacList.Count == 0 && port.LinkAggId == -1)) continue;
+                if (port == null) continue;
                 List<Dictionary<string, string>> dictList = list[key];
                 if (dt == DictionaryType.LldpRemoteList) port.LoadLldpRemoteTable(dictList); else port.LoadLldpInventoryTable(dictList);
                 if (!string.IsNullOrEmpty(port.EndPointDevice.IpAddress))
