@@ -35,6 +35,14 @@
     <sys:String x:Key="i18n_expLang">Export Current Language File</sys:String>
     <sys:String x:Key="i18n_impLang">Import New Language</sys:String>
 
+    <!--External Authentication-->
+    <sys:String x:Key="i18n_extauth">External</sys:String>
+    <sys:String x:Key="i18n_authdetect">server configuration detected on</sys:String>
+    <sys:String x:Key="i18n_authhint">Manual intervention may be required to enable HTTP for API access.</sys:String>
+    <sys:String x:Key="i18n_authcmds">To manually enable REST API, please run the following commands on the switch:</sys:String>
+    <sys:String x:Key="i18n_httpcmd">ip service http admin-state enable</sys:String>
+    <sys:String x:Key="i18n_writecmd">write memory</sys:String>
+
     <!--Buttons-->
     <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>
     <sys:String x:Key="i18n_ptTdr">Cable Test</sys:String>

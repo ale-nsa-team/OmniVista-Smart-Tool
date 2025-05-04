@@ -257,6 +257,30 @@ namespace PoEWizard.Comm
             }
         }
 
+        /// <summary>
+        /// Enables REST API service on the switch by configuring required services and authentication.
+        /// If external authentication servers (RADIUS, TACACS+, LDAP) are detected, returns an error message 
+        /// with manual configuration instructions instead of modifying AAA settings.
+        /// </summary>
+        /// <remarks>
+        /// This function performs the following operations:
+        /// 1. Connects to the switch using SSH
+        /// 2. Checks for external authentication servers (RADIUS, TACACS+, LDAP) using "show configuration snapshot aaa"
+        /// 3. If external auth servers are found, returns an error message with manual configuration steps
+        /// 4. Otherwise, checks if HTTP service is enabled using "show ip service" command
+        /// 5. Configures the following settings if needed:
+        ///    - Enables HTTP service if not already enabled
+        ///    - Sets AAA authentication for default to local
+        ///    - Sets AAA authentication for HTTP to local
+        /// 6. Saves configuration using "write memory" command
+        /// </remarks>
+        /// <returns>
+        /// Returns null if successful.
+        /// If the device doesn't support ALE Rest API, an error message is returned.
+        /// If external AAA servers are detected, returns an error message with the following manual configuration commands:
+        /// 1. ip service http admin-state enable
+        /// 2. write memory
+        /// </returns>
         private string EnableRestApi()
         {
             string error = null;
@@ -267,12 +291,93 @@ namespace PoEWizard.Comm
                 _progress.Report(new ProgressReport(progrMsg));
                 UpdateProgressBar(progressBarCnt);
                 ConnectAosSsh();
-                LinuxCommandSeq cmdSeq = new LinuxCommandSeq(
+
+                bool httpEnabled = false;
+                bool defaultLocalExists = false;
+                bool httpLocalExists = false;
+                
+                LinuxCommandSeq checkAaaSeq = new LinuxCommandSeq(
                     new List<LinuxCommand> {
-                                new LinuxCommand("ip service http admin-state enable"), new LinuxCommand("aaa authentication default local"),
-                                new LinuxCommand("aaa  authentication http local"), new LinuxCommand("write memory")
-                });
-                LinuxCommandSeq result = SendSshLinuxCommandSeq(cmdSeq, progrMsg);
+                        new LinuxCommand("show configuration snapshot aaa")
+                    }
+                );
+                LinuxCommandSeq aaaResult = SendSshLinuxCommandSeq(checkAaaSeq, progrMsg);
+                if (aaaResult != null)
+                {
+                    var aaaResponse = aaaResult.GetResponse("show configuration snapshot aaa");
+                    if (aaaResponse != null && aaaResponse.ContainsKey(OUTPUT))
+                    {
+                        string aaaConfig = aaaResponse[OUTPUT];
+                        
+                        if (aaaConfig.Contains("aaa radius-server") || 
+                            aaaConfig.Contains("aaa tacacs+-server") || 
+                            aaaConfig.Contains("aaa ldap-server"))
+                        {
+                            string serverType = aaaConfig.Contains("aaa radius-server") ? "RADIUS" : 
+                                              (aaaConfig.Contains("aaa tacacs+-server") ? "TACACS+" : "LDAP");
+                            
+                            string errorMsg = $"{Translate("i18n_extauth")} {serverType} {Translate("i18n_authdetect")} {SwitchModel.IpAddress}. " +
+                                                $"{Translate("i18n_authhint")}\n\n" +
+                                                $"{Translate("i18n_authcmds")}\n" +
+                                                $"1. {Translate("i18n_httpcmd")}\n" +
+                                                $"2. {Translate("i18n_writecmd")}";
+                            
+                            Logger.Error(errorMsg);
+                            DisconnectAosSsh();
+                            return errorMsg;
+                        }
+                        
+                        defaultLocalExists = aaaConfig.Contains("aaa authentication default");
+                        httpLocalExists = aaaConfig.Contains("aaa authentication http");
+                    }
+                }
+                
+                LinuxCommandSeq checkHttpSeq = new LinuxCommandSeq(
+                    new List<LinuxCommand> {
+                        new LinuxCommand("show ip service")
+                    }
+                );
+                LinuxCommandSeq httpResult = SendSshLinuxCommandSeq(checkHttpSeq, progrMsg);
+                if (httpResult != null)
+                {
+                    var httpResponse = httpResult.GetResponse("show ip service");
+                    if (httpResponse != null && httpResponse.ContainsKey(OUTPUT))
+                    {
+                        var httpOutput = httpResponse[OUTPUT];
+                        _dictList = CliParseUtils.ParseHTable(httpOutput, 1);
+                        var httpEntry = _dictList.FirstOrDefault(d => d.ContainsKey("Name") && d["Name"].Trim() == "http");
+                        if (httpEntry != null && httpEntry.ContainsKey("Status"))
+                        {
+                            httpEnabled = httpEntry["Status"].Trim() == "enabled";
+                        }
+                    }
+                }
+                
+                List<LinuxCommand> commands = new List<LinuxCommand>();
+                
+                if (!httpEnabled)
+                {
+                    commands.Add(new LinuxCommand("ip service http admin-state enable"));
+                }
+                
+                if (!defaultLocalExists)
+                {
+                    commands.Add(new LinuxCommand("aaa authentication default local"));
+                }
+                
+                if (!httpLocalExists)
+                {
+                    commands.Add(new LinuxCommand("aaa authentication http local"));
+                }
+                
+                if (commands.Count > 0)
+                {
+                    commands.Add(new LinuxCommand("write memory"));
+                    
+                    LinuxCommandSeq cmdSeq = new LinuxCommandSeq(commands);
+                    LinuxCommandSeq result = SendSshLinuxCommandSeq(cmdSeq, progrMsg);
+                }
+                
                 DisconnectAosSsh();
             }
             catch (Exception ex)
