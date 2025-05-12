@@ -1,6 +1,7 @@
 ﻿using PoEWizard.Data;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,6 +13,7 @@ namespace PoEWizard.Device
     [Serializable]
     public class SwitchModel
     {
+        public event PropertyChangedEventHandler PropertyChanged;
         public string Name { get; set; }
         public string IpAddress { get; set; }
         public string NetMask { get; set; }
