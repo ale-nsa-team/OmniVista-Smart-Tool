@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A5EB0001-8FD9-4A2F-A970-64311DA0F329}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DatabaseHelper</RootNamespace>
+    <AssemblyName>DatabaseHelper</AssemblyName>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.5.4.0\lib\net46\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.119.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\lib\net46\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.EF6, Version=1.0.119.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.EF6.1.0.119.0\lib\net46\System.Data.SQLite.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.119.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.119.0\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\DbContext.cs" />
+    <Compile Include="Entities\CapabilityEntity.cs" />
+    <Compile Include="Entities\ChassisEntity.cs" />
+    <Compile Include="Entities\EndpointDeviceEntity.cs" />
+    <Compile Include="Entities\PortEntity.cs" />
+    <Compile Include="Entities\PowerSupplyEntity.cs" />
+    <Compile Include="Entities\SlotEntity.cs" />
+    <Compile Include="Entities\SwitchDebugAppEntity.cs" />
+    <Compile Include="Entities\SwitchEntity.cs" />
+    <Compile Include="Entities\TemperatureEntity.cs" />
+    <Compile Include="Entities\DatabaseVersionEntity.cs" />
+    <Compile Include="Exceptions\ConcurrencyException.cs" />
+    <Compile Include="Exceptions\ConnectionException.cs" />
+    <Compile Include="Exceptions\DatabaseException.cs" />
+    <Compile Include="Exceptions\DuplicateEntityException.cs" />
+    <Compile Include="Exceptions\RepositoryException.cs" />
+    <Compile Include="Exceptions\SwitchNotFoundException.cs" />
+    <Compile Include="Exceptions\TransactionException.cs" />
+    <Compile Include="Exceptions\ValidationException.cs" />
+    <Compile Include="Interfaces\ICapabilityRepository.cs" />
+    <Compile Include="Interfaces\IChassisRepository.cs" />
+    <Compile Include="Interfaces\IDatabaseVersionRepository.cs" />
+    <Compile Include="Interfaces\IEndpointDeviceRepository.cs" />
+    <Compile Include="Interfaces\IPortRepository.cs" />
+    <Compile Include="Interfaces\IPowerSupplyRepository.cs" />
+    <Compile Include="Interfaces\IRepository.cs" />
+    <Compile Include="Interfaces\ISlotRepository.cs" />
+    <Compile Include="Interfaces\ISwitchDebugAppRepository.cs" />
+    <Compile Include="Interfaces\ISwitchRepository.cs" />
+    <Compile Include="Interfaces\ISwitchService.cs" />
+    <Compile Include="Interfaces\ITemperatureRepository.cs" />
+    <Compile Include="Interfaces\IUnitOfWork.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\LoggerFactory.cs" />
+    <Compile Include="Logging\NLogLogger.cs" />
+    <Compile Include="Repositories\BaseRepository.cs" />
+    <Compile Include="Repositories\CapabilityRepository.cs" />
+    <Compile Include="Repositories\ChassisRepository.cs" />
+    <Compile Include="Repositories\EndpointDeviceRepository.cs" />
+    <Compile Include="Repositories\PortRepository.cs" />
+    <Compile Include="Repositories\PowerSupplyRepository.cs" />
+    <Compile Include="Repositories\SlotRepository.cs" />
+    <Compile Include="Repositories\SwitchDebugAppRepository.cs" />
+    <Compile Include="Repositories\SwitchRepository.cs" />
+    <Compile Include="Repositories\TemperatureRepository.cs" />
+    <Compile Include="Repositories\DatabaseVersionRepository.cs" />
+    <Compile Include="Services\SwitchService.cs" />
+    <Compile Include="Services\DatabaseMigrationService.cs" />
+    <Compile Include="Transactions\UnitOfWork.cs" />
+    <Compile Include="Validation\Validators\IValidator.cs" />
+    <Compile Include="Validation\Validators\BaseValidator.cs" />
+    <Compile Include="Validation\Validators\SwitchValidator.cs" />
+    <Compile Include="Validation\Validators\ChassisValidator.cs" />
+    <Compile Include="Validation\Validators\PortValidator.cs" />
+    <Compile Include="Validation\Validators\EndpointDeviceValidator.cs" />
+    <Compile Include="Validation\Validators\SlotValidator.cs" />
+    <Compile Include="Validation\Validators\DatabaseVersionValidator.cs" />
+    <Compile Include="Validation\Validators\PowerSupplyValidator.cs" />
+    <Compile Include="Validation\Validators\TemperatureValidator.cs" />
+    <Compile Include="Validation\Validators\CapabilityValidator.cs" />
+    <Compile Include="Validation\Validators\SwitchDebugAppValidator.cs" />
+    <Compile Include="Validation\ValidationResult.cs" />
+    <Compile Include="Validation\ValidatorFactory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Constants\Queries\CapabilityQueries.cs" />
+    <Compile Include="Constants\Queries\ChassisQueries.cs" />
+    <Compile Include="Constants\Queries\DatabaseVersionQueries.cs" />
+    <Compile Include="Constants\Queries\EndpointDeviceQueries.cs" />
+    <Compile Include="Constants\Queries\PortQueries.cs" />
+    <Compile Include="Constants\Queries\PowerSupplyQueries.cs" />
+    <Compile Include="Constants\Queries\SlotQueries.cs" />
+    <Compile Include="Constants\Queries\SwitchDebugAppQueries.cs" />
+    <Compile Include="Constants\Queries\SwitchQueries.cs" />
+    <Compile Include="Constants\Queries\TemperatureQueries.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.1\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.1\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.119.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
+  <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" />
+</Project>

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoEWizard", "PoEWizard\PoEWizard.csproj", "{3924E57C-474A-43BD-8B71-DB87A4D2775D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseHelper", "DatabaseHelper\DatabaseHelper.csproj", "{A5EB0001-8FD9-4A2F-A970-64311DA0F329}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,14 @@ Global
 		{3924E57C-474A-43BD-8B71-DB87A4D2775D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3924E57C-474A-43BD-8B71-DB87A4D2775D}.Release|x64.ActiveCfg = Release|x64
 		{3924E57C-474A-43BD-8B71-DB87A4D2775D}.Release|x64.Build.0 = Release|x64
+		{A5EB0001-8FD9-4A2F-A970-64311DA0F329}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5EB0001-8FD9-4A2F-A970-64311DA0F329}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5EB0001-8FD9-4A2F-A970-64311DA0F329}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A5EB0001-8FD9-4A2F-A970-64311DA0F329}.Debug|x64.Build.0 = Debug|Any CPU
+		{A5EB0001-8FD9-4A2F-A970-64311DA0F329}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5EB0001-8FD9-4A2F-A970-64311DA0F329}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5EB0001-8FD9-4A2F-A970-64311DA0F329}.Release|x64.ActiveCfg = Release|Any CPU
+		{A5EB0001-8FD9-4A2F-A970-64311DA0F329}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
