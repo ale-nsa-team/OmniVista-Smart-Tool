@@ -1,10 +1,10 @@
-﻿using PoEWizard.Data;
-using PoEWizard.Device;
+﻿using Common.Data;
+using Common.Enums;
+using MVVM.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using static PoEWizard.Data.Constants;
 
 namespace MVVM.Services.Interfaces
 {
@@ -19,7 +19,7 @@ namespace MVVM.Services.Interfaces
 
         void Disconnect();
 
-        Task<object> ExecuteCommandAsync(Command command, ParseType parseType = ParseType.Htable, string[] parameters = null, CancellationToken cancellationToken = default);
+        Task<object> ExecuteCommandAsync(CommandLine command, ParseType parseType = ParseType.Htable, string[] parameters = null, CancellationToken cancellationToken = default);
 
         Task<string> ExecuteRawCommandAsync(string command, CancellationToken cancellationToken = default);
 

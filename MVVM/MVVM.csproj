@@ -55,23 +55,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
+    <Compile Include="Models\SwitchModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\NetworkService.cs" />
+    <Compile Include="Services\Implementations\RestService.cs" />
+    <Compile Include="Services\Implementations\SftpService.cs" />
+    <Compile Include="Services\Implementations\SshService.cs" />
     <Compile Include="Services\Interfaces\INetworkService.cs" />
+    <Compile Include="Services\Interfaces\IRestService.cs" />
+    <Compile Include="Services\Interfaces\ISftpService.cs" />
+    <Compile Include="Services\Interfaces\ISshService.cs" />
+    <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\SwitchViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PoEWizard\PoEWizard.csproj">
-      <Project>{3924E57C-474A-43BD-8B71-DB87A4D2775D}</Project>
-      <Name>PoEWizard</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{AF76A9EE-D442-4BC1-AFDD-555AE170D6EE}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

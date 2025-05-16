@@ -1,4 +1,4 @@
-﻿using PoEWizard.Device;
+﻿using MVVM.Models;
 using System;
 using System.ComponentModel;
 
