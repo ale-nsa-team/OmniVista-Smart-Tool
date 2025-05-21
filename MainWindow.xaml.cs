@@ -1972,6 +1972,12 @@ namespace PoEWizard
                 try
                 {
                     var res = restApiService?.SendCommand(new CmdRequest(Command.SHOW_HEALTH, ParseType.Htable2)) as List<Dictionary<string, string>>;
+                    IpScan.Init(swModel);
+                    if (IpScan.IsIpScanRunning().Result)
+                    {
+                        res.ForEach(r => r[CURRENT] = r[ONE_HOUR_AVG]);
+                        Logger.Warn("Ip scan is running, using 1 hour cpu health data");
+                    }
                     swModel.LoadFromList(res, DictionaryType.CpuTrafficList);
                     //launch ip scanner after this
                     DelayIpScan();
@@ -2005,7 +2011,8 @@ namespace PoEWizard
                     Logger.Activity($"Running ip scan on switch {swModel.Name} ({swModel.IpAddress})");
                     Stopwatch watch = new Stopwatch();
                     watch.Start();
-                    await IpScan.LaunchScan(swModel);
+                    await IpScan.LaunchScan();
+                    IpScan.Disconnect();
                     watch.Stop();
                     Logger.Activity($"Ip scan took {watch.Elapsed:mm\\:ss}");
                     Dispatcher.Invoke(() =>

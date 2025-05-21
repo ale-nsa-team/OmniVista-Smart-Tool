@@ -131,6 +131,7 @@ namespace PoEWizard.Data
         public const string FLASH_WORKING_DIR = "/" + FLASH_DIR + "/" + FLASH_WORKING;
         public const string FLASH_CERTIFIED_DIR = "/" + FLASH_DIR + "/" + FLASH_CERTIFIED;
         public const string PYTHON_DIR = "/" + FLASH_DIR + "/python/";
+        public const string HELPER_SCRIPT_FILE_NAME = "installers_toolkit_helper.py";
         public const string VCBOOT_WORK = FLASH_WORKING_DIR + "/" + VCBOOT_FILE;
         public const string VCSETUP_WORK = FLASH_WORKING_DIR + "/" + VCSETUP_FILE;
         public const string VCBOOT_CERT = FLASH_CERTIFIED_DIR + "/" + VCBOOT_FILE;
@@ -259,6 +260,7 @@ namespace PoEWizard.Data
         // Used by "SHOW_CHASSIS"
         public const string CHAS_DEVICE = "Chassis/Device";
         public const string CURRENT = "Current";
+        public const string ONE_HOUR_AVG = "1 Hr Avg";
         public const string RANGE = "Range";
         public const string DANGER = "Danger";
         public const string THRESHOLD = "Thresh";
