@@ -28,6 +28,7 @@ namespace PoEWizard.Components
         private string _pingResult;
         private bool _isLoading;
         private bool _canPing = true;
+        private const int DefaultSshMaxWaitSec = 20;
         private const int DefaultTimeout = 2000; // 2 seconds timeout
         private const int DefaultTtl = 128;
         private const int DefaultPingCount = 4;
@@ -247,6 +248,7 @@ namespace PoEWizard.Components
                         _sshService.ConnectSshClient();
 
                         LinuxCommand pingCmd = new LinuxCommand($"ping {SelectedIpAddress} count {DefaultPingCount}");
+                        pingCmd.MaxWaitSec = DefaultSshMaxWaitSec;
                         Dictionary<string, string> response = _sshService.SendLinuxCommand(pingCmd);
 
                         if (response != null && response.ContainsKey("output"))
