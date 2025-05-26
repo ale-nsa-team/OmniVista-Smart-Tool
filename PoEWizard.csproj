@@ -180,6 +180,9 @@
       <DependentUpon>PassCode.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\PasswordBoxAssistant.cs" />
+    <Compile Include="Components\PingDevice.xaml.cs">
+      <DependentUpon>PingDevice.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\PopupUserControl.xaml.cs">
       <DependentUpon>PopupUserControl.xaml</DependentUpon>
     </Compile>
@@ -340,6 +343,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\PassCode.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\PingDevice.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -549,6 +556,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\installers_toolkit_helper.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Img\ping-light.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Img\ping-dark.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

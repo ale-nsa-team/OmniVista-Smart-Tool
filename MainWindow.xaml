@@ -569,6 +569,14 @@
                         <Image Source="{DynamicResource bolt}" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>
+                <Button x:Name="_btnPing" Style="{DynamicResource largeButton}"
+                        IsEnabled="False"
+                        Click="Ping_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_ping}"/>
+                        <Image Source="{DynamicResource ping}" Height="16" Width="16"/>
+                    </StackPanel>
+                </Button>
                 <Button x:Name="_btnRunWiz" Style="{DynamicResource largeButton}"
                         IsEnabled="False"
                         Click="RunWiz_Click">

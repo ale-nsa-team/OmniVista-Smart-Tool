@@ -42,6 +42,7 @@
     <BitmapImage x:Key="write_memory" UriSource="Img//save-light.png" />
     <BitmapImage x:Key="reboot" UriSource="Img/reboot-light.png" />
     <BitmapImage x:Key="bolt" UriSource="Img/bolt.png" />
+    <BitmapImage x:Key="ping" UriSource="Img/ping-light.png" />
 
     <SolidColorBrush x:Key="fontColor" Color="Black" />
     <SolidColorBrush x:Key="linkColor" Color="Blue" />
