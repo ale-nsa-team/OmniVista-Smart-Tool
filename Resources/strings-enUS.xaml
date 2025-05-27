@@ -46,6 +46,7 @@
     <!--Buttons-->
     <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>
     <sys:String x:Key="i18n_ptTdr">Cable Test</sys:String>
+    <sys:String x:Key="i18n_ping">Ping</sys:String>
     <sys:String x:Key="i18n_poeWiz">Run PoE Wizard</sys:String>
     <sys:String x:Key="i18n_rfrsh">Refresh</sys:String>
     <sys:String x:Key="i18n_save">Write Memory</sys:String>
@@ -644,4 +645,30 @@ It may take up to 30 sec to execute Write Memory
     <sys:String x:Key="i18n_ptIp_tt" xml:space="preserve">May take up to 5 minutes to fully update.
 Uses best effort to scan IP addresses, may not get all addresses.
 List is limited to 50 IP Addresses per port.</sys:String>
+
+    <!--Ping Device Window-->
+    <sys:String x:Key="i18n_pingDevice">Ping Device</sys:String>
+    <sys:String x:Key="i18n_enterIpAddress">Enter an IP address and click Ping to test connectivity.</sys:String>
+    <sys:String x:Key="i18n_selectIpAddress">Select an IP address and click Ping to test connectivity.</sys:String>
+    <sys:String x:Key="i18n_validIpRequired">Please enter a valid IP address.</sys:String>
+    <sys:String x:Key="i18n_pingInProgress">Processing ping request, please wait...</sys:String>
+    <sys:String x:Key="i18n_error">Error</sys:String>
+    <sys:String x:Key="i18n_pinging">Pinging</sys:String>
+    <sys:String x:Key="i18n_withBytes">with 32 bytes of data</sys:String>
+    <sys:String x:Key="i18n_pingFailed">Ping failed</sys:String>
+    <sys:String x:Key="i18n_replyFrom">Reply from</sys:String>
+    <sys:String x:Key="i18n_bytes">bytes</sys:String>
+    <sys:String x:Key="i18n_time">time</sys:String>
+    <sys:String x:Key="i18n_requestTimeout">Request timed out</sys:String>
+    <sys:String x:Key="i18n_pingStats">Ping statistics for</sys:String>
+    <sys:String x:Key="i18n_packets">Packets</sys:String>
+    <sys:String x:Key="i18n_sent">Sent</sys:String>
+    <sys:String x:Key="i18n_received">Received</sys:String>
+    <sys:String x:Key="i18n_lost">Lost</sys:String>
+    <sys:String x:Key="i18n_loss">loss</sys:String>
+    <sys:String x:Key="i18n_roundTripTimes">Approximate round trip times in milliseconds</sys:String>
+    <sys:String x:Key="i18n_minimum">Minimum</sys:String>
+    <sys:String x:Key="i18n_maximum">Maximum</sys:String>
+    <sys:String x:Key="i18n_average">Average</sys:String>
+    <sys:String x:Key="i18n_pingFailedFallback">Falling back to ping from current machine...</sys:String>
 </ResourceDictionary>

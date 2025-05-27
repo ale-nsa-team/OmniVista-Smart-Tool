@@ -550,6 +550,13 @@ namespace PoEWizard
             SetConnectedState();
         }
 
+        private void Ping_Click(object sender, RoutedEventArgs e)
+        {
+            var pingWindow = new PingDevice(selectedPort);
+            pingWindow.Owner = this;
+            pingWindow.ShowDialog();
+        }
+
         private void RunWiz_Click(object sender, RoutedEventArgs e)
         {
             if (selectedPort == null) return;
@@ -1438,6 +1445,7 @@ namespace PoEWizard
                 _btnResetPort.IsEnabled = false;
                 _btnRunWiz.IsEnabled = false;
                 _btnTdr.IsEnabled = false;
+                _btnPing.IsEnabled = false;
             }
         }
 
@@ -1450,6 +1458,7 @@ namespace PoEWizard
                 _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
                 _btnResetPort.IsEnabled = true;
                 _btnTdr.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
+                _btnPing.IsEnabled = true;
             }
         }
 
@@ -2843,6 +2852,7 @@ namespace PoEWizard
                 _btnRunWiz.IsEnabled = false;
                 _btnResetPort.IsEnabled = false;
                 _btnTdr.IsEnabled = false;
+                _btnPing.IsEnabled = false;
             }
         }
 
@@ -2916,6 +2926,7 @@ namespace PoEWizard
             _btnRunWiz.IsEnabled = false;
             _btnResetPort.IsEnabled = false;
             _btnTdr.IsEnabled = false;
+            _btnPing.IsEnabled = false;
         }
 
         private void ChangeButtonVisibility(bool val)
@@ -2935,6 +2946,7 @@ namespace PoEWizard
             _upgradeMenuItem.IsEnabled = val;
             _cfgBackup.IsEnabled = val;
             _cfgRestore.IsEnabled = val;
+            _btnPing.IsEnabled = val;
         }
 
         private void ReselectPort()
@@ -2947,7 +2959,7 @@ namespace PoEWizard
                 _btnRunWiz.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
                 _btnResetPort.IsEnabled = true;
                 _btnTdr.IsEnabled = selectedPort.Poe != PoeStatus.NoPoe;
-
+                _btnPing.IsEnabled = true;
             }
         }
 
@@ -2961,6 +2973,7 @@ namespace PoEWizard
                 _btnRunWiz.IsEnabled = selectedPort != null && selectedPort.Poe != PoeStatus.NoPoe;
                 _btnResetPort.IsEnabled = true;
                 _btnTdr.IsEnabled = selectedPort != null && selectedPort.Poe != PoeStatus.NoPoe;
+                _btnPing.IsEnabled = true;
             }
         }
 
