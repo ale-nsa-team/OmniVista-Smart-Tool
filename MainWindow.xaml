@@ -413,6 +413,26 @@
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="0.9*" IsReadOnly="True">
                         <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_bw}"/>
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Bandwidth}" Style="{DynamicResource toolTip}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="0.7*" IsReadOnly="True">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_duplex}"/>
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Duplex}" Style="{DynamicResource toolTip}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="0.9*" IsReadOnly="True">
+                        <DataGridTemplateColumn.Header>
                             <TextBlock Text="{DynamicResource i18n_poeSt}"/>
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>

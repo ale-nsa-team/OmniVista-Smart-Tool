@@ -85,6 +85,9 @@ namespace PoEWizard.Comm
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_HW_INFO, ParseType.MVTable, DictionaryType.HwInfo)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.HwInfo);
                 UpdateProgressBar(++progressBarCnt); // 5
+                _dictList = SendCommand(new CmdRequest(Command.SHOW_PORTS_LIST, ParseType.Htable3)) as List<Dictionary<string, string>>;
+                SwitchModel.LoadFromList(_dictList, DictionaryType.PortList);
+                UpdateProgressBar(++progressBarCnt); // 6
                 token.ThrowIfCancellationRequested();
                 UpdateFlashInfo(progrMsg);
                 UpdateProgressBar(++progressBarCnt); // 30
