@@ -15,6 +15,24 @@ namespace PoEWizard.Device
 {
     public static class AosUpgrade
     {
+        // Product Family to Image Name mapping
+        private static readonly Dictionary<string, string> FamilyImageMap = new Dictionary<string, string>
+        {
+            { "OS6360", "Nosa.img" },
+            { "OS6465", "Nos.img" },
+            { "OS6560", "Nos.img" },
+            { "OS6570M", "Wos.img" },
+            { "OS6870", "Kaosn.img" },
+            { "OS6860", "Uos.img" },
+            { "OS6865", "Uos.img" },
+            { "OS6869-N", "Uosn.img" },
+            { "OS6900-Yukon", "Yos.img" },
+            { "OS9900", "Mos.img" },
+            // Deprecated platforms
+            { "OS10K", "Ros.img" },
+            { "OS6900", "Tos.img" }
+        };
+
         private const string SHA_SUM = "imgsha256sum";
         private const string LSM = "software.lsm";
 
@@ -34,10 +52,37 @@ namespace PoEWizard.Device
                 string err = OpenScp(model);
                 if (err != null) throw new UpgradeException(source, err);
 
+                // Get all .img files in the remote directory
                 imgFiles = sftpSrv.GetFilesInRemoteDir(FLASH_WORKING_DIR, "img");
                 if (imgFiles.Count == 0) throw new UpgradeException(source, $"{Translate("i18n_noImg")} {FLASH_WORKING_DIR}");
 
-                reqFiles = imgFiles.Concat(new List<string> { SHA_SUM, LSM }).ToList();
+                // Get the expected image name for this switch model
+                string expectedImageName;
+                try
+                {
+                    expectedImageName = GetExpectedImageName(model.Model);
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new UpgradeException(source, ex.Message);
+                }
+
+                // Check if expected image exists in the remote directory
+                if (!imgFiles.Contains(expectedImageName))
+                {
+                    throw new UpgradeException(source, $"{Translate("i18n_noImg")} {expectedImageName} in {FLASH_WORKING_DIR}");
+                }
+
+                // Report any extra image files (for logging purposes)
+                var extraImgFiles = ListExtraImgFiles(imgFiles, expectedImageName).ToList();
+                if (extraImgFiles.Any())
+                {
+                    Logger.Warn($"Extra .img files found in {FLASH_WORKING_DIR}: {string.Join(", ", extraImgFiles)}. Only {expectedImageName} will be used.");
+                }
+
+                // Only include the expected image file in required files
+                reqFiles = new List<string> { expectedImageName, SHA_SUM, LSM };
+                
                 List<string> files = CheckMissingFilesInArchive(archive) ??
                     throw new UpgradeException(source, $"{Translate("i18n_zipErr")} {archive}");
                 if (files.Count > 0)
@@ -77,7 +122,7 @@ namespace PoEWizard.Device
                 {
                     string localFile = Path.Combine(Path.GetTempPath(), file);
                     string remoteFile = $"{FLASH_WORKING_DIR}/{file}";
-                    if (!sftpSrv.UploadFile(localFile, remoteFile, true)) 
+                    if (!sftpSrv.UploadFile(localFile, remoteFile, true))
                         throw new UpgradeException(source, $"{Translate("i18n_uplErr")} {file}");
                 }
                 DeleteTempFiles();
@@ -202,6 +247,31 @@ namespace PoEWizard.Device
             {
                 Logger.Error($"Error extracting archive {path}", ex);
             }
+        }
+
+        private static string GetExpectedImageName(string productFamily)
+        {
+            // Try exact match first
+            if (FamilyImageMap.TryGetValue(productFamily, out var imageName))
+            {
+                return imageName;
+            }
+
+            // If exact match fails, try to find a base family that matches as a prefix
+            foreach (var family in FamilyImageMap.Keys)
+            {
+                if (productFamily.StartsWith(family))
+                {
+                    return FamilyImageMap[family];
+                }
+            }
+
+            throw new ArgumentException($"Unsupported or unknown product family: {productFamily}");
+        }
+
+        private static IEnumerable<string> ListExtraImgFiles(List<string> allImgFiles, string expectedImage)
+        {
+            return allImgFiles.Where(file => !string.Equals(file, expectedImage, StringComparison.OrdinalIgnoreCase));
         }
 
         private static void DeleteTempFiles()
