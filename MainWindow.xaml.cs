@@ -1876,7 +1876,9 @@ namespace PoEWizard
             if (ofd.ShowDialog() == true)
             {
                 string fname = Path.GetFileName(ofd.FileName);
-                string target = Path.Combine(DataPath, LANGUAGE_FOLDER, fname);
+                string langFolder = Path.Combine(DataPath, LANGUAGE_FOLDER);
+                if (!Directory.Exists(langFolder)) Directory.CreateDirectory(langFolder);
+                string target = Path.Combine(langFolder, fname);
                 bool exists = false;
                 try
                 {
