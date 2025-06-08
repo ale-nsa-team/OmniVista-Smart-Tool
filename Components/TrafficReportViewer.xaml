@@ -530,7 +530,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Width="*" MinWidth="100">
+                        <DataGridTemplateColumn Width="*" MinWidth="200">
                             <DataGridTemplateColumn.Header>
                                 <TextBlock Text="{DynamicResource i18n_tROperationalStatus}" />
                             </DataGridTemplateColumn.Header>
