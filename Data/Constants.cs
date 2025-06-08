@@ -29,7 +29,7 @@ namespace PoEWizard.Data
             [Description("Not Supported")]
             NotSupported
         }
-        public enum ParseType { Htable, Htable2, Htable3, Vtable, Etable, MVTable, Text, MibTable, LldpLocalTable, LldpRemoteTable, TrafficTable, NoParsing }
+        public enum ParseType { Htable, Htable2, Htable3, Vtable, Etable, MVTable, Text, MibTable, LldpLocalTable, LldpRemoteTable, TrafficTable, TransceiverTable, NoParsing }
         public enum EType { Fiber, Copper, Unknown }
         public enum PriorityLevelType { Low, High, Critical }
         public enum PowerSupplyState { Up, Down, Unknown }
@@ -37,7 +37,7 @@ namespace PoEWizard.Data
         public enum DictionaryType
         {
             SystemRunningDir, Chassis, Cmm, MicroCode, HwInfo, LanPower, LanPowerCfg, PortList, PortIdList, BlockedPorts, LinkAgg, PowerSupply, 
-            LldpRemoteList, TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, InterfaceList, None
+            LldpRemoteList, TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, InterfaceList, TransceiverList, None
         }
         public enum ConfigType { Disable, Enable, Unavailable }
         public enum DeviceType

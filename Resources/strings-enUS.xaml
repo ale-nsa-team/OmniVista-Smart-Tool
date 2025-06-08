@@ -416,6 +416,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_lanpw">Getting LAN power information on slot</sys:String>
     <sys:String x:Key="i18n_rlldp">Reading LLDP remote information</sys:String>
     <sys:String x:Key="i18n_rmac">Reading MAC address information</sys:String>
+    <sys:String x:Key="i18n_rtrans">Reading transceiver information</sys:String>
     <sys:String x:Key="i18n_rpdet">Reading ports detailed information</sys:String>
     <sys:String x:Key="i18n_shealth">Waiting to read CPU health</sys:String>
     <sys:String x:Key="i18n_enableRest">Enabling REST API on switch</sys:String>
@@ -673,4 +674,53 @@ List is limited to 50 IP Addresses per port.</sys:String>
     <sys:String x:Key="i18n_maximum">Maximum</sys:String>
     <sys:String x:Key="i18n_average">Average</sys:String>
     <sys:String x:Key="i18n_pingFailedFallback">Falling back to ping from current machine...</sys:String>
+    
+    <!-- Traffic Analysis Viewer Labels -->
+    <sys:String x:Key="i18n_tRPort">Port</sys:String>
+    <sys:String x:Key="i18n_tRAlias">Alias</sys:String>
+    <sys:String x:Key="i18n_tRType">Type</sys:String>
+    <sys:String x:Key="i18n_tRName">Name</sys:String>
+    <sys:String x:Key="i18n_tRDescription">Description</sys:String>
+    <sys:String x:Key="i18n_tRIpAddress">IP Address</sys:String>
+    <sys:String x:Key="i18n_tRVendor">Vendor</sys:String>
+    <sys:String x:Key="i18n_tRModel">Model</sys:String>
+    <sys:String x:Key="i18n_tRSoftwareVersion">Software Version</sys:String>
+    <sys:String x:Key="i18n_tRSerialNumber">Serial Number</sys:String>
+    <sys:String x:Key="i18n_tRMacAddress">MAC Address</sys:String>
+    <sys:String x:Key="i18n_tRBandwidth">Bandwidth</sys:String>
+    <sys:String x:Key="i18n_tRRxRate">Rx Rate (Kbps)</sys:String>
+    <sys:String x:Key="i18n_tRTxRate">Tx Rate (Kbps)</sys:String>
+    <sys:String x:Key="i18n_tRRxBroadcastFrames">#Rx Broadcast Frames</sys:String>
+    <sys:String x:Key="i18n_tRRxUnicastFrames">#Rx Unicast Frames</sys:String>
+    <sys:String x:Key="i18n_tRRxBroadcastUnicastPercent">Rx Broadcast/Unicast (%)</sys:String>
+    <sys:String x:Key="i18n_tRRxMulticastFrames">#Rx Multicast Frames</sys:String>
+    <sys:String x:Key="i18n_tRRxUnicastMulticastRate">Rx Unicast+Multicast Rate (Kbps)</sys:String>
+    <sys:String x:Key="i18n_tRRxLostFrames">#Rx Lost Frames</sys:String>
+    <sys:String x:Key="i18n_tRRxCrcError">#Rx CRC Error</sys:String>
+    <sys:String x:Key="i18n_tRRxAlignmentsError">#Rx Alignments Error</sys:String>
+    <sys:String x:Key="i18n_tRTxBroadcastFrames">#Tx Broadcast Frames</sys:String>
+    <sys:String x:Key="i18n_tRTxUnicastFrames">#Tx Unicast Frames</sys:String>
+    <sys:String x:Key="i18n_tRTxBroadcastUnicastPercent">Tx Broadcast/Unicast (%)</sys:String>
+    <sys:String x:Key="i18n_tRTxMulticastFrames">#Tx Multicast Frames</sys:String>
+    <sys:String x:Key="i18n_tRTxUnicastMulticastRate">Tx Unicast+Multicast Rate (Kbps)</sys:String>
+    <sys:String x:Key="i18n_tRTxLostFrames">#Tx Lost Frames</sys:String>
+    <sys:String x:Key="i18n_tRTxCollidedFrames">#Tx Collided Frames</sys:String>
+    <sys:String x:Key="i18n_tRTxCollisions">#Tx Collisions</sys:String>
+    <sys:String x:Key="i18n_tRTxLateCollisions">#Tx Late Collisions</sys:String>
+    <sys:String x:Key="i18n_tRTxExcessiveCollisions">#Tx Excessive Collisions</sys:String>
+    <sys:String x:Key="i18n_tRDeviceType">Device Type</sys:String>
+    <sys:String x:Key="i18n_tRMacAddressList">MAC Address List</sys:String>
+    <sys:String x:Key="i18n_tRPortTraffic">Port Traffic Statistics</sys:String>
+    <sys:String x:Key="i18n_tRLldpDevices">LLDP Devices</sys:String>
+    <sys:String x:Key="i18n_tRTransceivers">Transceivers</sys:String>
+    <sys:String x:Key="i18n_tRChassisSlotNumber">Chassis/Slot</sys:String>
+    <sys:String x:Key="i18n_tRTransceiverNumber">Transceiver</sys:String>
+    <sys:String x:Key="i18n_tRAluModelName">ALU Model Name</sys:String>
+    <sys:String x:Key="i18n_tRAluModelNumber">ALU Model Number</sys:String>
+    <sys:String x:Key="i18n_tRHardwareRevision">Hardware Revision</sys:String>
+    <sys:String x:Key="i18n_tRManufactureDate">Manufacture Date</sys:String>
+    <sys:String x:Key="i18n_tRLaserWaveLength">Laser Wave Length</sys:String>
+    <sys:String x:Key="i18n_tRAdminStatus">Admin Status</sys:String>
+    <sys:String x:Key="i18n_tROperationalStatus">Operational Status</sys:String>
+
 </ResourceDictionary>

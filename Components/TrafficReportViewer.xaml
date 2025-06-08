@@ -1,0 +1,554 @@
+﻿<Window x:Class="PoEWizard.Components.TrafficReportViewer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Loaded="OnWindow_Loaded"
+        Title="TrafficReportViewer" Width="1050" ShowInTaskbar="False" WindowStyle="SingleBorderWindow">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
+                <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-enUS.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Style="{DynamicResource popupWindow}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Style="{DynamicResource defaultScrollViewer}">
+            <Grid Style="{DynamicResource popupWindow}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <RichTextBox Grid.Row="0" x:Name="_textContent" Style="{DynamicResource fileBox}" FontFamily="Courier New"
+                         FontSize="12" Margin="8" Padding="0" />
+                <Border Grid.Row="1" Margin="8" Padding="0" Style="{DynamicResource gridBorder}">
+                    <TextBlock Text="{DynamicResource i18n_tRPortTraffic}" Style="{DynamicResource aboutParagraph}" Margin="8" Padding="0" />
+                </Border>
+                <DataGrid Grid.Row="2" x:Name="_portsTrafficGrid" AutoGenerateColumns="False" IsReadOnly="True" Margin="8" Padding="0" MinHeight="100" MaxHeight="225"
+                          Style="{DynamicResource defaultGrid}"
+                          ColumnHeaderStyle="{DynamicResource gridHeader}"
+                          CellStyle="{DynamicResource gridCell}"
+                          Width="Auto"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRPort}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Port}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRAlias}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Alias}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRBandwidth}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Bandwidth}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRRxRate}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=RxRate}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRTxRate}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=TxRate}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRRxBroadcastFrames}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=RxBroadcastFrames}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRRxUnicastFrames}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=RxUnicastFrames}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRRxBroadcastUnicastPercent}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=RxBroadcastUnicastPercent}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRRxMulticastFrames}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=RxMulticastFrames}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRRxUnicastMulticastRate}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=RxUnicastMulticastRate}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRRxLostFrames}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=RxLostFrames}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRRxCrcError}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=RxCrcError}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRRxAlignmentsError}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=RxAlignmentsError}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRTxBroadcastFrames}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=TxBroadcastFrames}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRTxUnicastFrames}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=TxUnicastFrames}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRTxBroadcastUnicastPercent}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=TxBroadcastUnicastPercent}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRTxMulticastFrames}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=TxMulticastFrames}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRTxUnicastMulticastRate}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=TxUnicastMulticastRate}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRTxLostFrames}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=TxLostFrames}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRTxCollidedFrames}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=TxCollidedFrames}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRTxCollisions}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=TxCollisions}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRTxLateCollisions}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=TxLateCollisions}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRTxExcessiveCollisions}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=TxExcessiveCollisions}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRDeviceType}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=DeviceType}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRVendor}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Vendor}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRMacAddressList}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=MacAddressesString}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}"
+                                        ToolTip="{Binding Path=MacAddresses, Converter={StaticResource MacListToTooltipConverter}}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Border Grid.Row="3" Margin="8" Padding="0" Style="{DynamicResource gridBorder}">
+                    <TextBlock Text="{DynamicResource i18n_tRLldpDevices}" Style="{DynamicResource aboutParagraph}" Margin="8" Padding="0" />
+                </Border>
+                <DataGrid Grid.Row="4" x:Name="_lldpPortsGrid" AutoGenerateColumns="False" IsReadOnly="True" Margin="8" Padding="0" MinHeight="100" MaxHeight="225"
+            Style="{DynamicResource defaultGrid}"
+            ColumnHeaderStyle="{DynamicResource gridHeader}"
+            CellStyle="{DynamicResource gridCell}"
+            Width="Auto"
+            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+            HorizontalContentAlignment="Stretch">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="100">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRPort}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Port}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="100">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRAlias}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Alias}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*" MinWidth="240">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRType}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Type}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="100">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRName}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Name}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*" MinWidth="240">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRDescription}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Description}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="100">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRIpAddress}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=IpAddress}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="100">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRVendor}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Vendor}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="100">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRModel}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Model}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="100">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRSoftwareVersion}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=SoftwareVersion}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="100">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRSerialNumber}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=SerialNumber}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*" MinWidth="120">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRMacAddress}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=MacAddress}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Border Grid.Row="5" Margin="8" Padding="0" Style="{DynamicResource gridBorder}">
+                    <TextBlock Text="{DynamicResource i18n_tRTransceivers}" Style="{DynamicResource aboutParagraph}" Margin="8" Padding="0" />
+                </Border>
+                <DataGrid Grid.Row="6" x:Name="_transceiversGrid" AutoGenerateColumns="False" IsReadOnly="True" Margin="8" Padding="0" MinHeight="100" MaxHeight="225"
+            Style="{DynamicResource defaultGrid}"
+            ColumnHeaderStyle="{DynamicResource gridHeader}"
+            CellStyle="{DynamicResource gridCell}"
+            Width="Auto"
+            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+            HorizontalContentAlignment="Stretch">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="100">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRChassisSlotNumber}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=ChassisSlotNumber}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="100">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRTransceiverNumber}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=TransceiverNumber}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="200">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRAluModelName}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=AluModelName}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="200">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRAluModelNumber}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=AluModelNumber}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="200">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRHardwareRevision}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=HardwareRevision}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="200">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRSerialNumber}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=SerialNumber}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="200">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRManufactureDate}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=ManufactureDate}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="200">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRLaserWaveLength}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=LaserWaveLength}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto" MinWidth="200">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tRAdminStatus}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=AdminStatus}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*" MinWidth="100">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{DynamicResource i18n_tROperationalStatus}" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=OperationalStatus}" Style="{DynamicResource toolTip}" Foreground="{DynamicResource fontColor}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </ScrollViewer>
+        <Border Grid.Row="2" Background="Transparent" Margin="8" Padding="0">
+            <StackPanel Style="{DynamicResource buttonBar}">
+                <Button x:Name="_btnSave" Click="Save_Click" Content="{DynamicResource i18n_svBtn}" Margin="0,0,8,0" Padding="0" />
+                <Button x:Name="_btnClose" Click="Close_Click" Content="{DynamicResource i18n_closeBtn}" Margin="0" Padding="0" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

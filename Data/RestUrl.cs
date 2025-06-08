@@ -135,6 +135,7 @@ namespace PoEWizard.Data
             [Command.SHOW_HW_INFO] = "show hardware-info",
             [Command.SHOW_INTERFACE_PORT] = $"show interfaces port {DAT}",
             [Command.SHOW_INTERFACES] = "show interfaces",
+            [Command.SHOW_TRANSCIEVERS] = "show transceivers",
             [Command.SHOW_IP_INTERFACE] = "show ip interface",
             [Command.SHOW_IP_ROUTES] = "show ip routes",
             [Command.SHOW_IP_SERVICE] = "show ip service",

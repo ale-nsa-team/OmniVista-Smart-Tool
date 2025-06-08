@@ -15,6 +15,8 @@ namespace PoEWizard.Data
             "#Tx Multicast Frames,Tx Unicast+Multicast Rate (Kbps),#Tx Lost Frames,#Tx Collided Frames,#Tx Collisions,#Tx Late Collisions,#Tx Excessive Collisions," +
             "Device Type,Vendor,MAC Address List";
         const string HEADER_DEVICE = "Port,Alias,Type,Name,Description,IP Address,Vendor,Model,Software Version,Serial Number,MAC Address";
+
+        const string HEADER_TRANSCEIVER = "Chassis/Slot,Transceiver,ALU Model Name,ALU Model Number,Hardware Revision,Serial Number,Manufacture Date,Laser Wave Length,Admin Status,Operational Status";
         const double MAX_PERCENT_BROADCAST = 2.0;
         const double MAX_PERCENT_RATE = 70;
         const double MAX_PERCENT_WARNING_LOST_FRAMES = 5;
@@ -99,10 +101,12 @@ namespace PoEWizard.Data
             this.Summary += $"\r\n  Actual duration: {CalcStringDuration(TrafficStartTime, true)}";
             this.Summary += $"\r\n\r\nNote: This tool can detect common network issues, but is not a substitute for long term monitoring and human interpretation.";
             this.Summary += $"\r\n      Your results may vary and will change over time.";
+            this.Summary += $"\r\n      THE STATISTICS BELOW REPRESENT DATA FOR THE ENTIRE SWITCH - NOT JUST INDIVIDUAL PORTS.";
             this.Summary += $"\r\n\r\nTraffic Alert:\r\n";
             this.TrafficDuration = DateTime.Now.Subtract(this.SwitchTraffic.StartTime).TotalSeconds;
             BuildReportData();
             BuildLldpDevicesReport();
+            BuildTransceiverReport();
             if (!string.IsNullOrEmpty(ddmReport)) this.Data.Append("\r\n\r\n\r\n").Append(ddmReport);
         }
 
@@ -113,6 +117,7 @@ namespace PoEWizard.Data
             this.Data.Append("\r\nDate,").Append($" {this.TrafficStartTime:MM/dd/yyyy h:mm:ss tt}");
             this.Data.Append($"\r\nSelected duration, ").Append(this.SelectedDuration);
             this.Data.Append($"\r\nActual duration, ").Append(CalcStringDuration(TrafficStartTime, true));
+            this.Data.Append("\r\nNOTE, THE STATISTICS BELOW REPRESENT DATA FOR THE ENTIRE SWITCH - NOT JUST INDIVIDUAL PORTS.");
             this.Data.Append("\r\n\r\n\r\n").Append(HEADER);
             this.alertReport = new Dictionary<string, string>();
             this.NbPortsNoData = 0;
@@ -427,6 +432,25 @@ namespace PoEWizard.Data
                         else this.Data.Append(device.MacAddress);
                     }
                     this.Data.Append("\"");
+                }
+            }
+        }
+
+        private void BuildTransceiverReport()
+        {
+            if (this.switchPorts?.Count > 0)
+            {
+                this.Data.Append("\r\n\r\n\r\n").Append(HEADER_TRANSCEIVER);
+                foreach (ChassisModel chassis in this.SwitchTraffic.ChassisList)
+                {
+                    foreach (SlotModel slot in chassis.Slots)
+                    {
+                        foreach (TransceiverModel transceiver in slot.Transceivers)
+                        {
+                            // Chassis/Slot,Transceiver,ALU Model Name,ALU Model Number,Hardware Revision,Serial Number,Manufacture Date,Laser Wave Length,Admin Status,Operational Status
+                            this.Data.Append("\n ").Append(chassis.Number).Append("/").Append(slot.Number).Append(",").Append(transceiver.TransceiverNumber).Append(",\"").Append(transceiver.AluModelName).Append("\",\"").Append(transceiver.AluModelNumber).Append("\",\"").Append(transceiver.HardwareRevision).Append("\",\"").Append(transceiver.SerialNumber).Append("\",\"").Append(transceiver.ManufactureDate).Append("\",\"").Append(transceiver.LaserWaveLength).Append("\",\"").Append(transceiver.AdminStatus).Append("\",\"").Append(transceiver.OperationalStatus).Append("\"");
+                        }
+                    }
                 }
             }
         }

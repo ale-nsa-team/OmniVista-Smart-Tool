@@ -114,6 +114,7 @@ namespace PoEWizard.Data
         SHOW_HW_INFO,
         SHOW_INTERFACE_PORT,
         SHOW_INTERFACES,
+        SHOW_TRANSCIEVERS,
         SHOW_IP_INTERFACE,
         SHOW_IP_ROUTES,
         SHOW_IP_SERVICE,

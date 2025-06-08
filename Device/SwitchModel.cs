@@ -273,6 +273,40 @@ namespace PoEWizard.Device
                         port.LoadDetailInfo(dict);
                     }
                     break;
+                case DictionaryType.TransceiverList:
+                    // clear transceiver list
+                    foreach (ChassisModel c in ChassisList)
+                    {
+                        foreach (SlotModel slot in c.Slots)
+                        {
+                            if (slot.Transceivers != null) slot.Transceivers.Clear();
+                        }
+                    }
+                    ParseTransceiverList(dictList);
+                    break;
+            }
+        }
+
+        private void ParseTransceiverList(List<Dictionary<string, string>> dictList)
+        {
+            foreach (Dictionary<string, string> dict in dictList)
+            {
+                try
+                {
+                    var transceiver = new TransceiverModel(dict);
+                    ChassisModel chassis = GetChassis(transceiver.ChassisNumber);
+                    if (chassis == null) continue;
+                    SlotModel slot = chassis.GetSlot(transceiver.SlotNumber);
+                    if (slot == null) continue;
+                    if (slot.Transceivers == null) slot.Transceivers = new List<TransceiverModel>();
+                    slot.Transceivers.Add(transceiver);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Error parsing transceiver list: {ex.Message}");
+                    GetSlot(ParseId(dict["CHASSIS"], 0), ParseId(dict["SLOT"], 0)).Transceivers = new List<TransceiverModel>();
+                    continue;
+                }
             }
         }
 
@@ -463,6 +497,11 @@ namespace PoEWizard.Device
         {
             ChassisModel cm = GetChassis(slotName);
             return cm?.Slots.FirstOrDefault(s => s.Name == slotName);
+        }
+
+        public SlotModel GetSlot(int chassisNumber, int slotNumber)
+        {
+            return GetChassis(chassisNumber)?.Slots.FirstOrDefault(s => s.Number == slotNumber);
         }
 
         public void SetAppLogLevel(string app, int logLevel)

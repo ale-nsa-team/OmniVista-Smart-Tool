@@ -170,6 +170,9 @@
     <Compile Include="Components\TdrView.xaml.cs">
       <DependentUpon>TdrView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\TrafficReportViewer.xaml.cs">
+      <DependentUpon>TrafficReportViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\TextViewer.xaml.cs">
       <DependentUpon>TextViewer.xaml</DependentUpon>
     </Compile>
@@ -221,6 +224,7 @@
     <Compile Include="Device\SwitchTrafficModel.cs" />
     <Compile Include="Device\SystemModel.cs" />
     <Compile Include="Device\TdrModel.cs" />
+    <Compile Include="Device\TransceiverModel.cs" />
     <Compile Include="Device\VlanModel.cs" />
     <Compile Include="Exceptions\CustomExceptions.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -242,6 +246,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Resources\EULA.rtf" />
@@ -343,6 +348,10 @@
     <Page Include="Components\TdrView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\TrafficReportViewer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\TextViewer.xaml">
       <SubType>Designer</SubType>
