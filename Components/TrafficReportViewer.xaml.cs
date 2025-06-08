@@ -307,6 +307,7 @@ namespace PoEWizard.Components
             {
                 foreach (var slot in chassis.Slots)
                 {
+                    if (slot is null) continue;
                     foreach (var port in slot.Ports)
                     {
                         if (!string.IsNullOrEmpty(port.Name))
@@ -314,6 +315,7 @@ namespace PoEWizard.Components
                             portsDictionary[port.Name] = port;
                         }
                     }
+                    if (slot.Transceivers is null) continue;
                     foreach (var transceiver in slot.Transceivers)
                     {
                         string key = $"{transceiver.ChassisNumber}/{transceiver.SlotNumber}/{transceiver.TransceiverNumber}";
