@@ -280,6 +280,7 @@ namespace PoEWizard.Device
                         foreach (SlotModel slot in c.Slots)
                         {
                             if (slot.Transceivers != null) slot.Transceivers.Clear();
+                            else slot.Transceivers = new List<TransceiverModel>();
                         }
                     }
                     ParseTransceiverList(dictList);

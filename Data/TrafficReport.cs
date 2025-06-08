@@ -445,6 +445,7 @@ namespace PoEWizard.Data
                 {
                     foreach (SlotModel slot in chassis.Slots)
                     {
+                        if (slot?.Transceivers is null || slot.Transceivers.Count == 0) continue;
                         foreach (TransceiverModel transceiver in slot.Transceivers)
                         {
                             // Chassis/Slot,Transceiver,ALU Model Name,ALU Model Number,Hardware Revision,Serial Number,Manufacture Date,Laser Wave Length,Admin Status,Operational Status
