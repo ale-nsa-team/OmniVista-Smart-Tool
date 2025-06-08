@@ -1236,11 +1236,12 @@ namespace PoEWizard
                 if (report != null)
                 {
                     if (report.NbPortsNoData >= MAX_NB_PORTS_NO_DATA) ShowMessageBox(Translate("i18n_taIdle"), $"{Translate("i18n_tanodata")}", MsgBoxIcons.Info, MsgBoxButtons.Ok);
-                    TextViewer tv = new TextViewer(Translate("i18n_taIdle"), report.Summary)
+                    TrafficReportViewer tv = new TrafficReportViewer(report.Summary)
                     {
                         Owner = this,
                         SaveFilename = $"{switchName}-{DateTime.Now:MM-dd-yyyy_hh_mm_ss}-traffic-analysis.txt",
-                        CsvData = report.Data.ToString()
+                        CsvData = report.Data.ToString(),
+                        TrafficReportData = report
                     };
                     tv.ShowDialog();
                 }

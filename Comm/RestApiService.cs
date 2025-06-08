@@ -543,6 +543,8 @@ namespace PoEWizard.Comm
                         return resp[STRING].ToString();
                     case ParseType.LldpLocalTable:
                         return CliParseUtils.ParseLldpLocalTable(resp[STRING].ToString());
+                    case ParseType.TransceiverTable:
+                        return CliParseUtils.ParseTransceiverTable(resp[STRING].ToString());
                     default:
                         return resp;
                 }
@@ -1557,6 +1559,7 @@ namespace PoEWizard.Comm
                 }
                 GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
                 GetPortsTrafficInformation();
+                GetPortTransceiversInformation();
                 report.Complete(stopTrafficAnalysisReason, GetDdmReport());
                 if (trafficAnalysisStatus == TrafficStatus.CanceledByUser)
                 {
@@ -1599,6 +1602,20 @@ namespace PoEWizard.Comm
                     if (_switchTraffic == null) _switchTraffic = new SwitchTrafficModel(SwitchModel, _dictList);
                     else _switchTraffic.UpdateTraffic(_dictList);
                 }
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError($"{Translate("i18n_taerr")} {PrintSwitchInfo()}", ex);
+            }
+        }
+
+        private void GetPortTransceiversInformation()
+        {
+            try
+            {
+                SendProgressReport(Translate("i18n_rtrans"));
+                _dictList = SendCommand(new CmdRequest(Command.SHOW_TRANSCIEVERS, ParseType.TransceiverTable)) as List<Dictionary<string, string>>;
+                if (_dictList?.Count > 0) SwitchModel.LoadFromList(_dictList, DictionaryType.TransceiverList);
             }
             catch (Exception ex)
             {

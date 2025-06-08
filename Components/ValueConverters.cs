@@ -820,4 +820,31 @@ namespace PoEWizard.Components
         }
     }
 
+    public class MacListToTooltipConverter : IValueConverter
+    {
+        // convert a list of mac addresses to a tooltip, each mac address on a new line
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                if (IsInvalid(value)) return DependencyProperty.UnsetValue;
+                if (!(value is List<string>)) return DependencyProperty.UnsetValue;
+                if (value is List<string> macList)
+                {
+                    return string.Join("\n", macList);
+                }
+                return DependencyProperty.UnsetValue;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return DependencyProperty.UnsetValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
 }
