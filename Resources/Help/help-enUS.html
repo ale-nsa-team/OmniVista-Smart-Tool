@@ -44,6 +44,27 @@
         including the serial number, model, software release and more.
     </p>
     <img src="connected.png" />
+    <p class="topic">Connection Protocols</p>
+    <p>
+        The application uses multiple protocols to communicate with the switch:
+    </p>
+    <ul>
+        <li>
+            <strong>REST API</strong>: The primary method for most operations, providing a secure interface to the switch's configuration.
+        </li>
+        <li>
+            <strong>SSH (Secure Shell)</strong>: Used for secure command-line access to the switch when needed for certain operations 
+            that aren't available via the REST API.
+        </li>
+        <li>
+            <strong>SFTP (SSH File Transfer Protocol)</strong>: Used for secure file transfers between the application and the switch, 
+            such as when collecting logs, backing up configurations, or upgrading firmware.
+        </li>
+    </ul>
+    <p>
+        These secure protocols ensure that communication with the switch is protected. The application will automatically attempt 
+        to enable the REST API on the switch if it's not already enabled.
+    </p>
     <p>
         The middle pane of the tool displays power supply information and status. It will also show the budget being allocated to PoE devices
         as well if the switch supports the new 802.3bt PoE standard and options for Fast PoE and Perpetual PoE.
@@ -110,6 +131,23 @@
     </p>
     <img src="wiz-result.png" />
     <br />
+
+    <p class="title">Using the Ping Function</p>
+    <p>
+        The Ping function allows you to test connectivity to devices connected to a port. To use this feature:
+    </p>
+    <ol>
+        <li>Select a port from the port list</li>
+        <li>Click the "Ping" button in the control panel</li>
+        <li>A Ping Device dialog will appear, showing available IP addresses detected on that port (if any)</li>
+        <li>Select one of the available IP addresses or enter a custom IP address in the dialog</li>
+        <li>Click the "Ping" button in the dialog to start the ping test</li>
+    </ol>
+    <p>
+        This is particularly useful for confirming network connectivity to a device after it has been powered up via PoE.
+        If the device doesn't respond to pings, you may need to check its network configuration or firewall settings.
+    </p>
+
     <p id="tdr" class="tile">Cable Test</p>
     <p>
         Cable Testing using Time Domain Reflectometer (TDR) is a diagnostic tool used on Ethernet and other cables.
@@ -159,6 +197,26 @@
             Trace is the most verbose and Error is the least verbose level. Basic level is the default.
         </li>
     </ul>
+
+    <p class="topic">Collecting Switch Logs</p>
+    <p>
+        The application provides a feature to collect diagnostic logs from the connected switch. This can be very useful when 
+        troubleshooting issues with ALE support. To collect logs:
+    </p>
+    <ol>
+        <li>Connect to a switch</li>
+        <li>Click the "Collect Logs" button in the control panel</li>
+        <li>The application will retrieve log files from the switch and save them to your computer</li>
+    </ol>
+    <p>
+        The collected logs include switch system logs, debug information, and configuration data. You can optionally restart 
+        PoE on ports during log collection to capture any PoE-related issues.
+    </p>
+    <p>
+        Note that log collection uses SFTP to securely transfer files from the switch. The process may take several minutes 
+        depending on the size of the log files and the connection speed.
+    </p>
+
     <p class="topic">vcboot.cfg</p>
     <p>Displays the vcboot config file from the switch on a separate window. You have the option to save it to a local file on your PC.</p>
     <p class="topic">snapshot</p>
@@ -181,6 +239,26 @@
         If you select a port on this window, before closing it, the port will also be selected on the main window, so you can perform some
         actions on it, such as reset the port of run the PoE Wizard.
     </p>
+
+    <p class="topic">Traffic Analysis</p>
+    <p>
+        This feature allows you to analyze traffic on the switch ports over a selected duration. Click the "Traffic Analysis" button 
+        in the control panel to start monitoring.
+    </p>
+    <p>
+        The traffic analysis collects data about MAC addresses, port utilization, and transceiver information for all active ports.
+        This is useful for troubleshooting network performance issues or identifying unusual activity on the network.
+    </p>
+    <p>
+        You can stop the traffic analysis at any time, and the collected data will be presented in a readable format for review.
+    </p>
+
+    <p class="topic">VLAN Settings</p>
+    <p>
+        Displays the current VLAN configuration on the switch. You can view the list of configured VLANs and their associated 
+        settings. This is useful for understanding the network segmentation on the switch.
+    </p>
+
     <p class="topic">Theme</p>
     <p>Allows you to select between dark mode and light mode.</p>
     <p class="topic">Help</p>
@@ -198,6 +276,19 @@
         Use this options to reset your switch configuration to factory default. The wizard will completely erase the switch configuration
         and will set vlan 1 IP inteface with the same IP address you used to connect to the switch originally, so you can reconnect to
         it with the application after the switch reboots. You can then proceed to run the config wizard to add some additional configuration.
+    </p>
+    <p class="no-space">
+        A factory reset performs the following actions:
+    </p>
+    <ul>
+        <li>Erases all configuration files on the switch</li>
+        <li>Returns all settings to factory defaults</li>
+        <li>Preserves the management IP address for vlan 1 to maintain connectivity</li>
+        <li>Reboots the switch to apply the reset</li>
+    </ul>
+    <p>
+        This is useful when you need to start from a clean configuration, particularly when repurposing a switch or
+        when troubleshooting complex configuration issues.
     </p>
     <p class="no-space">
         Since this operation is disrupting, you will be prompted to enter a password to be able to carry it out. There is a hard-coded password
@@ -247,6 +338,73 @@
         After your are done with the configuration, click Submit for the wizard to apply the configuration to the OmniSwitch.
     </p>
     <br />
+
+    <p class="header">Configuration Backup and Restore</p>
+    <p>
+        The application provides functionality to back up and restore switch configurations, which is important for 
+        disaster recovery, configuration management, and when upgrading switch firmware.
+    </p>
+    
+    <p class="topic">Backup Configuration</p>
+    <p>
+        To backup the switch configuration, go to Configuration > Backup. The backup process will:
+    </p>
+    <ul>
+        <li>Save the current switch configuration to a compressed file on your PC</li>
+        <li>Optionally include switch firmware images (recommended for full recovery capability)</li>
+        <li>Store important files like vcboot.cfg, the configuration snapshot, and other critical files</li>
+    </ul>
+    <p>
+        The backup file is saved with a timestamp and can be used later to restore the configuration to the same switch or 
+        to configure another switch identically.
+    </p>
+
+    <p class="topic">Restore Configuration</p>
+    <p>
+        To restore a previously saved configuration, go to Configuration > Restore and select the backup file. The restore process will:
+    </p>
+    <ul>
+        <li>Upload all configuration files to the switch</li>
+        <li>Optionally restore firmware images if they were included in the backup</li>
+        <li>Reboot the switch to apply the restored configuration</li>
+    </ul>
+    <p>
+        This feature is particularly useful when replacing switches or recovering from configuration issues.
+    </p>
+
+    <p class="header">Firmware Upgrade</p>
+    <p>
+        The application allows you to upgrade the switch's firmware, which includes both the main AOS operating system and the U-Boot loader.
+    </p>
+
+    <p class="topic">AOS Upgrade</p>
+    <p>
+        To upgrade the AOS firmware:
+    </p>
+    <ol>
+        <li>Go to Configuration > Upgrade > AOS</li>
+        <li>Select the ZIP file containing the AOS image file (.img) you want to install</li>
+        <li>Follow the on-screen instructions to complete the upgrade</li>
+    </ol>
+    <p>
+        The application will extract the image file from the ZIP archive, transfer it to the switch and prepare it for installation. 
+        The switch will usually require a reboot to activate the new firmware.
+    </p>
+
+    <p class="topic">U-Boot Upgrade</p>
+    <p>
+        U-Boot is the bootloader that starts the switch before the main operating system. To upgrade U-Boot:
+    </p>
+    <ol>
+        <li>Go to Configuration > Upgrade > U-Boot</li>
+        <li>Select the ZIP file containing the U-Boot image file</li>
+        <li>Follow the on-screen instructions carefully</li>
+    </ol>
+    <p>
+        <strong>Warning:</strong> U-Boot upgrades should be performed with caution as incorrect installation can prevent the switch from booting.
+        Only perform U-Boot upgrades when recommended by ALE support or documentation.
+    </p>
+
     <p>Exiting the Application will prompt you to save your changes. Click OK and wait for it to be completed. This can take some time.</p>
     <img src="save-prompt.png" />
     <br />
@@ -521,7 +679,7 @@
     <p class="title">Dynamic Power Allocation:</p>
     <ul>
         <li>
-            LLDP allows for real-time adjustments to power allocation based on the device’s current power consumption needs.
+            LLDP allows for real-time adjustments to power allocation based on the device's current power consumption needs.
             For example, a device might require more power during certain operations and less during others.
         </li>
         <li>
