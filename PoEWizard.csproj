@@ -250,6 +250,7 @@
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Resources\EULA.rtf" />
+    <None Include="Resources\ThirdPartyLicense.rtf" />
     <None Include="Resources\ulc.alu" />
     <None Include="oui.csv" />
     <None Include="Properties\Settings.settings">
@@ -541,6 +542,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Img\ping-dark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\README.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
