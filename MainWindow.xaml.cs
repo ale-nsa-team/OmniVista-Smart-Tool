@@ -124,7 +124,7 @@ namespace PoEWizard
                         break;
                 }
             });
-            this.Title += $" (V {string.Join(".", fileVersionInfo.ProductVersion.Split('.').ToList().Take(2))})";
+            this.Title += $" (v{string.Join(".", fileVersionInfo.ProductVersion.Split('.').ToList().Take(3))})";
             this.Height = SystemParameters.PrimaryScreenHeight * 0.95;
             this.Width = SystemParameters.PrimaryScreenWidth * 0.95;
             Activity.DataPath = DataPath;
