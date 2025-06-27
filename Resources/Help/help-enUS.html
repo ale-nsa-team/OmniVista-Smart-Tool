@@ -15,14 +15,14 @@
         Before we start, the minimum AOS supported by this Wizard is 8.9 R1. Switches running AOS 5.X or 6.X are not supported.
         The Application attempts to diagnose and repair PoE devices that will not boot.
     </p>
-    <p class="topic">Help Topoics</p>
+    <p class="topic">Help Topics</p>
     <ul>
         <li><a href="#connection">Connecting to a Switch</a></li>
         <li><a href="#wizard">Running the PoE Wizard</a></li>
         <li><a href="#tdr">Cable test</a></li>
         <li><a href="#view">View Menu</a></li>
         <li><a href="#cfg-wiz">Configuration Wizard</a></li>
-        <li><a href="#i18n">Locatization</a></li>
+        <li><a href="#i18n">Localization</a></li>
         <li><a href="#faq">Frequently Asked Questions</a></li>
         <li><a href="#support">Obtaining more support</a></li>
         <li><a href="#std">PoE Standards</a></li>
@@ -66,12 +66,12 @@
         to enable the REST API on the switch if it's not already enabled.
     </p>
     <p>
-        The middle pane of the tool displays power supply information and status. It will also show the budget being allocated to PoE devices
-        as well if the switch supports the new 802.3bt PoE standard and options for Fast PoE and Perpetual PoE.
+        The middle pane of the tool displays power supply information and status. It will also show the budget being allocated to PoE devices,
+        as well as if the switch supports the new 802.3bt PoE standard and options for Fast PoE and Perpetual PoE.
         You can also perform some actions such as turn PoE on and off on a slot and enable / disable fast PoE or perpetual PoE.
     </p>
     <p class="no-space">
-        Since this operation is disrupting, you will be prompted too enter a password to be able to carry it out. There is a hard-coded password
+        Since this operation is disruptive, you will be prompted to enter a password to be able to carry it out. There is a hard-coded password
         that you can use initially, and you have the option to change this password for you instance of application. Once you change the
         password, the hard-coded one will no longer be accepted.
     </p>
@@ -291,7 +291,7 @@
         when troubleshooting complex configuration issues.
     </p>
     <p class="no-space">
-        Since this operation is disrupting, you will be prompted to enter a password to be able to carry it out. There is a hard-coded password
+        Since this operation is disruptive, you will be prompted to enter a password to be able to carry it out. There is a hard-coded password
         that you can use initially, and you have the option to change this password for you instance of application. Once you change the
         password, the hard-coded one will no longer be accepted.
     </p>
@@ -300,13 +300,13 @@
     <p>The first window lets you configure the management IP address and netmask, as well as some switch system parameters.</p>
     <img src="cfg-wiz-sys.png" />
     <p>
-        Clicking "Next >" will nagivate to the next window where you can configure the Default Gateway, DNS and NTP servers.
-        When NTP option is enabled, you can select the switch's timezone from the drop-down menu.
+        Clicking "Next >" will navigate to the next window where you can configure the Default Gateway, DNS and NTP servers.
+        When the NTP option is enabled, you can select the switch's timezone from the drop-down menu.
     </p>
     <img src="cfg-wiz-srv.png" />
     <p>
-        Click "Next >" to navigate to the next window, which allows you to configure some features, like Disabling insecure protocols
-        (telnet, ftp) enable SSH, etc.
+        Click "Next >" to navigate to the next window, which allows you to configure some features, like disabling insecure protocols
+        (telnet, ftp), enable SSH, etc.
     </p>
     <p class="no-space">When setting up multicast, you can select which VLANs will have it enabled on the table below the multicast toggle switch.</p>
     <img src="cfg-wiz-feature.png" />
@@ -319,7 +319,7 @@
     <p>If you are using SNMP v2, you can create a community by clicking the "+" sign on the Communities table.</p>
     <img src="cfg-wiz-add-comm.png" />
     <p>
-        Since on the ALE OmniWwitches an SNMP community is associated with a user, enter the community name and select a previously
+        Since on the ALE OmniSwitches an SNMP community is associated with a user, enter the community name and select a previously
         created user from the drop-down menu, before clicking Create.
     </p>
     <p>To delete a community, click the "x" button to the left of the community name on the table.</p>
@@ -330,12 +330,12 @@
         If you selected v2, select the community from the drop-down menu, if you selected v3, select the user from the drop-down menu.
     </p>
     <p>
-        Note that, to simplify the configuration, the wizard sets the Authentication Protocol as MD5 and the Encryption Protocol
-        as DES, and that's what needs to be configured on the receiver side. The primary key assiciated to the encryption protocol is
+        Note that to simplify the configuration, the wizard sets the Authentication Protocol as MD5 and the Encryption Protocol
+        as DES, and that's what needs to be configured on the receiver side. The primary key associated to the encryption protocol is
         configured the same as the user's password.
     </p>
     <p>
-        After your are done with the configuration, click Submit for the wizard to apply the configuration to the OmniSwitch.
+        After you are done with the configuration, click Submit for the wizard to apply the configuration to the OmniSwitch.
     </p>
     <br />
 
@@ -457,7 +457,7 @@
                 </li>
             </ul>
         </li>
-        <li>Save the translated file with the name correspondig to the language
+        <li>Save the translated file with the name corresponding to the language
             <p class="mt-0">
                 For example, if you translate the strings to Brazilian Portuguese, the new file name should be <b>strings-ptBR.xaml</b>
             </p>
@@ -506,11 +506,11 @@
         802.3bt may not be supported on the switch or the correct setting for your network.
         The PoE Wizard will enable this if needed for you.
     </p>
-    <p class="title">Why does the wizard turn PoE off to enable 802.bt?</p>
+    <p class="title">Why does the wizard turn PoE off to enable 802.3bt?</p>
     <p>The switch must renegotiate with every end device when enabling 802.3bt and the best way to accomplish this is to reset.</p>
     <p class="title">Why does class detection show -? </p>
     <p>802.bt must be supported and enabled on the switch for auto class detection to function correctly.</p>
-    <p class="title">How do I accomplish long term monitoring of my ALE network?</p>
+    <p class="title">How do I accomplish long-term monitoring of my ALE network?</p>
     <p>
         The Application is designed to assist with new installations or a major refresh. Long term monitoring of ALE networks
         is available with our OmniVista Network Management System and plugins for either Milestone or Genetec:
@@ -524,7 +524,7 @@
         There are free to use general networking scanning tools available on the Internet, however these
         are not supplied or supported by Alcatel Lucent Enterprise and ALE assumes no liability for their use.
         Advanced IP Scanner can discover networked devices: <a href="https://www.advanced-ip-scanner.com/">https://www.advanced-ip-scanner.com/</a>.
-        Nmap can scan individual devices: <a href="https://nmap.org/downloadad">https://nmap.org/downloadad</a>
+        Nmap can scan individual devices: <a href="https://nmap.org/download">https://nmap.org/download</a>
     </p>
     <p id="support" class="header">Obtaining more support</p>
     <p>
@@ -575,7 +575,7 @@
     <p id="hp" class="header">High Power PoE</p>
     <p>
         ALE 6860E and 6865 switches provide intermediate power levels, specifically between 60 and 75 watts.
-        They were designed before the finalization of IEEE 802.3bt standards, cater to devices that require
+        They were designed before the finalization of IEEE 802.3bt standards, catering to devices that require
         more power than PoE+ but less than the highest levels of PoE++. The 4-pair option must be set to
         deliver power High PoE, similar to Type 3 and Type 4 and the wizard will set this for you.
     </p>
@@ -663,7 +663,7 @@
         PoE standards (IEEE 802.3at and IEEE 802.3bt). LLDP allows for dynamic and more granular power management through the
         exchange of detailed power-related information between PoE switches (or injectors) and powered devices (PDs).
     </p>
-    <p class="title">Key Aspects ofr LLDP in PoE:</p>
+    <p class="title">Key Aspects of LLDP in PoE:</p>
     <ul>
         <li>
             LLDP enables devices to negotiate power requirements dynamically beyond the initial class-based negotiation.
@@ -672,7 +672,7 @@
         <li>
             Using LLDP-MED (Media Endpoint Discovery), a specific extension of LLDP, devices can communicate their exact power
             requirements and capabilities, allowing the switch to allocate power more accurately and efficiently.
-            See <a href=" https://www.ieee802.org/1/files/public/docs2006/ab-congdon-lldp-med-8023at-0906.pdf">
+            See <a href="https://www.ieee802.org/1/files/public/docs2006/ab-congdon-lldp-med-8023at-0906.pdf">
                 https://www.ieee802.org/1/files/public/docs2006/ab-congdon-lldp-med-8023at-0906.pdf</a>  for more information.
         </li>
     </ul>
@@ -746,7 +746,7 @@
         </a>
     </p>
     <p id="poe-tech" class="header">Additional Technologies Related to PoE</p>
-    <p class="title">lanpower power-over-hdmi</p>
+    <p class="title">lanpower Power-over-HDMI</p>
     <p>
         The ALE OS6860E-P24Z8 has a special PoE setting that may be required in rare cases.
         The Wizard should detect and set this option if needed. Note this feature is restricted to just this switch model and no other.
