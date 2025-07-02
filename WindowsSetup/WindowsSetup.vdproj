@@ -111,6 +111,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D2F52C90FF2146E3983C04B4FEB803B9"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_DC1941DBACE1431ABC18EEFB87F0691C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -602,6 +608,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D2F52C90FF2146E3983C04B4FEB803B9"
+            {
+            "SourcePath" = "8:..\\oui.csv"
+            "TargetName" = "8:oui.csv"
+            "Tag" = "8:"
+            "Folder" = "8:_02BB8B4EE67D4BB6A90D04BA5210B3D5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DC1941DBACE1431ABC18EEFB87F0691C"
             {
             "SourcePath" = "8:..\\Resources\\README.txt"
@@ -794,7 +820,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AOS Toolkit v2.3.5"
         "ProductCode" = "8:{9F7A438C-A32A-47CB-A1E5-63F6F2EB71E8}"
-        "PackageCode" = "8:{A7F3AEEC-5109-485A-A291-A6279BA2A6A3}"
+        "PackageCode" = "8:{337D69F1-36F9-428F-9B4A-21BD7E4DEE5D}"
         "UpgradeCode" = "8:{E422185B-0A8C-4BE4-AD08-F34ED964BB9E}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -1390,7 +1416,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_71C550A60E284E2F91702A419C41DBE1"
             {
-            "SourcePath" = "8:..\\obj\\Release\\AOS Toolkit.exe"
+            "SourcePath" = "8:..\\obj\\Debug\\AOS Toolkit.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_02BB8B4EE67D4BB6A90D04BA5210B3D5"

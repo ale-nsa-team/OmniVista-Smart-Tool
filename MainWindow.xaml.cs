@@ -209,6 +209,13 @@ namespace PoEWizard
         {
             SetTitleColor(this);
             _btnConnect.IsEnabled = false;
+
+            if (ouiTable.Count == 0)
+            {
+                string errorMessage = Translate("i18n_ouiMissing");
+                Logger.Error($"Failed to load OUI table from both application directory and data path. Expected file: {OUI_FILE}");
+                ShowMessageBox(Translate("i18n_instError"), errorMessage, MsgBoxIcons.Error);
+            }
         }
 
         private async void OnWindowClosing(object sender, CancelEventArgs e)
@@ -2111,7 +2118,6 @@ namespace PoEWizard
             {
                 filePath = Path.Combine(DataPath, OUI_FILE);
                 if (File.Exists(filePath)) ouiEntries = File.ReadAllLines(filePath);
-
             }
             ouiTable = new Dictionary<string, string>();
             if (ouiEntries?.Length > 0)

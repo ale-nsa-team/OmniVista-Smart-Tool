@@ -76,6 +76,10 @@
     <sys:String x:Key="i18n_defLang">Cannot import default language</sys:String>
     <sys:String x:Key="i18n_dupLang">Language file $1 already exists, do you want to replace it?</sys:String>
     
+    <!--Installation Errors-->
+    <sys:String x:Key="i18n_instError">Installation Error</sys:String>
+    <sys:String x:Key="i18n_ouiMissing">Installation appears to be corrupted. The OUI database file is missing or invalid. The OUI (Organizationally Unique Identifier) database is essential for identifying device manufacturers from MAC addresses, so its absence would significantly impact the application's functionality, making reinstallation the appropriate solution. Please reinstall the application to restore missing components.</sys:String>
+    
     <!--System Information-->
     <sys:String x:Key="i18n_swName">Name:</sys:String>
     <sys:String x:Key="i18n_ipAddr">IP Address:</sys:String>
