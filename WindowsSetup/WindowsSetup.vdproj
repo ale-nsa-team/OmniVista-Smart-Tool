@@ -111,6 +111,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D2F52C90FF2146E3983C04B4FEB803B9"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_DC1941DBACE1431ABC18EEFB87F0691C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -207,7 +213,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:Debug\\AOS-Toolkit-Setup-v2.3.5.msi"
+        "OutputFilename" = "8:Debug\\OmniSwitch-SmartTool-Setup-v2.3.6.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -239,7 +245,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\AOS-Toolkit-Setup-v2.3.5.msi"
+        "OutputFilename" = "8:Release\\OmniSwitch-SmartTool-Setup-v2.3.6.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -602,6 +608,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D2F52C90FF2146E3983C04B4FEB803B9"
+            {
+            "SourcePath" = "8:..\\oui.csv"
+            "TargetName" = "8:oui.csv"
+            "Tag" = "8:"
+            "Folder" = "8:_02BB8B4EE67D4BB6A90D04BA5210B3D5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DC1941DBACE1431ABC18EEFB87F0691C"
             {
             "SourcePath" = "8:..\\Resources\\README.txt"
@@ -712,7 +738,7 @@
         {
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_02BB8B4EE67D4BB6A90D04BA5210B3D5"
             {
-            "DefaultLocation" = "8:[LocalAppDataFolder]\\Programs\\[Manufacturer]\\AOS Toolkit"
+            "DefaultLocation" = "8:[LocalAppDataFolder]\\Programs\\[Manufacturer]\\OmniSwitch Smart Tool"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:TRUE"
             "Condition" = "8:"
@@ -792,24 +818,24 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:AOS Toolkit v2.3.5"
+        "ProductName" = "8:OmniSwitch Smart Tool v2.3.6"
         "ProductCode" = "8:{9F7A438C-A32A-47CB-A1E5-63F6F2EB71E8}"
-        "PackageCode" = "8:{A7F3AEEC-5109-485A-A291-A6279BA2A6A3}"
+        "PackageCode" = "8:{337D69F1-36F9-428F-9B4A-21BD7E4DEE5D}"
         "UpgradeCode" = "8:{E422185B-0A8C-4BE4-AD08-F34ED964BB9E}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.3.5"
+        "ProductVersion" = "8:2.3.6"
         "Manufacturer" = "8:Alcatel-Lucent Enterprise"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:Alcatel-Lucent Enterprise Installer's Toolkit"
+        "Title" = "8:OmniSwitch Smart Tool"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Alcatel-Lucent Enterprise"
         "Keywords" = "8:"
-        "ARPCOMMENTS" = "8:Alcatel-Lucent Enterprise Installer's Toolkit"
+        "ARPCOMMENTS" = "8:OmniSwitch Smart Tool"
         "ARPURLINFOABOUT" = "8:https://www.al-enterprise.com/"
         "ARPPRODUCTICON" = "8:_C3B0996C88464912A215F6C1266EE3BC"
         "ARPIconIndex" = "3:0"
@@ -916,7 +942,7 @@
         {
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_00380620CE594291B0D87618F4146EF6"
             {
-            "Name" = "8:AOS Toolkit v2.3.5"
+            "Name" = "8:OmniSwitch Smart Tool v2.3.6"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -930,7 +956,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_F85DC562B1E2426BB32E8323AAB283CB"
             {
-            "Name" = "8:AOS Toolkit v2.3.5"
+            "Name" = "8:OmniSwitch Smart Tool v2.3.6"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -1390,7 +1416,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_71C550A60E284E2F91702A419C41DBE1"
             {
-            "SourcePath" = "8:..\\obj\\Release\\AOS Toolkit.exe"
+            "SourcePath" = "8:..\\obj\\Debug\\Omniswitch Smart Tool.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_02BB8B4EE67D4BB6A90D04BA5210B3D5"

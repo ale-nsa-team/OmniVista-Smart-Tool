@@ -76,6 +76,10 @@
     <sys:String x:Key="i18n_defLang">Cannot import default language</sys:String>
     <sys:String x:Key="i18n_dupLang">Language file $1 already exists, do you want to replace it?</sys:String>
     
+    <!--Installation Errors-->
+    <sys:String x:Key="i18n_instError">Installation Error</sys:String>
+    <sys:String x:Key="i18n_ouiMissing">Installation appears to be corrupted. The OUI database file is missing or invalid. The OUI (Organizationally Unique Identifier) database is essential for identifying device manufacturers from MAC addresses, so its absence would significantly impact the application's functionality, making reinstallation the appropriate solution. Please reinstall the application to restore missing components.</sys:String>
+    
     <!--System Information-->
     <sys:String x:Key="i18n_swName">Name:</sys:String>
     <sys:String x:Key="i18n_ipAddr">IP Address:</sys:String>
@@ -190,7 +194,7 @@
     <sys:String x:Key="i18n_snmp">SNMP Settings</sys:String>
     <sys:String x:Key="i18n_usrs">Users</sys:String>
     <sys:String x:Key="i18n_usr">User</sys:String>
-    <sys:String x:Key="i18n_comms">Communitites</sys:String>
+    <sys:String x:Key="i18n_comms">Communities</sys:String>
     <sys:String x:Key="i18n_comm">Community</sys:String>
     <sys:String x:Key="i18n_recv">Trap Receivers</sys:String>
     <sys:String x:Key="i18n_usrName">Name</sys:String>
@@ -202,10 +206,10 @@
     <sys:String x:Key="i18n_ver">Version</sys:String>
     <sys:String x:Key="i18n_runCW">Running config wizard...</sys:String>
     <sys:String x:Key="i18n_cwErr">The following error was reported:</sys:String>
-    <sys:String x:Key="i18n_cwErrs">The following $1 errors where reported:</sys:String>
+    <sys:String x:Key="i18n_cwErrs">The following $1 errors were reported:</sys:String>
     <sys:String x:Key="i18n_twiz">Config Wizard</sys:String>
     <sys:String x:Key="i18n_discWiz" xml:space="preserve">
-Application will disconnect from switch because IP address wad changed.
+Application will disconnect from switch because IP address was changed.
 Please reconnect using the new address.
     </sys:String>
     <sys:String x:Key="i18n_loading">Loading current parameters, please wait...</sys:String>
@@ -236,9 +240,9 @@ Please confirm your action.
     <sys:String x:Key="i18n_fullrst">Full Factory Reset (you will have to reconnect to the switch via console or use lightning config)</sys:String>
     <sys:String x:Key="i18n_partrst">Factory Reset + management interface (allows to reconnect to the switch via this app)</sys:String>
     <sys:String x:Key="i18n_frReboot">Configuration reset complete, switch will reboot now</sys:String>
-    <sys:String x:Key="i18n_frPrep">Prepairing factory default...</sys:String>
+    <sys:String x:Key="i18n_frPrep">Preparing factory default...</sys:String>
     <sys:String x:Key="i18n_frDelete">Removing config files</sys:String>
-    <sys:String x:Key="i18n_frTmplt">Appying basic template...</sys:String>
+    <sys:String x:Key="i18n_frTmplt">Applying basic template...</sys:String>
     
     <!--Upgrade Messages-->
     <sys:String x:Key="i18n_aosUpg">AOS Upgrade</sys:String>
@@ -259,6 +263,12 @@ Do you still want to proceed with the upgrade?</sys:String>
     <sys:String x:Key="i18n_ubootCmd">Running U-Boot upgrade command...</sys:String>
     <sys:String x:Key="i18n_upgReboot" xml:space="preserve">The switch needs to be restarted to complete the upgrade.
 Do you want to reboot now?</sys:String>
+    <sys:String x:Key="i18n_unsupportedFamily">Unsupported or unknown product family: '$1'</sys:String>
+    <sys:String x:Key="i18n_supportedFamilies">Supported families: $1</sys:String>
+    <sys:String x:Key="i18n_ensureSupported">Please ensure your switch model is supported for AOS upgrade</sys:String>
+    <sys:String x:Key="i18n_archiveMissingImage">Archive does not contain expected image file '$1' for product family '$2'</sys:String>
+    <sys:String x:Key="i18n_checkFamilyMapping">Please verify the archive contains the correct image file according to the family mapping</sys:String>
+    <sys:String x:Key="i18n_expectedImageGuide">Expected image for '$1': $2</sys:String>
 
     <!--Backup Messages-->
     <sys:String x:Key="i18n_bckRunning">Backing up configuration of switch</sys:String>
@@ -366,9 +376,9 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_maxpw">max. power =</sys:String>
     <sys:String x:Key="i18n_chgprio">Changing power priority on port</sys:String>
     <sys:String x:Key="i18n_pmaysolve">may solve the problem</sys:String>
-    <sys:String x:Key="i18n_pnoneed">No need to change power prioriry on port</sys:String>
+    <sys:String x:Key="i18n_pnoneed">No need to change power priority on port</sys:String>
     <sys:String x:Key="i18n_palready">priority is already</sys:String>
-    <sys:String x:Key="i18n_pback">Chaging priority back to</sys:String>
+    <sys:String x:Key="i18n_pback">Changing priority back to</sys:String>
     <sys:String x:Key="i18n_cpRep">Priority Change Report:</sys:String>
     <sys:String x:Key="i18n_rcpoe">Power cycling PoE on port</sys:String>
     <sys:String x:Key="i18n_pwoff">Turning power off</sys:String>
@@ -379,16 +389,16 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_devSel">Please, select the type of device connected to port</sys:String>
     <sys:String x:Key="i18n_isupl">is a switch uplink</sys:String>
     <sys:String x:Key="i18n_noen">Cannot enable</sys:String>
-    <sys:String x:Key="i18n_nodis">Connot disable</sys:String>
+    <sys:String x:Key="i18n_nodis">Cannot disable</sys:String>
     <sys:String x:Key="i18n_pwdown">because it is powered down</sys:String>
     <sys:String x:Key="i18n_isbt">because 802.3bt is supported</sys:String>
-    <sys:String x:Key="18n_isen">is already enabled</sys:String>
+    <sys:String x:Key="i18n_isen">is already enabled</sys:String>
     <sys:String x:Key="i18n_isdis">is already disabled</sys:String>
     <sys:String x:Key="i18n_exec">executed</sys:String>
     <sys:String x:Key="i18n_notex">failed to execute</sys:String>
 
     <!--About box-->
-    <sys:String x:Key="i18n_aboutTitle">About ALE Installer Toolkit</sys:String>
+    <sys:String x:Key="i18n_aboutTitle">About OmniSwitch Smart Tool</sys:String>
     <sys:String x:Key="i18n_cpright">Copyright</sys:String>
     <sys:String x:Key="i18n_reserved">All Rights Reserved</sys:String>
     <sys:String x:Key="i18n_authors">Authors:</sys:String>
@@ -522,7 +532,7 @@ Please reconnect to switch after it comes back up</sys:String>
     <sys:String x:Key="i18n_fromsw">from switch</sys:String>
     <sys:String x:Key="i18n_noSftp">Cannot connect secure FTP on switch</sys:String>
     <sys:String x:Key="i18n_lsnap">Reading configuration snapshot...</sys:String>
-    <sys:String x:Key="i18n_tsnap">Configuration Shapshot</sys:String>
+    <sys:String x:Key="i18n_tsnap">Configuration Snapshot</sys:String>
     <sys:String x:Key="i18n_sport">Device Search</sys:String>
     <sys:String x:Key="i18n_updAlias">Update port description</sys:String>
     <sys:String x:Key="i18n_fmac">Could not find MAC Address $1</sys:String>

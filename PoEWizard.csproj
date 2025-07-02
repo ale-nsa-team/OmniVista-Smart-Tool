@@ -7,7 +7,7 @@
     <ProjectGuid>{3924E57C-474A-43BD-8B71-DB87A4D2775D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>PoEWizard</RootNamespace>
-    <AssemblyName>AOS Toolkit</AssemblyName>
+    <AssemblyName>OmniSwitch Smart Tool</AssemblyName>
     <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -252,7 +252,9 @@
     <None Include="Resources\EULA.rtf" />
     <None Include="Resources\ThirdPartyLicense.rtf" />
     <None Include="Resources\ulc.alu" />
-    <None Include="oui.csv" />
+    <None Include="oui.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

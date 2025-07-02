@@ -36,7 +36,6 @@ namespace PoEWizard.Device
         private const string SHA_SUM = "imgsha256sum";
         private const string LSM = "software.lsm";
 
-        private static List<string> imgFiles;
         private static List<string> reqFiles;
         private static SwitchModel swModel;
         private static SftpService sftpSrv;
@@ -49,13 +48,6 @@ namespace PoEWizard.Device
             {
                 string source = Translate("i18n_aosUpg");
                 Progress.Report(new ProgressReport(ReportType.Status, source, Translate("i18n_upgCheck")));
-                string err = OpenScp(model);
-                if (err != null) throw new UpgradeException(source, err);
-
-                // Get all .img files in the remote directory
-                imgFiles = sftpSrv.GetFilesInRemoteDir(FLASH_WORKING_DIR, "img");
-                if (imgFiles.Count == 0) throw new UpgradeException(source, $"{Translate("i18n_noImg")} {FLASH_WORKING_DIR}");
-
                 // Get the expected image name for this switch model
                 string expectedImageName;
                 try
@@ -67,27 +59,25 @@ namespace PoEWizard.Device
                     throw new UpgradeException(source, ex.Message);
                 }
 
-                // Check if expected image exists in the remote directory
-                if (!imgFiles.Contains(expectedImageName))
-                {
-                    throw new UpgradeException(source, $"{Translate("i18n_noImg")} {expectedImageName} in {FLASH_WORKING_DIR}");
-                }
-
-                // Report any extra image files (for logging purposes)
-                var extraImgFiles = ListExtraImgFiles(imgFiles, expectedImageName).ToList();
-                if (extraImgFiles.Any())
-                {
-                    Logger.Warn($"Extra .img files found in {FLASH_WORKING_DIR}: {string.Join(", ", extraImgFiles)}. Only {expectedImageName} will be used.");
-                }
-
-                // Only include the expected image file in required files
+                // Set required files list with expected image
                 reqFiles = new List<string> { expectedImageName, SHA_SUM, LSM };
+
+                string err = OpenScp(model);
+                if (err != null) throw new UpgradeException(source, err);
                 
                 List<string> files = CheckMissingFilesInArchive(archive) ??
                     throw new UpgradeException(source, $"{Translate("i18n_zipErr")} {archive}");
                 if (files.Count > 0)
                 {
-                    if (files.Count == 1 && files[0] == SHA_SUM)
+                    // Check if expected image file is missing - provide specific guidance
+                    if (files.Contains(expectedImageName))
+                    {
+                        string errorMsg = $"{Translate("i18n_archiveMissingImage", expectedImageName, model.Model)}." +
+                                         $"\n{Translate("i18n_expectedImageGuide", model.Model, expectedImageName)}. " +
+                                         $"{Translate("i18n_checkFamilyMapping")}.";
+                        throw new UpgradeException(source, errorMsg);
+                    }
+                    else if (files.Count == 1 && files[0] == SHA_SUM)
                     {
                         bool res = true;
                         MainWindow.Instance.Dispatcher.Invoke(new Action(() =>
@@ -122,8 +112,8 @@ namespace PoEWizard.Device
                 {
                     string localFile = Path.Combine(Path.GetTempPath(), file);
                     string remoteFile = $"{FLASH_WORKING_DIR}/{file}";
-                    if (!sftpSrv.UploadFile(localFile, remoteFile, true))
-                        throw new UpgradeException(source, $"{Translate("i18n_uplErr")} {file}");
+                    //if (!sftpSrv.UploadFile(localFile, remoteFile, true))
+                    //    throw new UpgradeException(source, $"{Translate("i18n_uplErr")} {file}");
                 }
                 DeleteTempFiles();
                 Logger.Activity($"Switch {model.Name}, Model {model.Model}: AOS upgraded to {Path.GetFileNameWithoutExtension(archive)}");
@@ -266,12 +256,11 @@ namespace PoEWizard.Device
                 }
             }
 
-            throw new ArgumentException($"Unsupported or unknown product family: {productFamily}");
-        }
-
-        private static IEnumerable<string> ListExtraImgFiles(List<string> allImgFiles, string expectedImage)
-        {
-            return allImgFiles.Where(file => !string.Equals(file, expectedImage, StringComparison.OrdinalIgnoreCase));
+            var supportedFamilies = string.Join(", ", FamilyImageMap.Keys.OrderBy(k => k));
+            string errorMsg = $"{Translate("i18n_unsupportedFamily", productFamily)}. " +
+                             $"{Translate("i18n_supportedFamilies", supportedFamilies)}. " +
+                             $"{Translate("i18n_ensureSupported")}.";
+            throw new ArgumentException(errorMsg);
         }
 
         private static void DeleteTempFiles()

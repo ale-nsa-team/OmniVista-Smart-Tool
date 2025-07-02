@@ -5,11 +5,11 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Alcatel-Lucent Enterprise Installer's Toolkit")]
+[assembly: AssemblyTitle("OmniSwitch Smart Tool")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Alcatel-Lucent Enterprise")]
-[assembly: AssemblyProduct("AOS Toolkit")]
+[assembly: AssemblyProduct("OmniSwitch Smart Tool")]
 [assembly: AssemblyCopyright("©  ALE International, ALE USA Inc. All rights reserved in all countries.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -49,5 +49,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.3.5.0")]
-[assembly: AssemblyFileVersion("2.3.5.0")]
+[assembly: AssemblyVersion("2.3.6.0")]
+[assembly: AssemblyFileVersion("2.3.6.0")]
