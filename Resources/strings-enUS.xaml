@@ -206,7 +206,7 @@
     <sys:String x:Key="i18n_ver">Version</sys:String>
     <sys:String x:Key="i18n_runCW">Running config wizard...</sys:String>
     <sys:String x:Key="i18n_cwErr">The following error was reported:</sys:String>
-    <sys:String x:Key="i18n_cwErrs">The following $1 errors where reported:</sys:String>
+    <sys:String x:Key="i18n_cwErrs">The following $1 errors were reported:</sys:String>
     <sys:String x:Key="i18n_twiz">Config Wizard</sys:String>
     <sys:String x:Key="i18n_discWiz" xml:space="preserve">
 Application will disconnect from switch because IP address was changed.
@@ -263,6 +263,12 @@ Do you still want to proceed with the upgrade?</sys:String>
     <sys:String x:Key="i18n_ubootCmd">Running U-Boot upgrade command...</sys:String>
     <sys:String x:Key="i18n_upgReboot" xml:space="preserve">The switch needs to be restarted to complete the upgrade.
 Do you want to reboot now?</sys:String>
+    <sys:String x:Key="i18n_unsupportedFamily">Unsupported or unknown product family: '$1'</sys:String>
+    <sys:String x:Key="i18n_supportedFamilies">Supported families: $1</sys:String>
+    <sys:String x:Key="i18n_ensureSupported">Please ensure your switch model is supported for AOS upgrade</sys:String>
+    <sys:String x:Key="i18n_archiveMissingImage">Archive does not contain expected image file '$1' for product family '$2'</sys:String>
+    <sys:String x:Key="i18n_checkFamilyMapping">Please verify the archive contains the correct image file according to the family mapping</sys:String>
+    <sys:String x:Key="i18n_expectedImageGuide">Expected image for '$1': $2</sys:String>
 
     <!--Backup Messages-->
     <sys:String x:Key="i18n_bckRunning">Backing up configuration of switch</sys:String>
@@ -370,9 +376,9 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_maxpw">max. power =</sys:String>
     <sys:String x:Key="i18n_chgprio">Changing power priority on port</sys:String>
     <sys:String x:Key="i18n_pmaysolve">may solve the problem</sys:String>
-    <sys:String x:Key="i18n_pnoneed">No need to change power prioriry on port</sys:String>
+    <sys:String x:Key="i18n_pnoneed">No need to change power priority on port</sys:String>
     <sys:String x:Key="i18n_palready">priority is already</sys:String>
-    <sys:String x:Key="i18n_pback">Chaging priority back to</sys:String>
+    <sys:String x:Key="i18n_pback">Changing priority back to</sys:String>
     <sys:String x:Key="i18n_cpRep">Priority Change Report:</sys:String>
     <sys:String x:Key="i18n_rcpoe">Power cycling PoE on port</sys:String>
     <sys:String x:Key="i18n_pwoff">Turning power off</sys:String>
@@ -383,7 +389,7 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_devSel">Please, select the type of device connected to port</sys:String>
     <sys:String x:Key="i18n_isupl">is a switch uplink</sys:String>
     <sys:String x:Key="i18n_noen">Cannot enable</sys:String>
-    <sys:String x:Key="i18n_nodis">Connot disable</sys:String>
+    <sys:String x:Key="i18n_nodis">Cannot disable</sys:String>
     <sys:String x:Key="i18n_pwdown">because it is powered down</sys:String>
     <sys:String x:Key="i18n_isbt">because 802.3bt is supported</sys:String>
     <sys:String x:Key="i18n_isen">is already enabled</sys:String>
