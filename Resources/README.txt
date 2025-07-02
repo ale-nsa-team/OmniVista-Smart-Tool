@@ -1,13 +1,13 @@
 =====================================
-POE WIZARD - INSTALLERS TOOLKIT
+OMNI SWITCH SMART TOOL
 =====================================
 
-Thank you for installing PoE Wizard - AOS Installer's Toolkit!
+Thank you for installing OmniSwitch Smart Tool!
 
 OVERVIEW
 --------
-AOS Installer's Toolkit is a comprehensive network management tool designed for configuring 
-and managing AOS PoE devices. This application provides an intuitive interface for device discovery, configuration, monitoring, and troubleshooting of network infrastructure.
+OmniSwitch Smart Tool is a comprehensive network management tool designed for configuring 
+and managing OmniSwitch devices. This application provides an intuitive interface for device discovery, configuration, monitoring, and troubleshooting of network infrastructure.
 
 KEY FEATURES
 ------------

@@ -9,7 +9,7 @@
         Loaded="OnWindowLoaded"
         Closing="OnWindowClosing"
         WindowStartupLocation="CenterScreen"
-        Title="Alcatel-Lucent Enterprise Installer's Toolkit"  
+        Title="OmniSwitch Smart Tool"  
         Icon="/Resources/Img/app-icon.ico">
     <Window.Resources>
         <ResourceDictionary>

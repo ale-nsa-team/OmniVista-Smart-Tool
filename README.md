@@ -1,4 +1,4 @@
-# Alcatel-Lucent Enterprise Installer's Toolkit
+# OmniSwitch Smart Tool
 
 ## Disclaimer
 © 2024 ALE USA Inc. All Rights Reserved. Permission to use, copy, modify, and distribute this source code and its documentation without a fee and without a signed license agreement is hereby granted, provided that the copyright notice, this paragraph, and the following two paragraphs appear in all copies, modifications, and distributions.
@@ -11,17 +11,17 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
 The application doesn't have a setup project, as the idea is to provide something that the user just loads to their PC and starts using it without installing.
 When building a version for distribution (in release mode), you need to copy some of the contents from the /bin/release folder and add them to an archive file,
 to be sent to the users. The following files should be added to the archive:
-- ALE-InstallersToolkit.exe
-- ALE-InstallersTookit.exe.config
+- OmniSwitch Smart Tool.exe
+- OmniSwitch Smart Tool.exe.config
 - HtmlAgilityPack.dll
 - Microsoft.Bcl.AsyncInterfaces.dll
 - RenciSshNet.dll
 - oui.csv
 
-The user will then unpack this archive in a folder on their PC and launch the ALE-InstallersToolkit.exe application.
+The user will then unpack this archive in a folder on their PC and launch the OmniSwitch Smart Tool.exe application.
 
 Note that log files and some configuration options are saved in the user's %AppData% folder (normally c:\users\<username>\AppData\Roaming) under folder
-Alcatel-Lucent Enterprise/AOS Toolkit.
+Alcatel-Lucent Enterprise/OmniSwitch Smart Tool.
 Log files are under Log folder and configuration options are found in file app.cfg.
 The app.cfg may have the following entries:
 - theme (Dark/Light)

@@ -194,7 +194,7 @@
     <sys:String x:Key="i18n_snmp">SNMP Settings</sys:String>
     <sys:String x:Key="i18n_usrs">Users</sys:String>
     <sys:String x:Key="i18n_usr">User</sys:String>
-    <sys:String x:Key="i18n_comms">Communitites</sys:String>
+    <sys:String x:Key="i18n_comms">Communities</sys:String>
     <sys:String x:Key="i18n_comm">Community</sys:String>
     <sys:String x:Key="i18n_recv">Trap Receivers</sys:String>
     <sys:String x:Key="i18n_usrName">Name</sys:String>
@@ -209,7 +209,7 @@
     <sys:String x:Key="i18n_cwErrs">The following $1 errors where reported:</sys:String>
     <sys:String x:Key="i18n_twiz">Config Wizard</sys:String>
     <sys:String x:Key="i18n_discWiz" xml:space="preserve">
-Application will disconnect from switch because IP address wad changed.
+Application will disconnect from switch because IP address was changed.
 Please reconnect using the new address.
     </sys:String>
     <sys:String x:Key="i18n_loading">Loading current parameters, please wait...</sys:String>
@@ -240,9 +240,9 @@ Please confirm your action.
     <sys:String x:Key="i18n_fullrst">Full Factory Reset (you will have to reconnect to the switch via console or use lightning config)</sys:String>
     <sys:String x:Key="i18n_partrst">Factory Reset + management interface (allows to reconnect to the switch via this app)</sys:String>
     <sys:String x:Key="i18n_frReboot">Configuration reset complete, switch will reboot now</sys:String>
-    <sys:String x:Key="i18n_frPrep">Prepairing factory default...</sys:String>
+    <sys:String x:Key="i18n_frPrep">Preparing factory default...</sys:String>
     <sys:String x:Key="i18n_frDelete">Removing config files</sys:String>
-    <sys:String x:Key="i18n_frTmplt">Appying basic template...</sys:String>
+    <sys:String x:Key="i18n_frTmplt">Applying basic template...</sys:String>
     
     <!--Upgrade Messages-->
     <sys:String x:Key="i18n_aosUpg">AOS Upgrade</sys:String>
@@ -386,13 +386,13 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_nodis">Connot disable</sys:String>
     <sys:String x:Key="i18n_pwdown">because it is powered down</sys:String>
     <sys:String x:Key="i18n_isbt">because 802.3bt is supported</sys:String>
-    <sys:String x:Key="18n_isen">is already enabled</sys:String>
+    <sys:String x:Key="i18n_isen">is already enabled</sys:String>
     <sys:String x:Key="i18n_isdis">is already disabled</sys:String>
     <sys:String x:Key="i18n_exec">executed</sys:String>
     <sys:String x:Key="i18n_notex">failed to execute</sys:String>
 
     <!--About box-->
-    <sys:String x:Key="i18n_aboutTitle">About ALE Installer Toolkit</sys:String>
+    <sys:String x:Key="i18n_aboutTitle">About OmniSwitch Smart Tool</sys:String>
     <sys:String x:Key="i18n_cpright">Copyright</sys:String>
     <sys:String x:Key="i18n_reserved">All Rights Reserved</sys:String>
     <sys:String x:Key="i18n_authors">Authors:</sys:String>
@@ -526,7 +526,7 @@ Please reconnect to switch after it comes back up</sys:String>
     <sys:String x:Key="i18n_fromsw">from switch</sys:String>
     <sys:String x:Key="i18n_noSftp">Cannot connect secure FTP on switch</sys:String>
     <sys:String x:Key="i18n_lsnap">Reading configuration snapshot...</sys:String>
-    <sys:String x:Key="i18n_tsnap">Configuration Shapshot</sys:String>
+    <sys:String x:Key="i18n_tsnap">Configuration Snapshot</sys:String>
     <sys:String x:Key="i18n_sport">Device Search</sys:String>
     <sys:String x:Key="i18n_updAlias">Update port description</sys:String>
     <sys:String x:Key="i18n_fmac">Could not find MAC Address $1</sys:String>
