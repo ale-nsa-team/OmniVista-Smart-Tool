@@ -136,7 +136,7 @@ namespace PoEWizard.Comm
         {
             try
             {
-                StartProgressBar($"S{Translate("i18n_scan")} {SwitchModel.Name}{WAITING}", 24);
+                StartProgressBar($"{Translate("i18n_scan")} {SwitchModel.Name}{WAITING}", 24);
                 ScanSwitch(source, token, reportResult);
                 token.ThrowIfCancellationRequested();
                 ShowInterfacesList();
