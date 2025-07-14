@@ -379,16 +379,38 @@
 
     <p class="topic">AOS Upgrade</p>
     <p>
-        To upgrade the AOS firmware:
+        To upgrade the AOS firmware, go to <b>Configuration > Upgrade > AOS</b> and select the ZIP archive with the new firmware. The application handles the initial steps of the upgrade by validating the firmware and transferring the necessary files to the switch.
     </p>
+    <p>The process is as follows:</p>
     <ol>
-        <li>Go to Configuration > Upgrade > AOS</li>
-        <li>Select the ZIP file containing the AOS image file (.img) you want to install</li>
-        <li>Follow the on-screen instructions to complete the upgrade</li>
+        <li>
+            <strong>Firmware Archive Selection:</strong> You must select the correct ZIP archive for the intended AOS version.
+        </li>
+        <li>
+            <strong>Switch Compatibility Check:</strong> The application first identifies the switch model to determine the expected firmware image file name (e.g., <code>Uos.img</code>, <code>Nos.img</code>). An error will be shown if the switch family is not supported.
+        </li>
+        <li>
+            <strong>Archive Content Validation:</strong> The tool checks the ZIP file to ensure it contains the required files for the upgrade, which are:
+            <ul>
+                <li>The correct AOS image file for the switch model (e.g., <code>Nosa.img</code>).</li>
+                <li><code>software.lsm</code> (software manifest).</li>
+                <li><code>imgsha256sum</code> (checksum file for integrity verification).</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Handling Missing Files:</strong>
+            <ul>
+                <li>If the required AOS image file is not found in the archive, the process is aborted with an error message that specifies the expected image file name.</li>
+                <li>If the <code>imgsha256sum</code> file is missing, you will be prompted to either continue without it or cancel the upgrade.</li>
+                <li>If other files like <code>software.lsm</code> are missing, the upgrade will not proceed.</li>
+            </ul>
+        </li>
+        <li>
+            <strong>File Transfer:</strong> Once validation is successful, the application extracts the required files and transfers them to the switch's <code>/flash/working</code> directory via SFTP.
+        </li>
     </ol>
     <p>
-        The application will extract the image file from the ZIP archive, transfer it to the switch and prepare it for installation. 
-        The switch will usually require a reboot to activate the new firmware.
+        Once the files are transferred, the application's task is complete. <strong>The switch will not automatically reboot or install the firmware.</strong> You must connect to the switch (e.g., via console or SSH) and issue the appropriate commands to install the new AOS version from the working directory and reboot the switch to complete the upgrade.
     </p>
 
     <p class="topic">U-Boot Upgrade</p>
