@@ -2206,10 +2206,11 @@ namespace PoEWizard
                     progress.Report(wizardProgressReport);
                     await WaitAckProgress();
                 }
-                StringBuilder txt = new StringBuilder("PoE Wizard completed on port ");
-                txt.Append(selectedPort.Name).Append(" with device type ").Append(selectedDeviceType).Append(":").Append(msg).Append("\nPoE status: ").Append(selectedPort.Poe);
-                txt.Append(", Port Status: ").Append(selectedPort.Status).Append(", Power: ").Append(selectedPort.Power).Append(" Watts");
-                if (selectedPort.EndPointDevice != null) txt.Append("\n").Append(selectedPort.EndPointDevice);
+                StringBuilder txt = new StringBuilder($"{Translate("i18n_pwEnd", selectedPort.Name, selectedDeviceType.ToString())}");
+                txt.Append($"\n{Translate("i18n_poeSt")}: ").Append(selectedPort.Poe);
+                txt.Append($", {Translate("i18n_pwPst")} ").Append(selectedPort.Status);
+                txt.Append($", {Translate("i18n_power")} ").Append(selectedPort.Power).Append(" Watts");
+                if (selectedPort.EndPointDevice != null) txt.Append("\n").Append(selectedPort.EndPointDevice.ToTooltip());
                 else if (selectedPort.MacList?.Count > 0 && !string.IsNullOrEmpty(selectedPort.MacList[0]))
                     txt.Append($", {Translate("i18n_pwDevMac")} ").Append(selectedPort.MacList[0]);
                 Logger.Activity(txt.ToString());
@@ -2222,6 +2223,10 @@ namespace PoEWizard
                     maxCollectLogsDur = MAX_COLLECT_LOGS_WIZARD_DURATION;
                     string sftpError = await RunCollectLogs(true, selectedPort);
                     if (!string.IsNullOrEmpty(sftpError)) ShowMessageBox(barText, $"{Translate("i18n_noSftp")} {swModel.Name}!\n{sftpError}", MsgBoxIcons.Warning, MsgBoxButtons.Ok);
+                }
+                else
+                {
+                    ShowMessageBox(Translate("i18n_pwiz"), txt.ToString(), MsgBoxIcons.Info, MsgBoxButtons.Ok);
                 }
                 await GetSyncStatus(null);
             }

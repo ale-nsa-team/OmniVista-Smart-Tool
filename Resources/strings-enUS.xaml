@@ -328,8 +328,7 @@ Do you want to continue?</sys:String>
     <sys:String x:Key="i18n_pwRep">PoE Wizard Report:</sys:String>
     <sys:String x:Key="i18n_pwRun">Running PoE Wizard</sys:String>
     <sys:String x:Key="i18n_pwDur">Total duration:</sys:String>
-    <sys:String x:Key="i18n_pwEnd">PoE Wizard completed on port</sys:String>
-    <sys:String x:Key="i18n_pwDev">with device type</sys:String>
+    <sys:String x:Key="i18n_pwEnd">PoE Wizard completed on port $1 with device type $2:</sys:String>
     <sys:String x:Key="i18n_pwPst">Port Status:</sys:String>
     <sys:String x:Key="i18n_power">Power:</sys:String>
     <sys:String x:Key="i18n_pwDevMac">Device MAC:</sys:String>
