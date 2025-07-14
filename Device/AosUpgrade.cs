@@ -24,6 +24,8 @@ namespace PoEWizard.Device
             { "OS6570M", "Wos.img" },
             { "OS6870", "Kaosn.img" },
             { "OS6860", "Uos.img" },
+            { "OS6860N", "Uosn.img" },
+            { "OS6860-N", "Uosn.img" },
             { "OS6865", "Uos.img" },
             { "OS6869-N", "Uosn.img" },
             { "OS6900-Yukon", "Yos.img" },
@@ -112,8 +114,8 @@ namespace PoEWizard.Device
                 {
                     string localFile = Path.Combine(Path.GetTempPath(), file);
                     string remoteFile = $"{FLASH_WORKING_DIR}/{file}";
-                    //if (!sftpSrv.UploadFile(localFile, remoteFile, true))
-                    //    throw new UpgradeException(source, $"{Translate("i18n_uplErr")} {file}");
+                    if (!sftpSrv.UploadFile(localFile, remoteFile, true))
+                        throw new UpgradeException(source, $"{Translate("i18n_uplErr")} {file}");
                 }
                 DeleteTempFiles();
                 Logger.Activity($"Switch {model.Name}, Model {model.Model}: AOS upgraded to {Path.GetFileNameWithoutExtension(archive)}");
