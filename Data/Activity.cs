@@ -6,7 +6,7 @@ namespace PoEWizard.Data
 {
     public static class Activity
     {
-        private const string fileName = "activity.txt";
+        private const string fileName = "ActivityLog.txt";
         private static readonly object lockObj = new object();
         private static string dataPath;
         public static string FilePath { get; private set; }
