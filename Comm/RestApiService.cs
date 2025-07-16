@@ -2934,6 +2934,32 @@ namespace PoEWizard.Comm
             }
         }
 
+        public List<Route> GetIpRoutes()
+        {
+            List<Route> routes = new List<Route>();
+            try
+            {
+                List<Dictionary<string, string>> responses = SendCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
+                foreach (Dictionary<string, string> route in responses)
+                {
+                    try
+                    {
+                        routes.Add(new Route(route));
+                    }
+                    catch
+                    {
+                        //pass
+                        continue;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return routes;
+        }
+
         private void SendProgressReport(string progrMsg)
         {
             string msg = $"{progrMsg} {Translate("i18n_onsw")} {(!string.IsNullOrEmpty(SwitchModel.Name) ? SwitchModel.Name : SwitchModel.IpAddress)}";

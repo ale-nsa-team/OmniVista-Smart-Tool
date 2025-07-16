@@ -190,6 +190,7 @@
     <Compile Include="Data\Config.cs" />
     <Compile Include="Data\ConfigChanges.cs" />
     <Compile Include="Data\LinuxCommandSeq.cs" />
+    <Compile Include="Data\Route.cs" />
     <Compile Include="Data\SwitchDebugApp.cs" />
     <Compile Include="Data\TrafficReport.cs" />
     <Compile Include="Data\WizardReport.cs" />
