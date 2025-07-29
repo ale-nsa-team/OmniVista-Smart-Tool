@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -19,12 +19,15 @@
     <ul>
         <li><a href="#connection">Connecting to a Switch</a></li>
         <li><a href="#wizard">Running the PoE Wizard</a></li>
-        <li><a href="#tdr">Cable test</a></li>
+        <li><a href="#tdr">Cable Test</a></li>
         <li><a href="#view">View Menu</a></li>
         <li><a href="#cfg-wiz">Configuration Wizard</a></li>
+        <li><a href="#aos-upgrade">AOS Upgrade</a></li>
+        <li><a href="#uboot-upgrade">U-Boot Upgrade</a></li>
+        <li><a href="#security">Security and Passcode</a></li>
         <li><a href="#i18n">Localization</a></li>
         <li><a href="#faq">Frequently Asked Questions</a></li>
-        <li><a href="#support">Obtaining more support</a></li>
+        <li><a href="#support">Obtaining More Support</a></li>
         <li><a href="#std">PoE Standards</a></li>
         <li><a href="#hp">High Power PoE</a></li>
         <li><a href="#neg">PoE Detection and Class Negotiation</a></li>
@@ -413,24 +416,133 @@
         Once the files are transferred, the application's task is complete. <strong>The switch will not automatically reboot or install the firmware.</strong> You must connect to the switch (e.g., via console or SSH) and issue the appropriate commands to install the new AOS version from the working directory and reboot the switch to complete the upgrade.
     </p>
 
-    <p class="topic">U-Boot Upgrade</p>
+    <p id="aos-upgrade" class="topic">AOS Upgrade File Requirements</p>
     <p>
-        U-Boot is the bootloader that starts the switch before the main operating system. To upgrade U-Boot:
+        Before performing an AOS upgrade, ensure you have the correct upgrade package that contains the following required files:
     </p>
+    <ul>
+        <li><strong>Image file</strong> (e.g., Nos.img, Wos.img, Uos.img, etc.) - The actual AOS firmware image. The specific filename depends on your switch model's product family.</li>
+        <li><strong>imgsha256sum</strong> - Contains the SHA-256 checksum of the image file for verification.</li>
+        <li><strong>software.lsm</strong> - Contains metadata about the software package.</li>
+    </ul>
+    <p>
+        The required image filename is determined by your switch's product family. Here are some common mappings:
+    </p>
+    <ul>
+        <li>OS6360: Nosa.img</li>
+        <li>OS6465/OS6560: Nos.img</li>
+        <li>OS6570M: Wos.img</li>
+        <li>OS6860/OS6865: Uos.img</li>
+        <li>OS6860N/OS6869-N: Uosn.img</li>
+        <li>OS6870: Kaosn.img</li>
+        <li>OS6900-Yukon: Yos.img</li>
+        <li>OS9900: Mos.img</li>
+    </ul>
+    <p>
+        The upgrade package should be a ZIP file containing all required files. The tool will verify the presence of these files before proceeding with the upgrade.
+    </p>
+    <p id="uboot-upgrade" class="topic">U-Boot Upgrade</p>
+    <p>
+        U-Boot is the bootloader that initializes the switch hardware before the main operating system loads. This section explains how to upgrade the U-Boot firmware on your switch.
+    </p>
+    
+    <p>
+        The U-Boot upgrade package must be a ZIP file containing a U-Boot update file with the following naming pattern:
+    </p>
+    <ul>
+        <li><strong>u-boot-*.tar.gz</strong> - The U-Boot firmware package (e.g., u-boot-os6900-3.0.0.0.tar.gz)</li>
+    </ul>
+    <p>
+        The tool will automatically detect and extract the appropriate U-Boot file from the archive.
+    </p>
+
+    <p>To perform a U-Boot upgrade:</p>
     <ol>
-        <li>Go to Configuration > Upgrade > U-Boot</li>
-        <li>Select the ZIP file containing the U-Boot image file</li>
-        <li>Follow the on-screen instructions carefully</li>
+        <li>Ensure you have the correct U-Boot update package for your switch model.</li>
+        <li>Open the OmniSwitch Smart Tool and connect to the switch.</li>
+        <li>Go to Configuration > Upgrade > U-Boot.</li>
+        <li>Select the U-Boot update ZIP file.</li>
+        <li>Click "Start Upgrade" to begin the process.</li>
+        <li>The tool will:
+            <ul>
+                <li>Extract the U-Boot file from the archive</li>
+                <li>Upload it to the switch's flash directory</li>
+                <li>Execute the upgrade command</li>
+            </ul>
+        </li>
+        <li>Once complete, the switch will automatically reboot to apply the new U-Boot version.</li>
     </ol>
-    <p>
-        <strong>Warning:</strong> U-Boot upgrades should be performed with caution as incorrect installation can prevent the switch from booting.
-        Only perform U-Boot upgrades when recommended by ALE support or documentation.
-    </p>
+
+    <div class="note">
+        <strong>Important Notes:</strong>
+        <ul>
+            <li>Do not power off the switch during the U-Boot upgrade process.</li>
+            <li>The switch will automatically reboot after the upgrade.</li>
+            <li>Ensure you have a stable network connection throughout the process.</li>
+            <li>Not all switch models support U-Boot upgrades through this tool. The option will be disabled if your switch doesn't support it.</li>
+        </ul>
+    </div>
 
     <p>Exiting the Application will prompt you to save your changes. Click OK and wait for it to be completed. This can take some time.</p>
     <img src="save-prompt.png" />
     <br />
     <img src="save-progress.png" />
+
+    <p id="security" class="topic">Security and Passcode Protection</p>
+    <p>
+        The application implements security measures to prevent unauthorized access to critical operations. The following operations require a passcode:
+    </p>
+    
+    <p>Operations Requiring Passcode</p>
+    <ul>
+        <li><strong>Factory Reset</strong>
+            <ul>
+                <li>Full or partial reset of switch configuration</li>
+                <li>Restores switch to default settings</li>
+            </ul>
+        </li>
+        <li><strong>Firmware Upgrades</strong>
+            <ul>
+                <li>AOS (Operating System) upgrades</li>
+                <li>U-Boot (Bootloader) upgrades</li>
+            </ul>
+        </li>
+        <li><strong>Configuration Management</strong>
+            <ul>
+                <li>Restoring switch configurations</li>
+                <li>Applying major configuration changes</li>
+            </ul>
+        </li>
+        <li><strong>System Operations</strong>
+            <ul>
+                <li>Rebooting the switch</li>
+                <li>Power cycling PoE ports</li>
+            </ul>
+        </li>
+    </ul>
+
+    <p>
+        The default passcode is: <code>@AleT00lkit#</code> For security reasons, it is highly recommended to change the default passcode after initial setup.
+    </p>
+
+    <p>To change the passcode:</p>
+    <ol>
+        <li>When prompted for a passcode, click the "Change Password" button</li>
+        <li>Enter the current passcode</li>
+        <li>Enter and confirm the new passcode</li>
+        <li>Click "OK" to save the new passcode</li>
+    </ol>
+
+    <div class="note">
+        <strong>Security Notes:</strong>
+        <ul>
+            <li>Passcodes are stored in encrypted format for security</li>
+            <li>If you forget your passcode, you may need to reinstall the application</li>
+            <li>Only share the passcode with authorized personnel</li>
+            <li>Change the passcode periodically for enhanced security</li>
+        </ul>
+    </div>
+
     <p id="i18n" class="header">Localization</p>
     <p>
         Under the <b>Options</b> menu, you can select the language used in the application menus and messages. The application comes configured 
