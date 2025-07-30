@@ -97,6 +97,7 @@ namespace PoEWizard.Data
             [Command.POWER_823BT_DISABLE] = $"lanpower slot {DAT} 8023bt disable",
             [Command.POWER_823BT_ENABLE] = $"lanpower slot {DAT} 8023bt enable",
             [Command.POWER_CLASS_DETECTION_ENABLE] = $"lanpower slot {DAT} class-detection enable",
+            [Command.POWER_CLASS_DETECTION_DISABLE] = $"lanpower slot {DAT} class-detection disable",
             [Command.POWER_DOWN_PORT] = $"lanpower port {DAT} admin-state disable",
             [Command.POWER_DOWN_SLOT] = $"lanpower slot {DAT} service stop",
             [Command.POWER_HDMI_DISABLE] = $"lanpower port {DAT} power-over-hdmi disable",

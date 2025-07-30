@@ -2638,7 +2638,6 @@ namespace PoEWizard.Comm
                     }
                     chassis.PowerBudget += slot.Budget;
                     chassis.PowerConsumed += slot.Power;
-                    CheckPowerClassDetection(slot);
                 }
                 chassis.PowerRemaining = chassis.PowerBudget - chassis.PowerConsumed;
                 foreach (var ps in chassis.PowerSupplies)
@@ -2653,11 +2652,53 @@ namespace PoEWizard.Comm
             if (!SwitchModel.SupportsPoE) _wizardReportResult.CreateReportResult(SWITCH, WizardResult.Warning, $"{Translate("i18n_switch")} {SwitchModel.Name} {Translate("i18n_nopoe")}");
         }
 
-        private void CheckPowerClassDetection(SlotModel slot)
+        public void RollbackSwitchPowerClassDetection(Dictionary<string, ConfigType> origin)
         {
+            if (SwitchModel == null || origin == null || origin.Count == 0) return;
+            foreach (var chassis in SwitchModel.ChassisList)
+            {
+                foreach (var slot in chassis.Slots)
+                {
+                    if (!slot.SupportsPoE || !origin.ContainsKey(slot.Name) || origin[slot.Name] == ConfigType.Unavailable) continue;
+                    SetSlotPowerClassDetection(slot, origin[slot.Name]);
+                }
+            }
+        }
+
+        public Dictionary<string, ConfigType> GetCurrentSwitchPowerClassDetection()
+        {
+            Dictionary<string, ConfigType> result = new Dictionary<string, ConfigType>();
+            if (SwitchModel == null) return result;
+            foreach (var chassis in SwitchModel.ChassisList)
+            {
+                foreach (var slot in chassis.Slots)
+                {
+                    if (!slot.SupportsPoE) continue;
+                    result.Add(slot.Name, slot.PowerClassDetection);
+                }
+            }
+            return result;
+        }
+
+        public void SetSwitchPowerClassDetection(ConfigType type)
+        {
+            if (SwitchModel == null || type == ConfigType.Unavailable) return;
+            foreach (var chassis in SwitchModel.ChassisList)
+            {
+                foreach (var slot in chassis.Slots)
+                {
+                    if (!slot.SupportsPoE) continue;
+                    SetSlotPowerClassDetection(slot, type);
+                }
+            }
+        }
+
+        public void SetSlotPowerClassDetection(SlotModel slot, ConfigType type)
+        {
+            if (SwitchModel == null || type == ConfigType.Unavailable) return;
             try
             {
-                if (slot.PowerClassDetection == ConfigType.Disable) SendCommand(new CmdRequest(Command.POWER_CLASS_DETECTION_ENABLE, slot.Name));
+                SendCommand(new CmdRequest(type == ConfigType.Enable ? Command.POWER_CLASS_DETECTION_ENABLE : Command.POWER_CLASS_DETECTION_DISABLE, slot.Name));
             }
             catch (Exception ex)
             {

@@ -2173,7 +2173,13 @@ namespace PoEWizard
                 DateTime startTime = DateTime.Now;
                 tokenSource = new CancellationTokenSource();
                 string msg = $"{Translate("i18n_pwRun")} {Translate("i18n_onport")} {selectedPort.Name}{WAITING}";
-                await Task.Run(() => restApiService.ScanSwitch(msg, tokenSource.Token, reportResult));
+                Dictionary<string, ConfigType> powerClassDetection = new Dictionary<string, ConfigType>();
+                await Task.Run(() => 
+                {
+                    restApiService.ScanSwitch(msg, tokenSource.Token, reportResult);
+                    powerClassDetection = restApiService.GetCurrentSwitchPowerClassDetection();
+                    restApiService.SetSwitchPowerClassDetection(ConfigType.Enable);
+                });
                 ShowProgress(barText);
                 switch (selectedDeviceType)
                 {
@@ -2195,6 +2201,7 @@ namespace PoEWizard
                 {
                     await RunLastWizardActions();
                     result = reportResult.GetReportResult(selectedPort.Name);
+                    restApiService.RollbackSwitchPowerClassDetection(powerClassDetection);
                 }
                 msg = $"{reportResult.Message}\n\n{Translate("i18n_pwDur")} {CalcStringDurationTranslate(startTime, true)}";
                 await Task.Run(() => restApiService.RefreshSwitchPorts());
