@@ -33,6 +33,7 @@
         <li><a href="#neg">PoE Detection and Class Negotiation</a></li>
         <li><a href="#lldp">Role of LLDP in PoE</a></li>
         <li><a href="#poe-tech">Additional Technologies Related to PoE</a></li>
+        <li><a href="#oui">OUI Vendor Mapping</a></li>
     </ul>
     <p id="connection" class="topic">Connecting to a Switch</p>
     <p> Start by clicking Connection at the upper left of the tool and select Switch.</p>
@@ -487,6 +488,18 @@
     <img src="save-prompt.png" />
     <br />
     <img src="save-progress.png" />
+
+    <p id="oui" class="topic">OUI Vendor Mapping</p>
+    <p>
+        The application includes a feature to identify the vendor of a connected device based on its MAC address. This is achieved using an
+        Organizationally Unique Identifier (OUI), which is the first 24 bits of a MAC address, assigned to a specific vendor by the IEEE.
+    </p>
+    <p>
+        The application uses an internal file, <code>oui.csv</code>, (located in the application's installation directory) which contains a list of OUIs and their corresponding vendor names.
+        When a device connects to the switch, the application reads its MAC address, looks up the OUI in this table, and displays the vendor name
+        in the port details. This helps in identifying the manufacturer of the connected device, which can be useful for troubleshooting
+        and inventory management, especially for devices that do not provide detailed information via LLDP.
+    </p>
 
     <p id="security" class="topic">Security and Passcode Protection</p>
     <p>
