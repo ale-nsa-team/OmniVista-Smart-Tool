@@ -9,7 +9,7 @@
         Loaded="OnWindowLoaded"
         Closing="OnWindowClosing"
         WindowStartupLocation="CenterScreen"
-        Title="OmniSwitch Smart Tool"  
+        Title="OmniVista Smart Tool"  
         Icon="/Resources/Img/app-icon.ico">
     <Window.Resources>
         <ResourceDictionary>

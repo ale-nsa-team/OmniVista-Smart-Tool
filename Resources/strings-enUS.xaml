@@ -397,7 +397,7 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_notex">failed to execute</sys:String>
 
     <!--About box-->
-    <sys:String x:Key="i18n_aboutTitle">About OmniSwitch Smart Tool</sys:String>
+    <sys:String x:Key="i18n_aboutTitle">About OmniVista Smart Tool</sys:String>
     <sys:String x:Key="i18n_cpright">Copyright</sys:String>
     <sys:String x:Key="i18n_reserved">All Rights Reserved</sys:String>
     <sys:String x:Key="i18n_authors">Authors:</sys:String>

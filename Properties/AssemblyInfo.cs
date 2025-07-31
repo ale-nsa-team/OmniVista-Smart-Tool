@@ -5,11 +5,11 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("OmniSwitch Smart Tool")]
+[assembly: AssemblyTitle("OmniVista Smart Tool")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Alcatel-Lucent Enterprise")]
-[assembly: AssemblyProduct("OmniSwitch Smart Tool")]
+[assembly: AssemblyProduct("OmniVista Smart Tool")]
 [assembly: AssemblyCopyright("©  ALE International, ALE USA Inc. All rights reserved in all countries.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

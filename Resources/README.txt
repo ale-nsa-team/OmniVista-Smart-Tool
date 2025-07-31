@@ -2,11 +2,11 @@
 OMNI SWITCH SMART TOOL
 =====================================
 
-Thank you for installing OmniSwitch Smart Tool!
+Thank you for installing OmniVista Smart Tool!
 
 OVERVIEW
 --------
-OmniSwitch Smart Tool is a comprehensive network management tool designed for configuring 
+OmniVista Smart Tool is a comprehensive network management tool designed for configuring 
 and managing OmniSwitch devices. This application provides an intuitive interface for device discovery, configuration, monitoring, and troubleshooting of network infrastructure.
 
 KEY FEATURES
