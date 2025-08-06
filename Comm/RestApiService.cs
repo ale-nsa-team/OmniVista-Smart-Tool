@@ -1,4 +1,4 @@
-﻿using PoEWizard.Data;
+using PoEWizard.Data;
 using PoEWizard.Device;
 using PoEWizard.Exceptions;
 using System;
@@ -287,13 +287,13 @@ namespace PoEWizard.Comm
         private string EnableRestApi()
         {
             string error = null;
-            string progrMsg = $"{Translate("i18n_enableRest")} {SwitchModel.IpAddress}{WAITING}";
             try
             {
+                if (!ConnectAosSsh()) return $"{Translate("i18n_unableToConnect")}";
+                string progrMsg = $"{Translate("i18n_enableRest")} {SwitchModel.IpAddress}{WAITING}";
                 StartProgressBar(progrMsg, 31);
                 _progress.Report(new ProgressReport(progrMsg));
                 UpdateProgressBar(progressBarCnt);
-                ConnectAosSsh();
 
                 bool httpEnabled = false;
                 bool defaultLocalExists = false;
@@ -680,12 +680,21 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void ConnectAosSsh()
+        private bool ConnectAosSsh()
         {
-            if (SshService != null && SshService.IsSwitchConnected()) return;
+            if (SshService != null && SshService.IsSwitchConnected()) return true;
             if (SshService != null) DisconnectAosSsh();
             SshService = new AosSshService(SwitchModel);
-            SshService.ConnectSshClient();
+            try
+            {
+                SshService.ConnectSshClient();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to connect to switch via SSH", ex);
+                return false;
+            }
+            return SshService.IsSwitchConnected();
         }
 
         private void DisconnectAosSsh()

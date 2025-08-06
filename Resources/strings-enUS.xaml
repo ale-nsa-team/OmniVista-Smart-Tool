@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <!--Menus-->
@@ -414,6 +414,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
 
     <!--Switch scan-->
     <sys:String x:Key="i18n_rsCnx">Connecting to switch</sys:String>
+    <sys:String x:Key="i18n_unableToConnect">Connection to the switch failed. Aborting REST API enablement. Please verify that the switch is reachable before proceeding.</sys:String>
     <sys:String x:Key="i18n_rest">Connecting REST API</sys:String>
     <sys:String x:Key="i18n_scan">Scanning switch</sys:String>
     <sys:String x:Key="i18n_sys">Reading system information</sys:String>
