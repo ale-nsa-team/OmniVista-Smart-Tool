@@ -71,6 +71,7 @@
     <sys:String x:Key="i18n_langfe">Select folder to save language file</sys:String>
     <sys:String x:Key="i18n_langfi">Select language file to import</sys:String>
     <sys:String x:Key="i18n_badLang">Language file "$1" is invalid and will be removed</sys:String>
+    <sys:String x:Key="i18n_langBroken">Unable to access the language file. Please check the installation or contact support.</sys:String>
     <sys:String x:Key="i18n_expfail">Failed to export language file</sys:String>
     <sys:String x:Key="i18n_impfail">Failed to import language file</sys:String>
     <sys:String x:Key="i18n_defLang">Cannot import default language</sys:String>
