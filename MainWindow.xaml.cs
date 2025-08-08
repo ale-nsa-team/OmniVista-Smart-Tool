@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using PoEWizard.Comm;
 using PoEWizard.Components;
 using PoEWizard.Data;
@@ -1842,12 +1842,13 @@ namespace PoEWizard
 
         private void LangExport_Click(object sender, RoutedEventArgs e)
         {
-            string fname = Path.GetFileName(Resources.MergedDictionaries[2].Source.ToString());
+            ResourceDictionary stringsDict = Resources.MergedDictionaries.FirstOrDefault(rd => rd.Source.ToString().IndexOf("strings", StringComparison.OrdinalIgnoreCase) >= 0);
+            if (stringsDict == null) throw new Exception(Translate("i18n_langBroken"));
             var sfd = new SaveFileDialog
             {
                 Filter = $"{Translate("i18n_langf")}|*.xaml",
                 Title = Translate("i18n_langfe"),
-                FileName = fname,
+                FileName = Path.GetFileName(stringsDict.Source.ToString()),
                 InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
             };
             if (sfd.ShowDialog() == true)
@@ -1856,7 +1857,7 @@ namespace PoEWizard
                 {
                     using (StringWriter sw = new StringWriter())
                     {
-                        XamlWriter.Save(Resources.MergedDictionaries[2], sw);
+                        XamlWriter.Save(stringsDict, sw);
                         string res = sw.GetStringBuilder().ToString();
                         string formRes = res.Replace("<s:String", "\n<s:String");
                         using (StreamWriter writer = new StreamWriter(sfd.FileName))

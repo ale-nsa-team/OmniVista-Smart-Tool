@@ -1,4 +1,4 @@
-﻿using PoEWizard.Comm;
+using PoEWizard.Comm;
 using PoEWizard.Data;
 using PoEWizard.Device;
 using System;
@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.ComponentModel;
 using System.Windows.Controls;
 using static PoEWizard.Data.Constants;
 using static PoEWizard.Data.Utils;
@@ -16,7 +17,7 @@ namespace PoEWizard.Components
     /// <summary>
     /// Interaction logic for ConfigWiz.xaml
     /// </summary>
-    public partial class ConfigWiz : Window
+    public partial class ConfigWiz : Window, INotifyPropertyChanged
     {
         private RestApiService restSrv;
         private SwitchModel device;
@@ -42,6 +43,17 @@ namespace PoEWizard.Components
         }
 
         public static ConfigWiz Instance;
+
+        public int CurrentStep => pageNo;
+
+        public int PageCount => pageCount;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         #region Constructor
 
@@ -81,6 +93,7 @@ namespace PoEWizard.Components
         {
             _btnSubmit.IsEnabled = false;
             ShowInfoBox(Translate("i18n_loading"));
+            _progressBar.IsIndeterminate = true;
             await Task.Run(() =>
             {
                 GetServerData();
@@ -92,6 +105,7 @@ namespace PoEWizard.Components
             featOrig = features.Clone() as FeatureModel;
             snmpOrig = snmpData.Clone() as SnmpModel;
             HideInfoBox();
+            _progressBar.IsIndeterminate = false;
             _btnCfgNext.IsEnabled = true;
         }
 
@@ -108,6 +122,7 @@ namespace PoEWizard.Components
             pageNo = Math.Max(1, pageNo - 1);
             if (pageNo == 1) _btnCfgBack.IsEnabled = false;
             _btnCfgNext.IsEnabled = true;
+            OnPropertyChanged(nameof(CurrentStep));
             NavigateToPage();
         }
 
@@ -119,12 +134,14 @@ namespace PoEWizard.Components
                 _btnCfgNext.IsEnabled = false;
             }
             _btnCfgBack.IsEnabled = true;
+            OnPropertyChanged(nameof(CurrentStep));
             NavigateToPage();
         }
 
         private async void CfgSubmit_Click(object sender, RoutedEventArgs e)
         {
             bool needRefresh = false;
+            _progressBar.IsIndeterminate = true;
             await Task.Run(() =>
             {
                 ApplyCommands(srvData.ToCommandList(srvOrig), "i18n_appDns");
@@ -142,6 +159,7 @@ namespace PoEWizard.Components
                 await Task.Run(() => restSrv.ScanSwitch(null, tokenSource.Token));
             }
             DialogResult = true;
+            _progressBar.IsIndeterminate = true;
             Close();
         }
 
