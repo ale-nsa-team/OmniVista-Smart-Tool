@@ -847,4 +847,21 @@ namespace PoEWizard.Components
             return DependencyProperty.UnsetValue;
         }
     }
+
+    public class IsNoneOniePlatformToTooltipConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool isNoneOnie && !isNoneOnie)
+            {
+                return Translate("i18n_noUbootSupported");
+            }
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

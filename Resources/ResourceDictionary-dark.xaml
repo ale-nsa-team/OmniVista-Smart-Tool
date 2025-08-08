@@ -29,6 +29,7 @@
     <converters:IpAddrListFilterToTooltipConverter x:Key="IpAddrListFilterToTooltipConverter" />
     <converters:ValueToStyleConverter x:Key="ValueToStyleConverter" />
     <converters:MacListToTooltipConverter x:Key="MacListToTooltipConverter" />
+    <converters:IsNoneOniePlatformToTooltipConverter x:Key="IsNoneOniePlatformToTooltipConverter" />
 
     <BitmapImage x:Key="connected" UriSource="Img/connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="Img/disconnected-dark.png" />

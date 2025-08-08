@@ -1,4 +1,4 @@
-﻿<Window x:Class="PoEWizard.MainWindow"
+<Window x:Class="PoEWizard.MainWindow"
         DataContext="{StaticResource SwitchModel}"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -55,7 +55,14 @@
                 <MenuItem Header="{DynamicResource i18n_cfgWiz}" x:Name="_cfgMenuItem" IsEnabled="False" Click="LaunchConfigWizard"/>
                 <MenuItem Header="{DynamicResource i18n_upgrade}" x:Name="_upgradeMenuItem" IsEnabled="False">
                     <MenuItem Header="{DynamicResource i18n_aos}" x:Name="_aosUpgrade" Click="UpgradeAos"/>
-                    <MenuItem Header="{DynamicResource i18n_uboot}" x:Name="_ubootUpgrade" Click="UpgradeUboot"/>
+                    <MenuItem Header="{DynamicResource i18n_uboot}" x:Name="_ubootUpgrade" Click="UpgradeUboot"
+                              IsEnabled="{Binding IsNoneOniePlatform}"
+                              ToolTipService.ShowOnDisabled="True"
+>
+                        <MenuItem.ToolTip>
+                            <ToolTip Background="{DynamicResource barBackground}" Foreground="{DynamicResource fontColor}" Content="{Binding IsNoneOniePlatform, Converter={StaticResource IsNoneOniePlatformToTooltipConverter}}"/>
+                        </MenuItem.ToolTip>
+                    </MenuItem>
                 </MenuItem>
                 <Separator/>
                 <MenuItem Header="{DynamicResource i18n_backup}" x:Name="_cfgBackup" IsEnabled="False" Click="LaunchBackupCfg"/>
