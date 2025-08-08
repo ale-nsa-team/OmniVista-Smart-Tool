@@ -251,7 +251,7 @@
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Resources\EULA.rtf" />
-    <None Include="Resources\ThirdPartyLicense.rtf" />
+    <None Include="Resources\ThirdPartyLicense.txt" />
     <None Include="Resources\ulc.alu" />
     <None Include="oui.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

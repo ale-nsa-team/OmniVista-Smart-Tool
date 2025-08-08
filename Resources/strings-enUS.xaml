@@ -269,6 +269,7 @@ Do you want to reboot now?</sys:String>
     <sys:String x:Key="i18n_archiveMissingImage">Archive does not contain expected image file '$1' for product family '$2'</sys:String>
     <sys:String x:Key="i18n_checkFamilyMapping">Please verify the archive contains the correct image file according to the family mapping</sys:String>
     <sys:String x:Key="i18n_expectedImageGuide">Expected image for '$1': $2</sys:String>
+    <sys:String x:Key="i18n_noUbootSupported">U-Boot upgrade is not supported on this ONIE platform.</sys:String>
 
     <!--Backup Messages-->
     <sys:String x:Key="i18n_bckRunning">Backing up configuration of switch</sys:String>
