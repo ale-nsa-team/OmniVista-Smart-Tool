@@ -1,4 +1,4 @@
-﻿<Window x:Class="PoEWizard.Components.ConfigWiz"
+<Window x:Class="PoEWizard.Components.ConfigWiz"
          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -22,6 +22,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Style="{DynamicResource cfgTitle}">
             <TextBlock x:Name="_cfgTitle" Text="{DynamicResource i18n_netCfg}" Style="{DynamicResource cfgHeader}" />
@@ -30,26 +31,40 @@
         <Border Grid.Row="1" x:Name="_infoBox" Style="{DynamicResource infoBorder}" Visibility="Hidden">
             <TextBlock x:Name="_infoBlock" />
         </Border>
-        <DockPanel Grid.Row="2" Margin="5,20,10,0" LastChildFill="False" >
-            <Button Click="CfgCancel_Click" Style="{DynamicResource smallButton}" Margin="5,0,0,0">
-                <Button.Content>
-                    <TextBlock Text="{DynamicResource i18n_canBtn}" Padding="5,0"/>
-                </Button.Content>
-            </Button>
-            <Button x:Name="_btnSubmit" Click="CfgSubmit_Click" Style="{DynamicResource smallButton}" Margin="10,0,0,0">
-                <Button.Content>
-                    <TextBlock Text="{DynamicResource i18n_subBtn}" Padding="5,0" />
-                </Button.Content>
-            </Button>
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                <Button Style="{DynamicResource smallButton}" x:Name="_btnCfgBack" Click="CfgBack_Click">
+        <StackPanel Grid.Row="2" Orientation="Vertical" Margin="8">
+            <ProgressBar x:Name="_progressBar" Margin="4,0"
+                Foreground="{DynamicResource linkColor}"
+                Height="8"
+                IsIndeterminate="False"
+                Minimum="0" Maximum="4" Value="{Binding Path=CurrentStep, Mode=OneWay}" Visibility="Visible"/>
+        </StackPanel>
+        <DockPanel Grid.Row="3" Margin="8" LastChildFill="False" >
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                <Button Style="{DynamicResource smallButton}" x:Name="_btnCfgBack" Click="CfgBack_Click" Margin="4,0">
                     <Button.Content>
-                        <TextBlock Text="{DynamicResource i18n_prevBtn}" Padding="5,0" />
+                        <TextBlock Text="{DynamicResource i18n_prevBtn}" Padding="4,0" />
                     </Button.Content>
                 </Button>
-                <Button Style="{DynamicResource smallButton}" x:Name="_btnCfgNext" Click="CfgNext_Click" Margin="2,5,0,0">
+                <Button Style="{DynamicResource smallButton}" x:Name="_btnCfgNext" Click="CfgNext_Click" Margin="4,0">
                     <Button.Content>
-                        <TextBlock Text="{DynamicResource i18n_nextBtn}" Padding="5,0"/>
+                        <TextBlock Text="{DynamicResource i18n_nextBtn}" Padding="4,0"/>
+                    </Button.Content>
+                </Button>
+            </StackPanel>
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource fontColor}">
+                <Run Text="{Binding CurrentStep, Mode=OneWay}"/>
+                <Run Text="/"/>
+                <Run Text="{Binding PageCount, Mode=OneWay}"/>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                <Button Click="CfgCancel_Click" Style="{DynamicResource smallButton}" Margin="4,0">
+                    <Button.Content>
+                        <TextBlock Text="{DynamicResource i18n_canBtn}" Padding="4,0"/>
+                    </Button.Content>
+                </Button>
+                <Button x:Name="_btnSubmit" Click="CfgSubmit_Click" Style="{DynamicResource smallButton}" Margin="4,0">
+                    <Button.Content>
+                        <TextBlock Text="{DynamicResource i18n_subBtn}" Padding="4,0" />
                     </Button.Content>
                 </Button>
             </StackPanel>

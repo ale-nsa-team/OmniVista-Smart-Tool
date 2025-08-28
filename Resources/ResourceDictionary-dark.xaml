@@ -28,6 +28,8 @@
     <converters:IpAddrListToTooltipConverter x:Key="IpAddrListToTooltipConverter" />
     <converters:IpAddrListFilterToTooltipConverter x:Key="IpAddrListFilterToTooltipConverter" />
     <converters:ValueToStyleConverter x:Key="ValueToStyleConverter" />
+    <converters:MacListToTooltipConverter x:Key="MacListToTooltipConverter" />
+    <converters:IsNoneOniePlatformToTooltipConverter x:Key="IsNoneOniePlatformToTooltipConverter" />
 
     <BitmapImage x:Key="connected" UriSource="Img/connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="Img/disconnected-dark.png" />
@@ -42,6 +44,7 @@
     <BitmapImage x:Key="write_memory" UriSource="Img/save-dark.png" />
     <BitmapImage x:Key="reboot" UriSource="Img/reboot-dark.png" />
     <BitmapImage x:Key="bolt" UriSource="Img/bolt.png" />
+    <BitmapImage x:Key="ping" UriSource="Img/ping-dark.png" />
 
     <SolidColorBrush x:Key="fontColor" Color="White" />
     <SolidColorBrush x:Key="linkColor" Color="#92caf4" />
@@ -720,6 +723,9 @@
         <Setter Property="Foreground" Value="{StaticResource fontColor}" />
         <Setter Property="Block.LineHeight" Value="2" />
         <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+        <Style.Resources>
+            <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource defaultScrollbar}" />
+        </Style.Resources>
     </Style>
 
     <Style TargetType="TextBlock" x:Key="aboutTitle">
@@ -1284,6 +1290,12 @@
         <!--<Setter Property="Placement" Value="MousePoint" />-->
         <Setter Property="AllowsTransparency" Value="True" />
         <Setter Property="StaysOpen" Value="False" />
+    </Style>
+
+    <Style TargetType="ScrollViewer" x:Key="defaultScrollViewer">
+        <Style.Resources>
+            <Style TargetType="ScrollBar" BasedOn="{StaticResource defaultScrollbar}" /> 
+        </Style.Resources>
     </Style>
 
 </ResourceDictionary>

@@ -7,7 +7,7 @@
     <ProjectGuid>{3924E57C-474A-43BD-8B71-DB87A4D2775D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>PoEWizard</RootNamespace>
-    <AssemblyName>ALE-InstallersToolkit</AssemblyName>
+    <AssemblyName>OmniVista Smart Tool</AssemblyName>
     <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -15,6 +15,9 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -27,53 +30,19 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>app-icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="HtmlAgilityPack, Version=1.11.65.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
@@ -180,6 +149,9 @@
       <DependentUpon>PassCode.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\PasswordBoxAssistant.cs" />
+    <Compile Include="Components\PingDevice.xaml.cs">
+      <DependentUpon>PingDevice.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\PopupUserControl.xaml.cs">
       <DependentUpon>PopupUserControl.xaml</DependentUpon>
     </Compile>
@@ -198,6 +170,9 @@
     <Compile Include="Components\TdrView.xaml.cs">
       <DependentUpon>TdrView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\TrafficReportViewer.xaml.cs">
+      <DependentUpon>TrafficReportViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\TextViewer.xaml.cs">
       <DependentUpon>TextViewer.xaml</DependentUpon>
     </Compile>
@@ -215,6 +190,7 @@
     <Compile Include="Data\Config.cs" />
     <Compile Include="Data\ConfigChanges.cs" />
     <Compile Include="Data\LinuxCommandSeq.cs" />
+    <Compile Include="Data\Route.cs" />
     <Compile Include="Data\SwitchDebugApp.cs" />
     <Compile Include="Data\TrafficReport.cs" />
     <Compile Include="Data\WizardReport.cs" />
@@ -249,6 +225,7 @@
     <Compile Include="Device\SwitchTrafficModel.cs" />
     <Compile Include="Device\SystemModel.cs" />
     <Compile Include="Device\TdrModel.cs" />
+    <Compile Include="Device\TransceiverModel.cs" />
     <Compile Include="Device\VlanModel.cs" />
     <Compile Include="Exceptions\CustomExceptions.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -270,10 +247,15 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
+    <None Include="Resources\EULA.rtf" />
+    <None Include="Resources\ThirdPartyLicense.txt" />
     <None Include="Resources\ulc.alu" />
-    <None Include="oui.csv" />
+    <None Include="oui.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -343,6 +325,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\PingDevice.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\PopupUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -366,6 +352,10 @@
     <Page Include="Components\TdrView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\TrafficReportViewer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\TextViewer.xaml">
       <SubType>Designer</SubType>
@@ -549,6 +539,15 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\installers_toolkit_helper.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Img\ping-light.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Img\ping-dark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\README.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

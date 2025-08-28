@@ -95,7 +95,16 @@ namespace PoEWizard.Device
             try
             {
                 string content = ReadFromDisk();
-                if (!string.IsNullOrEmpty(swModel.DefaultGwy))
+                List<Route> routes = restSvc.GetIpRoutes();
+                routes = routes.Where(r => r.Protocol == "STATIC").ToList();
+                if(routes.Count > 0)
+                {
+                    foreach (Route route in routes)
+                    {
+                        content += $"ip static-route {route.Destination} gateway {route.Gateway} metric 1\n";
+                    }
+                }
+                else if(!string.IsNullOrEmpty(swModel.DefaultGwy))
                 {
                     content += $"ip static-route 0.0.0.0/0 gateway {swModel.DefaultGwy}\n";
                 }

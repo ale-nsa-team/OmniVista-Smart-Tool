@@ -1,13 +1,13 @@
-﻿<!doctype html>
+<!doctype html>
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Alcatel-Lucent Enterprise Installer's Tookit Help</title>
+    <title>OmniVista Smart Tool Help</title>
     <style type="text/css">
     </style>
 </head>
 <body>
-    <p class="header">Alcatel-Lucent Enterprise Installer's Toolkit Help</p>
+    <p class="header">OmniVista Smart Tool Help</p>
     <p>
         Power over Ethernet (PoE) is a technology that allows Ethernet cables to transmit both data and electrical power to devices over a single network cable.
         This simplifies the installation of networked devices such as wireless access points, IP cameras, VoIP phones, and other network devices by eliminating
@@ -15,21 +15,25 @@
         Before we start, the minimum AOS supported by this Wizard is 8.9 R1. Switches running AOS 5.X or 6.X are not supported.
         The Application attempts to diagnose and repair PoE devices that will not boot.
     </p>
-    <p class="topic">Help Topoics</p>
+    <p class="topic">Help Topics</p>
     <ul>
         <li><a href="#connection">Connecting to a Switch</a></li>
         <li><a href="#wizard">Running the PoE Wizard</a></li>
-        <li><a href="#tdr">Cable test</a></li>
+        <li><a href="#tdr">Cable Test</a></li>
         <li><a href="#view">View Menu</a></li>
         <li><a href="#cfg-wiz">Configuration Wizard</a></li>
-        <li><a href="#i18n">Locatization</a></li>
+        <li><a href="#aos-upgrade">AOS Upgrade</a></li>
+        <li><a href="#uboot-upgrade">U-Boot Upgrade</a></li>
+        <li><a href="#security">Security and Passcode</a></li>
+        <li><a href="#i18n">Localization</a></li>
         <li><a href="#faq">Frequently Asked Questions</a></li>
-        <li><a href="#support">Obtaining more support</a></li>
+        <li><a href="#support">Obtaining More Support</a></li>
         <li><a href="#std">PoE Standards</a></li>
         <li><a href="#hp">High Power PoE</a></li>
         <li><a href="#neg">PoE Detection and Class Negotiation</a></li>
         <li><a href="#lldp">Role of LLDP in PoE</a></li>
         <li><a href="#poe-tech">Additional Technologies Related to PoE</a></li>
+        <li><a href="#oui">OUI Vendor Mapping</a></li>
     </ul>
     <p id="connection" class="topic">Connecting to a Switch</p>
     <p> Start by clicking Connection at the upper left of the tool and select Switch.</p>
@@ -44,13 +48,34 @@
         including the serial number, model, software release and more.
     </p>
     <img src="connected.png" />
+    <p class="topic">Connection Protocols</p>
     <p>
-        The middle pane of the tool displays power supply information and status. It will also show the budget being allocated to PoE devices
-        as well if the switch supports the new 802.3bt PoE standard and options for Fast PoE and Perpetual PoE.
+        The application uses multiple protocols to communicate with the switch:
+    </p>
+    <ul>
+        <li>
+            <strong>REST API</strong>: The primary method for most operations, providing a secure interface to the switch's configuration.
+        </li>
+        <li>
+            <strong>SSH (Secure Shell)</strong>: Used for secure command-line access to the switch when needed for certain operations 
+            that aren't available via the REST API.
+        </li>
+        <li>
+            <strong>SFTP (SSH File Transfer Protocol)</strong>: Used for secure file transfers between the application and the switch, 
+            such as when collecting logs, backing up configurations, or upgrading firmware.
+        </li>
+    </ul>
+    <p>
+        These secure protocols ensure that communication with the switch is protected. The application will automatically attempt 
+        to enable the REST API on the switch if it's not already enabled.
+    </p>
+    <p>
+        The middle pane of the tool displays power supply information and status. It will also show the budget being allocated to PoE devices,
+        as well as if the switch supports the new 802.3bt PoE standard and options for Fast PoE and Perpetual PoE.
         You can also perform some actions such as turn PoE on and off on a slot and enable / disable fast PoE or perpetual PoE.
     </p>
     <p class="no-space">
-        Since this operation is disrupting, you will be prompted too enter a password to be able to carry it out. There is a hard-coded password
+        Since this operation is disruptive, you will be prompted to enter a password to be able to carry it out. There is a hard-coded password
         that you can use initially, and you have the option to change this password for you instance of application. Once you change the
         password, the hard-coded one will no longer be accepted.
     </p>
@@ -92,7 +117,7 @@
     </p>
     <img src="poe-device.png" />
     <p>
-        The installer sees that there is no link light on the switch and the Wizard shows port 48 Status as Searching when it should be Up and showing
+        The tool sees that there is no link light on the switch and the Wizard shows port 48 Status as Searching when it should be Up and showing
         the power being consumed. Select port 48 and click Run PoE Wizard. This is not a camera, AP, or telephone so we select Other and click OK.
     </p>
     <img src="run-wiz.png" />
@@ -110,6 +135,23 @@
     </p>
     <img src="wiz-result.png" />
     <br />
+
+    <p class="title">Using the Ping Function</p>
+    <p>
+        The Ping function allows you to test connectivity to devices connected to a port. To use this feature:
+    </p>
+    <ol>
+        <li>Select a port from the port list</li>
+        <li>Click the "Ping" button in the control panel</li>
+        <li>A Ping Device dialog will appear, showing available IP addresses detected on that port (if any)</li>
+        <li>Select one of the available IP addresses or enter a custom IP address in the dialog</li>
+        <li>Click the "Ping" button in the dialog to start the ping test</li>
+    </ol>
+    <p>
+        This is particularly useful for confirming network connectivity to a device after it has been powered up via PoE.
+        If the device doesn't respond to pings, you may need to check its network configuration or firewall settings.
+    </p>
+
     <p id="tdr" class="tile">Cable Test</p>
     <p>
         Cable Testing using Time Domain Reflectometer (TDR) is a diagnostic tool used on Ethernet and other cables.
@@ -159,6 +201,26 @@
             Trace is the most verbose and Error is the least verbose level. Basic level is the default.
         </li>
     </ul>
+
+    <p class="topic">Collecting Switch Logs</p>
+    <p>
+        The application provides a feature to collect diagnostic logs from the connected switch. This can be very useful when 
+        troubleshooting issues with ALE support. To collect logs:
+    </p>
+    <ol>
+        <li>Connect to a switch</li>
+        <li>Click the "Collect Logs" button in the control panel</li>
+        <li>The application will retrieve log files from the switch and save them to your computer</li>
+    </ol>
+    <p>
+        The collected logs include switch system logs, debug information, and configuration data. You can optionally restart 
+        PoE on ports during log collection to capture any PoE-related issues.
+    </p>
+    <p>
+        Note that log collection uses SFTP to securely transfer files from the switch. The process may take several minutes 
+        depending on the size of the log files and the connection speed.
+    </p>
+
     <p class="topic">vcboot.cfg</p>
     <p>Displays the vcboot config file from the switch on a separate window. You have the option to save it to a local file on your PC.</p>
     <p class="topic">snapshot</p>
@@ -181,6 +243,26 @@
         If you select a port on this window, before closing it, the port will also be selected on the main window, so you can perform some
         actions on it, such as reset the port of run the PoE Wizard.
     </p>
+
+    <p class="topic">Traffic Analysis</p>
+    <p>
+        This feature allows you to analyze traffic on the switch ports over a selected duration. Click the "Traffic Analysis" button 
+        in the control panel to start monitoring.
+    </p>
+    <p>
+        The traffic analysis collects data about MAC addresses, port utilization, and transceiver information for all active ports.
+        This is useful for troubleshooting network performance issues or identifying unusual activity on the network.
+    </p>
+    <p>
+        You can stop the traffic analysis at any time, and the collected data will be presented in a readable format for review.
+    </p>
+
+    <p class="topic">VLAN Settings</p>
+    <p>
+        Displays the current VLAN configuration on the switch. You can view the list of configured VLANs and their associated 
+        settings. This is useful for understanding the network segmentation on the switch.
+    </p>
+
     <p class="topic">Theme</p>
     <p>Allows you to select between dark mode and light mode.</p>
     <p class="topic">Help</p>
@@ -200,7 +282,20 @@
         it with the application after the switch reboots. You can then proceed to run the config wizard to add some additional configuration.
     </p>
     <p class="no-space">
-        Since this operation is disrupting, you will be prompted to enter a password to be able to carry it out. There is a hard-coded password
+        A factory reset performs the following actions:
+    </p>
+    <ul>
+        <li>Erases all configuration files on the switch</li>
+        <li>Returns all settings to factory defaults</li>
+        <li>Preserves the management IP address for vlan 1 to maintain connectivity</li>
+        <li>Reboots the switch to apply the reset</li>
+    </ul>
+    <p>
+        This is useful when you need to start from a clean configuration, particularly when repurposing a switch or
+        when troubleshooting complex configuration issues.
+    </p>
+    <p class="no-space">
+        Since this operation is disruptive, you will be prompted to enter a password to be able to carry it out. There is a hard-coded password
         that you can use initially, and you have the option to change this password for you instance of application. Once you change the
         password, the hard-coded one will no longer be accepted.
     </p>
@@ -209,13 +304,13 @@
     <p>The first window lets you configure the management IP address and netmask, as well as some switch system parameters.</p>
     <img src="cfg-wiz-sys.png" />
     <p>
-        Clicking "Next >" will nagivate to the next window where you can configure the Default Gateway, DNS and NTP servers.
-        When NTP option is enabled, you can select the switch's timezone from the drop-down menu.
+        Clicking "Next >" will navigate to the next window where you can configure the Default Gateway, DNS and NTP servers.
+        When the NTP option is enabled, you can select the switch's timezone from the drop-down menu.
     </p>
     <img src="cfg-wiz-srv.png" />
     <p>
-        Click "Next >" to navigate to the next window, which allows you to configure some features, like Disabling insecure protocols
-        (telnet, ftp) enable SSH, etc.
+        Click "Next >" to navigate to the next window, which allows you to configure some features, like disabling insecure protocols
+        (telnet, ftp), enable SSH, etc.
     </p>
     <p class="no-space">When setting up multicast, you can select which VLANs will have it enabled on the table below the multicast toggle switch.</p>
     <img src="cfg-wiz-feature.png" />
@@ -228,7 +323,7 @@
     <p>If you are using SNMP v2, you can create a community by clicking the "+" sign on the Communities table.</p>
     <img src="cfg-wiz-add-comm.png" />
     <p>
-        Since on the ALE OmniWwitches an SNMP community is associated with a user, enter the community name and select a previously
+        Since on the ALE OmniSwitches an SNMP community is associated with a user, enter the community name and select a previously
         created user from the drop-down menu, before clicking Create.
     </p>
     <p>To delete a community, click the "x" button to the left of the community name on the table.</p>
@@ -239,18 +334,228 @@
         If you selected v2, select the community from the drop-down menu, if you selected v3, select the user from the drop-down menu.
     </p>
     <p>
-        Note that, to simplify the configuration, the wizard sets the Authentication Protocol as MD5 and the Encryption Protocol
-        as DES, and that's what needs to be configured on the receiver side. The primary key assiciated to the encryption protocol is
+        Note that to simplify the configuration, the wizard sets the Authentication Protocol as MD5 and the Encryption Protocol
+        as DES, and that's what needs to be configured on the receiver side. The primary key associated to the encryption protocol is
         configured the same as the user's password.
     </p>
     <p>
-        After your are done with the configuration, click Submit for the wizard to apply the configuration to the OmniSwitch.
+        After you are done with the configuration, click Submit for the wizard to apply the configuration to the OmniSwitch.
     </p>
     <br />
+
+    <p class="header">Configuration Backup and Restore</p>
+    <p>
+        The application provides functionality to back up and restore switch configurations, which is important for 
+        disaster recovery, configuration management, and when upgrading switch firmware.
+    </p>
+    
+    <p class="topic">Backup Configuration</p>
+    <p>
+        To backup the switch configuration, go to Configuration > Backup. The backup process will:
+    </p>
+    <ul>
+        <li>Save the current switch configuration to a compressed file on your PC</li>
+        <li>Optionally include switch firmware images (recommended for full recovery capability)</li>
+        <li>Store important files like vcboot.cfg, the configuration snapshot, and other critical files</li>
+    </ul>
+    <p>
+        The backup file is saved with a timestamp and can be used later to restore the configuration to the same switch or 
+        to configure another switch identically.
+    </p>
+
+    <p class="topic">Restore Configuration</p>
+    <p>
+        To restore a previously saved configuration, go to Configuration > Restore and select the backup file. The restore process will:
+    </p>
+    <ul>
+        <li>Upload all configuration files to the switch</li>
+        <li>Optionally restore firmware images if they were included in the backup</li>
+        <li>Reboot the switch to apply the restored configuration</li>
+    </ul>
+    <p>
+        This feature is particularly useful when replacing switches or recovering from configuration issues.
+    </p>
+
+    <p class="header">Firmware Upgrade</p>
+    <p>
+        The application allows you to upgrade the switch's firmware, which includes both the main AOS operating system and the U-Boot loader.
+    </p>
+
+    <p class="topic">AOS Upgrade</p>
+    <p>
+        To upgrade the AOS firmware, go to <b>Configuration > Upgrade > AOS</b> and select the ZIP archive with the new firmware. The application handles the initial steps of the upgrade by validating the firmware and transferring the necessary files to the switch.
+    </p>
+    <p>The process is as follows:</p>
+    <ol>
+        <li>
+            <strong>Firmware Archive Selection:</strong> You must select the correct ZIP archive for the intended AOS version.
+        </li>
+        <li>
+            <strong>Switch Compatibility Check:</strong> The application first identifies the switch model to determine the expected firmware image file name (e.g., <code>Uos.img</code>, <code>Nos.img</code>). An error will be shown if the switch family is not supported.
+        </li>
+        <li>
+            <strong>Archive Content Validation:</strong> The tool checks the ZIP file to ensure it contains the required files for the upgrade, which are:
+            <ul>
+                <li>The correct AOS image file for the switch model (e.g., <code>Nosa.img</code>).</li>
+                <li><code>software.lsm</code> (software manifest).</li>
+                <li><code>imgsha256sum</code> (checksum file for integrity verification).</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Handling Missing Files:</strong>
+            <ul>
+                <li>If the required AOS image file is not found in the archive, the process is aborted with an error message that specifies the expected image file name.</li>
+                <li>If the <code>imgsha256sum</code> file is missing, you will be prompted to either continue without it or cancel the upgrade.</li>
+                <li>If other files like <code>software.lsm</code> are missing, the upgrade will not proceed.</li>
+            </ul>
+        </li>
+        <li>
+            <strong>File Transfer:</strong> Once validation is successful, the application extracts the required files and transfers them to the switch's <code>/flash/working</code> directory via SFTP.
+        </li>
+    </ol>
+    <p>
+        Once the files are transferred, the application's task is complete. <strong>The switch will not automatically reboot or install the firmware.</strong> You must connect to the switch (e.g., via console or SSH) and issue the appropriate commands to install the new AOS version from the working directory and reboot the switch to complete the upgrade.
+    </p>
+
+    <p id="aos-upgrade" class="topic">AOS Upgrade File Requirements</p>
+    <p>
+        Before performing an AOS upgrade, ensure you have the correct upgrade package that contains the following required files:
+    </p>
+    <ul>
+        <li><strong>Image file</strong> (e.g., Nos.img, Wos.img, Uos.img, etc.) - The actual AOS firmware image. The specific filename depends on your switch model's product family.</li>
+        <li><strong>imgsha256sum</strong> - Contains the SHA-256 checksum of the image file for verification.</li>
+        <li><strong>software.lsm</strong> - Contains metadata about the software package.</li>
+    </ul>
+    <p>
+        The required image filename is determined by your switch's product family. Here are some common mappings:
+    </p>
+    <ul>
+        <li>OS6360: Nosa.img</li>
+        <li>OS6465/OS6560: Nos.img</li>
+        <li>OS6570M: Wos.img</li>
+        <li>OS6860/OS6865: Uos.img</li>
+        <li>OS6860N/OS6869-N: Uosn.img</li>
+        <li>OS6870: Kaosn.img</li>
+        <li>OS6900-Yukon: Yos.img</li>
+        <li>OS9900: Mos.img</li>
+    </ul>
+    <p>
+        The upgrade package should be a ZIP file containing all required files. The tool will verify the presence of these files before proceeding with the upgrade.
+    </p>
+    <p id="uboot-upgrade" class="topic">U-Boot Upgrade</p>
+    <p>
+        U-Boot is the bootloader that initializes the switch hardware before the main operating system loads. This section explains how to upgrade the U-Boot firmware on your switch.
+    </p>
+    
+    <p>
+        The U-Boot upgrade package must be a ZIP file containing a U-Boot update file with the following naming pattern:
+    </p>
+    <ul>
+        <li><strong>u-boot-*.tar.gz</strong> - The U-Boot firmware package (e.g., u-boot-os6900-3.0.0.0.tar.gz)</li>
+    </ul>
+    <p>
+        The tool will automatically detect and extract the appropriate U-Boot file from the archive.
+    </p>
+
+    <p>To perform a U-Boot upgrade:</p>
+    <ol>
+        <li>Ensure you have the correct U-Boot update package for your switch model.</li>
+        <li>Open the OmniVista Smart Tool and connect to the switch.</li>
+        <li>Go to Configuration > Upgrade > U-Boot.</li>
+        <li>Select the U-Boot update ZIP file.</li>
+        <li>Click "Start Upgrade" to begin the process.</li>
+        <li>The tool will:
+            <ul>
+                <li>Extract the U-Boot file from the archive</li>
+                <li>Upload it to the switch's flash directory</li>
+                <li>Execute the upgrade command</li>
+            </ul>
+        </li>
+        <li>Once complete, the switch will automatically reboot to apply the new U-Boot version.</li>
+    </ol>
+
+    <div class="note">
+        <strong>Important Notes:</strong>
+        <ul>
+            <li>Do not power off the switch during the U-Boot upgrade process.</li>
+            <li>The switch will automatically reboot after the upgrade.</li>
+            <li>Ensure you have a stable network connection throughout the process.</li>
+            <li>Not all switch models support U-Boot upgrades through this tool. The option will be disabled if your switch doesn't support it.</li>
+        </ul>
+    </div>
+
     <p>Exiting the Application will prompt you to save your changes. Click OK and wait for it to be completed. This can take some time.</p>
     <img src="save-prompt.png" />
     <br />
     <img src="save-progress.png" />
+
+    <p id="oui" class="topic">OUI Vendor Mapping</p>
+    <p>
+        The application includes a feature to identify the vendor of a connected device based on its MAC address. This is achieved using an
+        Organizationally Unique Identifier (OUI), which is the first 24 bits of a MAC address, assigned to a specific vendor by the IEEE.
+    </p>
+    <p>
+        The application uses an internal file, <code>oui.csv</code>, (located in the application's installation directory) which contains a list of OUIs and their corresponding vendor names.
+        When a device connects to the switch, the application reads its MAC address, looks up the OUI in this table, and displays the vendor name
+        in the port details. This helps in identifying the manufacturer of the connected device, which can be useful for troubleshooting
+        and inventory management, especially for devices that do not provide detailed information via LLDP.
+    </p>
+
+    <p id="security" class="topic">Security and Passcode Protection</p>
+    <p>
+        The application implements security measures to prevent unauthorized access to critical operations. The following operations require a passcode:
+    </p>
+    
+    <p>Operations Requiring Passcode</p>
+    <ul>
+        <li><strong>Factory Reset</strong>
+            <ul>
+                <li>Full or partial reset of switch configuration</li>
+                <li>Restores switch to default settings</li>
+            </ul>
+        </li>
+        <li><strong>Firmware Upgrades</strong>
+            <ul>
+                <li>AOS (Operating System) upgrades</li>
+                <li>U-Boot (Bootloader) upgrades</li>
+            </ul>
+        </li>
+        <li><strong>Configuration Management</strong>
+            <ul>
+                <li>Restoring switch configurations</li>
+                <li>Applying major configuration changes</li>
+            </ul>
+        </li>
+        <li><strong>System Operations</strong>
+            <ul>
+                <li>Rebooting the switch</li>
+                <li>Power cycling PoE ports</li>
+            </ul>
+        </li>
+    </ul>
+
+    <p>
+        The default passcode is: <code>@AleT00lkit#</code> For security reasons, it is highly recommended to change the default passcode after initial setup.
+    </p>
+
+    <p>To change the passcode:</p>
+    <ol>
+        <li>When prompted for a passcode, click the "Change Password" button</li>
+        <li>Enter the current passcode</li>
+        <li>Enter and confirm the new passcode</li>
+        <li>Click "OK" to save the new passcode</li>
+    </ol>
+
+    <div class="note">
+        <strong>Security Notes:</strong>
+        <ul>
+            <li>Passcodes are stored in encrypted format for security</li>
+            <li>If you forget your passcode, you may need to reinstall the application</li>
+            <li>Only share the passcode with authorized personnel</li>
+            <li>Change the passcode periodically for enhanced security</li>
+        </ul>
+    </div>
+
     <p id="i18n" class="header">Localization</p>
     <p>
         Under the <b>Options</b> menu, you can select the language used in the application menus and messages. The application comes configured 
@@ -299,7 +604,7 @@
                 </li>
             </ul>
         </li>
-        <li>Save the translated file with the name correspondig to the language
+        <li>Save the translated file with the name corresponding to the language
             <p class="mt-0">
                 For example, if you translate the strings to Brazilian Portuguese, the new file name should be <b>strings-ptBR.xaml</b>
             </p>
@@ -348,11 +653,11 @@
         802.3bt may not be supported on the switch or the correct setting for your network.
         The PoE Wizard will enable this if needed for you.
     </p>
-    <p class="title">Why does the wizard turn PoE off to enable 802.bt?</p>
+    <p class="title">Why does the wizard turn PoE off to enable 802.3bt?</p>
     <p>The switch must renegotiate with every end device when enabling 802.3bt and the best way to accomplish this is to reset.</p>
     <p class="title">Why does class detection show -? </p>
     <p>802.bt must be supported and enabled on the switch for auto class detection to function correctly.</p>
-    <p class="title">How do I accomplish long term monitoring of my ALE network?</p>
+    <p class="title">How do I accomplish long-term monitoring of my ALE network?</p>
     <p>
         The Application is designed to assist with new installations or a major refresh. Long term monitoring of ALE networks
         is available with our OmniVista Network Management System and plugins for either Milestone or Genetec:
@@ -366,7 +671,7 @@
         There are free to use general networking scanning tools available on the Internet, however these
         are not supplied or supported by Alcatel Lucent Enterprise and ALE assumes no liability for their use.
         Advanced IP Scanner can discover networked devices: <a href="https://www.advanced-ip-scanner.com/">https://www.advanced-ip-scanner.com/</a>.
-        Nmap can scan individual devices: <a href="https://nmap.org/downloadad">https://nmap.org/downloadad</a>
+        Nmap can scan individual devices: <a href="https://nmap.org/download">https://nmap.org/download</a>
     </p>
     <p id="support" class="header">Obtaining more support</p>
     <p>
@@ -417,7 +722,7 @@
     <p id="hp" class="header">High Power PoE</p>
     <p>
         ALE 6860E and 6865 switches provide intermediate power levels, specifically between 60 and 75 watts.
-        They were designed before the finalization of IEEE 802.3bt standards, cater to devices that require
+        They were designed before the finalization of IEEE 802.3bt standards, catering to devices that require
         more power than PoE+ but less than the highest levels of PoE++. The 4-pair option must be set to
         deliver power High PoE, similar to Type 3 and Type 4 and the wizard will set this for you.
     </p>
@@ -505,7 +810,7 @@
         PoE standards (IEEE 802.3at and IEEE 802.3bt). LLDP allows for dynamic and more granular power management through the
         exchange of detailed power-related information between PoE switches (or injectors) and powered devices (PDs).
     </p>
-    <p class="title">Key Aspects ofr LLDP in PoE:</p>
+    <p class="title">Key Aspects of LLDP in PoE:</p>
     <ul>
         <li>
             LLDP enables devices to negotiate power requirements dynamically beyond the initial class-based negotiation.
@@ -514,14 +819,14 @@
         <li>
             Using LLDP-MED (Media Endpoint Discovery), a specific extension of LLDP, devices can communicate their exact power
             requirements and capabilities, allowing the switch to allocate power more accurately and efficiently.
-            See <a href=" https://www.ieee802.org/1/files/public/docs2006/ab-congdon-lldp-med-8023at-0906.pdf">
+            See <a href="https://www.ieee802.org/1/files/public/docs2006/ab-congdon-lldp-med-8023at-0906.pdf">
                 https://www.ieee802.org/1/files/public/docs2006/ab-congdon-lldp-med-8023at-0906.pdf</a>  for more information.
         </li>
     </ul>
     <p class="title">Dynamic Power Allocation:</p>
     <ul>
         <li>
-            LLDP allows for real-time adjustments to power allocation based on the device’s current power consumption needs.
+            LLDP allows for real-time adjustments to power allocation based on the device's current power consumption needs.
             For example, a device might require more power during certain operations and less during others.
         </li>
         <li>
@@ -588,7 +893,7 @@
         </a>
     </p>
     <p id="poe-tech" class="header">Additional Technologies Related to PoE</p>
-    <p class="title">lanpower power-over-hdmi</p>
+    <p class="title">lanpower Power-over-HDMI</p>
     <p>
         The ALE OS6860E-P24Z8 has a special PoE setting that may be required in rare cases.
         The Wizard should detect and set this option if needed. Note this feature is restricted to just this switch model and no other.
