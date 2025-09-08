@@ -1,4 +1,4 @@
-﻿<Window x:Class="PoEWizard.MainWindow"
+<Window x:Class="PoEWizard.MainWindow"
         DataContext="{StaticResource SwitchModel}"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,7 +9,7 @@
         Loaded="OnWindowLoaded"
         Closing="OnWindowClosing"
         WindowStartupLocation="CenterScreen"
-        Title="Alcatel-Lucent Enterprise Installer's Toolkit"  
+        Title="OmniVista Smart Tool"  
         Icon="/Resources/Img/app-icon.ico">
     <Window.Resources>
         <ResourceDictionary>
@@ -55,7 +55,14 @@
                 <MenuItem Header="{DynamicResource i18n_cfgWiz}" x:Name="_cfgMenuItem" IsEnabled="False" Click="LaunchConfigWizard"/>
                 <MenuItem Header="{DynamicResource i18n_upgrade}" x:Name="_upgradeMenuItem" IsEnabled="False">
                     <MenuItem Header="{DynamicResource i18n_aos}" x:Name="_aosUpgrade" Click="UpgradeAos"/>
-                    <MenuItem Header="{DynamicResource i18n_uboot}" x:Name="_ubootUpgrade" Click="UpgradeUboot"/>
+                    <MenuItem Header="{DynamicResource i18n_uboot}" x:Name="_ubootUpgrade" Click="UpgradeUboot"
+                              IsEnabled="{Binding IsNoneOniePlatform}"
+                              ToolTipService.ShowOnDisabled="True"
+>
+                        <MenuItem.ToolTip>
+                            <ToolTip Background="{DynamicResource barBackground}" Foreground="{DynamicResource fontColor}" Content="{Binding IsNoneOniePlatform, Converter={StaticResource IsNoneOniePlatformToTooltipConverter}}"/>
+                        </MenuItem.ToolTip>
+                    </MenuItem>
                 </MenuItem>
                 <Separator/>
                 <MenuItem Header="{DynamicResource i18n_backup}" x:Name="_cfgBackup" IsEnabled="False" Click="LaunchBackupCfg"/>
@@ -413,6 +420,26 @@
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Width="0.9*" IsReadOnly="True">
                         <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_bw}"/>
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Bandwidth}" Style="{DynamicResource toolTip}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="0.7*" IsReadOnly="True">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{DynamicResource i18n_duplex}"/>
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Duplex}" Style="{DynamicResource toolTip}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="0.9*" IsReadOnly="True">
+                        <DataGridTemplateColumn.Header>
                             <TextBlock Text="{DynamicResource i18n_poeSt}"/>
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
@@ -567,6 +594,14 @@
                     <StackPanel Orientation="Horizontal">
                         <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_ptTdr}"/>
                         <Image Source="{DynamicResource bolt}" Height="16" Width="16"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="_btnPing" Style="{DynamicResource largeButton}"
+                        IsEnabled="False"
+                        Click="Ping_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{DynamicResource valLabel}" Content="{DynamicResource i18n_ping}"/>
+                        <Image Source="{DynamicResource ping}" Height="16" Width="16"/>
                     </StackPanel>
                 </Button>
                 <Button x:Name="_btnRunWiz" Style="{DynamicResource largeButton}"

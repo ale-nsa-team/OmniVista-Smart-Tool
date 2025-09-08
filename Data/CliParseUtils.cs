@@ -187,6 +187,48 @@ namespace PoEWizard.Data
             return dict;
         }
 
+        public static List<Dictionary<string, string>> ParseTransceiverTable(string data)
+        {
+            List<Dictionary<string, string>> dictList = new List<Dictionary<string, string>>();
+            string[] lines = Regex.Split(data, @"\r\n\r|\n");
+            string chassisId = string.Empty;
+            foreach (string line in lines)
+            {
+                if (line.Trim().Length == 0) continue;
+                if (line.Contains("Chassis ID"))
+                {
+                    chassisId = ExtractSubString(line.Trim(), "Chassis ID ", "");
+                }
+                else if (line.Contains("Slot") && line.Contains("Transceiver"))
+                {
+                    if (string.IsNullOrEmpty(chassisId)) continue;
+                    string slot = ExtractSubString(line.Trim(), "Slot ", "Transceiver");
+                    string transceiver = ExtractSubString(line.Trim(), "Transceiver ", "");
+                    if (!string.IsNullOrEmpty(slot) && !string.IsNullOrEmpty(transceiver))
+                    {
+                        dictList.Add(new Dictionary<string, string>()
+                        {
+                            ["CHASSIS"] = chassisId,
+                            ["SLOT"] = slot.Trim(),
+                            ["TRANSCEIVER"] = transceiver.Trim()
+                        });
+                    }
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(chassisId) || dictList.Count == 0) continue;
+                    string[] split = line.Trim().Split(':');
+                    if (split.Length == 2)
+                    {
+                        string key = split[0].Trim().ToUpper();
+                        string value = split[1].Replace(",", "").Trim();
+                        if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value)) dictList[dictList.Count - 1][key] = value;
+                    }
+                }
+            }
+            return dictList;
+        }
+
         public static Dictionary<string, List<Dictionary<string, string>>> ParseLldpRemoteTable(string data)
         {
             Dictionary<string, List<Dictionary<string, string>>> dictList = new Dictionary<string, List<Dictionary<string, string>>>();

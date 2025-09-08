@@ -32,6 +32,7 @@ namespace PoEWizard.Device
         public bool SupportsPoE { get; set; }
         public bool IsMaster { get; set; }
         public string MasterSlave => ConvertMasterSlaveToString();
+        public List<TransceiverModel> Transceivers { get; set; }
 
         public SlotModel() { }
 

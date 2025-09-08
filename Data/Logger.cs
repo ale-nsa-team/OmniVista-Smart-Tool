@@ -20,10 +20,11 @@ namespace PoEWizard.Data
         private static readonly EventLog eventLog;
         private static readonly object lockObj = new object();
         private static readonly bool eventLogOk;
-
         public static string LogPath { get; private set; }
         public static LogLevel LogLevel { get; set; }
         #endregion
+
+        public const string LOG_FILE = "ApplicationLog.txt";
 
         #region constructor
         static Logger()
@@ -31,8 +32,7 @@ namespace PoEWizard.Data
             try
             {
                 LogLevel = LogLevel.Basic;
-                string filename = "PoEWizard.log";
-                LogPath = Path.Combine(MainWindow.DataPath, "Log", filename);
+                LogPath = Path.Combine(MainWindow.DataPath, "Log", LOG_FILE);
                 if (!Directory.Exists(Path.GetDirectoryName(LogPath)))
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(LogPath));

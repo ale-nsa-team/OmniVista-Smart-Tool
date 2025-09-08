@@ -29,7 +29,7 @@ namespace PoEWizard.Data
             [Description("Not Supported")]
             NotSupported
         }
-        public enum ParseType { Htable, Htable2, Htable3, Vtable, Etable, MVTable, Text, MibTable, LldpLocalTable, LldpRemoteTable, TrafficTable, NoParsing }
+        public enum ParseType { Htable, Htable2, Htable3, Vtable, Etable, MVTable, Text, MibTable, LldpLocalTable, LldpRemoteTable, TrafficTable, TransceiverTable, NoParsing }
         public enum EType { Fiber, Copper, Unknown }
         public enum PriorityLevelType { Low, High, Critical }
         public enum PowerSupplyState { Up, Down, Unknown }
@@ -37,7 +37,7 @@ namespace PoEWizard.Data
         public enum DictionaryType
         {
             SystemRunningDir, Chassis, Cmm, MicroCode, HwInfo, LanPower, LanPowerCfg, PortList, PortIdList, BlockedPorts, LinkAgg, PowerSupply, 
-            LldpRemoteList, TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, InterfaceList, None
+            LldpRemoteList, TemperatureList, CpuTrafficList, LldpInventoryList, SwitchDebugAppList, User, MibList, InterfaceList, TransceiverList, None
         }
         public enum ConfigType { Disable, Enable, Unavailable }
         public enum DeviceType
@@ -131,6 +131,7 @@ namespace PoEWizard.Data
         public const string FLASH_WORKING_DIR = "/" + FLASH_DIR + "/" + FLASH_WORKING;
         public const string FLASH_CERTIFIED_DIR = "/" + FLASH_DIR + "/" + FLASH_CERTIFIED;
         public const string PYTHON_DIR = "/" + FLASH_DIR + "/python/";
+        public const string HELPER_SCRIPT_FILE_NAME = "installers_toolkit_helper.py";
         public const string VCBOOT_WORK = FLASH_WORKING_DIR + "/" + VCBOOT_FILE;
         public const string VCSETUP_WORK = FLASH_WORKING_DIR + "/" + VCSETUP_FILE;
         public const string VCBOOT_CERT = FLASH_CERTIFIED_DIR + "/" + VCBOOT_FILE;
@@ -259,6 +260,7 @@ namespace PoEWizard.Data
         // Used by "SHOW_CHASSIS"
         public const string CHAS_DEVICE = "Chassis/Device";
         public const string CURRENT = "Current";
+        public const string ONE_HOUR_AVG = "1 Hr Avg";
         public const string RANGE = "Range";
         public const string DANGER = "Danger";
         public const string THRESHOLD = "Thresh";

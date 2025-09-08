@@ -2,6 +2,8 @@ auto-fabric admin-state disable remove-global-config
 aaa authentication default "local"
 aaa authentication http "local"
 aaa authentication ssh "local"
+aaa authentication ftp "local" 
 session cli timeout 15
 ip service ssh admin-state enable
 ip service http admin-state enable
+ip service ftp admin-state enable

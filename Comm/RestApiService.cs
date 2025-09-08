@@ -1,4 +1,4 @@
-﻿using PoEWizard.Data;
+using PoEWizard.Data;
 using PoEWizard.Device;
 using PoEWizard.Exceptions;
 using System;
@@ -85,6 +85,9 @@ namespace PoEWizard.Comm
                 _dictList = SendCommand(new CmdRequest(Command.SHOW_HW_INFO, ParseType.MVTable, DictionaryType.HwInfo)) as List<Dictionary<string, string>>;
                 SwitchModel.LoadFromList(_dictList, DictionaryType.HwInfo);
                 UpdateProgressBar(++progressBarCnt); // 5
+                _dictList = SendCommand(new CmdRequest(Command.SHOW_PORTS_LIST, ParseType.Htable3)) as List<Dictionary<string, string>>;
+                SwitchModel.LoadFromList(_dictList, DictionaryType.PortList);
+                UpdateProgressBar(++progressBarCnt); // 6
                 token.ThrowIfCancellationRequested();
                 UpdateFlashInfo(progrMsg);
                 UpdateProgressBar(++progressBarCnt); // 30
@@ -133,7 +136,7 @@ namespace PoEWizard.Comm
         {
             try
             {
-                StartProgressBar($"S{Translate("i18n_scan")} {SwitchModel.Name}{WAITING}", 24);
+                StartProgressBar($"{Translate("i18n_scan")} {SwitchModel.Name}{WAITING}", 24);
                 ScanSwitch(source, token, reportResult);
                 token.ThrowIfCancellationRequested();
                 ShowInterfacesList();
@@ -284,13 +287,13 @@ namespace PoEWizard.Comm
         private string EnableRestApi()
         {
             string error = null;
-            string progrMsg = $"{Translate("i18n_enableRest")} {SwitchModel.IpAddress}{WAITING}";
             try
             {
+                if (!ConnectAosSsh()) return $"{Translate("i18n_unableToConnect")}";
+                string progrMsg = $"{Translate("i18n_enableRest")} {SwitchModel.IpAddress}{WAITING}";
                 StartProgressBar(progrMsg, 31);
                 _progress.Report(new ProgressReport(progrMsg));
                 UpdateProgressBar(progressBarCnt);
-                ConnectAosSsh();
 
                 bool httpEnabled = false;
                 bool defaultLocalExists = false;
@@ -540,6 +543,8 @@ namespace PoEWizard.Comm
                         return resp[STRING].ToString();
                     case ParseType.LldpLocalTable:
                         return CliParseUtils.ParseLldpLocalTable(resp[STRING].ToString());
+                    case ParseType.TransceiverTable:
+                        return CliParseUtils.ParseTransceiverTable(resp[STRING].ToString());
                     default:
                         return resp;
                 }
@@ -675,12 +680,21 @@ namespace PoEWizard.Comm
             }
         }
 
-        private void ConnectAosSsh()
+        private bool ConnectAosSsh()
         {
-            if (SshService != null && SshService.IsSwitchConnected()) return;
+            if (SshService != null && SshService.IsSwitchConnected()) return true;
             if (SshService != null) DisconnectAosSsh();
             SshService = new AosSshService(SwitchModel);
-            SshService.ConnectSshClient();
+            try
+            {
+                SshService.ConnectSshClient();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to connect to switch via SSH", ex);
+                return false;
+            }
+            return SshService.IsSwitchConnected();
         }
 
         private void DisconnectAosSsh()
@@ -1554,6 +1568,7 @@ namespace PoEWizard.Comm
                 }
                 GetMacAndLldpInfo(MAX_SCAN_NB_MAC_PER_PORT);
                 GetPortsTrafficInformation();
+                GetPortTransceiversInformation();
                 report.Complete(stopTrafficAnalysisReason, GetDdmReport());
                 if (trafficAnalysisStatus == TrafficStatus.CanceledByUser)
                 {
@@ -1596,6 +1611,20 @@ namespace PoEWizard.Comm
                     if (_switchTraffic == null) _switchTraffic = new SwitchTrafficModel(SwitchModel, _dictList);
                     else _switchTraffic.UpdateTraffic(_dictList);
                 }
+            }
+            catch (Exception ex)
+            {
+                SendSwitchError($"{Translate("i18n_taerr")} {PrintSwitchInfo()}", ex);
+            }
+        }
+
+        private void GetPortTransceiversInformation()
+        {
+            try
+            {
+                SendProgressReport(Translate("i18n_rtrans"));
+                _dictList = SendCommand(new CmdRequest(Command.SHOW_TRANSCIEVERS, ParseType.TransceiverTable)) as List<Dictionary<string, string>>;
+                if (_dictList?.Count > 0) SwitchModel.LoadFromList(_dictList, DictionaryType.TransceiverList);
             }
             catch (Exception ex)
             {
@@ -2618,7 +2647,6 @@ namespace PoEWizard.Comm
                     }
                     chassis.PowerBudget += slot.Budget;
                     chassis.PowerConsumed += slot.Power;
-                    CheckPowerClassDetection(slot);
                 }
                 chassis.PowerRemaining = chassis.PowerBudget - chassis.PowerConsumed;
                 foreach (var ps in chassis.PowerSupplies)
@@ -2633,11 +2661,53 @@ namespace PoEWizard.Comm
             if (!SwitchModel.SupportsPoE) _wizardReportResult.CreateReportResult(SWITCH, WizardResult.Warning, $"{Translate("i18n_switch")} {SwitchModel.Name} {Translate("i18n_nopoe")}");
         }
 
-        private void CheckPowerClassDetection(SlotModel slot)
+        public void RollbackSwitchPowerClassDetection(Dictionary<string, ConfigType> origin)
         {
+            if (SwitchModel == null || origin == null || origin.Count == 0) return;
+            foreach (var chassis in SwitchModel.ChassisList)
+            {
+                foreach (var slot in chassis.Slots)
+                {
+                    if (!slot.SupportsPoE || !origin.ContainsKey(slot.Name) || origin[slot.Name] == ConfigType.Unavailable) continue;
+                    SetSlotPowerClassDetection(slot, origin[slot.Name]);
+                }
+            }
+        }
+
+        public Dictionary<string, ConfigType> GetCurrentSwitchPowerClassDetection()
+        {
+            Dictionary<string, ConfigType> result = new Dictionary<string, ConfigType>();
+            if (SwitchModel == null) return result;
+            foreach (var chassis in SwitchModel.ChassisList)
+            {
+                foreach (var slot in chassis.Slots)
+                {
+                    if (!slot.SupportsPoE) continue;
+                    result.Add(slot.Name, slot.PowerClassDetection);
+                }
+            }
+            return result;
+        }
+
+        public void SetSwitchPowerClassDetection(ConfigType type)
+        {
+            if (SwitchModel == null || type == ConfigType.Unavailable) return;
+            foreach (var chassis in SwitchModel.ChassisList)
+            {
+                foreach (var slot in chassis.Slots)
+                {
+                    if (!slot.SupportsPoE) continue;
+                    SetSlotPowerClassDetection(slot, type);
+                }
+            }
+        }
+
+        public void SetSlotPowerClassDetection(SlotModel slot, ConfigType type)
+        {
+            if (SwitchModel == null || type == ConfigType.Unavailable) return;
             try
             {
-                if (slot.PowerClassDetection == ConfigType.Disable) SendCommand(new CmdRequest(Command.POWER_CLASS_DETECTION_ENABLE, slot.Name));
+                SendCommand(new CmdRequest(type == ConfigType.Enable ? Command.POWER_CLASS_DETECTION_ENABLE : Command.POWER_CLASS_DETECTION_DISABLE, slot.Name));
             }
             catch (Exception ex)
             {
@@ -2912,6 +2982,32 @@ namespace PoEWizard.Comm
                     Logger.Error(ex);
                 }
             }
+        }
+
+        public List<Route> GetIpRoutes()
+        {
+            List<Route> routes = new List<Route>();
+            try
+            {
+                List<Dictionary<string, string>> responses = SendCommand(new CmdRequest(Command.SHOW_IP_ROUTES, ParseType.Htable)) as List<Dictionary<string, string>>;
+                foreach (Dictionary<string, string> route in responses)
+                {
+                    try
+                    {
+                        routes.Add(new Route(route));
+                    }
+                    catch
+                    {
+                        //pass
+                        continue;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return routes;
         }
 
         private void SendProgressReport(string progrMsg)
