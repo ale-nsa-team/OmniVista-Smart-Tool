@@ -28,6 +28,8 @@
     <converters:IpAddrListToTooltipConverter x:Key="IpAddrListToTooltipConverter" />
     <converters:IpAddrListFilterToTooltipConverter x:Key="IpAddrListFilterToTooltipConverter" />
     <converters:ValueToStyleConverter x:Key="ValueToStyleConverter" />
+    <converters:MacListToTooltipConverter x:Key="MacListToTooltipConverter" />
+    <converters:IsNoneOniePlatformToTooltipConverter x:Key="IsNoneOniePlatformToTooltipConverter" />
 
     <BitmapImage x:Key="connected" UriSource="Img/connected.png" />
     <BitmapImage x:Key="disconnected" UriSource="Img/disconnected-light.png" />
@@ -42,6 +44,7 @@
     <BitmapImage x:Key="write_memory" UriSource="Img//save-light.png" />
     <BitmapImage x:Key="reboot" UriSource="Img/reboot-light.png" />
     <BitmapImage x:Key="bolt" UriSource="Img/bolt.png" />
+    <BitmapImage x:Key="ping" UriSource="Img/ping-light.png" />
 
     <SolidColorBrush x:Key="fontColor" Color="Black" />
     <SolidColorBrush x:Key="linkColor" Color="Blue" />

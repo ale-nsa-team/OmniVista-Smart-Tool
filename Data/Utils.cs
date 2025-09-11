@@ -662,7 +662,7 @@ namespace PoEWizard.Data
 
         public static string Translate(string key, params string[] data)
         {
-            string str = (string)MainWindow.Strings[key];
+            string str = (string)MainWindow.Strings?[key];
             if (str == null) return key;
             for (int i = 0; i < data.Length; i++)
             {
@@ -726,5 +726,17 @@ namespace PoEWizard.Data
             else return string.Empty;
         }
 
+        private static readonly List<string> OnieSupportedModels = new List<string>
+        {
+            "OS6870-24", "OS6870-48", "OS6870-P24Z", "OS6870-P48Z",
+            "OS6900-X24C2", "OS6900-T24C2",
+            "OS6900-C32", "OS6900-V72", "OS6900-X48C6", "OS6900-T48C6", "OS6900-X48C4E", "OS6900-V48C8", "OS6900-C32E",
+            "OS6860N-P48Z", "OS6860N-P48M", "OS6860N-P24Z", "OS6860N-P24M", "OS6860N-U28"
+        };
+
+        public static bool IsNoneOniePlatform(string model)
+        {
+            return !OnieSupportedModels.Contains(model);
+        }
     }
 }

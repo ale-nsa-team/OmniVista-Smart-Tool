@@ -1,0 +1,122 @@
+﻿<Window x:Class="PoEWizard.Components.PingDevice"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PoEWizard.Components"
+        mc:Ignorable="d"
+        Loaded="OnWindowLoaded"
+        Title="{DynamicResource i18n_pingDevice}" Height="400" Width="550" WindowStartupLocation="CenterScreen"
+        WindowStyle="None" ShowInTaskbar="False" ResizeMode="NoResize">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/ResourceDictionary-light.xaml" />
+                <ResourceDictionary Source="../Resources/ResourceDictionary-dark.xaml" />
+                <ResourceDictionary Source="../Resources/strings-enUS.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Style="{DynamicResource popupWindow}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <!-- Title bar -->
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <!-- Window Title Bar -->
+        <Border Grid.Row="0"
+                Style="{DynamicResource cfgTitle}"
+                Margin="0"
+                Padding="0">
+            <TextBlock x:Name="_title" Text="{DynamicResource i18n_pingDevice}"
+                       Style="{DynamicResource cfgHeader}"
+                       Margin="8"
+                       Padding="0" />
+        </Border>
+        <!-- IP Address Selection -->
+        <TextBlock Grid.Row="1"
+                Text="{DynamicResource i18n_ip}"
+                Margin="8,4"
+                Padding="0"
+                Style="{DynamicResource popupTitle}" />
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <ComboBox x:Name="IpAddressComboBox"
+                    Grid.Column="0"
+                    Style="{DynamicResource defaultCombo}"
+                    FontSize="12"
+                    Height="24"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    IsEditable="True"
+                    Margin="8,4,8,8"
+                    Padding="0"
+                    ItemsSource="{Binding IpAddresses}">
+                <ComboBox.Text>
+                    <Binding Path="SelectedIpAddress" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay">
+                        <Binding.ValidationRules>
+                            <local:IpAddressRule />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </ComboBox.Text>
+            </ComboBox>
+
+            <Button x:Name="PingButton"
+                    Grid.Column="1"
+                    Click="PingButton_Click"
+                    Style="{DynamicResource defaultButton}"
+                    Margin="8,4,8,8"
+                    Padding="0"
+                    Content="{DynamicResource i18n_ping}"
+                    IsEnabled="{Binding CanPing}" />
+        </Grid>
+
+        <!-- Loading Indicator -->
+        <StackPanel Grid.Row="3" Margin="8,0,8,0">
+            <ProgressBar x:Name="PingProgressBar"
+                       Foreground="{DynamicResource linkColor}"
+                       Height="10"
+                       IsIndeterminate="True"
+                       Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </StackPanel>
+
+        <!-- Ping Results -->
+        <Border Grid.Row="4"
+                BorderBrush="{DynamicResource borderColor}"
+                CornerRadius="4"
+                BorderThickness="1"
+                Margin="8"
+                Padding="0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <TextBlock x:Name="ResultTextBlock"
+                         Foreground="{DynamicResource fontColor}"
+                         TextWrapping="Wrap"
+                         Padding="10"
+                         Text="{Binding PingResult}" />
+            </ScrollViewer>
+        </Border>
+
+        <!-- Buttons -->
+        <Border Grid.Row="5" Style="{DynamicResource propsBorder}"
+                Margin="0"
+                Padding="0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Click="CloseButton_Click"
+                        Style="{DynamicResource defaultButton}"
+                        Margin="8"
+                        Padding="0"
+                        Content="{DynamicResource i18n_closeBtn}" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

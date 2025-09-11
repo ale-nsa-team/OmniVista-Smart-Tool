@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <!--Menus-->
@@ -46,6 +46,7 @@
     <!--Buttons-->
     <sys:String x:Key="i18n_ptRst">Reset Port</sys:String>
     <sys:String x:Key="i18n_ptTdr">Cable Test</sys:String>
+    <sys:String x:Key="i18n_ping">Ping</sys:String>
     <sys:String x:Key="i18n_poeWiz">Run PoE Wizard</sys:String>
     <sys:String x:Key="i18n_rfrsh">Refresh</sys:String>
     <sys:String x:Key="i18n_save">Write Memory</sys:String>
@@ -70,10 +71,15 @@
     <sys:String x:Key="i18n_langfe">Select folder to save language file</sys:String>
     <sys:String x:Key="i18n_langfi">Select language file to import</sys:String>
     <sys:String x:Key="i18n_badLang">Language file "$1" is invalid and will be removed</sys:String>
+    <sys:String x:Key="i18n_langBroken">Unable to access the language file. Please check the installation or contact support.</sys:String>
     <sys:String x:Key="i18n_expfail">Failed to export language file</sys:String>
     <sys:String x:Key="i18n_impfail">Failed to import language file</sys:String>
     <sys:String x:Key="i18n_defLang">Cannot import default language</sys:String>
     <sys:String x:Key="i18n_dupLang">Language file $1 already exists, do you want to replace it?</sys:String>
+    
+    <!--Installation Errors-->
+    <sys:String x:Key="i18n_instError">Installation Error</sys:String>
+    <sys:String x:Key="i18n_ouiMissing">Installation appears to be corrupted. The OUI database file is missing or invalid. The OUI (Organizationally Unique Identifier) database is essential for identifying device manufacturers from MAC addresses, so its absence would significantly impact the application's functionality, making reinstallation the appropriate solution. Please reinstall the application to restore missing components.</sys:String>
     
     <!--System Information-->
     <sys:String x:Key="i18n_swName">Name:</sys:String>
@@ -113,6 +119,8 @@
     <sys:String x:Key="i18n_port">Port</sys:String>
     <sys:String x:Key="i18n_alias">Description</sys:String>
     <sys:String x:Key="i18n_ptSt">Status</sys:String>
+    <sys:String x:Key="i18n_bw">Bandwidth</sys:String>
+    <sys:String x:Key="i18n_duplex">Duplex</sys:String>
     <sys:String x:Key="i18n_prio">Priority</sys:String>
     <sys:String x:Key="i18n_ptIp">IP Address</sys:String>
     <sys:String x:Key="i18n_ptPwr">Power (Watts)</sys:String>
@@ -187,7 +195,7 @@
     <sys:String x:Key="i18n_snmp">SNMP Settings</sys:String>
     <sys:String x:Key="i18n_usrs">Users</sys:String>
     <sys:String x:Key="i18n_usr">User</sys:String>
-    <sys:String x:Key="i18n_comms">Communitites</sys:String>
+    <sys:String x:Key="i18n_comms">Communities</sys:String>
     <sys:String x:Key="i18n_comm">Community</sys:String>
     <sys:String x:Key="i18n_recv">Trap Receivers</sys:String>
     <sys:String x:Key="i18n_usrName">Name</sys:String>
@@ -199,10 +207,10 @@
     <sys:String x:Key="i18n_ver">Version</sys:String>
     <sys:String x:Key="i18n_runCW">Running config wizard...</sys:String>
     <sys:String x:Key="i18n_cwErr">The following error was reported:</sys:String>
-    <sys:String x:Key="i18n_cwErrs">The following $1 errors where reported:</sys:String>
+    <sys:String x:Key="i18n_cwErrs">The following $1 errors were reported:</sys:String>
     <sys:String x:Key="i18n_twiz">Config Wizard</sys:String>
     <sys:String x:Key="i18n_discWiz" xml:space="preserve">
-Application will disconnect from switch because IP address wad changed.
+Application will disconnect from switch because IP address was changed.
 Please reconnect using the new address.
     </sys:String>
     <sys:String x:Key="i18n_loading">Loading current parameters, please wait...</sys:String>
@@ -233,9 +241,9 @@ Please confirm your action.
     <sys:String x:Key="i18n_fullrst">Full Factory Reset (you will have to reconnect to the switch via console or use lightning config)</sys:String>
     <sys:String x:Key="i18n_partrst">Factory Reset + management interface (allows to reconnect to the switch via this app)</sys:String>
     <sys:String x:Key="i18n_frReboot">Configuration reset complete, switch will reboot now</sys:String>
-    <sys:String x:Key="i18n_frPrep">Prepairing factory default...</sys:String>
+    <sys:String x:Key="i18n_frPrep">Preparing factory default...</sys:String>
     <sys:String x:Key="i18n_frDelete">Removing config files</sys:String>
-    <sys:String x:Key="i18n_frTmplt">Appying basic template...</sys:String>
+    <sys:String x:Key="i18n_frTmplt">Applying basic template...</sys:String>
     
     <!--Upgrade Messages-->
     <sys:String x:Key="i18n_aosUpg">AOS Upgrade</sys:String>
@@ -256,6 +264,13 @@ Do you still want to proceed with the upgrade?</sys:String>
     <sys:String x:Key="i18n_ubootCmd">Running U-Boot upgrade command...</sys:String>
     <sys:String x:Key="i18n_upgReboot" xml:space="preserve">The switch needs to be restarted to complete the upgrade.
 Do you want to reboot now?</sys:String>
+    <sys:String x:Key="i18n_unsupportedFamily">Unsupported or unknown product family: '$1'</sys:String>
+    <sys:String x:Key="i18n_supportedFamilies">Supported families: $1</sys:String>
+    <sys:String x:Key="i18n_ensureSupported">Please ensure your switch model is supported for AOS upgrade</sys:String>
+    <sys:String x:Key="i18n_archiveMissingImage">Archive does not contain expected image file '$1' for product family '$2'</sys:String>
+    <sys:String x:Key="i18n_checkFamilyMapping">Please verify the archive contains the correct image file according to the family mapping</sys:String>
+    <sys:String x:Key="i18n_expectedImageGuide">Expected image for '$1': $2</sys:String>
+    <sys:String x:Key="i18n_noUbootSupported">U-Boot upgrade is not supported on this ONIE platform.</sys:String>
 
     <!--Backup Messages-->
     <sys:String x:Key="i18n_bckRunning">Backing up configuration of switch</sys:String>
@@ -315,8 +330,7 @@ Do you want to continue?</sys:String>
     <sys:String x:Key="i18n_pwRep">PoE Wizard Report:</sys:String>
     <sys:String x:Key="i18n_pwRun">Running PoE Wizard</sys:String>
     <sys:String x:Key="i18n_pwDur">Total duration:</sys:String>
-    <sys:String x:Key="i18n_pwEnd">PoE Wizard completed on port</sys:String>
-    <sys:String x:Key="i18n_pwDev">with device type</sys:String>
+    <sys:String x:Key="i18n_pwEnd">PoE Wizard completed on port $1 with device type $2:</sys:String>
     <sys:String x:Key="i18n_pwPst">Port Status:</sys:String>
     <sys:String x:Key="i18n_power">Power:</sys:String>
     <sys:String x:Key="i18n_pwDevMac">Device MAC:</sys:String>
@@ -363,9 +377,9 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_maxpw">max. power =</sys:String>
     <sys:String x:Key="i18n_chgprio">Changing power priority on port</sys:String>
     <sys:String x:Key="i18n_pmaysolve">may solve the problem</sys:String>
-    <sys:String x:Key="i18n_pnoneed">No need to change power prioriry on port</sys:String>
+    <sys:String x:Key="i18n_pnoneed">No need to change power priority on port</sys:String>
     <sys:String x:Key="i18n_palready">priority is already</sys:String>
-    <sys:String x:Key="i18n_pback">Chaging priority back to</sys:String>
+    <sys:String x:Key="i18n_pback">Changing priority back to</sys:String>
     <sys:String x:Key="i18n_cpRep">Priority Change Report:</sys:String>
     <sys:String x:Key="i18n_rcpoe">Power cycling PoE on port</sys:String>
     <sys:String x:Key="i18n_pwoff">Turning power off</sys:String>
@@ -376,16 +390,16 @@ Do you want to collect information to send the Technical Support?
     <sys:String x:Key="i18n_devSel">Please, select the type of device connected to port</sys:String>
     <sys:String x:Key="i18n_isupl">is a switch uplink</sys:String>
     <sys:String x:Key="i18n_noen">Cannot enable</sys:String>
-    <sys:String x:Key="i18n_nodis">Connot disable</sys:String>
+    <sys:String x:Key="i18n_nodis">Cannot disable</sys:String>
     <sys:String x:Key="i18n_pwdown">because it is powered down</sys:String>
     <sys:String x:Key="i18n_isbt">because 802.3bt is supported</sys:String>
-    <sys:String x:Key="18n_isen">is already enabled</sys:String>
+    <sys:String x:Key="i18n_isen">is already enabled</sys:String>
     <sys:String x:Key="i18n_isdis">is already disabled</sys:String>
     <sys:String x:Key="i18n_exec">executed</sys:String>
     <sys:String x:Key="i18n_notex">failed to execute</sys:String>
 
     <!--About box-->
-    <sys:String x:Key="i18n_aboutTitle">About ALE Installer Toolkit</sys:String>
+    <sys:String x:Key="i18n_aboutTitle">About OmniVista Smart Tool</sys:String>
     <sys:String x:Key="i18n_cpright">Copyright</sys:String>
     <sys:String x:Key="i18n_reserved">All Rights Reserved</sys:String>
     <sys:String x:Key="i18n_authors">Authors:</sys:String>
@@ -402,6 +416,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
 
     <!--Switch scan-->
     <sys:String x:Key="i18n_rsCnx">Connecting to switch</sys:String>
+    <sys:String x:Key="i18n_unableToConnect">Connection to the switch failed. Aborting REST API enablement. Please verify that the switch is reachable before proceeding.</sys:String>
     <sys:String x:Key="i18n_rest">Connecting REST API</sys:String>
     <sys:String x:Key="i18n_scan">Scanning switch</sys:String>
     <sys:String x:Key="i18n_sys">Reading system information</sys:String>
@@ -413,6 +428,7 @@ ALE USA INC. SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED T
     <sys:String x:Key="i18n_lanpw">Getting LAN power information on slot</sys:String>
     <sys:String x:Key="i18n_rlldp">Reading LLDP remote information</sys:String>
     <sys:String x:Key="i18n_rmac">Reading MAC address information</sys:String>
+    <sys:String x:Key="i18n_rtrans">Reading transceiver information</sys:String>
     <sys:String x:Key="i18n_rpdet">Reading ports detailed information</sys:String>
     <sys:String x:Key="i18n_shealth">Waiting to read CPU health</sys:String>
     <sys:String x:Key="i18n_enableRest">Enabling REST API on switch</sys:String>
@@ -518,7 +534,7 @@ Please reconnect to switch after it comes back up</sys:String>
     <sys:String x:Key="i18n_fromsw">from switch</sys:String>
     <sys:String x:Key="i18n_noSftp">Cannot connect secure FTP on switch</sys:String>
     <sys:String x:Key="i18n_lsnap">Reading configuration snapshot...</sys:String>
-    <sys:String x:Key="i18n_tsnap">Configuration Shapshot</sys:String>
+    <sys:String x:Key="i18n_tsnap">Configuration Snapshot</sys:String>
     <sys:String x:Key="i18n_sport">Device Search</sys:String>
     <sys:String x:Key="i18n_updAlias">Update port description</sys:String>
     <sys:String x:Key="i18n_fmac">Could not find MAC Address $1</sys:String>
@@ -644,4 +660,79 @@ It may take up to 30 sec to execute Write Memory
     <sys:String x:Key="i18n_ptIp_tt" xml:space="preserve">May take up to 5 minutes to fully update.
 Uses best effort to scan IP addresses, may not get all addresses.
 List is limited to 50 IP Addresses per port.</sys:String>
+
+    <!--Ping Device Window-->
+    <sys:String x:Key="i18n_pingDevice">Ping Device</sys:String>
+    <sys:String x:Key="i18n_enterIpAddress">Enter an IP address and click Ping to test connectivity.</sys:String>
+    <sys:String x:Key="i18n_selectIpAddress">Select an IP address and click Ping to test connectivity.</sys:String>
+    <sys:String x:Key="i18n_validIpRequired">Please enter a valid IP address.</sys:String>
+    <sys:String x:Key="i18n_pingInProgress">Processing ping request, please wait...</sys:String>
+    <sys:String x:Key="i18n_error">Error</sys:String>
+    <sys:String x:Key="i18n_pinging">Pinging</sys:String>
+    <sys:String x:Key="i18n_withBytes">with 32 bytes of data</sys:String>
+    <sys:String x:Key="i18n_pingFailed">Ping failed</sys:String>
+    <sys:String x:Key="i18n_replyFrom">Reply from</sys:String>
+    <sys:String x:Key="i18n_bytes">bytes</sys:String>
+    <sys:String x:Key="i18n_time">time</sys:String>
+    <sys:String x:Key="i18n_requestTimeout">Request timed out</sys:String>
+    <sys:String x:Key="i18n_pingStats">Ping statistics for</sys:String>
+    <sys:String x:Key="i18n_packets">Packets</sys:String>
+    <sys:String x:Key="i18n_sent">Sent</sys:String>
+    <sys:String x:Key="i18n_received">Received</sys:String>
+    <sys:String x:Key="i18n_lost">Lost</sys:String>
+    <sys:String x:Key="i18n_loss">loss</sys:String>
+    <sys:String x:Key="i18n_roundTripTimes">Approximate round trip times in milliseconds</sys:String>
+    <sys:String x:Key="i18n_minimum">Minimum</sys:String>
+    <sys:String x:Key="i18n_maximum">Maximum</sys:String>
+    <sys:String x:Key="i18n_average">Average</sys:String>
+    <sys:String x:Key="i18n_pingFailedFallback">Falling back to ping from current machine...</sys:String>
+    
+    <!-- Traffic Analysis Viewer Labels -->
+    <sys:String x:Key="i18n_tRPort">Port</sys:String>
+    <sys:String x:Key="i18n_tRAlias">Alias</sys:String>
+    <sys:String x:Key="i18n_tRType">Type</sys:String>
+    <sys:String x:Key="i18n_tRName">Name</sys:String>
+    <sys:String x:Key="i18n_tRDescription">Description</sys:String>
+    <sys:String x:Key="i18n_tRIpAddress">IP Address</sys:String>
+    <sys:String x:Key="i18n_tRVendor">Vendor</sys:String>
+    <sys:String x:Key="i18n_tRModel">Model</sys:String>
+    <sys:String x:Key="i18n_tRSoftwareVersion">Software Version</sys:String>
+    <sys:String x:Key="i18n_tRSerialNumber">Serial Number</sys:String>
+    <sys:String x:Key="i18n_tRMacAddress">MAC Address</sys:String>
+    <sys:String x:Key="i18n_tRBandwidth">Bandwidth</sys:String>
+    <sys:String x:Key="i18n_tRRxRate">Rx Rate (Kbps)</sys:String>
+    <sys:String x:Key="i18n_tRTxRate">Tx Rate (Kbps)</sys:String>
+    <sys:String x:Key="i18n_tRRxBroadcastFrames">#Rx Broadcast Frames</sys:String>
+    <sys:String x:Key="i18n_tRRxUnicastFrames">#Rx Unicast Frames</sys:String>
+    <sys:String x:Key="i18n_tRRxBroadcastUnicastPercent">Rx Broadcast/Unicast (%)</sys:String>
+    <sys:String x:Key="i18n_tRRxMulticastFrames">#Rx Multicast Frames</sys:String>
+    <sys:String x:Key="i18n_tRRxUnicastMulticastRate">Rx Unicast+Multicast Rate (Kbps)</sys:String>
+    <sys:String x:Key="i18n_tRRxLostFrames">#Rx Lost Frames</sys:String>
+    <sys:String x:Key="i18n_tRRxCrcError">#Rx CRC Error</sys:String>
+    <sys:String x:Key="i18n_tRRxAlignmentsError">#Rx Alignments Error</sys:String>
+    <sys:String x:Key="i18n_tRTxBroadcastFrames">#Tx Broadcast Frames</sys:String>
+    <sys:String x:Key="i18n_tRTxUnicastFrames">#Tx Unicast Frames</sys:String>
+    <sys:String x:Key="i18n_tRTxBroadcastUnicastPercent">Tx Broadcast/Unicast (%)</sys:String>
+    <sys:String x:Key="i18n_tRTxMulticastFrames">#Tx Multicast Frames</sys:String>
+    <sys:String x:Key="i18n_tRTxUnicastMulticastRate">Tx Unicast+Multicast Rate (Kbps)</sys:String>
+    <sys:String x:Key="i18n_tRTxLostFrames">#Tx Lost Frames</sys:String>
+    <sys:String x:Key="i18n_tRTxCollidedFrames">#Tx Collided Frames</sys:String>
+    <sys:String x:Key="i18n_tRTxCollisions">#Tx Collisions</sys:String>
+    <sys:String x:Key="i18n_tRTxLateCollisions">#Tx Late Collisions</sys:String>
+    <sys:String x:Key="i18n_tRTxExcessiveCollisions">#Tx Excessive Collisions</sys:String>
+    <sys:String x:Key="i18n_tRDeviceType">Device Type</sys:String>
+    <sys:String x:Key="i18n_tRMacAddressList">MAC Address List</sys:String>
+    <sys:String x:Key="i18n_tRPortTraffic">Port Traffic Statistics</sys:String>
+    <sys:String x:Key="i18n_tRLldpDevices">LLDP Devices</sys:String>
+    <sys:String x:Key="i18n_tRTransceivers">Transceivers</sys:String>
+    <sys:String x:Key="i18n_tRChassisSlotNumber">Chassis/Slot</sys:String>
+    <sys:String x:Key="i18n_tRTransceiverNumber">Transceiver</sys:String>
+    <sys:String x:Key="i18n_tRAluModelName">ALU Model Name</sys:String>
+    <sys:String x:Key="i18n_tRAluModelNumber">ALU Model Number</sys:String>
+    <sys:String x:Key="i18n_tRHardwareRevision">Hardware Revision</sys:String>
+    <sys:String x:Key="i18n_tRManufactureDate">Manufacture Date</sys:String>
+    <sys:String x:Key="i18n_tRLaserWaveLength">Laser Wave Length</sys:String>
+    <sys:String x:Key="i18n_tRAdminStatus">Admin Status</sys:String>
+    <sys:String x:Key="i18n_tROperationalStatus">Operational Status</sys:String>
+
 </ResourceDictionary>

@@ -33,7 +33,7 @@
             <StackPanel Grid.Row="1" Margin="40,0,0,10">
                 <TextBlock Style="{DynamicResource aboutParagraph}" Text="{DynamicResource i18n_authors}"  Margin="0"/>
                 <TextBlock Style="{DynamicResource aboutParagraph}" Margin="0,5,0,8">
-                Luiz Felix<LineBreak />Joao Almeida
+                    Alcatel-Lucent Enterprise
                 </TextBlock>
             </StackPanel>
         </Grid>
