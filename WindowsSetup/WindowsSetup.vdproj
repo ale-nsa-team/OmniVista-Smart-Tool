@@ -213,7 +213,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:Debug\\OmniVista-SmartTool-Setup-v2.4.0.msi"
+        "OutputFilename" = "8:Debug\\OmniVista-SmartTool-Setup-v2.4.1.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -245,7 +245,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\OmniVista-SmartTool-Setup-v2.4.0.msi"
+        "OutputFilename" = "8:Release\\OmniVista-SmartTool-Setup-v2.4.1.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -818,7 +818,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:OmniVista Smart Tool v2.4.0"
+        "ProductName" = "8:OmniVista Smart Tool v2.4.1"
         "ProductCode" = "8:{9F7A438C-A32A-47CB-A1E5-63F6F2EB71E8}"
         "PackageCode" = "8:{337D69F1-36F9-428F-9B4A-21BD7E4DEE5D}"
         "UpgradeCode" = "8:{E422185B-0A8C-4BE4-AD08-F34ED964BB9E}"
@@ -827,7 +827,7 @@
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.4.0"
+        "ProductVersion" = "8:2.4.1"
         "Manufacturer" = "8:Alcatel-Lucent Enterprise"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -942,7 +942,7 @@
         {
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_00380620CE594291B0D87618F4146EF6"
             {
-            "Name" = "8:OmniVista Smart Tool v2.4.0"
+            "Name" = "8:OmniVista Smart Tool v2.4.1"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -956,7 +956,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_F85DC562B1E2426BB32E8323AAB283CB"
             {
-            "Name" = "8:OmniVista Smart Tool v2.4.0"
+            "Name" = "8:OmniVista Smart Tool v2.4.1"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
