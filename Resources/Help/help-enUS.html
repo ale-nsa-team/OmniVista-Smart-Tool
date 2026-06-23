@@ -37,17 +37,17 @@
     </ul>
     <p id="connection" class="topic">Connecting to a Switch</p>
     <p> Start by clicking Connection at the upper left of the tool and select Switch.</p>
-    <img src="connection.png" />
+    <img src="Img/connection.png" />
     <p>
         You will need the IP address of the ALE switch, username, and password.
         The default username is admin, and the default password is switch.  Both are lower case.
     </p>
-    <img src="login.png" />
+    <img src="Img/login.png" />
     <p>
         Upon successful completion of the login, the Application will gather important information about the switch
         including the serial number, model, software release and more.
     </p>
-    <img src="connected.png" />
+    <img src="Img/connected.png" />
     <p class="topic">Connection Protocols</p>
     <p>
         The application uses multiple protocols to communicate with the switch:
@@ -93,9 +93,9 @@
         connected PoE device when it is functioning properly. Here we see an Axis camera model M20260LE MK II running firmware 9.80.72.
         The MAC address and IP address are shown.  Again, the device must support LLDP for this feature to function.
     </p>
-    <img src="device-info.png" />
+    <img src="Img/device-info.png" />
     <p>Details on the Status Field and what it means.</p>
-    <img src="port-status.png" />
+    <img src="Img/port-status.png" />
     <p>
         Status may be any of the following: On, Off, Searching, Fault, Deny, Conflict, PoweredOff, NoPoe.
     </p>
@@ -115,17 +115,17 @@
         In this example a 3rd party PoE splitter was connected to port 48 which supplies 802.3bt power and an IP camera that
         requires 24 volts instead of the normal 48 volts supplied by the switch
     </p>
-    <img src="poe-device.png" />
+    <img src="Img/poe-device.png" />
     <p>
         The tool sees that there is no link light on the switch and the Wizard shows port 48 Status as Searching when it should be Up and showing
         the power being consumed. Select port 48 and click Run PoE Wizard. This is not a camera, AP, or telephone so we select Other and click OK.
     </p>
-    <img src="run-wiz.png" />
+    <img src="Img/run-wiz.png" />
     <p>
         The Wizard will now attempt to diagnose and repair the problem. This can take up to a full 60 seconds to accomplish.
         Please be patient while the software runs. The Wizard will report success or not.
     </p>
-    <img src="wiz-report.png" />
+    <img src="Img/wiz-report.png" />
     <p>
         Note that in this case, capacitor-detection had to be enabled on the switch for the splitter to function correctly.
         Now we will check port 48 again and will see the Status has changed to Up, it is consuming 3.3 watts of power,
@@ -133,7 +133,7 @@
         power up and function correctly. However, because this splitter does not support LLDP, the Wizard can not display
         any extra information such as name, IP address, or firmware.
     </p>
-    <img src="wiz-result.png" />
+    <img src="Img/wiz-result.png" />
     <br />
 
     <p class="title">Using the Ping Function</p>
@@ -184,7 +184,7 @@
     </p>
     <p id="view" class="header">View Menu Options</p>
     <p>After you connect to a switch, several options are available under the View menu.</p>
-    <img src="view-menu.png" />
+    <img src="Img/view-menu.png" />
     <p class="topic">Log</p>
     <p>The options available under the Log menu are</p>
     <ul>
@@ -230,7 +230,7 @@
         Shows the switch power supply information on a popup window, where you can check the power supply satus,
         type, serial number, among other parameters.
     </p>
-    <img src="power-supply.png" />
+    <img src="Img/power-supply.png" />
     <p class="topic">Search</p>
     <p>Allows you to search for ports containing a specific mac-address.</p>
     <p>
@@ -238,7 +238,7 @@
         that portion of the mac in their mac address list. If you leave this field empty, the application will display all ports that have at
         least one mac address associated to them.
     </p>
-    <img src="search-mac.png" />
+    <img src="Img/search-mac.png" />
     <p>
         If you select a port on this window, before closing it, the port will also be selected on the main window, so you can perform some
         actions on it, such as reset the port of run the PoE Wizard.
@@ -274,7 +274,7 @@
         If you need to reconfigure your switch, starting from scratch and adding some basic recommended setup,
         you can do so by going to the Configuration menu option.
     </p>
-    <img src="config-wiz.png" />
+    <img src="Img/config-wiz.png" />
     <p class="topic">Factory Reset</p>
     <p>
         Use this options to reset your switch configuration to factory default. The wizard will completely erase the switch configuration
@@ -302,33 +302,33 @@
     <p class="topic">Basic Config Wizard</p>
     <p>The wizard presents a few configuration windows, you can navigate back and forth using the "Next >" and "< Back" buttons.</p>
     <p>The first window lets you configure the management IP address and netmask, as well as some switch system parameters.</p>
-    <img src="cfg-wiz-sys.png" />
+    <img src="Img/cfg-wiz-sys.png" />
     <p>
         Clicking "Next >" will navigate to the next window where you can configure the Default Gateway, DNS and NTP servers.
         When the NTP option is enabled, you can select the switch's timezone from the drop-down menu.
     </p>
-    <img src="cfg-wiz-srv.png" />
+    <img src="Img/cfg-wiz-srv.png" />
     <p>
         Click "Next >" to navigate to the next window, which allows you to configure some features, like disabling insecure protocols
         (telnet, ftp), enable SSH, etc.
     </p>
     <p class="no-space">When setting up multicast, you can select which VLANs will have it enabled on the table below the multicast toggle switch.</p>
-    <img src="cfg-wiz-feature.png" />
+    <img src="Img/cfg-wiz-feature.png" />
     <p>The last page on the configuration wizard allows you to configure the switch to send SNMP traps to trap receivers.</p>
-    <img src="cfg-wiz-snmp.png" />
+    <img src="Img/cfg-wiz-snmp.png" />
     <p>To add an snmp user, click the "+" button to the left of the table's "Name" column.</p>
-    <img src="cfg-wiz-add-user.png" />
+    <img src="Img/cfg-wiz-add-user.png" />
     <p>Enter the username and password and click Create.</p>
     <p>To delete a user, click the "x" button on the left of the username on the table.</p>
     <p>If you are using SNMP v2, you can create a community by clicking the "+" sign on the Communities table.</p>
-    <img src="cfg-wiz-add-comm.png" />
+    <img src="Img/cfg-wiz-add-comm.png" />
     <p>
         Since on the ALE OmniSwitches an SNMP community is associated with a user, enter the community name and select a previously
         created user from the drop-down menu, before clicking Create.
     </p>
     <p>To delete a community, click the "x" button to the left of the community name on the table.</p>
     <p>To add an SNMP Trap Receiver, click the "+" button to the left of the Ip Address column on the Trap Receivers table.</p>
-    <img src="cfg-wiz-recv.png" />
+    <img src="Img/cfg-wiz-recv.png" />
     <p>
         Select the required SNMP Version (v2 or v3) and enter the IP Address of the trap receiver.
         If you selected v2, select the community from the drop-down menu, if you selected v3, select the user from the drop-down menu.
@@ -485,9 +485,10 @@
     </div>
 
     <p>Exiting the Application will prompt you to save your changes. Click OK and wait for it to be completed. This can take some time.</p>
-    <img src="save-prompt.png" />
+    <img src="Img/save-prompt.png" />
     <br />
-    <img src="save-progress.png" />
+
+    <img src="Img/save-progress.png" />
 
     <p id="oui" class="topic">OUI Vendor Mapping</p>
     <p>
@@ -555,6 +556,7 @@
             <li>Change the passcode periodically for enhanced security</li>
         </ul>
     </div>
+
 
     <p id="i18n" class="header">Localization</p>
     <p>
@@ -773,7 +775,7 @@
         <li>Class 4: PoE+ (12.95 to 25.50 watts).</li>
         <li>Classes 5 to 8: Defined in IEEE 802.3bt for higher power levels, supporting up to 100 watts.</li>
     </ul>
-    <img src="poe-table.png" />
+    <img src="Img/poe-table.png" />
     <p>The Application will display both PoE class and the maximum wattage supported by that class for you.</p>
     <p class="title">Negotiation Process</p>
     <ul>
